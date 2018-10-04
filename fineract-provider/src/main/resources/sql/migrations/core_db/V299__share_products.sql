@@ -117,7 +117,7 @@ CREATE TABLE `m_share_account_charge` (
 	`account_id` BIGINT(20) NOT NULL,
 	`charge_id` BIGINT(20) NOT NULL,
 	`charge_time_enum` SMALLINT(5) NOT NULL,
-	`charge_calculation_enum` SMALLINT(5) NOT NULL,
+	`charge_calculation_enum` SMALLINT(6) NOT NULL,
 	`charge_payment_mode_enum` SMALLINT(5) NOT NULL DEFAULT '0',
 	`calculation_percentage` DECIMAL(19,6) NULL DEFAULT NULL,
 	`calculation_on_amount` DECIMAL(19,6) NULL DEFAULT NULL,

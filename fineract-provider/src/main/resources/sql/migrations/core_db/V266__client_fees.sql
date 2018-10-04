@@ -67,7 +67,7 @@ CREATE TABLE `m_client_charge` (
 	`is_penalty` TINYINT(1) NOT NULL,
 	`charge_time_enum` SMALLINT(5) NOT NULL,
 	`charge_due_date` DATE NULL DEFAULT NULL,
-	`charge_calculation_enum` SMALLINT(5) NOT NULL,
+	`charge_calculation_enum` SMALLINT(6) NOT NULL,
 	`amount` DECIMAL(19,6) NOT NULL,
 	`amount_paid_derived` DECIMAL(19,6) NULL DEFAULT NULL,
 	`amount_waived_derived` DECIMAL(19,6) NULL DEFAULT NULL,
