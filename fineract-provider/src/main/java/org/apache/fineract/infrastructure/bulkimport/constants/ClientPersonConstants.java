@@ -21,6 +21,7 @@ package org.apache.fineract.infrastructure.bulkimport.constants;
 public class ClientPersonConstants {
     public static final int FIRST_NAME_COL = 0;//A
     public static final int LAST_NAME_COL = 1;//B
+    public static final int KHMER_NAME = 28;//
     public static final int MIDDLE_NAME_COL = 2;//C
     public static final int OFFICE_NAME_COL = 3;//D
     public static final int STAFF_NAME_COL = 4;//E
@@ -55,4 +56,5 @@ public class ClientPersonConstants {
     public static final int LOOKUP_ADDRESS_TYPE_COL = 40;//AO
     public static final int LOOKUP_STATE_PROVINCE_COL = 41;//AP
     public static final int LOOKUP_COUNTRY_COL = 42;//AQ
+    
 }

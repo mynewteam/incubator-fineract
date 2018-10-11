@@ -76,5 +76,17 @@ public class WebXmlConfiguration {
         filterRegistrationBean.setEnabled(false);
         return filterRegistrationBean;
     }
+    
+//  @Bean(name="filterRegistration2")
+//  public FilterRegistrationBean filterRegistrationBean2() {
+//  	FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean(); 	
+//  
+//  	CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
+//  	characterEncodingFilter.setForceEncoding(true);
+//  	characterEncodingFilter.setEncoding("UTF-8");
+//  	filterRegistrationBean.setFilter(characterEncodingFilter);
+//  	filterRegistrationBean.setName("iamFilterBean2");
+//  	return filterRegistrationBean();
+//  }
 
 }

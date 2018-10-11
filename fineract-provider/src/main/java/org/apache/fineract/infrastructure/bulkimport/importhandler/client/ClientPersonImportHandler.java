@@ -78,6 +78,7 @@ public class ClientPersonImportHandler implements ImportHandler {
         Long legalFormId=1L;
         String firstName = ImportHandlerUtils.readAsString(ClientPersonConstants.FIRST_NAME_COL, row);
         String lastName = ImportHandlerUtils.readAsString(ClientPersonConstants.LAST_NAME_COL, row);
+        String khmerName = ImportHandlerUtils.readAsString(ClientPersonConstants.KHMER_NAME, row);
         String middleName = ImportHandlerUtils.readAsString(ClientPersonConstants.MIDDLE_NAME_COL, row);
         String officeName = ImportHandlerUtils.readAsString(ClientPersonConstants.OFFICE_NAME_COL, row);
         Long officeId = ImportHandlerUtils.getIdByName(workbook.getSheet(TemplatePopulateImportConstants.OFFICE_SHEET_NAME), officeName);
@@ -155,7 +156,7 @@ public class ClientPersonImportHandler implements ImportHandler {
              addressDataObj = new AddressData(addressTypeId, street, addressLine1, addressLine2, addressLine3,
                     city, postalCode, isActiveAddress, stateProvinceId, countryId);
         }
-        return ClientData.importClientPersonInstance(legalFormId,row.getRowNum(),firstName,lastName,middleName,submittedOn,activationDate,active,externalId,
+        return ClientData.importClientPersonInstance(legalFormId,row.getRowNum(),firstName,lastName, khmerName,middleName,submittedOn,activationDate,active,externalId,
                 officeId,staffId,mobileNo,dob,clientTypeId,genderId,clientClassicationId,isStaff,addressDataObj,locale,dateFormat);
 
         }

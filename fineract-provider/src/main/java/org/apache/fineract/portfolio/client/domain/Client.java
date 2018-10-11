@@ -60,7 +60,8 @@ import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormatter;
 
 @Entity
-@Table(name = "m_client", uniqueConstraints = { @UniqueConstraint(columnNames = { "account_no" }, name = "account_no_UNIQUE"), //
+@Table(name = "m_client", uniqueConstraints = {
+        @UniqueConstraint(columnNames = { "account_no" }, name = "account_no_UNIQUE"), //
         @UniqueConstraint(columnNames = { "mobile_no" }, name = "mobile_no_UNIQUE") })
 public final class Client extends AbstractPersistableCustom<Long> {
 
@@ -88,7 +89,7 @@ public final class Client extends AbstractPersistableCustom<Long> {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sub_status", nullable = true)
     private CodeValue subStatus;
-    
+
     @Column(name = "activation_date", nullable = true)
     @Temporal(TemporalType.DATE)
     private Date activationDate;
@@ -106,6 +107,9 @@ public final class Client extends AbstractPersistableCustom<Long> {
     @Column(name = "lastname", length = 50, nullable = true)
     private String lastname;
 
+    @Column(name = "khmername", length = 50, nullable = true)
+    private String khmername;
+
     @Column(name = "fullname", length = 100, nullable = true)
     private String fullname;
 
@@ -114,11 +118,11 @@ public final class Client extends AbstractPersistableCustom<Long> {
 
     @Column(name = "mobile_no", length = 50, nullable = false, unique = true)
     private String mobileNo;
-	
-	@Column(name = "email_address", length = 50, unique = true)
+
+    @Column(name = "email_address", length = 50, unique = true)
     private String emailAddress;
 
-	@Column(name = "is_staff", nullable = false)
+    @Column(name = "is_staff", nullable = false)
     private boolean isStaff;
 
     @Column(name = "external_id", length = 100, nullable = true, unique = true)
@@ -136,7 +140,7 @@ public final class Client extends AbstractPersistableCustom<Long> {
     @JoinColumn(name = "staff_id")
     private Staff staff;
 
-    @ManyToMany(fetch=FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "m_group_client", joinColumns = @JoinColumn(name = "client_id"), inverseJoinColumns = @JoinColumn(name = "group_id"))
     private Set<Group> groups;
 
@@ -159,7 +163,7 @@ public final class Client extends AbstractPersistableCustom<Long> {
     @Temporal(TemporalType.DATE)
     private Date rejectionDate;
 
-    @ManyToOne(optional = true, fetch=FetchType.LAZY)
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "rejectedon_userid", nullable = true)
     private AppUser rejectedBy;
 
@@ -171,7 +175,7 @@ public final class Client extends AbstractPersistableCustom<Long> {
     @Temporal(TemporalType.DATE)
     private Date withdrawalDate;
 
-    @ManyToOne(optional = true, fetch=FetchType.LAZY)
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "withdraw_on_userid", nullable = true)
     private AppUser withdrawnBy;
 
@@ -179,11 +183,11 @@ public final class Client extends AbstractPersistableCustom<Long> {
     @Temporal(TemporalType.DATE)
     private Date reactivateDate;
 
-    @ManyToOne(optional = true, fetch=FetchType.LAZY)
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "reactivated_on_userid", nullable = true)
     private AppUser reactivatedBy;
 
-    @ManyToOne(optional = true, fetch=FetchType.LAZY)
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "closedon_userid", nullable = true)
     private AppUser closedBy;
 
@@ -191,7 +195,7 @@ public final class Client extends AbstractPersistableCustom<Long> {
     @Temporal(TemporalType.DATE)
     private Date submittedOnDate;
 
-    @ManyToOne(optional = true, fetch=FetchType.LAZY)
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "submittedon_userid", nullable = true)
     private AppUser submittedBy;
 
@@ -199,17 +203,17 @@ public final class Client extends AbstractPersistableCustom<Long> {
     @Temporal(TemporalType.DATE)
     private Date updatedOnDate;
 
-    @ManyToOne(optional = true, fetch=FetchType.LAZY)
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "updated_by", nullable = true)
     private AppUser updatedBy;
 
-    @ManyToOne(optional = true, fetch=FetchType.LAZY)
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "activatedon_userid", nullable = true)
     private AppUser activatedBy;
 
     @Column(name = "default_savings_product", nullable = true)
     private Long savingsProductId;
-    
+
     @Column(name = "default_savings_account", nullable = true)
     private Long savingsAccountId;
 
@@ -220,7 +224,7 @@ public final class Client extends AbstractPersistableCustom<Long> {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_classification_cv_id", nullable = true)
     private CodeValue clientClassification;
-    
+
     @Column(name = "legal_form_enum", nullable = true)
     private Integer legalForm;
 
@@ -232,21 +236,22 @@ public final class Client extends AbstractPersistableCustom<Long> {
     @JoinColumn(name = "reopened_by_userid", nullable = true)
     private AppUser reopenedBy;
 
-    public static Client createNew(final AppUser currentUser, final Office clientOffice, final Group clientParentGroup, final Staff staff,
-            final Long savingsProductId, final CodeValue gender, final CodeValue clientType, final CodeValue clientClassification,
-            final Integer legalForm, final JsonCommand command) {
+    public static Client createNew(final AppUser currentUser, final Office clientOffice, final Group clientParentGroup,
+            final Staff staff, final Long savingsProductId, final CodeValue gender, final CodeValue clientType,
+            final CodeValue clientClassification, final Integer legalForm, final JsonCommand command) {
 
         final String accountNo = command.stringValueOfParameterNamed(ClientApiConstants.accountNoParamName);
         final String externalId = command.stringValueOfParameterNamed(ClientApiConstants.externalIdParamName);
         final String mobileNo = command.stringValueOfParameterNamed(ClientApiConstants.mobileNoParamName);
-		final String emailAddress = command.stringValueOfParameterNamed(ClientApiConstants.emailAddressParamName);
+        final String emailAddress = command.stringValueOfParameterNamed(ClientApiConstants.emailAddressParamName);
 
         final String firstname = command.stringValueOfParameterNamed(ClientApiConstants.firstnameParamName);
         final String middlename = command.stringValueOfParameterNamed(ClientApiConstants.middlenameParamName);
         final String lastname = command.stringValueOfParameterNamed(ClientApiConstants.lastnameParamName);
+        final String khmername = command.stringValueOfParameterNamed(ClientApiConstants.khmernameParamName);
         final String fullname = command.stringValueOfParameterNamed(ClientApiConstants.fullnameParamName);
-		
-		final boolean isStaff = command.booleanPrimitiveValueOfParameterNamed(ClientApiConstants.isStaffParamName);
+
+        final boolean isStaff = command.booleanPrimitiveValueOfParameterNamed(ClientApiConstants.isStaffParamName);
 
         final LocalDate dataOfBirth = command.localDateValueOfParameterNamed(ClientApiConstants.dateOfBirthParamName);
 
@@ -272,20 +277,24 @@ public final class Client extends AbstractPersistableCustom<Long> {
             submittedOnDate = command.localDateValueOfParameterNamed(ClientApiConstants.submittedOnDateParamName);
         }
         final Long savingsAccountId = null;
-        return new Client(currentUser, status, clientOffice, clientParentGroup, accountNo, firstname, middlename, lastname, fullname,
-                activationDate, officeJoiningDate, externalId, mobileNo, emailAddress, staff, submittedOnDate, savingsProductId, savingsAccountId, dataOfBirth,
-                gender, clientType, clientClassification, legalForm, isStaff);
+        return new Client(currentUser, status, clientOffice, clientParentGroup, accountNo, firstname, middlename,
+                lastname, khmername, fullname, activationDate, officeJoiningDate, externalId, mobileNo, emailAddress,
+                staff, submittedOnDate, savingsProductId, savingsAccountId, dataOfBirth, gender, clientType,
+                clientClassification, legalForm, isStaff);
     }
 
     protected Client() {
-    	this.setLegalForm(null);
+        this.setLegalForm(null);
     }
 
-    private Client(final AppUser currentUser, final ClientStatus status, final Office office, final Group clientParentGroup,
-            final String accountNo, final String firstname, final String middlename, final String lastname, final String fullname,
-            final LocalDate activationDate, final LocalDate officeJoiningDate, final String externalId, final String mobileNo, final String emailAddress,
-            final Staff staff, final LocalDate submittedOnDate, final Long savingsProductId, final Long savingsAccountId,
-            final LocalDate dateOfBirth, final CodeValue gender, final CodeValue clientType, final CodeValue clientClassification, final Integer legalForm, final Boolean isStaff) {
+    private Client(final AppUser currentUser, final ClientStatus status, final Office office,
+            final Group clientParentGroup, final String accountNo, final String firstname, final String middlename,
+            final String lastname, final String khmername, final String fullname, final LocalDate activationDate,
+            final LocalDate officeJoiningDate, final String externalId, final String mobileNo,
+            final String emailAddress, final Staff staff, final LocalDate submittedOnDate, final Long savingsProductId,
+            final Long savingsAccountId, final LocalDate dateOfBirth, final CodeValue gender,
+            final CodeValue clientType, final CodeValue clientClassification, final Integer legalForm,
+            final Boolean isStaff) {
 
         if (StringUtils.isBlank(accountNo)) {
             this.accountNumber = new RandomPasswordGenerator(19).generate();
@@ -311,7 +320,7 @@ public final class Client extends AbstractPersistableCustom<Long> {
             this.mobileNo = null;
         }
 
-		if (StringUtils.isNotBlank(emailAddress)) {
+        if (StringUtils.isNotBlank(emailAddress)) {
             this.emailAddress = emailAddress.trim();
         } else {
             this.emailAddress = null;
@@ -376,17 +385,22 @@ public final class Client extends AbstractPersistableCustom<Long> {
         validateNameParts(dataValidationErrors);
         validateActivationDate(dataValidationErrors);
 
-        if (!dataValidationErrors.isEmpty()) { throw new PlatformApiDataValidationException(dataValidationErrors); }
+        if (!dataValidationErrors.isEmpty()) {
+            throw new PlatformApiDataValidationException(dataValidationErrors);
+        }
 
     }
-    
+
     private void validateUpdate() {
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
-        //Not validating name parts while update request as firstname/lastname can be along with fullname 
-        //when we change clientType from Individual to Organisation or vice-cersa
+        // Not validating name parts while update request as firstname/lastname can be
+        // along with fullname
+        // when we change clientType from Individual to Organisation or vice-cersa
         validateActivationDate(dataValidationErrors);
 
-        if (!dataValidationErrors.isEmpty()) { throw new PlatformApiDataValidationException(dataValidationErrors); }
+        if (!dataValidationErrors.isEmpty()) {
+            throw new PlatformApiDataValidationException(dataValidationErrors);
+        }
 
     }
 
@@ -411,12 +425,14 @@ public final class Client extends AbstractPersistableCustom<Long> {
         this.accountNumberRequiresAutoGeneration = false;
     }
 
-    public void activate(final AppUser currentUser, final DateTimeFormatter formatter, final LocalDate activationLocalDate) {
+    public void activate(final AppUser currentUser, final DateTimeFormatter formatter,
+            final LocalDate activationLocalDate) {
 
         if (isActive()) {
             final String defaultUserMessage = "Cannot activate client. Client is already active.";
-            final ApiParameterError error = ApiParameterError.parameterError("error.msg.clients.already.active", defaultUserMessage,
-                    ClientApiConstants.activationDateParamName, activationLocalDate.toString(formatter));
+            final ApiParameterError error = ApiParameterError.parameterError("error.msg.clients.already.active",
+                    defaultUserMessage, ClientApiConstants.activationDateParamName,
+                    activationLocalDate.toString(formatter));
 
             final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
             dataValidationErrors.add(error);
@@ -428,7 +444,7 @@ public final class Client extends AbstractPersistableCustom<Long> {
         this.activatedBy = currentUser;
         this.officeJoiningDate = this.activationDate;
         this.status = ClientStatus.ACTIVE.getValue();
-        
+
         // in case a closed client is being re open
         this.closureDate = null;
         this.closureReason = null;
@@ -472,15 +488,15 @@ public final class Client extends AbstractPersistableCustom<Long> {
     private boolean isDateInTheFuture(final LocalDate localDate) {
         return localDate.isAfter(DateUtils.getLocalDateOfTenant());
     }
-    
+
     public boolean isRejected() {
         return ClientStatus.fromInt(this.status).isRejected();
     }
-    
+
     public boolean isWithdrawn() {
         return ClientStatus.fromInt(this.status).isWithdrawn();
     }
-    
+
     public Map<String, Object> update(final JsonCommand command) {
 
         final Map<String, Object> actualChanges = new LinkedHashMap<>(9);
@@ -508,8 +524,8 @@ public final class Client extends AbstractPersistableCustom<Long> {
             actualChanges.put(ClientApiConstants.mobileNoParamName, newValue);
             this.mobileNo = StringUtils.defaultIfEmpty(newValue, null);
         }
-		
-		if (command.isChangeInStringParameterNamed(ClientApiConstants.emailAddressParamName, this.emailAddress)) {
+
+        if (command.isChangeInStringParameterNamed(ClientApiConstants.emailAddressParamName, this.emailAddress)) {
             final String newValue = command.stringValueOfParameterNamed(ClientApiConstants.emailAddressParamName);
             actualChanges.put(ClientApiConstants.emailAddressParamName, newValue);
             this.emailAddress = StringUtils.defaultIfEmpty(newValue, null);
@@ -564,37 +580,32 @@ public final class Client extends AbstractPersistableCustom<Long> {
             actualChanges.put(ClientApiConstants.clientTypeIdParamName, newValue);
         }
 
-        if (command.isChangeInLongParameterNamed(ClientApiConstants.clientClassificationIdParamName, clientClassificationId())) {
+        if (command.isChangeInLongParameterNamed(ClientApiConstants.clientClassificationIdParamName,
+                clientClassificationId())) {
             final Long newValue = command.longValueOfParameterNamed(ClientApiConstants.clientClassificationIdParamName);
             actualChanges.put(ClientApiConstants.clientClassificationIdParamName, newValue);
         }
-        
+
         if (command.isChangeInIntegerParameterNamed(ClientApiConstants.legalFormIdParamName, this.getLegalForm())) {
             final Integer newValue = command.integerValueOfParameterNamed(ClientApiConstants.legalFormIdParamName);
-            if(newValue != null)
-            {
-            	LegalForm legalForm = LegalForm.fromInt(newValue);
-            	if(legalForm != null)
-            	{
-            		actualChanges.put(ClientApiConstants.legalFormIdParamName, ClientEnumerations.legalForm(newValue));
+            if (newValue != null) {
+                LegalForm legalForm = LegalForm.fromInt(newValue);
+                if (legalForm != null) {
+                    actualChanges.put(ClientApiConstants.legalFormIdParamName, ClientEnumerations.legalForm(newValue));
                     this.setLegalForm(legalForm.getValue());
-                    if(legalForm.isPerson()){
+                    if (legalForm.isPerson()) {
                         this.fullname = null;
-                    }else if(legalForm.isEntity()){
+                    } else if (legalForm.isEntity()) {
                         this.firstname = null;
                         this.lastname = null;
                         this.displayName = null;
                     }
-            	}
-            	else
-            	{
-            		actualChanges.put(ClientApiConstants.legalFormIdParamName, null);
+                } else {
+                    actualChanges.put(ClientApiConstants.legalFormIdParamName, null);
                     this.setLegalForm(null);
-            	}
-            }
-            else
-            {
-            	actualChanges.put(ClientApiConstants.legalFormIdParamName, null);
+                }
+            } else {
+                actualChanges.put(ClientApiConstants.legalFormIdParamName, null);
                 this.setLegalForm(null);
             }
         }
@@ -602,18 +613,21 @@ public final class Client extends AbstractPersistableCustom<Long> {
         final String dateFormatAsInput = command.dateFormat();
         final String localeAsInput = command.locale();
 
-        if (command.isChangeInLocalDateParameterNamed(ClientApiConstants.activationDateParamName, getActivationLocalDate())) {
+        if (command.isChangeInLocalDateParameterNamed(ClientApiConstants.activationDateParamName,
+                getActivationLocalDate())) {
             final String valueAsInput = command.stringValueOfParameterNamed(ClientApiConstants.activationDateParamName);
             actualChanges.put(ClientApiConstants.activationDateParamName, valueAsInput);
             actualChanges.put(ClientApiConstants.dateFormatParamName, dateFormatAsInput);
             actualChanges.put(ClientApiConstants.localeParamName, localeAsInput);
 
-            final LocalDate newValue = command.localDateValueOfParameterNamed(ClientApiConstants.activationDateParamName);
+            final LocalDate newValue = command
+                    .localDateValueOfParameterNamed(ClientApiConstants.activationDateParamName);
             this.activationDate = newValue.toDate();
             this.officeJoiningDate = this.activationDate;
         }
 
-        if (command.isChangeInLocalDateParameterNamed(ClientApiConstants.dateOfBirthParamName, dateOfBirthLocalDate())) {
+        if (command.isChangeInLocalDateParameterNamed(ClientApiConstants.dateOfBirthParamName,
+                dateOfBirthLocalDate())) {
             final String valueAsInput = command.stringValueOfParameterNamed(ClientApiConstants.dateOfBirthParamName);
             actualChanges.put(ClientApiConstants.dateOfBirthParamName, valueAsInput);
             actualChanges.put(ClientApiConstants.dateFormatParamName, dateFormatAsInput);
@@ -623,13 +637,16 @@ public final class Client extends AbstractPersistableCustom<Long> {
             this.dateOfBirth = newValue.toDate();
         }
 
-        if (command.isChangeInLocalDateParameterNamed(ClientApiConstants.submittedOnDateParamName, getSubmittedOnDate())) {
-            final String valueAsInput = command.stringValueOfParameterNamed(ClientApiConstants.submittedOnDateParamName);
+        if (command.isChangeInLocalDateParameterNamed(ClientApiConstants.submittedOnDateParamName,
+                getSubmittedOnDate())) {
+            final String valueAsInput = command
+                    .stringValueOfParameterNamed(ClientApiConstants.submittedOnDateParamName);
             actualChanges.put(ClientApiConstants.submittedOnDateParamName, valueAsInput);
             actualChanges.put(ClientApiConstants.dateFormatParamName, dateFormatAsInput);
             actualChanges.put(ClientApiConstants.localeParamName, localeAsInput);
 
-            final LocalDate newValue = command.localDateValueOfParameterNamed(ClientApiConstants.submittedOnDateParamName);
+            final LocalDate newValue = command
+                    .localDateValueOfParameterNamed(ClientApiConstants.submittedOnDateParamName);
             this.submittedOnDate = newValue.toDate();
         }
 
@@ -641,7 +658,8 @@ public final class Client extends AbstractPersistableCustom<Long> {
     }
 
     private void validateNameParts(final List<ApiParameterError> dataValidationErrors) {
-        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("client");
+        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
+                .resource("client");
 
         if (StringUtils.isNotBlank(this.fullname)) {
 
@@ -657,8 +675,8 @@ public final class Client extends AbstractPersistableCustom<Long> {
 
             baseDataValidator.reset().parameter(ClientApiConstants.firstnameParamName).value(this.firstname).notBlank()
                     .notExceedingLengthOf(50);
-            baseDataValidator.reset().parameter(ClientApiConstants.middlenameParamName).value(this.middlename).ignoreIfNull()
-                    .notExceedingLengthOf(50);
+            baseDataValidator.reset().parameter(ClientApiConstants.middlenameParamName).value(this.middlename)
+                    .ignoreIfNull().notExceedingLengthOf(50);
             baseDataValidator.reset().parameter(ClientApiConstants.lastnameParamName).value(this.lastname).notBlank()
                     .notExceedingLengthOf(50);
         }
@@ -669,37 +687,41 @@ public final class Client extends AbstractPersistableCustom<Long> {
         if (getSubmittedOnDate() != null && isDateInTheFuture(getSubmittedOnDate())) {
 
             final String defaultUserMessage = "submitted date cannot be in the future.";
-            final ApiParameterError error = ApiParameterError.parameterError("error.msg.clients.submittedOnDate.in.the.future",
-                    defaultUserMessage, ClientApiConstants.submittedOnDateParamName, this.submittedOnDate);
+            final ApiParameterError error = ApiParameterError.parameterError(
+                    "error.msg.clients.submittedOnDate.in.the.future", defaultUserMessage,
+                    ClientApiConstants.submittedOnDateParamName, this.submittedOnDate);
 
             dataValidationErrors.add(error);
         }
 
-        if (getActivationLocalDate() != null && getSubmittedOnDate() != null && getSubmittedOnDate().isAfter(getActivationLocalDate())) {
+        if (getActivationLocalDate() != null && getSubmittedOnDate() != null
+                && getSubmittedOnDate().isAfter(getActivationLocalDate())) {
 
             final String defaultUserMessage = "submitted date cannot be after the activation date";
-            final ApiParameterError error = ApiParameterError.parameterError("error.msg.clients.submittedOnDate.after.activation.date",
-                    defaultUserMessage, ClientApiConstants.submittedOnDateParamName, this.submittedOnDate);
+            final ApiParameterError error = ApiParameterError.parameterError(
+                    "error.msg.clients.submittedOnDate.after.activation.date", defaultUserMessage,
+                    ClientApiConstants.submittedOnDateParamName, this.submittedOnDate);
 
             dataValidationErrors.add(error);
         }
 
-		if (getReopenedDate() != null && getActivationLocalDate() != null
-				&& getReopenedDate().isAfter(getActivationLocalDate())) {
+        if (getReopenedDate() != null && getActivationLocalDate() != null
+                && getReopenedDate().isAfter(getActivationLocalDate())) {
 
-			final String defaultUserMessage = "reopened date cannot be after the submittedon date";
-			final ApiParameterError error = ApiParameterError.parameterError(
-					"error.msg.clients.submittedOnDate.after.reopened.date", defaultUserMessage,
-					ClientApiConstants.reopenedDateParamName, this.reopenedDate);
+            final String defaultUserMessage = "reopened date cannot be after the submittedon date";
+            final ApiParameterError error = ApiParameterError.parameterError(
+                    "error.msg.clients.submittedOnDate.after.reopened.date", defaultUserMessage,
+                    ClientApiConstants.reopenedDateParamName, this.reopenedDate);
 
-			dataValidationErrors.add(error);
-		}
+            dataValidationErrors.add(error);
+        }
 
         if (getActivationLocalDate() != null && isDateInTheFuture(getActivationLocalDate())) {
 
             final String defaultUserMessage = "Activation date cannot be in the future.";
-            final ApiParameterError error = ApiParameterError.parameterError("error.msg.clients.activationDate.in.the.future",
-                    defaultUserMessage, ClientApiConstants.activationDateParamName, getActivationLocalDate());
+            final ApiParameterError error = ApiParameterError.parameterError(
+                    "error.msg.clients.activationDate.in.the.future", defaultUserMessage,
+                    ClientApiConstants.activationDateParamName, getActivationLocalDate());
 
             dataValidationErrors.add(error);
         }
@@ -719,9 +741,8 @@ public final class Client extends AbstractPersistableCustom<Long> {
 
         StringBuilder nameBuilder = new StringBuilder();
         Integer legalForm = this.getLegalForm();
-        if(legalForm == null || LegalForm.fromInt(legalForm).isPerson())
-        {
-        	if (StringUtils.isNotBlank(this.firstname)) {
+        if (legalForm == null || LegalForm.fromInt(legalForm).isPerson()) {
+            if (StringUtils.isNotBlank(this.firstname)) {
                 nameBuilder.append(this.firstname).append(' ');
             }
 
@@ -732,18 +753,16 @@ public final class Client extends AbstractPersistableCustom<Long> {
             if (StringUtils.isNotBlank(this.lastname)) {
                 nameBuilder.append(this.lastname);
             }
-            
+
+            if (StringUtils.isNotBlank(this.fullname)) {
+                nameBuilder = new StringBuilder(this.fullname);
+            }
+        } else if (LegalForm.fromInt(legalForm).isEntity()) {
             if (StringUtils.isNotBlank(this.fullname)) {
                 nameBuilder = new StringBuilder(this.fullname);
             }
         }
-        else if(LegalForm.fromInt(legalForm).isEntity())
-        {
-        	if (StringUtils.isNotBlank(this.fullname)) {
-                nameBuilder = new StringBuilder(this.fullname);
-            }
-        }
-        
+
         this.displayName = nameBuilder.toString();
     }
 
@@ -787,7 +806,7 @@ public final class Client extends AbstractPersistableCustom<Long> {
         return this.mobileNo;
     }
 
-	public String emailAddress() {
+    public String emailAddress() {
         return this.emailAddress;
     }
 
@@ -795,7 +814,7 @@ public final class Client extends AbstractPersistableCustom<Long> {
         this.mobileNo = mobileNo;
     }
 
-	public boolean isNotStaff() {
+    public boolean isNotStaff() {
         return !isStaff();
     }
 
@@ -803,11 +822,11 @@ public final class Client extends AbstractPersistableCustom<Long> {
         return this.isStaff;
     }
 
-	public String getExternalId() {
-		return this.externalId; 
-	}
+    public String getExternalId() {
+        return this.externalId;
+    }
 
-	public void setEmailAddress(final String emailAddress) {
+    public void setEmailAddress(final String emailAddress) {
         this.emailAddress = emailAddress;
     }
 
@@ -877,11 +896,11 @@ public final class Client extends AbstractPersistableCustom<Long> {
     public Integer getStatus() {
         return this.status;
     }
-    
+
     public CodeValue subStatus() {
         return this.subStatus;
     }
-    
+
     public Long subStatusId() {
         Long subStatusId = null;
         if (this.subStatus != null) {
@@ -901,7 +920,9 @@ public final class Client extends AbstractPersistableCustom<Long> {
     public boolean isChildOfGroup(final Long groupId) {
         if (groupId != null && this.groups != null && !this.groups.isEmpty()) {
             for (final Group group : this.groups) {
-                if (group.getId().equals(groupId)) { return true; }
+                if (group.getId().equals(groupId)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -954,18 +975,20 @@ public final class Client extends AbstractPersistableCustom<Long> {
     public LocalDate getClosureDate() {
         return (LocalDate) ObjectUtils.defaultIfNull(new LocalDate(this.closureDate), null);
     }
+
     public LocalDate getRejectedDate() {
         return (LocalDate) ObjectUtils.defaultIfNull(new LocalDate(this.rejectionDate), null);
     }
+
     public LocalDate getWithdrawalDate() {
         return (LocalDate) ObjectUtils.defaultIfNull(new LocalDate(this.withdrawalDate), null);
-	}
+    }
 
-	public LocalDate getReopenedDate() {
-		return this.reopenedDate == null ? null : new LocalDate(this.reopenedDate);
-	}
+    public LocalDate getReopenedDate() {
+        return this.reopenedDate == null ? null : new LocalDate(this.reopenedDate);
+    }
 
-	public CodeValue gender() {
+    public CodeValue gender() {
         return this.gender;
     }
 
@@ -1031,7 +1054,7 @@ public final class Client extends AbstractPersistableCustom<Long> {
         this.status = ClientStatus.PENDING.getValue();
 
     }
-    
+
     public void reOpened(AppUser currentUser, Date reopenedDate) {
         this.reopenedDate = reopenedDate;
         this.reopenedBy = currentUser;
@@ -1048,14 +1071,20 @@ public final class Client extends AbstractPersistableCustom<Long> {
     public void setLegalForm(Integer legalForm) {
         this.legalForm = legalForm;
     }
-    
+
     public void loadLazyCollections() {
-        this.groups.size() ;
+        this.groups.size();
     }
-    
-    public String getFirstname(){return this.firstname;}
 
-    public String getMiddlename(){return this.middlename;}
+    public String getFirstname() {
+        return this.firstname;
+    }
 
-    public String getLastname(){return this.lastname;}
+    public String getMiddlename() {
+        return this.middlename;
+    }
+
+    public String getLastname() {
+        return this.lastname;
+    }
 }
