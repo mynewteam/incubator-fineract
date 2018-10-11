@@ -82,8 +82,7 @@ public class ClientsApiResource {
     private final BulkImportWorkbookService bulkImportWorkbookService;
     private final BulkImportWorkbookPopulatorService bulkImportWorkbookPopulatorService;
 
-    // myutf
-    private final String UTF8 = "UTF-8";
+ 
 
     @Autowired
     public ClientsApiResource(final PlatformSecurityContext context,

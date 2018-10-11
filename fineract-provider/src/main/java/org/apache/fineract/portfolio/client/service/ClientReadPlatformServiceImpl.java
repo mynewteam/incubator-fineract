@@ -240,6 +240,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
         final String displayName = searchParameters.getName();
         final String firstname = searchParameters.getFirstname();
         final String lastname = searchParameters.getLastname();
+        final String khmername = searchParameters.getKhmername();
 
         String extraCriteria = "";
         if (sqlSearch != null) {
@@ -274,6 +275,11 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
         if (lastname != null) {
             paramList.add(ApiParameterHelper.sqlEncodeString(lastname));
             extraCriteria += " and c.lastname like ? ";
+        }
+        
+        if(khmername != null) {
+        	paramList.add(ApiParameterHelper.sqlEncodeString(khmername));
+        	extraCriteria+=" and c.khmername like ? ";
         }
 
         if (searchParameters.isScopedByOfficeHierarchy()) {
@@ -804,7 +810,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
     private static final class ClientIdentifierMapper implements RowMapper<ClientData> {
 
         public String clientLookupByIdentifierSchema() {
-            return "c.id as id, c.account_no as accountNo, c.firstname as firstname, c.middlename as middlename, c.lastname as lastname, "
+            return "c.id as id, c.account_no as accountNo, c.firstname as firstname, c.middlename as middlename, c.lastname as lastname, c.khmername as khmername "
                     + "c.fullname as fullname, c.display_name as displayName,"
                     + "c.office_id as officeId, o.name as officeName "
                     + " from m_client c, m_office o, m_client_identifier ci "

@@ -236,9 +236,17 @@ public final class Client extends AbstractPersistableCustom<Long> {
     @JoinColumn(name = "reopened_by_userid", nullable = true)
     private AppUser reopenedBy;
 
-    public static Client createNew(final AppUser currentUser, final Office clientOffice, final Group clientParentGroup,
-            final Staff staff, final Long savingsProductId, final CodeValue gender, final CodeValue clientType,
-            final CodeValue clientClassification, final Integer legalForm, final JsonCommand command) {
+    public static Client createNew(
+    		final AppUser currentUser,
+    		final Office clientOffice, 
+    		final Group clientParentGroup,
+            final Staff staff, 
+            final Long savingsProductId,
+            final CodeValue gender, 
+            final CodeValue clientType,
+            final CodeValue clientClassification, 
+            final Integer legalForm, 
+            final JsonCommand command) {
 
         final String accountNo = command.stringValueOfParameterNamed(ClientApiConstants.accountNoParamName);
         final String externalId = command.stringValueOfParameterNamed(ClientApiConstants.externalIdParamName);
@@ -349,6 +357,12 @@ public final class Client extends AbstractPersistableCustom<Long> {
             this.lastname = lastname.trim();
         } else {
             this.lastname = null;
+        }
+        
+        if(StringUtils.isNotBlank(khmername)) {
+        	this.khmername = khmername.trim();
+        }else {
+        	this.khmername = null;
         }
 
         if (StringUtils.isNotBlank(fullname)) {
@@ -549,6 +563,12 @@ public final class Client extends AbstractPersistableCustom<Long> {
             this.lastname = StringUtils.defaultIfEmpty(newValue, null);
         }
 
+        if(command.isChangeInStringParameterNamed(ClientApiConstants.khmernameParamName, this.khmername)) {
+        	final String newValue = command.stringValueOfParameterNamed(ClientApiConstants.khmernameParamName);
+        	actualChanges.put(ClientApiConstants.khmernameParamName, newValue);
+        	this.khmername = StringUtils.defaultIfEmpty(newValue, null);
+        }
+        
         if (command.isChangeInStringParameterNamed(ClientApiConstants.fullnameParamName, this.fullname)) {
             final String newValue = command.stringValueOfParameterNamed(ClientApiConstants.fullnameParamName);
             actualChanges.put(ClientApiConstants.fullnameParamName, newValue);
@@ -598,6 +618,7 @@ public final class Client extends AbstractPersistableCustom<Long> {
                     } else if (legalForm.isEntity()) {
                         this.firstname = null;
                         this.lastname = null;
+                        this.khmername = null;
                         this.displayName = null;
                     }
                 } else {
@@ -1086,5 +1107,9 @@ public final class Client extends AbstractPersistableCustom<Long> {
 
     public String getLastname() {
         return this.lastname;
+    }
+    
+    public String getKhmername() {
+    	return this.khmername;
     }
 }
