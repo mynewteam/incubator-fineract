@@ -41,7 +41,7 @@ public class CreateChargeDefinitionCommandHandler implements NewCommandSourceHan
     @Transactional
     @Override
     public CommandProcessingResult processCommand(final JsonCommand command) {
-
+        // helloworld
         return this.clientWritePlatformService.createCharge(command);
     }
 }
