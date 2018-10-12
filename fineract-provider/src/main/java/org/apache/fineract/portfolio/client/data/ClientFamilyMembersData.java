@@ -55,11 +55,11 @@ public class ClientFamilyMembersData {
 	private final Long professionId;
 
 	private final String profession;
-	
+
 	private final String mobileNumber;
-	
+
 	private final Long age;
-	
+
 	private final Boolean isDependent;
 
 	// template holder
@@ -69,10 +69,11 @@ public class ClientFamilyMembersData {
 	private final Collection<CodeValueData> professionIdOptions;
 
 	private ClientFamilyMembersData(final Long id, final Long clientId, final String firstName, final String middleName,
-			final String lastName, final String qualification,final String mobileNumber,final Long age,final Boolean isDependent, final String relationship, final Long relationshipId,
-			final String maritalStatus, final Long maritalStatusId, final String gender, final Long genderId,
-			final LocalDate dateOfBirth, final String profession, final Long professionId,
-			final Collection<CodeValueData> relationshipIdOptions,final Collection<CodeValueData> genderIdOptions,final Collection<CodeValueData> maritalStatusIdOptions,
+			final String lastName, final String qualification, final String mobileNumber, final Long age,
+			final Boolean isDependent, final String relationship, final Long relationshipId, final String maritalStatus,
+			final Long maritalStatusId, final String gender, final Long genderId, final LocalDate dateOfBirth,
+			final String profession, final Long professionId, final Collection<CodeValueData> relationshipIdOptions,
+			final Collection<CodeValueData> genderIdOptions, final Collection<CodeValueData> maritalStatusIdOptions,
 			final Collection<CodeValueData> professionIdOptions) {
 		this.id = id;
 		this.clientId = clientId;
@@ -89,35 +90,33 @@ public class ClientFamilyMembersData {
 		this.dateOfBirth = dateOfBirth;
 		this.profession = profession;
 		this.professionId = professionId;
-		this.mobileNumber=mobileNumber;
-		this.age=age;
-		this.isDependent=isDependent;
-		this.relationshipIdOptions=relationshipIdOptions;
-		this.genderIdOptions=genderIdOptions;
-		this.maritalStatusIdOptions=maritalStatusIdOptions;
-		this.professionIdOptions=professionIdOptions;
-		
+		this.mobileNumber = mobileNumber;
+		this.age = age;
+		this.isDependent = isDependent;
+		this.relationshipIdOptions = relationshipIdOptions;
+		this.genderIdOptions = genderIdOptions;
+		this.maritalStatusIdOptions = maritalStatusIdOptions;
+		this.professionIdOptions = professionIdOptions;
+
 	}
 
 	public static ClientFamilyMembersData instance(final Long id, final Long clientId, final String firstName,
-			final String middleName, final String lastName, final String qualification,final String mobileNumber,final Long age,final Boolean isDependent, final String relationship,
-			final Long relationshipId, final String maritalStatus, final Long maritalStatusId, final String gender,
-			final Long genderId, final LocalDate dateOfBirth, final String profession, final Long professionId
-			) {
-		return new ClientFamilyMembersData(id, clientId, firstName, middleName, lastName, qualification,mobileNumber,age,isDependent, relationship,
-				relationshipId, maritalStatus, maritalStatusId, gender, genderId, dateOfBirth, profession,
-				professionId,null,null,null,null);
+			final String middleName, final String lastName, final String qualification, final String mobileNumber,
+			final Long age, final Boolean isDependent, final String relationship, final Long relationshipId,
+			final String maritalStatus, final Long maritalStatusId, final String gender, final Long genderId,
+			final LocalDate dateOfBirth, final String profession, final Long professionId) {
+		return new ClientFamilyMembersData(id, clientId, firstName, middleName, lastName, qualification, mobileNumber,
+				age, isDependent, relationship, relationshipId, maritalStatus, maritalStatusId, gender, genderId,
+				dateOfBirth, profession, professionId, null, null, null, null);
 	}
-	
-	
+
 	public static ClientFamilyMembersData templateInstance(final Collection<CodeValueData> relationshipIdOptions,
-			final Collection<CodeValueData> genderIdOptions,final Collection<CodeValueData> maritalStatusIdOptions,
+			final Collection<CodeValueData> genderIdOptions, final Collection<CodeValueData> maritalStatusIdOptions,
 			final Collection<CodeValueData> professionIdOptions) {
-		
-		
-		return new ClientFamilyMembersData(null, null, null, null, null, null,null,
-				null, null, null, null, null, null, null,
-				null,null,null,null,relationshipIdOptions,genderIdOptions,maritalStatusIdOptions,professionIdOptions);
+
+		return new ClientFamilyMembersData(null, null, null, null, null, null, null, null, null, null, null, null, null,
+				null, null, null, null, null, relationshipIdOptions, genderIdOptions, maritalStatusIdOptions,
+				professionIdOptions);
 	}
 
 	public Long getId() {
@@ -191,7 +190,5 @@ public class ClientFamilyMembersData {
 	public Boolean getIsDependent() {
 		return this.isDependent;
 	}
-	
-	
 
 }

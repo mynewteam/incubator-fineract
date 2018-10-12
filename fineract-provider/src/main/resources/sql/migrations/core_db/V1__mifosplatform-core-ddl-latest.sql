@@ -415,6 +415,7 @@ CREATE TABLE `m_client` (
   `firstname` varchar(50) DEFAULT NULL,
   `middlename` varchar(50) DEFAULT NULL,
   `lastname` varchar(50) DEFAULT NULL,
+  `khmername` varchar(50) DEFAULT NULL,
   `fullname` varchar(100) DEFAULT NULL,
   `display_name` varchar(100) NOT NULL,
   `image_key` varchar(500) DEFAULT NULL,

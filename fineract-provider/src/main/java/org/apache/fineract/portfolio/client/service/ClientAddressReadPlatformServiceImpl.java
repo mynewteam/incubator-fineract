@@ -31,27 +31,33 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ClientAddressReadPlatformServiceImpl implements ClientAddressReadPlatformService {
+public class ClientAddressReadPlatformServiceImpl implements ClientAddressReadPlatformService
+{
 
 	private final JdbcTemplate jdbcTemplate;
 	private final PlatformSecurityContext context;
 
 	@Autowired
-	public ClientAddressReadPlatformServiceImpl(final PlatformSecurityContext context,
-			final RoutingDataSource dataSource) {
+	public ClientAddressReadPlatformServiceImpl(
+		final PlatformSecurityContext context,
+		final RoutingDataSource dataSource)
+	{
 		this.context = context;
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 
-	private static final class ClientAddrMapper implements RowMapper<ClientAddressData> {
-		public String schema() {
+	private static final class ClientAddrMapper implements RowMapper<ClientAddressData>
+	{
+		public String schema()
+		{
 			return "fld.id as fieldConfigurationId,fld.entity as entity,fld.table as entitytable,fld.field as field,fld.is_enabled as is_enabled,"
-					+ "fld.is_mandatory as is_mandatory,fld.validation_regex as validation_regex from m_field_configuration fld";
+				+ "fld.is_mandatory as is_mandatory,fld.validation_regex as validation_regex from m_field_configuration fld";
 		}
 
 		@Override
 		public ClientAddressData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum)
-				throws SQLException {
+			throws SQLException
+		{
 			final long clientAddressId = rs.getLong("clientAddressId");
 			final long client_id = rs.getLong("client_id");
 			final long address_id = rs.getLong("address_id");
@@ -64,13 +70,17 @@ public class ClientAddressReadPlatformServiceImpl implements ClientAddressReadPl
 	}
 
 	@Override
-	public Collection<ClientAddressData> retrieveClientAddrConfiguration(final String entity) {
+	public Collection<ClientAddressData> retrieveClientAddrConfiguration(final String entity)
+	{
 		this.context.authenticatedUser();
 
 		final ClientAddrMapper rm = new ClientAddrMapper();
 		final String sql = "select " + rm.schema() + " where fld.entity=?";
 
-		return this.jdbcTemplate.query(sql, rm, new Object[] { entity });
+		return this.jdbcTemplate.query(sql, rm, new Object[]
+		{
+			entity
+		});
 	}
 
 }
