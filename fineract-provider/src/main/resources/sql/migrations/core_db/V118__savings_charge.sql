@@ -24,7 +24,7 @@ CREATE TABLE `m_savings_account_charge` (
 	`is_penalty` TINYINT(1) NOT NULL DEFAULT '0',
 	`charge_time_enum` SMALLINT(5) NOT NULL,
 	`due_for_collection_as_of_date` DATE NULL DEFAULT NULL,
-	`charge_calculation_enum` SMALLINT(6) NOT NULL,
+	`charge_calculation_enum` SMALLINT(5) NOT NULL,
 	`calculation_percentage` DECIMAL(19,6) NULL DEFAULT NULL,
 	`calculation_on_amount` DECIMAL(19,6) NULL DEFAULT NULL,
 	`amount` DECIMAL(19,6) NOT NULL,
