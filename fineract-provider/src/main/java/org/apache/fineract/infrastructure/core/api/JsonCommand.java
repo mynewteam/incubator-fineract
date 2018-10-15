@@ -67,7 +67,8 @@ public final class JsonCommand {
     private final Long creditBureauId;
     private final Long organisationCreditBureauId;
 
-    public static JsonCommand from(final String jsonCommand, final JsonElement parsedCommand, final FromJsonHelper fromApiJsonHelper,
+    public static JsonCommand from(
+    		final String jsonCommand, final JsonElement parsedCommand, final FromJsonHelper fromApiJsonHelper,
             final String entityName, final Long resourceId, final Long subresourceId, final Long groupId, final Long clientId,
             final Long loanId, final Long savingsId, final String transactionId, final String url, final Long productId,
             final Long creditBureauId,final Long organisationCreditBureauId) {

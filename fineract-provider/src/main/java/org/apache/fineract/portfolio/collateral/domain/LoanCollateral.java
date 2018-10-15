@@ -115,7 +115,7 @@ public class LoanCollateral extends AbstractPersistableCustom<Long> {
 
     public CollateralData toData() {
         final CodeValueData typeData = this.type.toData();
-        return CollateralData.instance(getId(), typeData, this.value, this.description, null);
+        return CollateralData.instance(getId(), typeData, this.value, this.description, null, null);
     }
 
     public void setCollateralType(final CodeValue type) {

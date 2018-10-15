@@ -30,6 +30,7 @@ import org.apache.fineract.infrastructure.security.service.PlatformSecurityConte
 import org.apache.fineract.organisation.monetary.data.CurrencyData;
 import org.apache.fineract.portfolio.collateral.data.CollateralData;
 import org.apache.fineract.portfolio.collateral.exception.CollateralNotFoundException;
+import org.apache.fineract.portfolio.collateral.landcollateral.data.LandCollateralData;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanRepositoryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -45,7 +46,9 @@ public class CollateralReadPlatformServiceImpl implements CollateralReadPlatform
     private final LoanRepositoryWrapper loanRepositoryWrapper;
 
     @Autowired
-    public CollateralReadPlatformServiceImpl(final PlatformSecurityContext context, final RoutingDataSource dataSource,
+    public CollateralReadPlatformServiceImpl(
+    		final PlatformSecurityContext context, 
+    		final RoutingDataSource dataSource,
             final LoanRepositoryWrapper loanRepositoryWrapper) {
         this.context = context;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
@@ -74,6 +77,7 @@ public class CollateralReadPlatformServiceImpl implements CollateralReadPlatform
             final Long typeId = rs.getLong("typeId");
             final BigDecimal value = JdbcSupport.getBigDecimalDefaultToNullIfZero(rs, "value");
             final String typeName = rs.getString("typeName");
+//            final LandCollateralData landCollateralData = rs.getString("landcollateral");
 
             final CodeValueData type = CodeValueData.instance(typeId, typeName);
 
@@ -88,6 +92,7 @@ public class CollateralReadPlatformServiceImpl implements CollateralReadPlatform
                     currencyDisplaySymbol, currencyNameCode);
 
             return CollateralData.instance(id, type, value, description, currencyData);
+            
         }
     }
 

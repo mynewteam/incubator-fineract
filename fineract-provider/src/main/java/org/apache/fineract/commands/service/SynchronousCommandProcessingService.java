@@ -185,7 +185,7 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
                 handler = this.applicationContext.getBean("fullFilSurveyCommandHandler", NewCommandSourceHandler.class);
             } else {
                 throw new UnsupportedCommandException(wrapper.commandName());
-            }
+            } 
         } else if (wrapper.isLoanDisburseDetailResource()) {
             if (wrapper.isUpdateDisbursementDate()) {
                 handler = this.applicationContext.getBean("updateLoanDisbuseDateCommandHandler", NewCommandSourceHandler.class);

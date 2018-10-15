@@ -23,6 +23,7 @@ import java.util.Collection;
 
 import org.apache.fineract.infrastructure.codes.data.CodeValueData;
 import org.apache.fineract.organisation.monetary.data.CurrencyData;
+import org.apache.fineract.portfolio.collateral.landcollateral.data.LandCollateralData;
 
 /**
  * Immutable data object for Collateral data.
@@ -36,38 +37,42 @@ public class CollateralData {
     @SuppressWarnings("unused")
     private final Collection<CodeValueData> allowedCollateralTypes;
     private final CurrencyData currency;
+    private final LandCollateralData landCollateralData;
+   
 
     public static CollateralData instance(final Long id, final CodeValueData type, final BigDecimal value, final String description,
-            final CurrencyData currencyData) {
-        return new CollateralData(id, type, value, description, currencyData);
+            final CurrencyData currencyData, final LandCollateralData landCollateralData) {
+        return new CollateralData(id, type, value, description, currencyData, landCollateralData);
     }
 
     public static CollateralData template(final Collection<CodeValueData> codeValues) {
-        return new CollateralData(null, null, null, null, null, codeValues);
+        return new CollateralData(null, null, null, null, null, codeValues, null);
     }
 
     private CollateralData(final Long id, final CodeValueData type, final BigDecimal value, final String description,
-            final CurrencyData currencyData) {
+            final CurrencyData currencyData, LandCollateralData landCollateralData) {
         this.id = id;
         this.type = type;
         this.value = value;
         this.description = description;
         this.currency = currencyData;
         this.allowedCollateralTypes = null;
+        this.landCollateralData = landCollateralData;
     }
 
     private CollateralData(final Long id, final CodeValueData type, final BigDecimal value, final String description,
-            final CurrencyData currencyData, final Collection<CodeValueData> allowedCollateralTypes) {
+            final CurrencyData currencyData, final Collection<CodeValueData> allowedCollateralTypes, final LandCollateralData landCollateralData) {
         this.id = id;
         this.type = type;
         this.value = value;
         this.description = description;
         this.currency = currencyData;
         this.allowedCollateralTypes = allowedCollateralTypes;
+        this.landCollateralData = landCollateralData;
     }
 
     public CollateralData template(final CollateralData collateralData, final Collection<CodeValueData> codeValues) {
         return new CollateralData(collateralData.id, collateralData.type, collateralData.value, collateralData.description,
-                collateralData.currency, codeValues);
+                collateralData.currency, codeValues, null);
     }
 }
