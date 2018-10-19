@@ -70,7 +70,9 @@ public class CollateralsApiResource {
     private final CodeValueReadPlatformService codeValueReadPlatformService;
 
     @Autowired
-    public CollateralsApiResource(final PlatformSecurityContext context, final CollateralReadPlatformService collateralReadPlatformService,
+    public CollateralsApiResource(
+    		final PlatformSecurityContext context, 
+    		final CollateralReadPlatformService collateralReadPlatformService,
             final DefaultToApiJsonSerializer<CollateralData> toApiJsonSerializer,
             final ApiRequestParameterHelper apiRequestParameterHelper,
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
@@ -150,8 +152,7 @@ public class CollateralsApiResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public String updateCollateral(@PathParam("loanId") final Long loanId, @PathParam("collateralId") final Long collateralId,
             final String jsonRequestBody) {
-        final CommandWrapper commandRequest = new CommandWrapperBuilder().updateCollateral(loanId, collateralId).withJson(jsonRequestBody)
-                .build();
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().updateCollateral(loanId, collateralId).withJson(jsonRequestBody).build();
 
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
 

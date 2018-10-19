@@ -49,7 +49,8 @@ public class CollateralReadPlatformServiceImpl implements CollateralReadPlatform
     public CollateralReadPlatformServiceImpl(
     		final PlatformSecurityContext context, 
     		final RoutingDataSource dataSource,
-            final LoanRepositoryWrapper loanRepositoryWrapper) {
+            final LoanRepositoryWrapper loanRepositoryWrapper
+            ) {
         this.context = context;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.loanRepositoryWrapper = loanRepositoryWrapper;
@@ -77,7 +78,6 @@ public class CollateralReadPlatformServiceImpl implements CollateralReadPlatform
             final Long typeId = rs.getLong("typeId");
             final BigDecimal value = JdbcSupport.getBigDecimalDefaultToNullIfZero(rs, "value");
             final String typeName = rs.getString("typeName");
-//            final LandCollateralData landCollateralData = rs.getString("landcollateral");
 
             final CodeValueData type = CodeValueData.instance(typeId, typeName);
 
@@ -91,7 +91,7 @@ public class CollateralReadPlatformServiceImpl implements CollateralReadPlatform
             final CurrencyData currencyData = new CurrencyData(currencyCode, currencyName, currencyDecimalPlaces, inMultiplesOf,
                     currencyDisplaySymbol, currencyNameCode);
 
-            return CollateralData.instance(id, type, value, description, currencyData);
+            return CollateralData.instance(id, type, value, description, currencyData, null);
             
         }
     }

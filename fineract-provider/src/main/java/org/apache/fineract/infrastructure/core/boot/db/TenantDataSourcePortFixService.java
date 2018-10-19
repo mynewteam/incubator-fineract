@@ -92,5 +92,4 @@ public class TenantDataSourcePortFixService {
 					+ " rows in the tenant_server_connections table of the mifosplatform-tenants schema to the real current host: "
 					+ dsp.getHost() + ", port: " + dsp.getPort());
     }
-
 }

@@ -50,6 +50,7 @@ DROP TABLE IF EXISTS `m_loan`;
 DROP TABLE IF EXISTS `m_loan_charge`;
 DROP TABLE IF EXISTS `m_loan_arrears_aging`;
 DROP TABLE IF EXISTS `m_loan_collateral`;
+DROP TABLE IF EXISTS `m_land_collateral`;
 DROP TABLE IF EXISTS `m_loan_officer_assignment_history`;
 DROP TABLE IF EXISTS `m_loan_repayment_schedule`;
 DROP TABLE IF EXISTS `m_loan_transaction`;
@@ -736,6 +737,33 @@ CREATE TABLE `m_loan_transaction` (
   KEY `FKCFCEA42640BE0710` (`loan_id`),
   CONSTRAINT `FKCFCEA42640BE0710` FOREIGN KEY (`loan_id`) REFERENCES `m_loan` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `m_land_collateral` (
+  `land_collateral_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `collateral_id` bigint(20) not null,
+  `name_enum` VARCHAR(100) DEFAULT null,
+  `date_issue` DATETIME DEFAULT NULL,
+  `natural_enum` VARCHAR(50) DEFAULT NULL,
+  `size` VARCHAR(100) DEFAULT NULL,
+  `old_price` DECIMAL(19,6) DEFAULT NULL,
+  `price` DECIMAL(19,6) DEFAULT NULL,
+  `province_enum` TINYINT(2) NOT NULL,
+  `number_of_copy` TINYINT(3) DEFAULT NULL,
+  `status_enum` TINYINT(2) NOT NULL,
+  `detail_location` text DEFAULT NULL,
+  `owner_name_1` VARCHAR(50) DEFAULT NULL,
+  `gender_1` TINYINT(1) NOT NULL,
+  `passport_id_1` VARCHAR(50) DEFAULT NULL,
+  `owner_name_2` VARCHAR(50) DEFAULT NULL,
+  `gender_2` TINYINT(1) NOT NULL,
+  `passport_id_2` VARCHAR(50) DEFAULT NULL,
+  PRIMARY KEY(`land_collateral_id`),
+  INDEX `FK_land_collateral_m_land_collateral` (`land_collateral_id`),
+  CONSTRAINT `FK_land_collateral_m_land_collateral` FOREIGN KEY (`land_collateral_id`) REFERENCES `m_loan_collateral` (`id`)
+)
+COLLATE='utf8_general_ci'
+ENGINE=InnoDB;
 -- ======== end of loan related tables ==========
 
 CREATE TABLE `m_savings_product` (
@@ -963,4 +991,7 @@ CREATE TABLE `stretchy_report_parameter` (
   PRIMARY KEY (`report_id`,`parameter_id`),
   UNIQUE KEY `report_id_name_UNIQUE` (`report_id`,`report_parameter_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
 -- =========== end of reporting related tables ============

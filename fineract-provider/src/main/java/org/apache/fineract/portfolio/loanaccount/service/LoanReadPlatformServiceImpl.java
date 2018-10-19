@@ -234,9 +234,12 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
     }
 
     @Override
-    public LoanScheduleData retrieveRepaymentSchedule(final Long loanId,
-            final RepaymentScheduleRelatedLoanData repaymentScheduleRelatedLoanData, Collection<DisbursementData> disbursementData,
-            boolean isInterestRecalculationEnabled, BigDecimal totalPaidFeeCharges) {
+    public LoanScheduleData retrieveRepaymentSchedule(
+    		final Long loanId,
+            final RepaymentScheduleRelatedLoanData repaymentScheduleRelatedLoanData, 
+            Collection<DisbursementData> disbursementData,
+            boolean isInterestRecalculationEnabled, 
+            BigDecimal totalPaidFeeCharges) {
 
         try {
             this.context.authenticatedUser();
