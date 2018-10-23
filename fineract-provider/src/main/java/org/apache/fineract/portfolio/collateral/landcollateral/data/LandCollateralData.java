@@ -4,10 +4,7 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.Collection;
 
-import org.apache.fineract.portfolio.collateral.landcollateral.domain.CollateralName;
 import org.apache.fineract.portfolio.collateral.landcollateral.domain.CollateralStatus;
-import org.apache.fineract.portfolio.collateral.landcollateral.domain.NaturalCollateral;
-import org.apache.fineract.portfolio.collateral.landcollateral.domain.Province;
 import org.joda.time.LocalDate;
 
 public class LandCollateralData {
