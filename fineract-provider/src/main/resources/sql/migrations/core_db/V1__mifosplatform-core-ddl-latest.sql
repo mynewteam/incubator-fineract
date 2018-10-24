@@ -770,13 +770,10 @@ DEFAULT CHARACTER SET = utf8;
 
 CREATE TABLE IF NOT EXISTS `mifostenant-default`.`m_land_collateral` (
   `id` BIGINT(20) NOT NULL,
-  `name_enum` VARCHAR(100) NULL DEFAULT NULL,
   `date_issue` DATETIME NULL DEFAULT NULL,
-  `natural_enum` VARCHAR(50) NULL DEFAULT NULL,
   `size` VARCHAR(100) NULL DEFAULT NULL,
   `old_price` DECIMAL(19,6) NULL DEFAULT NULL,
   `price` DECIMAL(19,6) NULL DEFAULT NULL,
-  `province_enum` TINYINT(2) NOT NULL,
   `number_of_copy` TINYINT(3) NULL DEFAULT NULL,
   `status_enum` TINYINT(2) NOT NULL,
   `detail_location` TEXT NULL DEFAULT NULL,

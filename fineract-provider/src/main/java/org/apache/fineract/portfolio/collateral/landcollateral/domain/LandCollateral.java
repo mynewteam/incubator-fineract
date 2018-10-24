@@ -20,21 +20,11 @@ import org.joda.time.LocalDate;
 @Table(name = "m_land_collateral")
 public class LandCollateral extends AbstractPersistableCustom<Long> {
 
-    @Column(name = "id", length = 100)
+    @Column(name = "id", length = 20)
     private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "collateral_id", nullable = false)
-    private LoanCollateral collateralId;
-
-    @Column(name = "name_enum", length = 100)
-    private Integer name;
 
     @Column(name = "date_issue", nullable = true)
     private Date dateIssue;
-
-    @Column(name = "natural_enum", length = 100)
-    private Integer natural;
 
     @Column(name = "size", nullable = true)
     private String size;
@@ -48,13 +38,16 @@ public class LandCollateral extends AbstractPersistableCustom<Long> {
     @Column(name = "number_of_copy", nullable = true)
     private Integer numberOfCopy;
 
+    @Column(name = "status_enum", nullable = false)
+    private Integer status;
+
     @Column(name = "detail_location", nullable = true)
     private String detailLocation;
 
     @Column(name = "owner_name_1", nullable = true)
     private String ownerName1;
 
-    @Column(name = "gender_1", length = 6)
+    @Column(name = "gender_1", length = 1)
     private Long gender1;
 
     @Column(name = "passport_id_1", nullable = true)
@@ -63,19 +56,27 @@ public class LandCollateral extends AbstractPersistableCustom<Long> {
     @Column(name = "owner_name_2", nullable = true)
     private String ownerName2;
 
-    @Column(name = "gender_2")
+    @Column(name = "gender_2", length = 1)
     private Long gender2;
 
     @Column(name = "passport_id_2", nullable = true)
     private String passportid2;
 
-    public Integer getName() {
-        return this.name;
-    }
+    @ManyToOne
+    @JoinColumn(name = "m_loan_collateral_id", nullable = false)
+    private LoanCollateral collateral;
 
-    public void setName(Integer name) {
-        this.name = name;
-    }
+    // @OneToOne
+    // @JoinColumn(name = "m_loan_collateral_name_id", nullable = false)
+    // private LoanCollateral loan;
+
+    // @ManyToOne
+    // @JoinColumn(name = "collateral_id", nullable = false)
+    // private LoanCollateral collateralId;
+
+    // @ManyToOne
+    // @JoinColumn(name = "collateral_id", nullable = false)
+    // private LoanCollateral collateralId;
 
     public Date getDateIssue() {
         return this.dateIssue;
@@ -83,14 +84,6 @@ public class LandCollateral extends AbstractPersistableCustom<Long> {
 
     public void setDateIssue(Date dateIssue) {
         this.dateIssue = dateIssue;
-    }
-
-    public Integer getNatural() {
-        return this.natural;
-    }
-
-    public void setNatural(Integer natural) {
-        this.natural = natural;
     }
 
     public String getSize() {
@@ -117,8 +110,6 @@ public class LandCollateral extends AbstractPersistableCustom<Long> {
         this.price = price;
     }
 
-
-
     public Integer getNumberOfCopy() {
         return this.numberOfCopy;
     }
@@ -126,8 +117,6 @@ public class LandCollateral extends AbstractPersistableCustom<Long> {
     public void setNumberOfCopy(Integer numberOfCopy) {
         this.numberOfCopy = numberOfCopy;
     }
-
-   
 
     public String getDetailLocation() {
         return this.detailLocation;
