@@ -30,7 +30,6 @@ import org.apache.fineract.infrastructure.security.service.PlatformSecurityConte
 import org.apache.fineract.organisation.monetary.data.CurrencyData;
 import org.apache.fineract.portfolio.collateral.data.CollateralData;
 import org.apache.fineract.portfolio.collateral.exception.CollateralNotFoundException;
-import org.apache.fineract.portfolio.collateral.landcollateral.data.LandCollateralData;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanRepositoryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -91,7 +90,7 @@ public class CollateralReadPlatformServiceImpl implements CollateralReadPlatform
             final CurrencyData currencyData = new CurrencyData(currencyCode, currencyName, currencyDecimalPlaces, inMultiplesOf,
                     currencyDisplaySymbol, currencyNameCode);
 
-            return CollateralData.instance(id, type, value, description, currencyData, null);
+            return CollateralData.instance(id, type, value, description, currencyData);
             
         }
     }

@@ -39,7 +39,6 @@ import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 import org.apache.fineract.portfolio.collateral.api.CollateralApiConstants.COLLATERAL_JSON_INPUT_PARAMS;
 import org.apache.fineract.portfolio.collateral.data.CollateralData;
-import org.apache.fineract.portfolio.collateral.landcollateral.domain.LandCollateral;
 import org.apache.fineract.portfolio.loanaccount.domain.Loan;
 
 @Entity
@@ -59,9 +58,7 @@ public class LoanCollateral extends AbstractPersistableCustom<Long> {
 
     @Column(name = "description", length = 500)
     private String description;
-    
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "loanCollateral", orphanRemoval = true, fetch=FetchType.LAZY)
-    private Set<LandCollateral> collateral = null;
+   
 
     public static LoanCollateral from(final CodeValue collateralType, final BigDecimal value, final String description) {
         return new LoanCollateral(null, collateralType, value, description);
@@ -123,7 +120,7 @@ public class LoanCollateral extends AbstractPersistableCustom<Long> {
 
     public CollateralData toData() {
         final CodeValueData typeData = this.type.toData();
-        return CollateralData.instance(getId(), typeData, this.value, this.description, null, null);
+        return CollateralData.instance(getId(), typeData, this.value, this.description, null);
     }
 
     public void setCollateralType(final CodeValue type) {
