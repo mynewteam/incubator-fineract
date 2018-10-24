@@ -49,8 +49,12 @@ DROP TABLE IF EXISTS `m_guarantor`;
 DROP TABLE IF EXISTS `m_loan`;
 DROP TABLE IF EXISTS `m_loan_charge`;
 DROP TABLE IF EXISTS `m_loan_arrears_aging`;
+-- collateral --
 DROP TABLE IF EXISTS `m_loan_collateral`;
 DROP TABLE IF EXISTS `m_land_collateral`;
+DROP TABLE IF EXISTS `m_province`;
+DROP TABLE IF EXISTS `m_loan_collateral_name`;
+DROP TABLE IF EXISTS `m_loan_collateral_nature`;
 DROP TABLE IF EXISTS `m_loan_officer_assignment_history`;
 DROP TABLE IF EXISTS `m_loan_repayment_schedule`;
 DROP TABLE IF EXISTS `m_loan_transaction`;
@@ -739,31 +743,81 @@ CREATE TABLE `m_loan_transaction` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE `m_land_collateral` (
-  `land_collateral_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `collateral_id` bigint(20) not null,
-  `name_enum` VARCHAR(100) DEFAULT null,
-  `date_issue` DATETIME DEFAULT NULL,
-  `natural_enum` VARCHAR(50) DEFAULT NULL,
-  `size` VARCHAR(100) DEFAULT NULL,
-  `old_price` DECIMAL(19,6) DEFAULT NULL,
-  `price` DECIMAL(19,6) DEFAULT NULL,
+--create new collateral style--
+CREATE TABLE `m_loan_collateral_nature` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 3
+DEFAULT CHARACTER SET = utf8;
+
+
+CREATE TABLE `m_loan_collateral_name` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 2
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE `m_province` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `pro_name` VARCHAR(45) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `mifostenant-default`.`m_land_collateral` (
+  `id` BIGINT(20) NOT NULL,
+  `name_enum` VARCHAR(100) NULL DEFAULT NULL,
+  `date_issue` DATETIME NULL DEFAULT NULL,
+  `natural_enum` VARCHAR(50) NULL DEFAULT NULL,
+  `size` VARCHAR(100) NULL DEFAULT NULL,
+  `old_price` DECIMAL(19,6) NULL DEFAULT NULL,
+  `price` DECIMAL(19,6) NULL DEFAULT NULL,
   `province_enum` TINYINT(2) NOT NULL,
-  `number_of_copy` TINYINT(3) DEFAULT NULL,
+  `number_of_copy` TINYINT(3) NULL DEFAULT NULL,
   `status_enum` TINYINT(2) NOT NULL,
-  `detail_location` text DEFAULT NULL,
-  `owner_name_1` VARCHAR(50) DEFAULT NULL,
+  `detail_location` TEXT NULL DEFAULT NULL,
+  `owner_name_1` VARCHAR(50) NULL DEFAULT NULL,
   `gender_1` TINYINT(1) NOT NULL,
-  `passport_id_1` VARCHAR(50) DEFAULT NULL,
-  `owner_name_2` VARCHAR(50) DEFAULT NULL,
+  `passport_id_1` VARCHAR(50) NULL DEFAULT NULL,
+  `owner_name_2` VARCHAR(50) NULL DEFAULT NULL,
   `gender_2` TINYINT(1) NOT NULL,
-  `passport_id_2` VARCHAR(50) DEFAULT NULL,
-  PRIMARY KEY(`land_collateral_id`),
-  INDEX `FK_land_collateral_m_land_collateral` (`land_collateral_id`),
-  CONSTRAINT `FK_land_collateral_m_land_collateral` FOREIGN KEY (`land_collateral_id`) REFERENCES `m_loan_collateral` (`id`)
-)
-COLLATE='utf8_general_ci'
-ENGINE=InnoDB;
+  `passport_id_2` VARCHAR(50) NULL DEFAULT NULL,
+  `m_loan_collateral_name_id` INT(11) NOT NULL,
+  `m_loan_collateral_nature_id` INT(11) NOT NULL,
+  `Province_id` INT(11) NOT NULL,
+  `m_loan_collateral_id` BIGINT(20) NOT NULL,
+  INDEX `fk_m_land_collateral_m_loan_collateral_name1_idx` (`m_loan_collateral_name_id` ASC) ,
+  INDEX `fk_m_land_collateral_m_loan_collateral_nature1_idx` (`m_loan_collateral_nature_id` ASC) ,
+  INDEX `fk_m_land_collateral_Province1_idx` (`Province_id` ASC) ,
+  INDEX `fk_m_land_collateral_m_loan_collateral1_idx` (`m_loan_collateral_id` ASC) ,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_m_land_collateral_m_loan_collateral_name1`
+    FOREIGN KEY (`m_loan_collateral_name_id`)
+    REFERENCES `mifostenant-default`.`m_loan_collateral_name` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_m_land_collateral_m_loan_collateral_nature1`
+    FOREIGN KEY (`m_loan_collateral_nature_id`)
+    REFERENCES `mifostenant-default`.`m_loan_collateral_nature` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_m_land_collateral_Province1`
+    FOREIGN KEY (`Province_id`)
+    REFERENCES `mifostenant-default`.`m_province` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_m_land_collateral_m_loan_collateral1`
+    FOREIGN KEY (`m_loan_collateral_id`)
+    REFERENCES `mifostenant-default`.`m_loan_collateral` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
 -- ======== end of loan related tables ==========
 
 CREATE TABLE `m_savings_product` (

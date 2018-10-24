@@ -7,6 +7,7 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -18,6 +19,9 @@ import org.joda.time.LocalDate;
 @Entity
 @Table(name = "m_land_collateral")
 public class LandCollateral extends AbstractPersistableCustom<Long> {
+
+    @Column(name = "id", length = 100)
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "collateral_id", nullable = false)
@@ -41,14 +45,8 @@ public class LandCollateral extends AbstractPersistableCustom<Long> {
     @Column(name = "price", scale = 6, precision = 19, nullable = true)
     private BigDecimal price;
 
-    @Column(name = "province_enum", length = 26)
-    private Integer province;
-
     @Column(name = "number_of_copy", nullable = true)
     private Integer numberOfCopy;
-
-    @Column(name = "status_enum", length = 10)
-    private Integer status;
 
     @Column(name = "detail_location", nullable = true)
     private String detailLocation;
@@ -70,8 +68,6 @@ public class LandCollateral extends AbstractPersistableCustom<Long> {
 
     @Column(name = "passport_id_2", nullable = true)
     private String passportid2;
-
-    
 
     public Integer getName() {
         return this.name;
@@ -121,13 +117,7 @@ public class LandCollateral extends AbstractPersistableCustom<Long> {
         this.price = price;
     }
 
-    public Integer getProvince() {
-        return this.province;
-    }
 
-    public void setProvince(Integer province) {
-        this.province = province;
-    }
 
     public Integer getNumberOfCopy() {
         return this.numberOfCopy;
@@ -137,13 +127,7 @@ public class LandCollateral extends AbstractPersistableCustom<Long> {
         this.numberOfCopy = numberOfCopy;
     }
 
-    public Integer getStatus() {
-        return this.status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
+   
 
     public String getDetailLocation() {
         return this.detailLocation;
