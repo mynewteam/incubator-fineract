@@ -426,6 +426,7 @@ CREATE TABLE `m_client` (
   `image_key` varchar(500) DEFAULT NULL,
   `joined_date` date DEFAULT NULL,
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
+  `village_code` INT (11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `account_no_UNIQUE` (`account_no`),
   UNIQUE KEY `external_id` (`external_id`),
