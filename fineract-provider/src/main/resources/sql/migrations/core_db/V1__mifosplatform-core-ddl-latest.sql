@@ -743,6 +743,55 @@ CREATE TABLE `m_loan_transaction` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+-- create table to store address--
+CREATE TABLE `tbl_country` (
+  `CountryID` INT(11) NOT NULL,
+  `Country` VARCHAR(45) NULL DEFAULT NULL,
+  `Des_In_Khmer` VARCHAR(45) NULL DEFAULT NULL,
+  `countryCode` VARCHAR(50) NULL DEFAULT NULL)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE `tbl_province` (
+  `ProvinceID` INT(11) NOT NULL,
+  `ProvinceCode` VARCHAR(45) NULL DEFAULT NULL,
+  `ProDescription` VARCHAR(45) NULL DEFAULT NULL,
+  `Des_In_Khmer` VARCHAR(45) NULL DEFAULT NULL,
+  `CountryID` INT(11) NOT NULL)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+
+CREATE TABLE  `tbl_district` (
+  `DistrictID` INT(11) NOT NULL,
+  `disDescription` VARCHAR(45) NULL DEFAULT NULL,
+  `Des_In_Khmer` VARCHAR(45) NULL DEFAULT NULL,
+  `ProvinceID` INT(11) NOT NULL)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+
+CREATE TABLE  `tbl_commune` (
+  `CommuneID` INT(11) NOT NULL,
+  `comDescription` VARCHAR(45) NULL DEFAULT NULL,
+  `Des_In_Khmer` VARCHAR(45) NULL DEFAULT NULL,
+  `DistrictID` INT(11) NOT NULL)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+
+CREATE TABLE `tbl_village` (
+  `VillageID` INT(11) NOT NULL,
+  `villDescription` VARCHAR(45) NULL DEFAULT NULL,
+  `Des_In_Khmer` VARCHAR(45) NULL DEFAULT NULL,
+  `communeID` INT(11) NOT NULL)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
 --create new collateral style--
 CREATE TABLE `m_loan_collateral_nature` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
