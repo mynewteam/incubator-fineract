@@ -25,6 +25,9 @@ import org.apache.fineract.organisation.monetary.domain.Money;
 import org.apache.fineract.portfolio.loanaccount.domain.Loan;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanInterestRecalcualtionAdditionalDetails;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanRepaymentScheduleInstallment;
+import org.apache.fineract.portfolio.loanaccount.LoanRepaymentScheduleInstallmentBuilder;
+import org.apache.fineract.portfolio.loanaccount.MonetaryCurrencyBuilder;
+import org.apache.fineract.portfolio.loanaccount.MoneyBuilder;
 import org.joda.time.LocalDate;
 
 public class LoanRepaymentScheduleInstallmentBuilder {
@@ -51,7 +54,7 @@ public class LoanRepaymentScheduleInstallmentBuilder {
     public LoanRepaymentScheduleInstallment build() {
         final Set<LoanInterestRecalcualtionAdditionalDetails> compoundingDetails = null;
         final LoanRepaymentScheduleInstallment installment = new LoanRepaymentScheduleInstallment(this.loan, this.installmentNumber,
-                this.fromDate, this.dueDate, this.principal.getAmount(), this.interest.getAmount(), this.feeCharges.getAmount(),
+                this.fromDate, this.dueDate, this.principal.getAmount(), this.principal.getAmount(), this.interest.getAmount(), this.feeCharges.getAmount(),
                 this.penaltyCharges.getAmount(), this.recalculatedInterestComponent, compoundingDetails);
         if (this.completed) {
             installment.payPrincipalComponent(this.latestTransactionDate, this.principal);

@@ -123,6 +123,11 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonElement;
 
 @Path("/loans")
@@ -179,6 +184,8 @@ public class LoansApiResource {
     private final BulkImportWorkbookService bulkImportWorkbookService;
     private final BulkImportWorkbookPopulatorService bulkImportWorkbookPopulatorService;
 
+    
+    private final static Logger logger = LoggerFactory.getLogger(LoansApiResource.class);
 
     @Autowired
     public LoansApiResource(final PlatformSecurityContext context, final LoanReadPlatformService loanReadPlatformService,
@@ -654,26 +661,55 @@ public class LoansApiResource {
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toApiJsonSerializer.serialize(settings, loanBasicDetails, this.LOAN_DATA_PARAMETERS);
     }
-
+    
+    //Create New Loan
     @POST
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public String calculateLoanScheduleOrSubmitLoanApplication(@QueryParam("command") final String commandParam,
-            @Context final UriInfo uriInfo, final String apiRequestBodyAsJson) {
+    public String calculateLoanScheduleOrSubmitLoanApplication(
+            @QueryParam("command") final String commandParam,
+            @Context final UriInfo uriInfo, 
+            final String apiRequestBodyAsJson
+            ) 
+    {
 
         if (is(commandParam, "calculateLoanSchedule")) {
-
+             logger.info("My Debug TEST apiRequestBodyAsJson: "+ apiRequestBodyAsJson);
             final JsonElement parsedQuery = this.fromJsonHelper.parse(apiRequestBodyAsJson);
             final JsonQuery query = JsonQuery.from(apiRequestBodyAsJson, parsedQuery, this.fromJsonHelper);
 
             final LoanScheduleModel loanSchedule = this.calculationPlatformService.calculateLoanSchedule(query, true);
-
+           
+          //Sothea
+            ObjectMapper mapper = new ObjectMapper();
+            String prettyJson;
+            try {
+                prettyJson = mapper.writeValueAsString(loanSchedule);
+                logger.info("-------------------------------------------------------------------------------------------------");
+                logger.info("Sothea Test: this.calculationPlatformService.calculateLoanSchedule(query, true) loanSchedule: "+ prettyJson);
+                logger.info("-------------------------------------------------------------------------------------------------"); 
+            } catch (JsonProcessingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            
+            //Sothea
+            
             final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-            return this.loanScheduleToApiJsonSerializer.serialize(settings, loanSchedule.toData(), new HashSet<String>());
+            
+            return this.loanScheduleToApiJsonSerializer.serialize(
+            	settings, 
+            	loanSchedule.toData(),
+            	new HashSet<String>()
+            	);
         }
 
+       
+        
         final CommandWrapper commandRequest = new CommandWrapperBuilder().createLoanApplication().withJson(apiRequestBodyAsJson).build();
-
+        
+        logger.info("My Debug TEST CommandWrapperBuilder after CommandWrapperBuilder :" + apiRequestBodyAsJson);
+        
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
 
         return this.toApiJsonSerializer.serialize(result);

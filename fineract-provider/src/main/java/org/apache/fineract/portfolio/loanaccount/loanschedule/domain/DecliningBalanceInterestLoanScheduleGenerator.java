@@ -31,6 +31,9 @@ import org.apache.fineract.portfolio.loanproduct.domain.AmortizationMethod;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * <p>
  * Declining balance can be amortized (see {@link AmortizationMethod}) in two
@@ -39,7 +42,8 @@ import org.joda.time.LocalDate;
  * <li>Equal principal payments</li>
  * <li>Equal installment payments</li>
  * </ol>
- * <p></p>
+ * <p>
+ * </p>
  * 
  * <p>
  * When amortized using <i>equal principal payments</i>, the <b>principal
@@ -56,99 +60,150 @@ import org.joda.time.LocalDate;
  * component</b> that is <b>total payment due</b> minus <b>interest due</b>.
  * </p>
  */
-public class DecliningBalanceInterestLoanScheduleGenerator extends AbstractLoanScheduleGenerator {
+public class DecliningBalanceInterestLoanScheduleGenerator extends AbstractLoanScheduleGenerator
+{
 
-    @Override
-    public PrincipalInterest calculatePrincipalInterestComponentsForPeriod(final PaymentPeriodsInOneYearCalculator calculator,
-            final double interestCalculationGraceOnRepaymentPeriodFraction, final Money totalCumulativePrincipal,
-            @SuppressWarnings("unused") final Money totalCumulativeInterest,
-            @SuppressWarnings("unused") final Money totalInterestDueForLoan, final Money cumulatingInterestPaymentDueToGrace,
-            final Money outstandingBalance, final LoanApplicationTerms loanApplicationTerms, final int periodNumber, final MathContext mc,
-            final TreeMap<LocalDate, Money> principalVariation, final Map<LocalDate, Money> compoundingMap,
-            final LocalDate periodStartDate, final LocalDate periodEndDate, final Collection<LoanTermVariationsData> termVariations) {
+	private final static Logger logger = LoggerFactory.getLogger(DecliningBalanceInterestLoanScheduleGenerator.class);
 
-        LocalDate interestStartDate = periodStartDate;
-        Money interestForThisInstallment = totalCumulativePrincipal.zero();
-        Money compoundedInterest = totalCumulativePrincipal.zero();
-        Money balanceForInterestCalculation = outstandingBalance;
-        Money cumulatingInterestDueToGrace = cumulatingInterestPaymentDueToGrace;
-        Map<LocalDate, BigDecimal> interestRates = new HashMap<>(termVariations.size());
-        
-        for (LoanTermVariationsData loanTermVariation : termVariations) {
-            if (loanTermVariation.getTermVariationType().isInterestRateVariation()
-                    && loanTermVariation.isApplicable(periodStartDate, periodEndDate)) {
-                LocalDate fromDate = loanTermVariation.getTermApplicableFrom();
-                if (fromDate == null) {
-                    fromDate = periodStartDate;
-                }
-                interestRates.put(fromDate, loanTermVariation.getDecimalValue());
-                if (!principalVariation.containsKey(fromDate)) {
-                    principalVariation.put(fromDate, balanceForInterestCalculation.zero());
-                }
-            }
-        }
+	@Override
+	public PrincipalInterest calculatePrincipalInterestComponentsForPeriod(
+		final PaymentPeriodsInOneYearCalculator calculator,
+		final double interestCalculationGraceOnRepaymentPeriodFraction,
+		final Money totalCumulativePrincipal,
+		@SuppressWarnings("unused") final Money totalCumulativeInterest,
+		@SuppressWarnings("unused") final Money totalInterestDueForLoan,
+		final Money cumulatingInterestPaymentDueToGrace,
+		final Money outstandingBalance,
+		final LoanApplicationTerms loanApplicationTerms,
+		final int periodNumber,
+		final MathContext mc,
+		final TreeMap<LocalDate, Money> principalVariation,
+		final Map<LocalDate, Money> compoundingMap,
+		final LocalDate periodStartDate,
+		final LocalDate periodEndDate,
+		final Collection<LoanTermVariationsData> termVariations)
+	{
 
-        if (principalVariation != null) {
+		LocalDate interestStartDate = periodStartDate;
+		Money interestForThisInstallment = totalCumulativePrincipal.zero();
+		Money compoundedInterest = totalCumulativePrincipal.zero();
+		Money balanceForInterestCalculation = outstandingBalance;
+		Money cumulatingInterestDueToGrace = cumulatingInterestPaymentDueToGrace;
+		Map<LocalDate, BigDecimal> interestRates = new HashMap<>(termVariations.size());
 
-            for (Map.Entry<LocalDate, Money> principal : principalVariation.entrySet()) {
+		for (LoanTermVariationsData loanTermVariation : termVariations)
+		{
+			if (loanTermVariation.getTermVariationType().isInterestRateVariation()
+				&& loanTermVariation.isApplicable(periodStartDate, periodEndDate))
+			{
+				LocalDate fromDate = loanTermVariation.getTermApplicableFrom();
+				if (fromDate == null)
+				{
+					fromDate = periodStartDate;
+				}
+				interestRates.put(fromDate, loanTermVariation.getDecimalValue());
+				if (!principalVariation.containsKey(fromDate))
+				{
+					principalVariation.put(fromDate, balanceForInterestCalculation.zero());
+				}
+			}
+		}
 
-                if (!principal.getKey().isAfter(periodEndDate)) {
-                    int interestForDays = Days.daysBetween(interestStartDate, principal.getKey()).getDays();
-                    if (interestForDays > 0) {
-                        final PrincipalInterest result = loanApplicationTerms.calculateTotalInterestForPeriod(calculator,
-                                interestCalculationGraceOnRepaymentPeriodFraction, periodNumber, mc, cumulatingInterestDueToGrace,
-                                balanceForInterestCalculation, interestStartDate, principal.getKey());
-                        interestForThisInstallment = interestForThisInstallment.plus(result.interest());
-                        cumulatingInterestDueToGrace = result.interestPaymentDueToGrace();
-                        interestStartDate = principal.getKey();
+		if (principalVariation != null)
+		{
 
-                    }
-                    Money compoundFee = totalCumulativePrincipal.zero();
-                    if (compoundingMap.containsKey(principal.getKey())) {
-                        Money interestToBeCompounded = totalCumulativePrincipal.zero();
-                        // for interest compounding
-                        if (loanApplicationTerms.getInterestRecalculationCompoundingMethod().isInterestCompoundingEnabled()) {
-                            interestToBeCompounded = interestForThisInstallment.minus(compoundedInterest);
-                            balanceForInterestCalculation = balanceForInterestCalculation.plus(interestToBeCompounded);
-                            compoundedInterest = interestForThisInstallment;
-                        }
-                        // fee compounding will be done after calculation
-                        compoundFee = compoundingMap.get(principal.getKey());
-                        compoundingMap.put(principal.getKey(), interestToBeCompounded.plus(compoundFee));
-                    }
-                    balanceForInterestCalculation = balanceForInterestCalculation.plus(principal.getValue()).plus(compoundFee);
-                    if (interestRates.containsKey(principal.getKey())) {
-                        loanApplicationTerms.updateAnnualNominalInterestRate(interestRates.get(principal.getKey()));
-                    }
-                }
-            }
-        }
-        
+			for (Map.Entry<LocalDate, Money> principal : principalVariation.entrySet())
+			{
 
-        final PrincipalInterest result = loanApplicationTerms.calculateTotalInterestForPeriod(calculator,
-                interestCalculationGraceOnRepaymentPeriodFraction, periodNumber, mc, cumulatingInterestDueToGrace,
-                balanceForInterestCalculation, interestStartDate, periodEndDate);
-        
-        interestForThisInstallment = interestForThisInstallment.plus(result.interest());
-        cumulatingInterestDueToGrace = result.interestPaymentDueToGrace();
+				if (!principal.getKey().isAfter(periodEndDate))
+				{
+					int interestForDays = Days.daysBetween(interestStartDate, principal.getKey()).getDays();
+					if (interestForDays > 0)
+					{
+						final PrincipalInterest result = loanApplicationTerms.calculateTotalInterestForPeriod(
+							calculator,
+							interestCalculationGraceOnRepaymentPeriodFraction, 
+							periodNumber, 
+							mc,
+							cumulatingInterestDueToGrace,
+							balanceForInterestCalculation, 
+							interestStartDate, principal.getKey());
+						
+						interestForThisInstallment = interestForThisInstallment.plus(result.interest());
+						cumulatingInterestDueToGrace = result.interestPaymentDueToGrace();
+						interestStartDate = principal.getKey();
 
-        Money interestForPeriod = interestForThisInstallment;
-        if (interestForPeriod.isGreaterThanZero()) {
-            interestForPeriod = interestForPeriod.minus(cumulatingInterestPaymentDueToGrace);
-        } else {
-            interestForPeriod = cumulatingInterestDueToGrace.minus(cumulatingInterestPaymentDueToGrace);
-        }
-        Money principalForThisInstallment = loanApplicationTerms.calculateTotalPrincipalForPeriod(calculator, outstandingBalance,
-                periodNumber, mc, interestForPeriod);
+					}
+					
+					Money compoundFee = totalCumulativePrincipal.zero();
+					
+					if (compoundingMap.containsKey(principal.getKey()))
+					{
+						Money interestToBeCompounded = totalCumulativePrincipal.zero();
+						// for interest compounding
+						if (loanApplicationTerms.getInterestRecalculationCompoundingMethod()
+							.isInterestCompoundingEnabled())
+						{
+							interestToBeCompounded = interestForThisInstallment.minus(compoundedInterest);
+							balanceForInterestCalculation = balanceForInterestCalculation.plus(interestToBeCompounded);
+							compoundedInterest = interestForThisInstallment;
+						}
+						// fee compounding will be done after calculation
+						compoundFee = compoundingMap.get(principal.getKey());
+						compoundingMap.put(principal.getKey(), interestToBeCompounded.plus(compoundFee));
+					}
+					
+					balanceForInterestCalculation = balanceForInterestCalculation.plus(principal.getValue())
+						.plus(compoundFee);
+					if (interestRates.containsKey(principal.getKey()))
+					{
+						loanApplicationTerms.updateAnnualNominalInterestRate(interestRates.get(principal.getKey()));
+					}
+				}
+			}
+		}
 
-        // update cumulative fields for principal & interest
-        final Money interestBroughtFowardDueToGrace = cumulatingInterestDueToGrace;
-        final Money totalCumulativePrincipalToDate = totalCumulativePrincipal.plus(principalForThisInstallment);
+		final PrincipalInterest result = loanApplicationTerms.calculateTotalInterestForPeriod(
+			calculator,
+			interestCalculationGraceOnRepaymentPeriodFraction, 
+			periodNumber, 
+			mc, 
+			cumulatingInterestDueToGrace,
+			balanceForInterestCalculation, 
+			interestStartDate, 
+			periodEndDate);
 
-        // adjust if needed
-        principalForThisInstallment = loanApplicationTerms.adjustPrincipalIfLastRepaymentPeriod(principalForThisInstallment,
-                totalCumulativePrincipalToDate, periodNumber);
+		interestForThisInstallment = interestForThisInstallment.plus(result.interest());
+		cumulatingInterestDueToGrace = result.interestPaymentDueToGrace();
 
-        return new PrincipalInterest(principalForThisInstallment, interestForThisInstallment, interestBroughtFowardDueToGrace);
-    }
+		Money interestForPeriod = interestForThisInstallment;
+		if (interestForPeriod.isGreaterThanZero())
+		{
+			interestForPeriod = interestForPeriod.minus(cumulatingInterestPaymentDueToGrace);
+		} else
+		{
+			interestForPeriod = cumulatingInterestDueToGrace.minus(cumulatingInterestPaymentDueToGrace);
+		}
+
+		Money principalForThisInstallment = loanApplicationTerms.calculateTotalPrincipalForPeriod(calculator,
+			outstandingBalance,
+			periodNumber, mc, interestForPeriod);
+
+		// update cumulative fields for principal & interest
+		final Money interestBroughtFowardDueToGrace = cumulatingInterestDueToGrace;
+		final Money totalCumulativePrincipalToDate = totalCumulativePrincipal.plus(principalForThisInstallment);
+
+		// adjust if needed
+		principalForThisInstallment = loanApplicationTerms.adjustPrincipalIfLastRepaymentPeriod(
+			principalForThisInstallment,
+			totalCumulativePrincipalToDate, periodNumber);
+
+//      sothea test
+
+		logger.info("DecliningBalanceInterestLoanScheduleGenerator balanceForInterestCalculation : "
+			+ balanceForInterestCalculation);
+
+		return new PrincipalInterest(principalForThisInstallment,balanceForInterestCalculation, interestForThisInstallment,
+			interestBroughtFowardDueToGrace);
+	}
 }

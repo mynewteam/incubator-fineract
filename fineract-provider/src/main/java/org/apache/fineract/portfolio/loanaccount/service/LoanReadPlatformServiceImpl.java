@@ -234,12 +234,9 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
     }
 
     @Override
-    public LoanScheduleData retrieveRepaymentSchedule(
-    		final Long loanId,
-            final RepaymentScheduleRelatedLoanData repaymentScheduleRelatedLoanData, 
-            Collection<DisbursementData> disbursementData,
-            boolean isInterestRecalculationEnabled, 
-            BigDecimal totalPaidFeeCharges) {
+    public LoanScheduleData retrieveRepaymentSchedule(final Long loanId,
+            final RepaymentScheduleRelatedLoanData repaymentScheduleRelatedLoanData, Collection<DisbursementData> disbursementData,
+            boolean isInterestRecalculationEnabled, BigDecimal totalPaidFeeCharges) {
 
         try {
             this.context.authenticatedUser();
@@ -1253,11 +1250,23 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
                 periods.add(periodData);
             }
 
-            return new LoanScheduleData(this.currency, periods, loanTermInDays, totalPrincipalDisbursed,
-                    totalPrincipalExpected.getAmount(), totalPrincipalPaid.getAmount(), totalInterestCharged.getAmount(),
-                    totalFeeChargesCharged.getAmount(), totalPenaltyChargesCharged.getAmount(), totalWaived.getAmount(),
-                    totalWrittenOff.getAmount(), totalRepaymentExpected.getAmount(), totalRepayment.getAmount(),
-                    totalPaidInAdvance.getAmount(), totalPaidLate.getAmount(), totalOutstanding.getAmount());
+            return new LoanScheduleData(
+                    this.currency, 
+                    periods, loanTermInDays, 
+                    totalPrincipalDisbursed,
+                    totalPrincipalExpected.getAmount(), 
+                    totalPrincipalPaid.getAmount(), 
+                    totalInterestCharged.getAmount(),
+                    totalFeeChargesCharged.getAmount(), 
+                    totalPenaltyChargesCharged.getAmount(), 
+                    totalWaived.getAmount(),
+                    totalWrittenOff.getAmount(), 
+                    totalRepaymentExpected.getAmount(), 
+                    totalRepayment.getAmount(),
+                    totalPaidInAdvance.getAmount(), 
+                    totalPaidLate.getAmount(), 
+                    totalOutstanding.getAmount(
+                    ));
         }
 
     }

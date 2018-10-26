@@ -30,8 +30,8 @@ import org.apache.fineract.organisation.monetary.data.CurrencyData;
 import org.apache.fineract.portfolio.charge.domain.ChargeTimeType;
 import org.apache.fineract.portfolio.loanaccount.data.LoanChargeData;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountChargeData;
-import org.apache.fineract.portfolio.tax.data.TaxGroupData;
 import org.apache.fineract.portfolio.shareaccounts.data.ShareAccountChargeData;
+import org.apache.fineract.portfolio.tax.data.TaxGroupData;
 import org.joda.time.LocalDate;
 import org.joda.time.MonthDay;
 
@@ -79,18 +79,28 @@ public class ChargeData implements Comparable<ChargeData>, Serializable {
     private final Collection<TaxGroupData> taxGroupOptions;
 
     public static ChargeData template(final Collection<CurrencyData> currencyOptions,
-            final List<EnumOptionData> chargeCalculationTypeOptions, final List<EnumOptionData> chargeAppliesToOptions,
-            final List<EnumOptionData> chargeTimeTypeOptions, final List<EnumOptionData> chargePaymentModeOptions,
-            final List<EnumOptionData> loansChargeCalculationTypeOptions, final List<EnumOptionData> loansChargeTimeTypeOptions,
-            final List<EnumOptionData> savingsChargeCalculationTypeOptions, final List<EnumOptionData> savingsChargeTimeTypeOptions,
-            final List<EnumOptionData> clientChargeCalculationTypeOptions, final List<EnumOptionData> clientChargeTimeTypeOptions,
-            final List<EnumOptionData> feeFrequencyOptions, final Map<String, List<GLAccountData>> incomeOrLiabilityAccountOptions,
-            final Collection<TaxGroupData> taxGroupOptions, final List<EnumOptionData> shareChargeCalculationTypeOptions,
+            final List<EnumOptionData> chargeCalculationTypeOptions, 
+            final List<EnumOptionData> chargeAppliesToOptions,
+            final List<EnumOptionData> chargeTimeTypeOptions, 
+            final List<EnumOptionData> chargePaymentModeOptions,
+            final List<EnumOptionData> loansChargeCalculationTypeOptions,
+            final List<EnumOptionData> loansChargeTimeTypeOptions,
+            final List<EnumOptionData> savingsChargeCalculationTypeOptions,
+            final List<EnumOptionData> savingsChargeTimeTypeOptions,
+            final List<EnumOptionData> clientChargeCalculationTypeOptions,
+            final List<EnumOptionData> clientChargeTimeTypeOptions,
+            final List<EnumOptionData> feeFrequencyOptions, 
+            final Map<String, List<GLAccountData>> incomeOrLiabilityAccountOptions,
+            final Collection<TaxGroupData> taxGroupOptions,
+            final List<EnumOptionData> shareChargeCalculationTypeOptions,
             final List<EnumOptionData> shareChargeTimeTypeOptions) {
         final GLAccountData account = null;
         final TaxGroupData taxGroupData = null;
 
-        return new ChargeData(null, null, null, null, null, null, null, null, false, false, taxGroupData, currencyOptions,
+        return new ChargeData(
+                null, 
+                null, 
+                null, null, null, null, null, null, false, false, taxGroupData, currencyOptions,
                 chargeCalculationTypeOptions, chargeAppliesToOptions, chargeTimeTypeOptions, chargePaymentModeOptions,
                 loansChargeCalculationTypeOptions, loansChargeTimeTypeOptions, savingsChargeCalculationTypeOptions,
                 savingsChargeTimeTypeOptions, clientChargeCalculationTypeOptions, clientChargeTimeTypeOptions, null, null, null, null,

@@ -20,31 +20,25 @@ package org.apache.fineract.portfolio.loanaccount.loanschedule.domain;
 
 import org.apache.fineract.organisation.monetary.domain.Money;
 
-public class PrincipalInterest {
+public class C_PrincipalInterest {
 
     private final Money principal;
-    private final Money outstanding;
     private final Money interest;
     private final Money interestPaymentDueToGrace;
 
-    public PrincipalInterest(
+    public C_PrincipalInterest(
             final Money principal, 
-            final Money outstanding,
             final Money interest, 
             final Money interestPaymentDueToGrace
             ) 
     {
         this.principal = principal;
-        this.outstanding =outstanding;
         this.interest = interest;
         this.interestPaymentDueToGrace = interestPaymentDueToGrace;
     }
 
     public Money principal() {
         return this.principal;
-    }
-    public Money outstanding() {
-        return this.outstanding;
     }
 
     public Money interest() {

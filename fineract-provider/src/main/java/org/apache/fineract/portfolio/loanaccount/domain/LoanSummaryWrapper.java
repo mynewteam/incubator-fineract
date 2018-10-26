@@ -70,6 +70,16 @@ public final class LoanSummaryWrapper {
         }
         return total;
     }
+    
+    //Sothea Add
+    public Money calculateTotalOutstanding(final List<LoanRepaymentScheduleInstallment> repaymentScheduleInstallments,
+        final MonetaryCurrency currency) {
+    Money total = Money.zero(currency);
+    for (final LoanRepaymentScheduleInstallment installment : repaymentScheduleInstallments) {
+        total = total.plus(installment.getPrincipalOutstanding(currency));
+    }
+    return total;
+    }
 
     public Money calculateTotalInterestRepaid(final List<LoanRepaymentScheduleInstallment> repaymentScheduleInstallments,
             final MonetaryCurrency currency) {
