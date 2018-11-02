@@ -66,12 +66,14 @@ public class EntityFieldConfigurationApiResources {
 	private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
 
 	@Autowired
-	public EntityFieldConfigurationApiResources(final PlatformSecurityContext context,
+	public EntityFieldConfigurationApiResources(
+	                final PlatformSecurityContext context,
 			final DefaultToApiJsonSerializer<AddressData> toApiJsonSerializer,
 			final FieldConfigurationReadPlatformService readPlatformServicefld,
 			final DefaultToApiJsonSerializer<FieldConfigurationData> toApiJsonSerializerfld,
 			final ApiRequestParameterHelper apiRequestParameterHelper,
-			final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
+			final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService
+			) {
 		this.context = context;
 		this.toApiJsonSerializer = toApiJsonSerializer;
 		this.readPlatformServicefld = readPlatformServicefld;

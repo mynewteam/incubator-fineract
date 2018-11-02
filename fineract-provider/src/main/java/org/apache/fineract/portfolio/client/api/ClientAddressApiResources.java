@@ -112,6 +112,8 @@ public class ClientAddressApiResources {
 		} else {
 			address = this.readPlatformService.retrieveAddressbyStatus(clientid, status);
 		}
+		
+		
 
 		final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper
 				.process(uriInfo.getQueryParameters());

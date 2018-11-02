@@ -87,11 +87,17 @@ public class StandingInstructionApiResource {
     @Path("template")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public String template(@QueryParam("fromOfficeId") final Long fromOfficeId, @QueryParam("fromClientId") final Long fromClientId,
-            @QueryParam("fromAccountId") final Long fromAccountId, @QueryParam("fromAccountType") final Integer fromAccountType,
-            @QueryParam("toOfficeId") final Long toOfficeId, @QueryParam("toClientId") final Long toClientId,
-            @QueryParam("toAccountId") final Long toAccountId, @QueryParam("toAccountType") final Integer toAccountType,
-            @QueryParam("transferType") final Integer transferType, @Context final UriInfo uriInfo) {
+    public String template(
+            @QueryParam("fromOfficeId") final Long fromOfficeId, 
+            @QueryParam("fromClientId") final Long fromClientId,
+            @QueryParam("fromAccountId") final Long fromAccountId, 
+            @QueryParam("fromAccountType") final Integer fromAccountType,
+            @QueryParam("toOfficeId") final Long toOfficeId, 
+            @QueryParam("toClientId") final Long toClientId,
+            @QueryParam("toAccountId") final Long toAccountId, 
+            @QueryParam("toAccountType") final Integer toAccountType,
+            @QueryParam("transferType") final Integer transferType, 
+            @Context final UriInfo uriInfo) {
 
         this.context.authenticatedUser().validateHasReadPermission(StandingInstructionApiConstants.STANDING_INSTRUCTION_RESOURCE_NAME);
 
@@ -146,12 +152,19 @@ public class StandingInstructionApiResource {
     @GET
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public String retrieveAll(@Context final UriInfo uriInfo, @QueryParam("sqlSearch") final String sqlSearch,
-            @QueryParam("externalId") final String externalId, @QueryParam("offset") final Integer offset,
-            @QueryParam("limit") final Integer limit, @QueryParam("orderBy") final String orderBy,
-            @QueryParam("sortOrder") final String sortOrder, @QueryParam("transferType") final Integer transferType,
-            @QueryParam("clientName") final String clientName, @QueryParam("clientId") final Long clientId,
-            @QueryParam("fromAccountId") final Long fromAccount, @QueryParam("fromAccountType") final Integer fromAccountType) {
+    public String retrieveAll(
+            @Context final UriInfo uriInfo, 
+            @QueryParam("sqlSearch") final String sqlSearch,
+            @QueryParam("externalId") final String externalId, 
+            @QueryParam("offset") final Integer offset,
+            @QueryParam("limit") final Integer limit, 
+            @QueryParam("orderBy") final String orderBy,
+            @QueryParam("sortOrder") final String sortOrder, 
+            @QueryParam("transferType") final Integer transferType,
+            @QueryParam("clientName") final String clientName, 
+            @QueryParam("clientId") final Long clientId,
+            @QueryParam("fromAccountId") final Long fromAccount, 
+            @QueryParam("fromAccountType") final Integer fromAccountType) {
 
         this.context.authenticatedUser().validateHasReadPermission(StandingInstructionApiConstants.STANDING_INSTRUCTION_RESOURCE_NAME);
 

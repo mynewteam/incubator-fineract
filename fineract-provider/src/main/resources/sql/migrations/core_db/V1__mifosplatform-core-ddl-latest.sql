@@ -703,6 +703,7 @@ CREATE TABLE `m_loan_repayment_schedule` (
   `duedate` date NOT NULL,
   `installment` smallint(5) NOT NULL,
   `principal_amount` decimal(19,6) DEFAULT NULL,
+  `outstanding_amount` decimal(19,6) DEFAULT NULL,
   `principal_completed_derived` decimal(19,6) DEFAULT NULL,
   `principal_writtenoff_derived` decimal(19,6) DEFAULT NULL,
   `interest_amount` decimal(19,6) DEFAULT NULL,
@@ -791,6 +792,14 @@ CREATE TABLE `tbl_village` (
   `communeID` INT(11) NOT NULL)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `m_country` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `country_code` VARCHAR(45) NULL,
+  `description_khmer` VARCHAR(45) NULL,
+  `description` VARCHAR(45) NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
 
 
 --create new collateral style--

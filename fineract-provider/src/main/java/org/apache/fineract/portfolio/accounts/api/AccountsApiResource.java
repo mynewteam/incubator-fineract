@@ -183,12 +183,15 @@ public class AccountsApiResource {
             @QueryParam("dateFormat") final String dateFormat) {
         return bulkImportWorkbookPopulatorService.getTemplate(GlobalEntityType.SHARE_ACCOUNTS.toString(),officeId, null,dateFormat);
     }
+    
     @POST
     @Path("uploadtemplate")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public String postSharedAccountsTemplate(@FormDataParam("file") InputStream uploadedInputStream,
+    public String postSharedAccountsTemplate(
+            @FormDataParam("file") InputStream uploadedInputStream,
             @FormDataParam("file") FormDataContentDisposition fileDetail,
-            @FormDataParam("locale") final String locale, @FormDataParam("dateFormat") final String dateFormat){
+            @FormDataParam("locale") final String locale, 
+            @FormDataParam("dateFormat") final String dateFormat){
         final Long importDocumentId = this. bulkImportWorkbookService.importWorkbook(GlobalEntityType.SHARE_ACCOUNTS.toString(), uploadedInputStream,
                 fileDetail,locale,dateFormat);
         return this.toApiJsonSerializer.serialize(importDocumentId);

@@ -78,14 +78,22 @@ public class ChargeData implements Comparable<ChargeData>, Serializable {
     private final Map<String, List<GLAccountData>> incomeOrLiabilityAccountOptions;
     private final Collection<TaxGroupData> taxGroupOptions;
 
-    public static ChargeData template(final Collection<CurrencyData> currencyOptions,
-            final List<EnumOptionData> chargeCalculationTypeOptions, final List<EnumOptionData> chargeAppliesToOptions,
-            final List<EnumOptionData> chargeTimeTypeOptions, final List<EnumOptionData> chargePaymentModeOptions,
-            final List<EnumOptionData> loansChargeCalculationTypeOptions, final List<EnumOptionData> loansChargeTimeTypeOptions,
-            final List<EnumOptionData> savingsChargeCalculationTypeOptions, final List<EnumOptionData> savingsChargeTimeTypeOptions,
-            final List<EnumOptionData> clientChargeCalculationTypeOptions, final List<EnumOptionData> clientChargeTimeTypeOptions,
-            final List<EnumOptionData> feeFrequencyOptions, final Map<String, List<GLAccountData>> incomeOrLiabilityAccountOptions,
-            final Collection<TaxGroupData> taxGroupOptions, final List<EnumOptionData> shareChargeCalculationTypeOptions,
+    public static ChargeData template(
+            final Collection<CurrencyData> currencyOptions,
+            final List<EnumOptionData> chargeCalculationTypeOptions, 
+            final List<EnumOptionData> chargeAppliesToOptions,
+            final List<EnumOptionData> chargeTimeTypeOptions, 
+            final List<EnumOptionData> chargePaymentModeOptions,
+            final List<EnumOptionData> loansChargeCalculationTypeOptions, 
+            final List<EnumOptionData> loansChargeTimeTypeOptions,
+            final List<EnumOptionData> savingsChargeCalculationTypeOptions, 
+            final List<EnumOptionData> savingsChargeTimeTypeOptions,
+            final List<EnumOptionData> clientChargeCalculationTypeOptions, 
+            final List<EnumOptionData> clientChargeTimeTypeOptions,
+            final List<EnumOptionData> feeFrequencyOptions, 
+            final Map<String, List<GLAccountData>> incomeOrLiabilityAccountOptions,
+            final Collection<TaxGroupData> taxGroupOptions, 
+            final List<EnumOptionData> shareChargeCalculationTypeOptions,
             final List<EnumOptionData> shareChargeTimeTypeOptions) {
         final GLAccountData account = null;
         final TaxGroupData taxGroupData = null;

@@ -79,6 +79,10 @@ public final class Client extends AbstractPersistableCustom<Long> {
 	@OneToOne(optional = true)
 	@JoinColumn(name = "image_id", nullable = true)
 	private Image image;
+//
+//	@ManyToOne
+//	@JoinColumn(name = "village_code")
+//	private Integer VillageCode;
 
 	/**
 	 * A value from {@link ClientStatus}.
