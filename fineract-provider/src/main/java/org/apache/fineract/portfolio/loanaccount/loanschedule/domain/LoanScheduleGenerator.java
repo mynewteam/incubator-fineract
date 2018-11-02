@@ -30,17 +30,30 @@ import org.apache.fineract.portfolio.loanaccount.domain.transactionprocessor.Loa
 import org.apache.fineract.portfolio.loanaccount.loanschedule.data.LoanScheduleDTO;
 import org.joda.time.LocalDate;
 
-public interface LoanScheduleGenerator {
+public interface LoanScheduleGenerator
+{
 
-    LoanScheduleModel generate(MathContext mc, LoanApplicationTerms loanApplicationTerms, Set<LoanCharge> loanCharges,
-            final HolidayDetailDTO holidayDetailDTO);
+	LoanScheduleModel generate(
+		MathContext mc,
+		LoanApplicationTerms loanApplicationTerms,
+		Set<LoanCharge> loanCharges,
+		final HolidayDetailDTO holidayDetailDTO);
 
-    LoanScheduleDTO rescheduleNextInstallments(MathContext mc, LoanApplicationTerms loanApplicationTerms, Loan loan,
-            final HolidayDetailDTO holidayDetailDTO, LoanRepaymentScheduleTransactionProcessor loanRepaymentScheduleTransactionProcessor,
-            LocalDate rescheduleFrom);
+	LoanScheduleDTO rescheduleNextInstallments(
+		MathContext mc,
+		LoanApplicationTerms loanApplicationTerms,
+		Loan loan,
+		final HolidayDetailDTO holidayDetailDTO,
+		LoanRepaymentScheduleTransactionProcessor loanRepaymentScheduleTransactionProcessor,
+		LocalDate rescheduleFrom);
 
-    LoanRepaymentScheduleInstallment calculatePrepaymentAmount(MonetaryCurrency currency, LocalDate onDate,
-            LoanApplicationTerms loanApplicationTerms, MathContext mc, Loan loan, HolidayDetailDTO holidayDetailDTO,
-            LoanRepaymentScheduleTransactionProcessor loanRepaymentScheduleTransactionProcessor);
+	LoanRepaymentScheduleInstallment calculatePrepaymentAmount(
+		MonetaryCurrency currency,
+		LocalDate onDate,
+		LoanApplicationTerms loanApplicationTerms,
+		MathContext mc,
+		Loan loan,
+		HolidayDetailDTO holidayDetailDTO,
+		LoanRepaymentScheduleTransactionProcessor loanRepaymentScheduleTransactionProcessor);
 
 }

@@ -39,6 +39,8 @@ public interface LoanScheduleModelPeriod {
     LocalDate periodDueDate();
 
     BigDecimal principalDue();
+    
+    BigDecimal outstandingDue();
 
     BigDecimal interestDue();
 
@@ -54,4 +56,6 @@ public interface LoanScheduleModelPeriod {
     
     void addInterestAmount(Money interestDue);
     Set<LoanInterestRecalcualtionAdditionalDetails> getLoanCompoundingDetails();
+
+	void addOutstandingAmount(Money outstanding);
 }
