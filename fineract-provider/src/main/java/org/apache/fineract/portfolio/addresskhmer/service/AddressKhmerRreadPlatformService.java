@@ -21,7 +21,6 @@ package org.apache.fineract.portfolio.addresskhmer.service;
 import java.util.Collection;
 
 import org.apache.fineract.portfolio.addresskhmer.data.CountryKhmerData;
-import org.apache.fineract.portfolio.addresskhmer.domain.CountryKhmer;
 
 public interface AddressKhmerRreadPlatformService {
 

@@ -7,25 +7,16 @@ import javax.persistence.Table;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 
 @Entity
-@Table(name = "tbl_country")
-public class CountryKhmer extends AbstractPersistableCustom<Long> {
+@Table(name = "tbl_district")
+public class DistrictKhmer extends AbstractPersistableCustom<Long> {
     
-    @Column(name = "CountryID")
-    private Integer CountryID;
+    @Column(name = "DistrictID")
+    private Integer DistrictID;
     
-    @Column(name = "Country")
-    private String Country;
+    @Column(name = "disDescription")
+    private String disDescription;
     
     @Column(name = "Des_In_Khmer")
     private String Des_In_Khmer;
     
-    @Column(name = "countryCode")
-    private String countryCode;
-
-    
-
-   
-    
-    
-
 }

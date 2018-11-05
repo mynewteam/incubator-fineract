@@ -772,7 +772,7 @@ public class LoanScheduleAssembler
 	}
 
 	// sothea 1
-	public LoanScheduleModel assembleLoanScheduleFrom(
+    public LoanScheduleModel assembleLoanScheduleFrom(
 		final LoanApplicationTerms loanApplicationTerms,
 		final boolean isHolidayEnabled,
 		final List<Holiday> holidays,
@@ -796,10 +796,7 @@ public class LoanScheduleAssembler
 				final LoanScheduleGenerator decliningLoanScheduleGenerator = this.loanScheduleFactory.create(InterestMethod.DECLINING_BALANCE);
 				LoanScheduleModel loanSchedule = decliningLoanScheduleGenerator.generate(mc, loanApplicationTerms, loanCharges, detailDTO);
 
-				loanApplicationTerms
-					.updateTotalInterestDue(
-						Money.of(loanApplicationTerms.getCurrency(), loanSchedule.getTotalInterestCharged()));
-
+				loanApplicationTerms .updateTotalInterestDue( Money.of(loanApplicationTerms.getCurrency(), loanSchedule.getTotalInterestCharged()));
 			}
 			loanScheduleGenerator = this.loanScheduleFactory.create(InterestMethod.FLAT);
 		} else

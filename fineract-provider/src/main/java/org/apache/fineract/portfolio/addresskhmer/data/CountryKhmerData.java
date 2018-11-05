@@ -6,32 +6,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class CountryKhmerData {
     
-    private String country_code;
+    private String countryCode;
 
-    private String description_khmer;
+    private String Des_In_Khmer;
 
-    private String description;
+    private String Country;
     
     
     
-    public CountryKhmerData(String country_code, String description_khmer, String description) {
-        super();
-        this.country_code = country_code;
-        this.description_khmer = description_khmer;
-        this.description = description;
+    public CountryKhmerData(String countryCode, String des_In_Khmer, String country) {
+        this.countryCode = countryCode;
+        this.Des_In_Khmer = des_In_Khmer;
+        this.Country = country;
     }
+
 
 
 
     public static CountryKhmerData instance(
             final String countryCode,
-            final String descriptionKhmer,
-            final String description) {
+            final String Des_In_Khmer,
+            final String Country) {
         
         return new CountryKhmerData(
                 countryCode,
-                descriptionKhmer,
-                description);
+                Des_In_Khmer,
+                Country);
     }
     
 }

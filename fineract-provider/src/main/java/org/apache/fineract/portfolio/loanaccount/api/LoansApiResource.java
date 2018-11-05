@@ -141,16 +141,17 @@ public class LoansApiResource {
             "inArrearsTolerance", "termFrequency", "termPeriodFrequencyType", "numberOfRepayments", "repaymentEvery",
             "interestRatePerPeriod", "annualInterestRate", "repaymentFrequencyType", "transactionProcessingStrategyId",
             "transactionProcessingStrategyName", "interestRateFrequencyType", "amortizationType", "interestType",
-            "interestCalculationPeriodType", LoanProductConstants.allowPartialPeriodInterestCalcualtionParamName, "expectedFirstRepaymentOnDate",
-            "graceOnPrincipalPayment", "recurringMoratoriumOnPrincipalPeriods", "graceOnInterestPayment", "graceOnInterestCharged", "interestChargedFromDate", "timeline",
-            "totalFeeChargesAtDisbursement", "summary", "repaymentSchedule", "transactions", "charges", "collateral", "guarantors",
-            "meeting", "productOptions", "amortizationTypeOptions", "interestTypeOptions", "interestCalculationPeriodTypeOptions",
-            "repaymentFrequencyTypeOptions", "repaymentFrequencyNthDayTypeOptions", "repaymentFrequencyDaysOfWeekTypeOptions",
-            "termFrequencyTypeOptions", "interestRateFrequencyTypeOptions", "fundOptions", "repaymentStrategyOptions", "chargeOptions",
-            "loanOfficerOptions", "loanPurposeOptions", "loanCollateralOptions", "chargeTemplate", "calendarOptions",
-            "syncDisbursementWithMeeting", "loanCounter", "loanProductCounter", "notes", "accountLinkingOptions", "linkedAccount",
-            "interestRateDifferential", "isFloatingInterestRate", "interestRatesPeriods", LoanApiConstants.canUseForTopup,
-            LoanApiConstants.isTopup, LoanApiConstants.loanIdToClose, LoanApiConstants.topupAmount, LoanApiConstants.clientActiveLoanOptions,
+            "interestCalculationPeriodType", LoanProductConstants.allowPartialPeriodInterestCalcualtionParamName,
+            "expectedFirstRepaymentOnDate", "graceOnPrincipalPayment", "recurringMoratoriumOnPrincipalPeriods", "graceOnInterestPayment",
+            "graceOnInterestCharged", "interestChargedFromDate", "timeline", "totalFeeChargesAtDisbursement", "summary",
+            "repaymentSchedule", "transactions", "charges", "collateral", "guarantors", "meeting", "productOptions",
+            "amortizationTypeOptions", "interestTypeOptions", "interestCalculationPeriodTypeOptions", "repaymentFrequencyTypeOptions",
+            "repaymentFrequencyNthDayTypeOptions", "repaymentFrequencyDaysOfWeekTypeOptions", "termFrequencyTypeOptions",
+            "interestRateFrequencyTypeOptions", "fundOptions", "repaymentStrategyOptions", "chargeOptions", "loanOfficerOptions",
+            "loanPurposeOptions", "loanCollateralOptions", "chargeTemplate", "calendarOptions", "syncDisbursementWithMeeting",
+            "loanCounter", "loanProductCounter", "notes", "accountLinkingOptions", "linkedAccount", "interestRateDifferential",
+            "isFloatingInterestRate", "interestRatesPeriods", LoanApiConstants.canUseForTopup, LoanApiConstants.isTopup,
+            LoanApiConstants.loanIdToClose, LoanApiConstants.topupAmount, LoanApiConstants.clientActiveLoanOptions,
             LoanApiConstants.datatables));
 
     private final Set<String> LOAN_APPROVAL_DATA_PARAMETERS = new HashSet<>(Arrays.asList("approvalDate", "approvalAmount"));
@@ -184,7 +185,6 @@ public class LoansApiResource {
     private final BulkImportWorkbookService bulkImportWorkbookService;
     private final BulkImportWorkbookPopulatorService bulkImportWorkbookPopulatorService;
 
-    
     private final static Logger logger = LoggerFactory.getLogger(LoansApiResource.class);
 
     @Autowired
@@ -234,8 +234,8 @@ public class LoansApiResource {
         this.loanScheduleHistoryReadPlatformService = loanScheduleHistoryReadPlatformService;
         this.accountDetailsReadPlatformService = accountDetailsReadPlatformService;
         this.entityDatatableChecksReadService = entityDatatableChecksReadService;
-        this.bulkImportWorkbookService=bulkImportWorkbookService;
-        this.bulkImportWorkbookPopulatorService=bulkImportWorkbookPopulatorService;
+        this.bulkImportWorkbookService = bulkImportWorkbookService;
+        this.bulkImportWorkbookPopulatorService = bulkImportWorkbookPopulatorService;
     }
 
     /*
@@ -304,14 +304,14 @@ public class LoansApiResource {
             // for JLG loan both client and group details are required
             if (templateType.equals("individual") || templateType.equals("jlg")) {
 
-                if(clientId == null) {
+                if (clientId == null) {
                     newLoanAccount = newLoanAccount == null ? LoanAccountData.emptyTemplate() : newLoanAccount;
                 } else {
                     final LoanAccountData loanAccountClientDetails = this.loanReadPlatformService.retrieveClientDetailsTemplate(clientId);
 
                     officeId = loanAccountClientDetails.officeId();
-                    newLoanAccount = newLoanAccount == null ? loanAccountClientDetails : LoanAccountData.populateClientDefaults(newLoanAccount,
-                            loanAccountClientDetails);
+                    newLoanAccount = newLoanAccount == null ? loanAccountClientDetails
+                            : LoanAccountData.populateClientDefaults(newLoanAccount, loanAccountClientDetails);
                 }
 
                 // if it's JLG loan add group details
@@ -326,8 +326,8 @@ public class LoansApiResource {
                 final LoanAccountData loanAccountGroupData = this.loanReadPlatformService.retrieveGroupDetailsTemplate(groupId);
                 officeId = loanAccountGroupData.groupOfficeId();
                 calendarOptions = this.loanReadPlatformService.retrieveCalendars(groupId);
-                newLoanAccount = newLoanAccount == null ? loanAccountGroupData : LoanAccountData.populateGroupDefaults(newLoanAccount,
-                        loanAccountGroupData);
+                newLoanAccount = newLoanAccount == null ? loanAccountGroupData
+                        : LoanAccountData.populateGroupDefaults(newLoanAccount, loanAccountGroupData);
                 accountLinkingOptions = getaccountLinkingOptions(newLoanAccount, clientId, groupId);
 
             } else if (templateType.equals("jlgbulk")) {
@@ -335,20 +335,20 @@ public class LoansApiResource {
                 final LoanAccountData loanAccountGroupData = this.loanReadPlatformService.retrieveGroupAndMembersDetailsTemplate(groupId);
                 officeId = loanAccountGroupData.groupOfficeId();
                 calendarOptions = this.loanReadPlatformService.retrieveCalendars(groupId);
-                newLoanAccount = newLoanAccount == null ? loanAccountGroupData : LoanAccountData.populateGroupDefaults(newLoanAccount,
-                        loanAccountGroupData);
+                newLoanAccount = newLoanAccount == null ? loanAccountGroupData
+                        : LoanAccountData.populateGroupDefaults(newLoanAccount, loanAccountGroupData);
                 if (productId != null) {
                     Map<Long, Integer> memberLoanCycle = new HashMap<>();
                     Collection<ClientData> members = loanAccountGroupData.groupData().clientMembers();
                     accountLinkingOptions = new ArrayList<>();
-                    if(members != null){
-                    	for (ClientData clientData : members) {
+                    if (members != null) {
+                        for (ClientData clientData : members) {
                             Integer loanCounter = this.loanReadPlatformService.retriveLoanCounter(clientData.id(), productId);
                             memberLoanCycle.put(clientData.id(), loanCounter);
                             accountLinkingOptions.addAll(getaccountLinkingOptions(newLoanAccount, clientData.id(), groupId));
                         }
                     }
-                    
+
                     newLoanAccount = LoanAccountData.associateMemberVariations(newLoanAccount, memberLoanCycle);
                 }
 
@@ -384,14 +384,14 @@ public class LoansApiResource {
             currencyCode = currencyData.code();
         }
         final long[] accountStatus = { SavingsAccountStatusType.ACTIVE.getValue() };
-        final PortfolioAccountDTO portfolioAccountDTO = new PortfolioAccountDTO(PortfolioAccountType.SAVINGS.getValue(), clientId, currencyCode,
-                accountStatus, DepositAccountType.SAVINGS_DEPOSIT.getValue());
+        final PortfolioAccountDTO portfolioAccountDTO = new PortfolioAccountDTO(PortfolioAccountType.SAVINGS.getValue(), clientId,
+                currencyCode, accountStatus, DepositAccountType.SAVINGS_DEPOSIT.getValue());
         if (groupId != null) {
             portfolioAccountDTO.setGroupId(groupId);
         }
         return this.portfolioAccountReadPlatformService.retrieveAllForLookup(portfolioAccountDTO);
     }
-    
+
     @GET
     @Path("{loanId}")
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -399,14 +399,14 @@ public class LoansApiResource {
     public String retrieveLoan(@PathParam("loanId") final Long loanId,
             @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") final boolean staffInSelectedOfficeOnly,
             @Context final UriInfo uriInfo) {
-        long start = System.currentTimeMillis() ;
+        long start = System.currentTimeMillis();
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 
         LoanAccountData loanBasicDetails = this.loanReadPlatformService.retrieveOne(loanId);
         if (loanBasicDetails.isInterestRecalculationEnabled()) {
-            Collection<CalendarData> interestRecalculationCalendarDatas = this.calendarReadPlatformService
-                    .retrieveCalendarsByEntity(loanBasicDetails.getInterestRecalculationDetailId(),
-                            CalendarEntityType.LOAN_RECALCULATION_REST_DETAIL.getValue(), null);
+            Collection<CalendarData> interestRecalculationCalendarDatas = this.calendarReadPlatformService.retrieveCalendarsByEntity(
+                    loanBasicDetails.getInterestRecalculationDetailId(), CalendarEntityType.LOAN_RECALCULATION_REST_DETAIL.getValue(),
+                    null);
             CalendarData calendarData = null;
             if (!CollectionUtils.isEmpty(interestRecalculationCalendarDatas)) {
                 calendarData = interestRecalculationCalendarDatas.iterator().next();
@@ -423,17 +423,16 @@ public class LoansApiResource {
                     compoundingCalendarData);
         }
         if (loanBasicDetails.isMonthlyRepaymentFrequencyType()) {
-        	Collection<CalendarData> loanCalendarDatas = this.calendarReadPlatformService
-                    .retrieveCalendarsByEntity(loanId,
-                            CalendarEntityType.LOANS.getValue(), null);
+            Collection<CalendarData> loanCalendarDatas = this.calendarReadPlatformService.retrieveCalendarsByEntity(loanId,
+                    CalendarEntityType.LOANS.getValue(), null);
             CalendarData calendarData = null;
             if (!CollectionUtils.isEmpty(loanCalendarDatas)) {
                 calendarData = loanCalendarDatas.iterator().next();
             }
-            if(calendarData != null)
-            	loanBasicDetails = LoanAccountData.withLoanCalendarData(loanBasicDetails, calendarData);
+            if (calendarData != null) loanBasicDetails = LoanAccountData.withLoanCalendarData(loanBasicDetails, calendarData);
         }
-        Collection<InterestRatePeriodData> interestRatesPeriods = this.loanReadPlatformService.retrieveLoanInterestRatePeriodData(loanBasicDetails);
+        Collection<InterestRatePeriodData> interestRatesPeriods = this.loanReadPlatformService
+                .retrieveLoanInterestRatePeriodData(loanBasicDetails);
         Collection<LoanTransactionData> loanRepayments = null;
         LoanScheduleData repaymentSchedule = null;
         Collection<LoanChargeData> charges = null;
@@ -497,8 +496,8 @@ public class LoansApiResource {
                 if (associationParameters.contains("originalSchedule") && loanBasicDetails.isInterestRecalculationEnabled()
                         && loanBasicDetails.isActive()) {
                     mandatoryResponseParameters.add("originalSchedule");
-                    LoanScheduleData loanScheduleData = this.loanScheduleHistoryReadPlatformService.retrieveRepaymentArchiveSchedule(
-                            loanId, repaymentScheduleRelatedData, disbursementData);
+                    LoanScheduleData loanScheduleData = this.loanScheduleHistoryReadPlatformService.retrieveRepaymentArchiveSchedule(loanId,
+                            repaymentScheduleRelatedData, disbursementData);
                     loanBasicDetails = LoanAccountData.withOriginalSchedule(loanBasicDetails, loanScheduleData);
                 }
             }
@@ -586,8 +585,8 @@ public class LoansApiResource {
                 chargeOptions = this.chargeReadPlatformService.retrieveLoanAccountApplicableCharges(loanId,
                         new ChargeTimeType[] { ChargeTimeType.OVERDUE_INSTALLMENT });
             } else {
-                chargeOptions = this.chargeReadPlatformService.retrieveLoanAccountApplicableCharges(loanId, new ChargeTimeType[] {
-                        ChargeTimeType.OVERDUE_INSTALLMENT, ChargeTimeType.TRANCHE_DISBURSEMENT });
+                chargeOptions = this.chargeReadPlatformService.retrieveLoanAccountApplicableCharges(loanId,
+                        new ChargeTimeType[] { ChargeTimeType.OVERDUE_INSTALLMENT, ChargeTimeType.TRANCHE_DISBURSEMENT });
             }
             chargeTemplate = this.loanChargeReadPlatformService.retrieveLoanChargeTemplate();
 
@@ -614,10 +613,10 @@ public class LoansApiResource {
                 calendarOptions = this.loanReadPlatformService.retrieveCalendars(loanBasicDetails.groupId());
             }
 
-            if(loanBasicDetails.product().canUseForTopup() && loanBasicDetails.clientId() != null){
-                clientActiveLoanOptions = this.accountDetailsReadPlatformService.retrieveClientActiveLoanAccountSummary(loanBasicDetails.clientId());
+            if (loanBasicDetails.product().canUseForTopup() && loanBasicDetails.clientId() != null) {
+                clientActiveLoanOptions = this.accountDetailsReadPlatformService
+                        .retrieveClientActiveLoanAccountSummary(loanBasicDetails.clientId());
             }
-
 
         }
 
@@ -628,23 +627,22 @@ public class LoansApiResource {
 
         final LoanAccountData loanAccount = LoanAccountData.associationsAndTemplate(loanBasicDetails, repaymentSchedule, loanRepayments,
                 charges, collateral, guarantors, meeting, productOptions, loanTermFrequencyTypeOptions, repaymentFrequencyTypeOptions,
-                repaymentFrequencyNthDayTypeOptions, repaymentFrequencyDayOfWeekTypeOptions, repaymentStrategyOptions, 
-                interestRateFrequencyTypeOptions, amortizationTypeOptions, interestTypeOptions, interestCalculationPeriodTypeOptions, 
-                fundOptions, chargeOptions, chargeTemplate, allowedLoanOfficers, loanPurposeOptions, loanCollateralOptions, 
-                calendarOptions, notes, accountLinkingOptions, linkedAccount, disbursementData, emiAmountVariations,
-                overdueCharges, paidInAdvanceTemplate, interestRatesPeriods, clientActiveLoanOptions);
+                repaymentFrequencyNthDayTypeOptions, repaymentFrequencyDayOfWeekTypeOptions, repaymentStrategyOptions,
+                interestRateFrequencyTypeOptions, amortizationTypeOptions, interestTypeOptions, interestCalculationPeriodTypeOptions,
+                fundOptions, chargeOptions, chargeTemplate, allowedLoanOfficers, loanPurposeOptions, loanCollateralOptions, calendarOptions,
+                notes, accountLinkingOptions, linkedAccount, disbursementData, emiAmountVariations, overdueCharges, paidInAdvanceTemplate,
+                interestRatesPeriods, clientActiveLoanOptions);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters(),
                 mandatoryResponseParameters);
         String toReturn = this.toApiJsonSerializer.serialize(settings, loanAccount, this.LOAN_DATA_PARAMETERS);
-        return toReturn ;
+        return toReturn;
     }
 
     @GET
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public String retrieveAll(@Context final UriInfo uriInfo,
-            @QueryParam("sqlSearch") final String sqlSearch,
+    public String retrieveAll(@Context final UriInfo uriInfo, @QueryParam("sqlSearch") final String sqlSearch,
             @QueryParam("externalId") final String externalId,
             // @QueryParam("underHierarchy") final String hierarchy,
             @QueryParam("offset") final Integer offset, @QueryParam("limit") final Integer limit,
@@ -661,55 +659,45 @@ public class LoansApiResource {
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toApiJsonSerializer.serialize(settings, loanBasicDetails, this.LOAN_DATA_PARAMETERS);
     }
-    
-    //Create New Loan
+
+    // Create New Loan
     @POST
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public String calculateLoanScheduleOrSubmitLoanApplication(
-            @QueryParam("command") final String commandParam,
-            @Context final UriInfo uriInfo, 
-            final String apiRequestBodyAsJson
-            ) 
-    {
+    public String calculateLoanScheduleOrSubmitLoanApplication(@QueryParam("command") final String commandParam,
+            @Context final UriInfo uriInfo, final String apiRequestBodyAsJson) {
 
         if (is(commandParam, "calculateLoanSchedule")) {
-             logger.info("My Debug TEST apiRequestBodyAsJson: "+ apiRequestBodyAsJson);
+            logger.info("My Debug TEST apiRequestBodyAsJson: " + apiRequestBodyAsJson);
             final JsonElement parsedQuery = this.fromJsonHelper.parse(apiRequestBodyAsJson);
             final JsonQuery query = JsonQuery.from(apiRequestBodyAsJson, parsedQuery, this.fromJsonHelper);
 
             final LoanScheduleModel loanSchedule = this.calculationPlatformService.calculateLoanSchedule(query, true);
-           
-          //Sothea
+
+            // Sothea
             ObjectMapper mapper = new ObjectMapper();
             String prettyJson;
             try {
                 prettyJson = mapper.writeValueAsString(loanSchedule);
                 logger.info("-------------------------------------------------------------------------------------------------");
-                logger.info("Sothea Test: this.calculationPlatformService.calculateLoanSchedule(query, true) loanSchedule: "+ prettyJson);
-                logger.info("-------------------------------------------------------------------------------------------------"); 
+                logger.info("Sothea Test: this.calculationPlatformService.calculateLoanSchedule(query, true) loanSchedule: " + prettyJson);
+                logger.info("-------------------------------------------------------------------------------------------------");
             } catch (JsonProcessingException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            
-            //Sothea
-            
+
+            // Sothea
+
             final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-            
-            return this.loanScheduleToApiJsonSerializer.serialize(
-            	settings, 
-            	loanSchedule.toData(),
-            	new HashSet<String>()
-            	);
+
+            return this.loanScheduleToApiJsonSerializer.serialize(settings, loanSchedule.toData(), new HashSet<String>());
         }
 
-       
-        
         final CommandWrapper commandRequest = new CommandWrapperBuilder().createLoanApplication().withJson(apiRequestBodyAsJson).build();
-        
+
         logger.info("My Debug TEST CommandWrapperBuilder after CommandWrapperBuilder :" + apiRequestBodyAsJson);
-        
+
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
 
         return this.toApiJsonSerializer.serialize(result);
@@ -776,7 +764,7 @@ public class LoansApiResource {
         } else if (is(commandParam, "undodisbursal")) {
             final CommandWrapper commandRequest = builder.undoLoanApplicationDisbursal(loanId).build();
             result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
-        }else if (is(commandParam, "undolastdisbursal")) {
+        } else if (is(commandParam, "undolastdisbursal")) {
             final CommandWrapper commandRequest = builder.undoLastDisbursalLoanApplication(loanId).build();
             result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
         }
@@ -804,9 +792,9 @@ public class LoansApiResource {
     @GET
     @Path("downloadtemplate")
     @Produces("application/vnd.ms-excel")
-    public Response getLoansTemplate(@QueryParam("officeId") final Long officeId,
-            @QueryParam("staffId") final Long staffId,@QueryParam("dateFormat") final String dateFormat) {
-        return bulkImportWorkbookPopulatorService.getTemplate(GlobalEntityType.LOANS.toString(), officeId, staffId,dateFormat);
+    public Response getLoansTemplate(@QueryParam("officeId") final Long officeId, @QueryParam("staffId") final Long staffId,
+            @QueryParam("dateFormat") final String dateFormat) {
+        return bulkImportWorkbookPopulatorService.getTemplate(GlobalEntityType.LOANS.toString(), officeId, staffId, dateFormat);
     }
 
     @GET
@@ -814,16 +802,17 @@ public class LoansApiResource {
     @Produces("application/vnd.ms-excel")
     public Response getLoanRepaymentTemplate(@QueryParam("officeId") final Long officeId,
             @QueryParam("dateFormat") final String dateFormat) {
-        return bulkImportWorkbookPopulatorService.getTemplate(GlobalEntityType.LOAN_TRANSACTIONS.toString(), officeId, null,dateFormat);
+        return bulkImportWorkbookPopulatorService.getTemplate(GlobalEntityType.LOAN_TRANSACTIONS.toString(), officeId, null, dateFormat);
     }
 
     @POST
     @Path("uploadtemplate")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public String postLoanTemplate(@FormDataParam("file") InputStream uploadedInputStream,
-            @FormDataParam("file") FormDataContentDisposition fileDetail,
-            @FormDataParam("locale") final String locale, @FormDataParam("dateFormat") final String dateFormat){
-        final Long importDocumentId = this. bulkImportWorkbookService.importWorkbook(GlobalEntityType.LOANS.toString(), uploadedInputStream,fileDetail,locale,dateFormat);
+            @FormDataParam("file") FormDataContentDisposition fileDetail, @FormDataParam("locale") final String locale,
+            @FormDataParam("dateFormat") final String dateFormat) {
+        final Long importDocumentId = this.bulkImportWorkbookService.importWorkbook(GlobalEntityType.LOANS.toString(), uploadedInputStream,
+                fileDetail, locale, dateFormat);
         return this.toApiJsonSerializer.serialize(importDocumentId);
     }
 
@@ -831,10 +820,10 @@ public class LoansApiResource {
     @Path("repayments/uploadtemplate")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public String postLoanRepaymentTemplate(@FormDataParam("file") InputStream uploadedInputStream,
-            @FormDataParam("file") FormDataContentDisposition fileDetail,@FormDataParam("locale") final String locale,
-            @FormDataParam("dateFormat") final String dateFormat){
-        final Long importDocumentId = this.bulkImportWorkbookService.importWorkbook(GlobalEntityType.LOAN_TRANSACTIONS.toString(), uploadedInputStream,fileDetail,
-                locale,dateFormat);
+            @FormDataParam("file") FormDataContentDisposition fileDetail, @FormDataParam("locale") final String locale,
+            @FormDataParam("dateFormat") final String dateFormat) {
+        final Long importDocumentId = this.bulkImportWorkbookService.importWorkbook(GlobalEntityType.LOAN_TRANSACTIONS.toString(),
+                uploadedInputStream, fileDetail, locale, dateFormat);
         return this.toApiJsonSerializer.serialize(importDocumentId);
     }
 }

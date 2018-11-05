@@ -17,34 +17,33 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-@Path("/heloworld")
+@Path("/helloworld")
 @Component
 @Scope("singleton")
 public class ShitApiResource {
 
-//    private final DefaultToApiJsonSerializer<CountryKhmer> toApiJsonSerializer;
-//    private final AddressKhmerRreadPlatformService readPlatformService;
-//    private final PlatformSecurityContext context;
-//
-////    @Autowired
-//    public ShitApiResource(
-//           final DefaultToApiJsonSerializer<CountryKhmer> toApiJsonSerializer,
-//           final AddressKhmerRreadPlatformService readPlatformService,
-//           final PlatformSecurityContext context
-//            ) {
-//        this.toApiJsonSerializer = toApiJsonSerializer;
-//        this.readPlatformService = readPlatformService;
-//        this.context = context;
-//    }
+    private final DefaultToApiJsonSerializer<CountryKhmer> toApiJsonSerializer;
+    private final AddressKhmerRreadPlatformService readPlatformService;
+    // private final PlatformSecurityContext context;
+
+    @Autowired
+    public ShitApiResource(final DefaultToApiJsonSerializer<CountryKhmer> toApiJsonSerializer,
+            final AddressKhmerRreadPlatformService readPlatformService
+    // final PlatformSecurityContext context
+    ) {
+        this.toApiJsonSerializer = toApiJsonSerializer;
+        this.readPlatformService = readPlatformService;
+        // this.context = context;
+    }
 
     @GET
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     public String retrieveAllCountry() {
 
-//        final Collection<CountryKhmerData> countrykh = this.readPlatformService.retrieveAllCountry();
-//        return this.toApiJsonSerializer.serialize(countrykh);
-        
-        return "hello world";
+        final Collection<CountryKhmerData> countrykh = this.readPlatformService.retrieveAllCountry();
+         return this.toApiJsonSerializer.serialize(countrykh);
+
+//        return "hello world";
     }
 }

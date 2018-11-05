@@ -22,6 +22,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 
+import javax.sql.DataSource;
+
+import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
 import org.apache.fineract.portfolio.addresskhmer.data.CountryKhmerData;
 import org.apache.fineract.portfolio.addresskhmer.domain.CountryKhmer;
 import org.apache.fineract.portfolio.charge.data.ChargeData;
@@ -30,15 +33,18 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AddressKhmerReadPlatformServiceImp implements AddressKhmerRreadPlatformService {
     
     private final JdbcTemplate jdbcTemplate;
+    private final DataSource dataSource;
 
     @Autowired
-    
-    public AddressKhmerReadPlatformServiceImp(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public AddressKhmerReadPlatformServiceImp(final RoutingDataSource dataSource) {
+        this.dataSource = dataSource;
+        this.jdbcTemplate = new JdbcTemplate(this.dataSource);
     }
 
     @Override
@@ -53,22 +59,23 @@ public class AddressKhmerReadPlatformServiceImp implements AddressKhmerRreadPlat
         
         final CountryMapper mp = new CountryMapper();
         
-        String sql = "select " + mp.CountrySchema() + " order by country_code ";
+        String sql = "select " + mp.CountrySchema() + " order by countryCode ";
         
         return this.jdbcTemplate.query(sql, mp, new Object[] {});
     }
 
     private static final class CountryMapper implements RowMapper<CountryKhmerData> {
         public String CountrySchema() {
-            return "id, country_code, description_khmer, description";
+            return " CountryID, Country, Des_In_Khmer, countryCode"
+        + " from tbl_country";
         }
 
         @Override
         public CountryKhmerData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum)
                 throws SQLException {
-            String countryCode = rs.getString("country_code");
-            String descriptionKhmer = rs.getString("description_khmer");
-            String description = rs.getString("description");
+            String countryCode = rs.getString("countryCode");
+            String descriptionKhmer = rs.getString("Des_In_Khmer");
+            String description = rs.getString("Country");
            
             return CountryKhmerData.instance(countryCode, descriptionKhmer, description);
         }
