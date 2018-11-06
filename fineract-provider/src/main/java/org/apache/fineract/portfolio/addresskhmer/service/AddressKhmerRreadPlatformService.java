@@ -20,12 +20,33 @@ package org.apache.fineract.portfolio.addresskhmer.service;
 
 import java.util.Collection;
 
+import org.apache.fineract.portfolio.addresskhmer.data.CommuneKhmerData;
 import org.apache.fineract.portfolio.addresskhmer.data.CountryKhmerData;
+import org.apache.fineract.portfolio.addresskhmer.data.DistrictKhmerData;
+import org.apache.fineract.portfolio.addresskhmer.data.ProvinceKhmerData;
+import org.apache.fineract.portfolio.addresskhmer.data.VillageKhmerData;
 
 public interface AddressKhmerRreadPlatformService {
 
     CountryKhmerData retrieveCountry(long id);
 
     Collection<CountryKhmerData> retrieveAllCountry();
+    
+    ProvinceKhmerData retrieveProvince(long id);
+    
+    Collection<ProvinceKhmerData> RetrieveAllProvince();
+    
+    DistrictKhmerData retriveDistrict(long id);
+    
+    Collection<DistrictKhmerData> retrieveAllDistrict();
+    
+    CommuneKhmerData retrieveCommune(long id);
+    
+    Collection<CommuneKhmerData> retrieveAllCommune();
+    
+    VillageKhmerData retrieveVillage(long id);
+    
+    Collection<VillageKhmerData> retrieveAllVillage();
+   
 
 }

@@ -6,32 +6,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class CountryKhmerData {
     
-    private String countryCode;
+    private Integer CountryID;
 
     private String Des_In_Khmer;
 
     private String Country;
     
-    
-    
-    public CountryKhmerData(String countryCode, String des_In_Khmer, String country) {
-        this.countryCode = countryCode;
+    public CountryKhmerData(Integer CountryID, String des_In_Khmer, String country) {
+        this.CountryID = CountryID;
         this.Des_In_Khmer = des_In_Khmer;
         this.Country = country;
     }
 
-
-
-
     public static CountryKhmerData instance(
-            final String countryCode,
+            final Integer CountryID,
             final String Des_In_Khmer,
-            final String Country) {
+            final String Country
+            ) {
         
         return new CountryKhmerData(
-                countryCode,
+                CountryID,
                 Des_In_Khmer,
                 Country);
     }
-    
 }

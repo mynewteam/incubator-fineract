@@ -21,4 +21,6 @@ public class ProvinceKhmer extends AbstractPersistableCustom<Long> {
     
     @Column(name = "Des_In_Khmer")
     private String Des_In_Khmer;
+    
+    
 }

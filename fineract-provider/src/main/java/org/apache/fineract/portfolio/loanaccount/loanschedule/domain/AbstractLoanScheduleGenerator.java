@@ -2054,17 +2054,8 @@ public abstract class AbstractLoanScheduleGenerator implements LoanScheduleGener
                 amount = amount.add(principalInterestForThisPeriod.interest().getAmount());
             }
 
-            else if (loanCharge.getChargeCalculation().isPercentageOfOutstandingAmount()) // if
-                                                                                          // charge
-                                                                                          // type
-                                                                                          // is
-                                                                                          // percentage
-                                                                                          // of
-                                                                                          // Outstanding
-                                                                                          // amount
+            else if (loanCharge.getChargeCalculation().isPercentageOfOutstandingAmount()) 
             {
-
-               
                 amount = amount.add(principalInterestForThisPeriod.outstanding().getAmount());
                 logger.debug("Percentage of outstanding amount is raised." + amount);
 
@@ -2073,6 +2064,14 @@ public abstract class AbstractLoanScheduleGenerator implements LoanScheduleGener
             }
 
             BigDecimal loanChargeAmt = amount.multiply(loanCharge.getPercentage()).divide(BigDecimal.valueOf(100));
+            
+            // Modefy
+            if (loanCharge.getChargeCalculation().isPercentageOfOutstandingAmount()) {
+                
+                loanChargeAmt = amount.multiply(loanCharge.getPercentage()).multiply(BigDecimal.valueOf(30)).divide(BigDecimal.valueOf(36000));
+            }else {
+                loanChargeAmt = amount.multiply(loanCharge.getPercentage()).divide(BigDecimal.valueOf(100));
+            }
             // loanChargeAmt = .getPrincipalOutstanding().getAmount();
             cumulative = cumulative.plus(loanChargeAmt);
 

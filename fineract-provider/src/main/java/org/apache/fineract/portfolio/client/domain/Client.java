@@ -53,6 +53,7 @@ import org.apache.fineract.infrastructure.documentmanagement.domain.Image;
 import org.apache.fineract.infrastructure.security.service.RandomPasswordGenerator;
 import org.apache.fineract.organisation.office.domain.Office;
 import org.apache.fineract.organisation.staff.domain.Staff;
+import org.apache.fineract.portfolio.addresskhmer.domain.VillageKhmer;
 import org.apache.fineract.portfolio.client.api.ClientApiConstants;
 import org.apache.fineract.portfolio.group.domain.Group;
 import org.apache.fineract.useradministration.domain.AppUser;
@@ -79,10 +80,10 @@ public final class Client extends AbstractPersistableCustom<Long> {
 	@OneToOne(optional = true)
 	@JoinColumn(name = "image_id", nullable = true)
 	private Image image;
-//
-//	@ManyToOne
-//	@JoinColumn(name = "village_code")
-//	private Integer VillageCode;
+
+	@ManyToOne
+	@JoinColumn(name = "tbl_village_id")
+	private VillageKhmer villageKhmer;
 
 	/**
 	 * A value from {@link ClientStatus}.
