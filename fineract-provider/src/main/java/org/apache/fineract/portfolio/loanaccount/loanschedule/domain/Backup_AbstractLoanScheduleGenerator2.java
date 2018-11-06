@@ -20,7 +20,6 @@ package org.apache.fineract.portfolio.loanaccount.loanschedule.domain;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -61,13 +60,13 @@ import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractLoanScheduleGenerator implements LoanScheduleGenerator
+public abstract class Backup_AbstractLoanScheduleGenerator2 implements LoanScheduleGenerator
 {
 
 	private final ScheduledDateGenerator scheduledDateGenerator = new DefaultScheduledDateGenerator();
 	private final PaymentPeriodsInOneYearCalculator paymentPeriodsInOneYearCalculator = new DefaultPaymentPeriodsInOneYearCalculator();
 
-	private final static Logger logger = LoggerFactory.getLogger(AbstractLoanScheduleGenerator.class);
+	private final static Logger logger = LoggerFactory.getLogger(Backup_AbstractLoanScheduleGenerator2.class);
 
 	@Override
 	public LoanScheduleModel generate(
@@ -2625,13 +2624,7 @@ public abstract class AbstractLoanScheduleGenerator implements LoanScheduleGener
 			{
 				if (loanCharge.isInstalmentFee() && isInstallmentChargeApplicable)
 				{
-					int loanTermInDays = 0;
-					loanTermInDays = Days.daysBetween(periodStart, periodEnd).getDays();
-					 logger.info("------------------------------------------------------------------------------------");
-					 logger.info("Sothea Working On: loanTermInDays: " + loanTermInDays );
-					 logger.info("------------------------------------------------------------------------------------");
-					cumulative = calculateInstallmentCharge(principalInterestForThisPeriod, cumulative, loanCharge,loanTermInDays);
-//					cumulative = calculateInstallmentCharge(principalInterestForThisPeriod, cumulative, loanCharge);
+					cumulative = calculateInstallmentCharge(principalInterestForThisPeriod, cumulative, loanCharge);
 				} else if (loanCharge.isOverdueInstallmentCharge()
 					&& loanCharge.isDueForCollectionFromAndUpToAndIncluding(periodStart, periodEnd)
 					&& loanCharge.getChargeCalculation().isPercentageBased())
@@ -2684,76 +2677,19 @@ public abstract class AbstractLoanScheduleGenerator implements LoanScheduleGener
 		return cumulative;
 	}
 
-	// sothea 
-//	private Money calculateInstallmentCharge(
-//		final PrincipalInterest principalInterestForThisPeriod,
-//		Money cumulative,
-//		final LoanCharge loanCharge)
-//	{
-//		if (loanCharge.getChargeCalculation().isPercentageBased())
-//		{
-//			BigDecimal amount = BigDecimal.ZERO;
-//			if (loanCharge.getChargeCalculation().isPercentageOfAmountAndInterest())
-//			{
-//				amount = amount.add(principalInterestForThisPeriod.principal().getAmount())
-//					.add(principalInterestForThisPeriod.interest().getAmount());
-//			} else if (loanCharge.getChargeCalculation().isPercentageOfInterest())
-//			{
-//				amount = amount.add(principalInterestForThisPeriod.interest().getAmount());
-//			}
-//
-//			else if (loanCharge.getChargeCalculation().isPercentageOfOutstandingAmount())			
-//			{
-//				amount = amount.add(principalInterestForThisPeriod.outstanding().getAmount());
-//				logger.debug("Percentage of outstanding amount is raised." + amount);
-//
-//			} else
-//			{
-//				amount = amount.add(principalInterestForThisPeriod.principal().getAmount());
-//			}
-//			
-//			
-//			
-//			BigDecimal loanChargeAmt = amount.multiply(loanCharge.getPercentage()).divide(BigDecimal.valueOf(100));
-//			// loanChargeAmt = .getPrincipalOutstanding().getAmount();
-//			if (loanCharge.getChargeCalculation().isPercentageOfOutstandingAmount()) {
-//				loanChargeAmt = amount.multiply(loanCharge.getPercentage()).multiply(BigDecimal.valueOf(30)).divide(BigDecimal.valueOf(36000));
-//			}else {
-//				loanChargeAmt = amount.multiply(loanCharge.getPercentage()).divide(BigDecimal.valueOf(100));
-//			}
-//			
-//			cumulative = cumulative.plus(loanChargeAmt);
-//
-//			// scheduleParams.getOutstandingBalance()
-//			 logger.info("------------------------------------------------------------------------------------");
-//			 logger.info("Sothea Working On: cumulative = " + cumulative.getAmount() + ": + :" + loanChargeAmt);
-//			 logger.info("-----------------------------------------------------------------------------------");
-//
-//		} else
-//		{
-//			cumulative = cumulative.plus(loanCharge.amountOrPercentage());
-//		}
-//		// logger.info("Sothea Working On: cumulative =" + cumulative);
-//		return cumulative;
-//	}
-//	
-//	sothea Add int loanTermInDays Paramarter
+	// sothea add
 	private Money calculateInstallmentCharge(
 		final PrincipalInterest principalInterestForThisPeriod,
 		Money cumulative,
-		final LoanCharge loanCharge
-		, int loanTermInDays)
+		final LoanCharge loanCharge)
 	{
 		if (loanCharge.getChargeCalculation().isPercentageBased())
 		{
-			BigDecimal _loanTermInDays = BigDecimal.ZERO;
 			BigDecimal amount = BigDecimal.ZERO;
-			
 			if (loanCharge.getChargeCalculation().isPercentageOfAmountAndInterest())
 			{
 				amount = amount.add(principalInterestForThisPeriod.principal().getAmount())
 					.add(principalInterestForThisPeriod.interest().getAmount());
-				
 			} else if (loanCharge.getChargeCalculation().isPercentageOfInterest())
 			{
 				amount = amount.add(principalInterestForThisPeriod.interest().getAmount());
@@ -2762,7 +2698,6 @@ public abstract class AbstractLoanScheduleGenerator implements LoanScheduleGener
 			else if (loanCharge.getChargeCalculation().isPercentageOfOutstandingAmount())			
 			{
 				amount = amount.add(principalInterestForThisPeriod.outstanding().getAmount());
-				
 				logger.debug("Percentage of outstanding amount is raised." + amount);
 
 			} else
@@ -2770,22 +2705,12 @@ public abstract class AbstractLoanScheduleGenerator implements LoanScheduleGener
 				amount = amount.add(principalInterestForThisPeriod.principal().getAmount());
 			}
 			
-			if( loanTermInDays < 1) {
-				loanTermInDays = 1;
-			}
-			// scheduleParams.getOutstandingBalance()
-			 logger.info("------------------------------------------------------------------------------------");
-			 logger.info("Sothea Working On calculateInstallmentCharge: loanTermInDays : " + loanTermInDays );
-			 logger.info("------------------------------------------------------------------------------------");
-			 
-			 _loanTermInDays= BigDecimal.valueOf(Double.valueOf(loanTermInDays));
 			
 			
-//			loanTermInDays = Days.daysBetween(installment.getFromDate(), installment.getDueDate()).getDays();
 			BigDecimal loanChargeAmt = amount.multiply(loanCharge.getPercentage()).divide(BigDecimal.valueOf(100));
 			// loanChargeAmt = .getPrincipalOutstanding().getAmount();
 			if (loanCharge.getChargeCalculation().isPercentageOfOutstandingAmount()) {
-				loanChargeAmt = amount.multiply(loanCharge.getPercentage()).multiply(_loanTermInDays).divide(BigDecimal.valueOf(36000), 2, RoundingMode.HALF_UP);
+				loanChargeAmt = amount.multiply(loanCharge.getPercentage()).multiply(BigDecimal.valueOf(30)).divide(BigDecimal.valueOf(36000));
 			}else {
 				loanChargeAmt = amount.multiply(loanCharge.getPercentage()).divide(BigDecimal.valueOf(100));
 			}
@@ -2794,7 +2719,7 @@ public abstract class AbstractLoanScheduleGenerator implements LoanScheduleGener
 
 			// scheduleParams.getOutstandingBalance()
 			 logger.info("------------------------------------------------------------------------------------");
-			 logger.info("Sothea Working On: loanTermInDays" + loanTermInDays + " cumulative = " + cumulative.getAmount() + " : + : " + loanChargeAmt);
+			 logger.info("Sothea Working On: cumulative = " + cumulative.getAmount() + ": + :" + loanChargeAmt);
 			 logger.info("------------------------------------------------------------------------------------");
 
 		} else
@@ -2824,19 +2749,13 @@ public abstract class AbstractLoanScheduleGenerator implements LoanScheduleGener
 			{
 				if (loanCharge.isInstalmentFee() && isInstallmentChargeApplicable)
 				{
-					int loanTermInDays = 0;
-					
-					loanTermInDays = Days.daysBetween(periodStart, periodEnd).getDays();
-					 logger.info("------------------------------------------------------------------------------------");
-					 logger.info("Sothea Working On: loanTermInDays:" + loanTermInDays);
-					 logger.info("------------------------------------------------------------------------------------");
-					cumulative = calculateInstallmentCharge(principalInterestForThisPeriod, cumulative, loanCharge, loanTermInDays);
+
+					cumulative = calculateInstallmentCharge(principalInterestForThisPeriod, cumulative, loanCharge);
 				} else if (loanCharge.isOverdueInstallmentCharge()
 					&& loanCharge.isDueForCollectionFromAndUpToAndIncluding(periodStart, periodEnd)
 					&& loanCharge.getChargeCalculation().isPercentageBased())
 				{
 					cumulative = cumulative.plus(loanCharge.chargeAmount());
-					
 				} else if (loanCharge.isDueForCollectionFromAndUpToAndIncluding(periodStart, periodEnd)
 					&& loanCharge.getChargeCalculation().isPercentageBased())
 				{
@@ -3193,30 +3112,16 @@ public abstract class AbstractLoanScheduleGenerator implements LoanScheduleGener
 				Money totalOutstandingInterestPaymentDueToGrace = Money.zero(currency);
 				loanScheduleParams = LoanScheduleParams.createLoanScheduleParamsForPartialUpdate(periodNumber,
 					instalmentNumber,
-					loanTermInDays, 
-					periodStartDate, 
-					actualRepaymentDate, 
-					totalCumulativePrincipal,
+					loanTermInDays, periodStartDate, actualRepaymentDate, totalCumulativePrincipal,
 					totalCumulativeInterest,
-					totalFeeChargesCharged, 
-					totalPenaltyChargesCharged, 
-					totalRepaymentExpected,
-					totalOutstandingInterestPaymentDueToGrace, 
-					reducePrincipal, 
-					principalPortionMap, 
-					latePaymentMap,
+					totalFeeChargesCharged, totalPenaltyChargesCharged, totalRepaymentExpected,
+					totalOutstandingInterestPaymentDueToGrace, reducePrincipal, principalPortionMap, latePaymentMap,
 					compoundingMap,
-					uncompoundedAmount, 
-					disburseDetailMap, 
-					principalToBeScheduled, 
-					outstandingBalance,
+					uncompoundedAmount, disburseDetailMap, principalToBeScheduled, outstandingBalance,
 					outstandingBalanceAsPerRest,
-					newRepaymentScheduleInstallments, 
-					recalculationDetails, 
-					loanRepaymentScheduleTransactionProcessor,
+					newRepaymentScheduleInstallments, recalculationDetails, loanRepaymentScheduleTransactionProcessor,
 					scheduleTillDate,
-					currency, 
-					applyInterestRecalculation);
+					currency, applyInterestRecalculation);
 				retainedInstallments.addAll(newRepaymentScheduleInstallments);
 				loanScheduleParams.getCompoundingDateVariations().putAll(compoundingDateVariations);
 				loanApplicationTerms
@@ -3532,14 +3437,10 @@ public abstract class AbstractLoanScheduleGenerator implements LoanScheduleGener
 		final MonetaryCurrency currency = outstandingPrincipal.getCurrency();
 		LoanScheduleModelPeriod scheduledLoanInstallment = LoanScheduleModelRepaymentPeriod.repayment(
 			installment.getInstallmentNumber(),
-			installment.getFromDate(), 
-			installment.getDueDate(), 
-			installment.getPrincipal(currency),
+			installment.getFromDate(), installment.getDueDate(), installment.getPrincipal(currency),
 			outstandingPrincipal,
-			installment.getInterestCharged(currency), 
-			installment.getFeeChargesCharged(currency),
-			installment.getPenaltyChargesCharged(currency), 
-			installment.getDue(currency),
+			installment.getInterestCharged(currency), installment.getFeeChargesCharged(currency),
+			installment.getPenaltyChargesCharged(currency), installment.getDue(currency),
 			installment.isRecalculatedInterestComponent());
 		/// Sothea Check
 		logger.info(
