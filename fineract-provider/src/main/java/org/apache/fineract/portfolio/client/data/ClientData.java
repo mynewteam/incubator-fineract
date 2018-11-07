@@ -32,6 +32,8 @@ import org.apache.fineract.infrastructure.dataqueries.data.DatatableData;
 import org.apache.fineract.organisation.office.data.OfficeData;
 import org.apache.fineract.organisation.staff.data.StaffData;
 import org.apache.fineract.portfolio.address.data.AddressData;
+import org.apache.fineract.portfolio.addresskhmer.data.VillageKhmerData;
+import org.apache.fineract.portfolio.addresskhmer.domain.VillageKhmer;
 import org.apache.fineract.portfolio.group.data.GroupGeneralData;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountData;
 import org.apache.fineract.portfolio.savings.data.SavingsProductData;
@@ -105,6 +107,7 @@ final public class ClientData implements Comparable<ClientData>
 	private final ClientNonPersonData clientNonPersonDetails;
 
 	private final AddressData address;
+	private final VillageKhmerData addressKhmer;
 
 	private final Boolean isAddressEnabled;
 
@@ -136,14 +139,35 @@ final public class ClientData implements Comparable<ClientData>
 		String mobileNo,
 		ClientNonPersonData clientNonPersonDetails,
 		AddressData address,
+		VillageKhmerData addressKhmer,
 		String locale,
 		String dateFormat)
 	{
 		return new ClientData(
-			legalFormId, rowIndex, fullname, null, null, null, null, submittedOnDate, activationDate,
-			active, externalId,
-			officeId, staffId, mobileNo, dateOfBirth, clientTypeId, null, clientClassificationId, null,
-			address, clientNonPersonDetails, locale, dateFormat);
+			legalFormId, 
+			rowIndex, 
+			fullname, 
+			null, 
+			null, 
+			null, 
+			null, 
+			submittedOnDate, 
+			activationDate,
+			active, 
+			externalId,
+			officeId, 
+			staffId, 
+			mobileNo, 
+			dateOfBirth, 
+			clientTypeId, 
+			null, 
+			clientClassificationId, 
+			null,
+			address, 
+			addressKhmer,
+			clientNonPersonDetails, 
+			locale, 
+			dateFormat);
 	}
 
 	public static ClientData importClientPersonInstance(
@@ -165,13 +189,14 @@ final public class ClientData implements Comparable<ClientData>
 		Long clientClassificationId,
 		Boolean isStaff,
 		AddressData address,
+		VillageKhmerData addressKhmer,
 		String locale,
 		String dateFormat)
 	{
 
 		return new ClientData(legalFormId, rowIndex, null, firstName, lastName, null, middleName, submittedOn,
 			activationDate, active, externalId,
-			officeId, staffId, mobileNo, dob, clientTypeId, genderId, clientClassificationId, isStaff, address, null,
+			officeId, staffId, mobileNo, dob, clientTypeId, genderId, clientClassificationId, isStaff, address, addressKhmer, null,
 			locale, dateFormat);
 	}
 
@@ -201,6 +226,7 @@ final public class ClientData implements Comparable<ClientData>
 		Long clientClassificationId,
 		Boolean isStaff,
 		AddressData address,
+		VillageKhmerData addresskhmer,
 		ClientNonPersonData clientNonPersonDetails,
 		String locale,
 		String dateFormat)
@@ -227,6 +253,8 @@ final public class ClientData implements Comparable<ClientData>
 		this.clientClassificationId = clientClassificationId;
 		this.isStaff = isStaff;
 		this.address = address;
+		this.addressKhmer = addresskhmer;
+		
 		this.id = null;
 		this.accountNo = null;
 		this.status = null;
@@ -300,6 +328,7 @@ final public class ClientData implements Comparable<ClientData>
 		final List<EnumOptionData> clientLegalFormOptions,
 		final ClientFamilyMembersData familyMemberOptions,
 		final AddressData address,
+		final VillageKhmerData addressKhmer,
 		final Boolean isAddressEnabled,
 		final List<DatatableData> datatables)
 	{
@@ -344,7 +373,7 @@ final public class ClientData implements Comparable<ClientData>
 			clientClassification,
 			clientTypeOptions, clientClassificationOptions, clientNonPersonConstitutionOptions,
 			clientNonPersonMainBusinessLineOptions,
-			clientNonPersonDetails, clientLegalFormOptions, familyMemberOptions, legalForm, address, isAddressEnabled,
+			clientNonPersonDetails, clientLegalFormOptions, familyMemberOptions, legalForm, address, addressKhmer, isAddressEnabled,
 			datatables, isStaff);
 
 	}
@@ -354,23 +383,50 @@ final public class ClientData implements Comparable<ClientData>
 
 		return new ClientData(clientData.accountNo, clientData.status, clientData.subStatus, clientData.officeId,
 			clientData.officeName,
-			clientData.transferToOfficeId, clientData.transferToOfficeName, clientData.id, clientData.firstname,
+			clientData.transferToOfficeId,
+			clientData.transferToOfficeName, 
+			clientData.id, 
+			clientData.firstname,
 			clientData.middlename,
-			clientData.lastname, clientData.khmername, clientData.fullname, clientData.displayName,
-			clientData.externalId, clientData.mobileNo, clientData.emailAddress,
-			clientData.dateOfBirth, clientData.gender, clientData.activationDate, clientData.imageId,
+			clientData.lastname, 
+			clientData.khmername, 
+			clientData.fullname, 
+			clientData.displayName,
+			clientData.externalId,
+			clientData.mobileNo, 
+			clientData.emailAddress,
+			clientData.dateOfBirth, 
+			clientData.gender, 
+			clientData.activationDate, 
+			clientData.imageId,
 			clientData.staffId,
-			clientData.staffName, templateData.officeOptions, clientData.groups, templateData.staffOptions,
+			clientData.staffName,
+			templateData.officeOptions,
+			clientData.groups, 
+			templateData.staffOptions,
 			templateData.narrations,
-			templateData.genderOptions, clientData.timeline, templateData.savingProductOptions,
+			templateData.genderOptions,
+			clientData.timeline, 
+			templateData.savingProductOptions,
 			clientData.savingsProductId,
-			clientData.savingsProductName, clientData.savingsAccountId, clientData.savingAccountOptions,
+			clientData.savingsProductName, 
+			clientData.savingsAccountId, 
+			clientData.savingAccountOptions,
 			clientData.clientType,
-			clientData.clientClassification, templateData.clientTypeOptions, templateData.clientClassificationOptions,
-			templateData.clientNonPersonConstitutionOptions, templateData.clientNonPersonMainBusinessLineOptions,
+			clientData.clientClassification,
+			templateData.clientTypeOptions,
+			templateData.clientClassificationOptions,
+			templateData.clientNonPersonConstitutionOptions, 
+			templateData.clientNonPersonMainBusinessLineOptions,
 			clientData.clientNonPersonDetails,
-			templateData.clientLegalFormOptions, templateData.familyMemberOptions, clientData.legalForm,
-			clientData.address, clientData.isAddressEnabled, null, clientData.isStaff);
+			templateData.clientLegalFormOptions,
+			templateData.familyMemberOptions, 
+			clientData.legalForm,
+			clientData.address, 
+			clientData.addressKhmer,
+			clientData.isAddressEnabled, 
+			null,
+			clientData.isStaff);
 
 	}
 
@@ -379,23 +435,56 @@ final public class ClientData implements Comparable<ClientData>
 		final Collection<SavingsAccountData> savingAccountOptions)
 	{
 
-		return new ClientData(clientData.accountNo, clientData.status, clientData.subStatus, clientData.officeId,
+		return new ClientData(
+		        clientData.accountNo, 
+		        clientData.status,
+		        clientData.subStatus,
+		        clientData.officeId,
 			clientData.officeName,
-			clientData.transferToOfficeId, clientData.transferToOfficeName, clientData.id, clientData.firstname,
+			clientData.transferToOfficeId,
+			clientData.transferToOfficeName, 
+			clientData.id, 
+			clientData.firstname,
 			clientData.middlename,
-			clientData.lastname, clientData.khmername, clientData.fullname, clientData.displayName,
-			clientData.externalId, clientData.mobileNo, clientData.emailAddress,
-			clientData.dateOfBirth, clientData.gender, clientData.activationDate, clientData.imageId,
+			clientData.lastname,
+			clientData.khmername, 
+			clientData.fullname,
+			clientData.displayName,
+			clientData.externalId, 
+			clientData.mobileNo, 
+			clientData.emailAddress,
+			clientData.dateOfBirth,
+			clientData.gender, 
+			clientData.activationDate,
+			clientData.imageId,
 			clientData.staffId,
-			clientData.staffName, clientData.officeOptions, clientData.groups, clientData.staffOptions,
+			clientData.staffName, 
+			clientData.officeOptions, 
+			clientData.groups, 
+			clientData.staffOptions,
 			clientData.narrations,
-			clientData.genderOptions, clientData.timeline, clientData.savingProductOptions, clientData.savingsProductId,
-			clientData.savingsProductName, clientData.savingsAccountId, savingAccountOptions, clientData.clientType,
-			clientData.clientClassification, clientData.clientTypeOptions, clientData.clientClassificationOptions,
-			clientData.clientNonPersonConstitutionOptions, clientData.clientNonPersonMainBusinessLineOptions,
+			clientData.genderOptions, 
+			clientData.timeline, 
+			clientData.savingProductOptions,
+			clientData.savingsProductId,
+			clientData.savingsProductName, 
+			clientData.savingsAccountId, 
+			savingAccountOptions, 
+			clientData.clientType,
+			clientData.clientClassification, 
+			clientData.clientTypeOptions, 
+			clientData.clientClassificationOptions,
+			clientData.clientNonPersonConstitutionOptions,
+			clientData.clientNonPersonMainBusinessLineOptions,
 			clientData.clientNonPersonDetails,
-			clientData.clientLegalFormOptions, clientData.familyMemberOptions, clientData.legalForm, clientData.address,
-			clientData.isAddressEnabled, null, clientData.isStaff);
+			clientData.clientLegalFormOptions,
+			clientData.familyMemberOptions,
+			clientData.legalForm,
+			clientData.address,
+			clientData.addressKhmer,
+			clientData.isAddressEnabled,
+			null, 
+			clientData.isStaff);
 
 	}
 
@@ -403,25 +492,56 @@ final public class ClientData implements Comparable<ClientData>
 		final ClientData clientData,
 		final Collection<GroupGeneralData> parentGroups)
 	{
-		return new ClientData(clientData.accountNo, clientData.status, clientData.subStatus, clientData.officeId,
+		return new ClientData(
+		        clientData.accountNo, 
+		        clientData.status,
+		        clientData.subStatus, 
+		        clientData.officeId,
 			clientData.officeName,
-			clientData.transferToOfficeId, clientData.transferToOfficeName, clientData.id, clientData.firstname,
+			clientData.transferToOfficeId, 
+			clientData.transferToOfficeName,
+			clientData.id, 
+			clientData.firstname,
 			clientData.middlename,
-			clientData.lastname, clientData.khmername, clientData.fullname, clientData.displayName,
-			clientData.externalId, clientData.mobileNo, clientData.emailAddress,
-			clientData.dateOfBirth, clientData.gender, clientData.activationDate, clientData.imageId,
+			clientData.lastname, 
+			clientData.khmername, 
+			clientData.fullname, 
+			clientData.displayName,
+			clientData.externalId, 
+			clientData.mobileNo, 
+			clientData.emailAddress,
+			clientData.dateOfBirth, 
+			clientData.gender, 
+			clientData.activationDate, 
+			clientData.imageId,
 			clientData.staffId,
-			clientData.staffName, clientData.officeOptions, parentGroups, clientData.staffOptions, null, null,
+			clientData.staffName, 
+			clientData.officeOptions, 
+			parentGroups,
+			clientData.staffOptions,
+			null,
+			null,
 			clientData.timeline,
-			clientData.savingProductOptions, clientData.savingsProductId, clientData.savingsProductName,
+			clientData.savingProductOptions, 
+			clientData.savingsProductId, 
+			clientData.savingsProductName,
 			clientData.savingsAccountId,
-			clientData.savingAccountOptions, clientData.clientType, clientData.clientClassification,
+			clientData.savingAccountOptions, 
+			clientData.clientType,
+			clientData.clientClassification,
 			clientData.clientTypeOptions,
-			clientData.clientClassificationOptions, clientData.clientNonPersonConstitutionOptions,
+			clientData.clientClassificationOptions, 
+			clientData.clientNonPersonConstitutionOptions,
 			clientData.clientNonPersonMainBusinessLineOptions,
-			clientData.clientNonPersonDetails, clientData.clientLegalFormOptions, clientData.familyMemberOptions,
-			clientData.legalForm, clientData.address,
-			clientData.isAddressEnabled, null, clientData.isStaff);
+			clientData.clientNonPersonDetails, 
+			clientData.clientLegalFormOptions,
+			clientData.familyMemberOptions,
+			clientData.legalForm, 
+			clientData.address,
+			clientData.addressKhmer,
+			clientData.isAddressEnabled,
+			null,
+			clientData.isStaff);
 
 	}
 
@@ -483,7 +603,7 @@ final public class ClientData implements Comparable<ClientData>
 			clientClassification,
 			clientTypeOptions, clientClassificationOptions, clientNonPersonConstitutionOptions,
 			clientNonPersonMainBusinessLineOptions,
-			clientNonPerson, clientLegalFormOptions, familyMemberOptions, legalForm, null, null, null, isStaff);
+			clientNonPerson, clientLegalFormOptions, familyMemberOptions, legalForm, null, null, null, null, isStaff);
 	}
 
 	public static ClientData lookup(
@@ -542,7 +662,7 @@ final public class ClientData implements Comparable<ClientData>
 			clientClassification,
 			clientTypeOptions, clientClassificationOptions, clientNonPersonConstitutionOptions,
 			clientNonPersonMainBusinessLineOptions,
-			clientNonPerson, clientLegalFormOptions, familyMemberOptions, legalForm, null, null, null, isStaff);
+			clientNonPerson, clientLegalFormOptions, familyMemberOptions, legalForm, null, null, null, null, isStaff);
 
 	}
 
@@ -610,7 +730,7 @@ final public class ClientData implements Comparable<ClientData>
 			clientTypeOptions,
 			clientClassificationOptions, clientNonPersonConstitutionOptions, clientNonPersonMainBusinessLineOptions,
 			clientNonPerson,
-			clientLegalFormOptions, familyMemberOptions, legalForm, null, null, null, isStaff);
+			clientLegalFormOptions, familyMemberOptions, legalForm, null, null, null, null, isStaff);
 
 	}
 
@@ -660,6 +780,7 @@ final public class ClientData implements Comparable<ClientData>
 		final ClientFamilyMembersData familyMemberOptions,
 		final EnumOptionData legalForm,
 		final AddressData address,
+		final VillageKhmerData addressKhmer,
 		final Boolean isAddressEnabled,
 		final List<DatatableData> datatables,
 		final Boolean isStaff)
@@ -732,6 +853,7 @@ final public class ClientData implements Comparable<ClientData>
 		this.clientNonPersonDetails = clientNonPerson;
 
 		this.address = address;
+		this.addressKhmer = addressKhmer;
 		this.isAddressEnabled = isAddressEnabled;
 		this.datatables = datatables;
 

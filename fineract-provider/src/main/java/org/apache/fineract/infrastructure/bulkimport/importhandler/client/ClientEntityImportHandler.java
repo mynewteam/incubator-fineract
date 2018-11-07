@@ -31,6 +31,7 @@ import org.apache.fineract.infrastructure.bulkimport.importhandler.helper.DateSe
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.exception.*;
 import org.apache.fineract.portfolio.address.data.AddressData;
+import org.apache.fineract.portfolio.addresskhmer.data.VillageKhmerData;
 import org.apache.fineract.portfolio.client.data.ClientData;
 import org.apache.fineract.portfolio.client.data.ClientNonPersonData;
 import org.apache.poi.ss.usermodel.*;
@@ -134,6 +135,7 @@ public class ClientEntityImportHandler implements ImportHandler {
             activationDate=submittedOn;
         }
         AddressData addressDataObj=null;
+        VillageKhmerData addressKhmerDataObj=null;
         if (ImportHandlerUtils.readAsBoolean(ClientEntityConstants.ADDRESS_ENABLED,row)) {
             String addressType = ImportHandlerUtils.readAsString(ClientEntityConstants.ADDRESS_TYPE_COL, row);
             Long addressTypeId = null;
@@ -167,9 +169,29 @@ public class ClientEntityImportHandler implements ImportHandler {
             }
             addressDataObj = new AddressData(addressTypeId, street, addressLine1, addressLine2, addressLine3,
                     city, postalCode, isActiveAddress, stateProvinceId, countryId);
+            addressKhmerDataObj = new VillageKhmerData(ClientEntityConstants.ADDRESS_KHMER, null, null, null);
+            
+//            = ImportHandlerUtils.readAsInt(ClientEntityConstants.ADDRESS_KHMER, row);
         }
-        return ClientData.importClientEntityInstance(legalFormId,row.getRowNum(),name,officeId,clientTypeId,clientClassicationId,
-                staffId,active,activationDate,submittedOn, externalId,incorportionDate,mobileNo,clientNonPersonData,addressDataObj,locale,dateFormat);
+        return ClientData.importClientEntityInstance(
+                legalFormId,
+                row.getRowNum(),
+                name,
+                officeId,
+                clientTypeId,
+                clientClassicationId,
+                staffId,
+                active,
+                activationDate,
+                submittedOn, 
+                externalId,
+                incorportionDate,
+                mobileNo,
+                clientNonPersonData,
+                addressDataObj,
+                addressKhmerDataObj,
+                locale,
+                dateFormat);
     }
 
     public Count importEntity(String dateFormat) {

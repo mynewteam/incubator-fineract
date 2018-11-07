@@ -31,6 +31,7 @@ import org.apache.fineract.infrastructure.bulkimport.importhandler.helper.DateSe
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.exception.*;
 import org.apache.fineract.portfolio.address.data.AddressData;
+import org.apache.fineract.portfolio.addresskhmer.data.VillageKhmerData;
 import org.apache.fineract.portfolio.client.data.ClientData;
 import org.apache.poi.ss.usermodel.*;
 import org.joda.time.LocalDate;
@@ -120,6 +121,7 @@ public class ClientPersonImportHandler implements ImportHandler {
         Boolean isStaff = ImportHandlerUtils.readAsBoolean(ClientPersonConstants.IS_STAFF_COL, row);
 
         AddressData addressDataObj=null;
+        VillageKhmerData addressKhmerDataObj=null;
         if (ImportHandlerUtils.readAsBoolean(ClientPersonConstants.ADDRESS_ENABLED_COL,row)) {
             String addressType=ImportHandlerUtils.readAsString(ClientPersonConstants.ADDRESS_TYPE_COL, row);
             Long addressTypeId = null;
@@ -154,9 +156,29 @@ public class ClientPersonImportHandler implements ImportHandler {
             }
              addressDataObj = new AddressData(addressTypeId, street, addressLine1, addressLine2, addressLine3,
                     city, postalCode, isActiveAddress, stateProvinceId, countryId);
+            addressKhmerDataObj = new VillageKhmerData(ClientPersonConstants.ADDRESS_KHMER, null, null, null);
         }
-        return ClientData.importClientPersonInstance(legalFormId,row.getRowNum(),firstName,lastName,middleName,submittedOn,activationDate,active,externalId,
-                officeId,staffId,mobileNo,dob,clientTypeId,genderId,clientClassicationId,isStaff,addressDataObj,locale,dateFormat);
+        return ClientData.importClientPersonInstance(
+                legalFormId,
+                row.getRowNum(),
+                firstName,
+                lastName,
+                middleName,
+                submittedOn,
+                activationDate,
+                active,externalId,
+                officeId,
+                staffId,
+                mobileNo,
+                dob,
+                clientTypeId,
+                genderId,
+                clientClassicationId,
+                isStaff,
+                addressDataObj,
+                addressKhmerDataObj,
+                locale,
+                dateFormat);
 
         }
 

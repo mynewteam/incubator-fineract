@@ -55,4 +55,5 @@ public class ClientPersonConstants {
     public static final int LOOKUP_ADDRESS_TYPE_COL = 40;//AO
     public static final int LOOKUP_STATE_PROVINCE_COL = 41;//AP
     public static final int LOOKUP_COUNTRY_COL = 42;//AQ
+    public static final int ADDRESS_KHMER=43;//AR
 }

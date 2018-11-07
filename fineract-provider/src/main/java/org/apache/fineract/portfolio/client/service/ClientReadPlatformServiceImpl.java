@@ -49,6 +49,8 @@ import org.apache.fineract.organisation.staff.data.StaffData;
 import org.apache.fineract.organisation.staff.service.StaffReadPlatformService;
 import org.apache.fineract.portfolio.address.data.AddressData;
 import org.apache.fineract.portfolio.address.service.AddressReadPlatformService;
+import org.apache.fineract.portfolio.addresskhmer.data.VillageKhmerData;
+import org.apache.fineract.portfolio.addresskhmer.service.AddressKhmerRreadPlatformService;
 import org.apache.fineract.portfolio.client.api.ClientApiConstants;
 import org.apache.fineract.portfolio.client.data.ClientData;
 import org.apache.fineract.portfolio.client.data.ClientFamilyMembersData;
@@ -87,6 +89,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 	private final ParentGroupsMapper clientGroupsMapper = new ParentGroupsMapper();
 
 	private final AddressReadPlatformService addressReadPlatformService;
+	private final AddressKhmerRreadPlatformService addressKhmerReadPlatformService;
 	private final ClientFamilyMembersReadPlatformService clientFamilyMembersReadPlatformService;
 	private final ConfigurationReadPlatformService configurationReadPlatformService;
 	private final EntityDatatableChecksReadService entityDatatableChecksReadService;
@@ -99,6 +102,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 			final CodeValueReadPlatformService codeValueReadPlatformService,
 			final SavingsProductReadPlatformService savingsProductReadPlatformService,
 			final AddressReadPlatformService addressReadPlatformService,
+			final AddressKhmerRreadPlatformService addressKhmerRreadPlatformService,
 			final ClientFamilyMembersReadPlatformService clientFamilyMembersReadPlatformService,
 			final ConfigurationReadPlatformService configurationReadPlatformService,
 			final EntityDatatableChecksReadService entityDatatableChecksReadService,
@@ -110,6 +114,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 		this.codeValueReadPlatformService = codeValueReadPlatformService;
 		this.savingsProductReadPlatformService = savingsProductReadPlatformService;
 		this.addressReadPlatformService = addressReadPlatformService;
+		this.addressKhmerReadPlatformService = addressKhmerRreadPlatformService;
 		this.clientFamilyMembersReadPlatformService = clientFamilyMembersReadPlatformService;
 		this.configurationReadPlatformService = configurationReadPlatformService;
 		this.entityDatatableChecksReadService = entityDatatableChecksReadService;
@@ -122,6 +127,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 
 		final Long defaultOfficeId = defaultToUsersOfficeIfNull(officeId);
 		AddressData address = null;
+		VillageKhmerData addressKhmer = null;
 
 		final Collection<OfficeData> offices = this.officeReadPlatformService.retrieveAllOfficesForDropdown();
 
@@ -134,6 +140,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 		final Boolean isAddressEnabled = configuration.isEnabled();
 		if (isAddressEnabled) {
 			address = this.addressReadPlatformService.retrieveTemplate();
+			
 		}
 
 		final ClientFamilyMembersData familyMemberOptions = this.clientFamilyMembersReadPlatformService
@@ -175,6 +182,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 		return ClientData.template(defaultOfficeId, new LocalDate(), offices, staffOptions, null, genderOptions,
 				savingsProductDatas, clientTypeOptions, clientClassificationOptions, clientNonPersonConstitutionOptions,
 				clientNonPersonMainBusinessLineOptions, clientLegalFormOptions, familyMemberOptions, address,
+				addressKhmer,
 				isAddressEnabled, datatableTemplates);
 	}
 
@@ -852,7 +860,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 		final List<EnumOptionData> clientLegalFormOptions = null;
 		return ClientData.template(null, null, null, null, narrations, null, null, clientTypeOptions,
 				clientClassificationOptions, clientNonPersonConstitutionOptions, clientNonPersonMainBusinessLineOptions,
-				clientLegalFormOptions, null, null, null, null);
+				clientLegalFormOptions, null, null, null, null, null);
 	}
 
 }

@@ -57,5 +57,6 @@ public class ClientEntityConstants {
     public static final int LOOKUP_ADDRESS_TYPE = 40;//AO
     public static final int LOOKUP_STATE_PROVINCE = 41;//AP
     public static final int LOOKUP_COUNTRY = 42;//AQ
-    public static final int LOOKUP_MAIN_BUSINESS_LINE=43;//AR
+    public static final int LOOKUP_MAIN_BUSINESS_LINE=43;//As
+    public static final int ADDRESS_KHMER=44;//AR
 }
