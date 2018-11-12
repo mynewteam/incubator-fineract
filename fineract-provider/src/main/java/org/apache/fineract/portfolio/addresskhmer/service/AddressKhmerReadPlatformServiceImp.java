@@ -30,11 +30,13 @@ import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
 import org.apache.fineract.portfolio.addresskhmer.data.CommuneKhmerData;
 import org.apache.fineract.portfolio.addresskhmer.data.CountryKhmerData;
 import org.apache.fineract.portfolio.addresskhmer.data.DistrictKhmerData;
+import org.apache.fineract.portfolio.addresskhmer.data.FullAddressKhmer;
 import org.apache.fineract.portfolio.addresskhmer.data.ProvinceKhmerData;
 import org.apache.fineract.portfolio.addresskhmer.data.VillageKhmerData;
 import org.apache.fineract.portfolio.addresskhmer.domain.CountryKhmer;
 import org.apache.fineract.portfolio.charge.data.ChargeData;
 import org.apache.fineract.portfolio.charge.domain.ChargeAppliesTo;
+import org.apache.fineract.portfolio.collateral.exception.CollateralCannotBeCreatedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
@@ -214,5 +216,15 @@ public class AddressKhmerReadPlatformServiceImp implements AddressKhmerRreadPlat
             Integer tbl_commune_id = rs.getInt("tbl_commune_id");
             return new VillageKhmerData(villageID, villDescription, des_In_Khmer, tbl_commune_id);
         }
+    }
+
+    @Override
+    public FullAddressKhmer retrieveAddressKhmerTemplate() {
+        Collection<CountryKhmerData> country = this.retrieveAllCountry();
+        Collection<ProvinceKhmerData> province = this.RetrieveAllProvince();
+        Collection<DistrictKhmerData>district=this.retrieveAllDistrict();
+        Collection<CommuneKhmerData>commune = this.retrieveAllCommune();
+        Collection<VillageKhmerData>village=this.retrieveAllVillage();
+        return FullAddressKhmer.template(country, province, district, commune, village);
     }
 }

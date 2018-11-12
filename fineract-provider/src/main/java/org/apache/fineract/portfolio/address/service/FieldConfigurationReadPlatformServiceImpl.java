@@ -60,9 +60,7 @@ public class FieldConfigurationReadPlatformServiceImpl implements FieldConfigura
 			final boolean is_mandatory = rs.getBoolean("is_mandatory");
 			final String validation_regex = rs.getString("validation_regex");
 
-			return FieldConfigurationData.instance(fieldConfigurationId, entity, subentity, field, is_enabled,
-					is_mandatory, validation_regex);
-
+			return FieldConfigurationData.instance(fieldConfigurationId, entity, subentity, field, is_enabled, is_mandatory, validation_regex);
 		}
 	}
 

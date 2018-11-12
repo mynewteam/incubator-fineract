@@ -23,6 +23,7 @@ import java.util.Collection;
 import org.apache.fineract.portfolio.addresskhmer.data.CommuneKhmerData;
 import org.apache.fineract.portfolio.addresskhmer.data.CountryKhmerData;
 import org.apache.fineract.portfolio.addresskhmer.data.DistrictKhmerData;
+import org.apache.fineract.portfolio.addresskhmer.data.FullAddressKhmer;
 import org.apache.fineract.portfolio.addresskhmer.data.ProvinceKhmerData;
 import org.apache.fineract.portfolio.addresskhmer.data.VillageKhmerData;
 
@@ -47,6 +48,6 @@ public interface AddressKhmerRreadPlatformService {
     VillageKhmerData retrieveVillage(long id);
     
     Collection<VillageKhmerData> retrieveAllVillage();
-   
-
+    
+    FullAddressKhmer retrieveAddressKhmerTemplate();
 }

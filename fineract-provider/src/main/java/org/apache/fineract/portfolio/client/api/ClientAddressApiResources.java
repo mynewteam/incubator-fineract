@@ -45,6 +45,8 @@ import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSer
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.portfolio.address.data.AddressData;
 import org.apache.fineract.portfolio.address.service.AddressReadPlatformServiceImpl;
+import org.apache.fineract.portfolio.addresskhmer.data.CountryKhmerData;
+import org.apache.fineract.portfolio.addresskhmer.service.AddressKhmerRreadPlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -61,6 +63,7 @@ public class ClientAddressApiResources {
 	private final String resourceNameForPermissions = "Address";
 	private final PlatformSecurityContext context;
 	private final AddressReadPlatformServiceImpl readPlatformService;
+	private final AddressKhmerRreadPlatformService readKhmerPlatformService;
 	private final DefaultToApiJsonSerializer<AddressData> toApiJsonSerializer;
 	private final ApiRequestParameterHelper apiRequestParameterHelper;
 	private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
@@ -68,11 +71,13 @@ public class ClientAddressApiResources {
 	@Autowired
 	public ClientAddressApiResources(final PlatformSecurityContext context,
 			final AddressReadPlatformServiceImpl readPlatformService,
+			final AddressKhmerRreadPlatformService readKhmerPlatformService,
 			final DefaultToApiJsonSerializer<AddressData> toApiJsonSerializer,
 			final ApiRequestParameterHelper apiRequestParameterHelper,
 			final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
 		this.context = context;
 		this.readPlatformService = readPlatformService;
+		this.readKhmerPlatformService = readKhmerPlatformService;
 		this.toApiJsonSerializer = toApiJsonSerializer;
 		this.apiRequestParameterHelper = apiRequestParameterHelper;
 		this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
@@ -90,7 +95,24 @@ public class ClientAddressApiResources {
 		final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper
 				.process(uriInfo.getQueryParameters());
 		return this.toApiJsonSerializer.serialize(settings, template, this.RESPONSE_DATA_PARAMETERS);
+	}
 
+	@GET
+	@Path("addresseskhmer/template")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+	public String getAddresseskhmerTemplate(@Context final UriInfo uriInfo) {
+		this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+		// final AddressData template = this.readPlatformService.retrieveTemplate();
+		//
+		// final ApiRequestJsonSerializationSettings settings =
+		// this.apiRequestParameterHelper
+		// .process(uriInfo.getQueryParameters());
+		// return this.toApiJsonSerializer.serialize(settings, template,
+		// this.RESPONSE_DATA_PARAMETERS);
+		final Collection<CountryKhmerData> template = this.readKhmerPlatformService.retrieveAllCountry();
+		return this.toApiJsonSerializer.serialize(template);
 	}
 
 	@GET
@@ -112,8 +134,6 @@ public class ClientAddressApiResources {
 		} else {
 			address = this.readPlatformService.retrieveAddressbyStatus(clientid, status);
 		}
-		
-		
 
 		final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper
 				.process(uriInfo.getQueryParameters());

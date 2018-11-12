@@ -32,6 +32,7 @@ import org.apache.fineract.infrastructure.dataqueries.data.DatatableData;
 import org.apache.fineract.organisation.office.data.OfficeData;
 import org.apache.fineract.organisation.staff.data.StaffData;
 import org.apache.fineract.portfolio.address.data.AddressData;
+import org.apache.fineract.portfolio.addresskhmer.data.FullAddressKhmer;
 import org.apache.fineract.portfolio.addresskhmer.data.VillageKhmerData;
 import org.apache.fineract.portfolio.addresskhmer.domain.VillageKhmer;
 import org.apache.fineract.portfolio.group.data.GroupGeneralData;
@@ -107,7 +108,7 @@ final public class ClientData implements Comparable<ClientData>
 	private final ClientNonPersonData clientNonPersonDetails;
 
 	private final AddressData address;
-	private final VillageKhmerData addressKhmer;
+	private final FullAddressKhmer addressKhmer;
 
 	private final Boolean isAddressEnabled;
 
@@ -139,7 +140,7 @@ final public class ClientData implements Comparable<ClientData>
 		String mobileNo,
 		ClientNonPersonData clientNonPersonDetails,
 		AddressData address,
-		VillageKhmerData addressKhmer,
+		FullAddressKhmer addressKhmer,
 		String locale,
 		String dateFormat)
 	{
@@ -189,7 +190,7 @@ final public class ClientData implements Comparable<ClientData>
 		Long clientClassificationId,
 		Boolean isStaff,
 		AddressData address,
-		VillageKhmerData addressKhmer,
+		FullAddressKhmer addressKhmer,
 		String locale,
 		String dateFormat)
 	{
@@ -226,7 +227,7 @@ final public class ClientData implements Comparable<ClientData>
 		Long clientClassificationId,
 		Boolean isStaff,
 		AddressData address,
-		VillageKhmerData addresskhmer,
+		FullAddressKhmer addresskhmer,
 		ClientNonPersonData clientNonPersonDetails,
 		String locale,
 		String dateFormat)
@@ -328,7 +329,7 @@ final public class ClientData implements Comparable<ClientData>
 		final List<EnumOptionData> clientLegalFormOptions,
 		final ClientFamilyMembersData familyMemberOptions,
 		final AddressData address,
-		final VillageKhmerData addressKhmer,
+		final FullAddressKhmer addressKhmer,
 		final Boolean isAddressEnabled,
 		final List<DatatableData> datatables)
 	{
@@ -780,7 +781,7 @@ final public class ClientData implements Comparable<ClientData>
 		final ClientFamilyMembersData familyMemberOptions,
 		final EnumOptionData legalForm,
 		final AddressData address,
-		final VillageKhmerData addressKhmer,
+		final FullAddressKhmer addressKhmer,
 		final Boolean isAddressEnabled,
 		final List<DatatableData> datatables,
 		final Boolean isStaff)

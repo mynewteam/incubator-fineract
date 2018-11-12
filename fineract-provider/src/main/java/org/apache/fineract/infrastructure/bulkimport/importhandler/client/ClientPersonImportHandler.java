@@ -31,6 +31,7 @@ import org.apache.fineract.infrastructure.bulkimport.importhandler.helper.DateSe
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.exception.*;
 import org.apache.fineract.portfolio.address.data.AddressData;
+import org.apache.fineract.portfolio.addresskhmer.data.FullAddressKhmer;
 import org.apache.fineract.portfolio.addresskhmer.data.VillageKhmerData;
 import org.apache.fineract.portfolio.client.data.ClientData;
 import org.apache.poi.ss.usermodel.*;
@@ -121,7 +122,7 @@ public class ClientPersonImportHandler implements ImportHandler {
         Boolean isStaff = ImportHandlerUtils.readAsBoolean(ClientPersonConstants.IS_STAFF_COL, row);
 
         AddressData addressDataObj=null;
-        VillageKhmerData addressKhmerDataObj=null;
+        FullAddressKhmer addressKhmerDataObj=null;
         if (ImportHandlerUtils.readAsBoolean(ClientPersonConstants.ADDRESS_ENABLED_COL,row)) {
             String addressType=ImportHandlerUtils.readAsString(ClientPersonConstants.ADDRESS_TYPE_COL, row);
             Long addressTypeId = null;
@@ -156,7 +157,7 @@ public class ClientPersonImportHandler implements ImportHandler {
             }
              addressDataObj = new AddressData(addressTypeId, street, addressLine1, addressLine2, addressLine3,
                     city, postalCode, isActiveAddress, stateProvinceId, countryId);
-            addressKhmerDataObj = new VillageKhmerData(ClientPersonConstants.ADDRESS_KHMER, null, null, null);
+//            addressKhmerDataObj = new FullAddressKhmer(ClientPersonConstants.ADDRESS_KHMER, null, null, null);
         }
         return ClientData.importClientPersonInstance(
                 legalFormId,

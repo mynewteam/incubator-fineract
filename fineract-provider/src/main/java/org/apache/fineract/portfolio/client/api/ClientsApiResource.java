@@ -108,9 +108,11 @@ public class ClientsApiResource {
 	@Path("template")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
-	public String retrieveTemplate(@Context final UriInfo uriInfo, @QueryParam("officeId") final Long officeId,
-			@QueryParam("commandParam") final String commandParam,
-			@DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") final boolean staffInSelectedOfficeOnly) {
+	public String retrieveTemplate(
+	        @Context final UriInfo uriInfo, 
+	        @QueryParam("officeId") final Long officeId,
+	        @QueryParam("commandParam") final String commandParam,
+	        @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") final boolean staffInSelectedOfficeOnly) {
 
 		this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
 
