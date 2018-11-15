@@ -49,7 +49,6 @@ import org.apache.fineract.organisation.staff.data.StaffData;
 import org.apache.fineract.organisation.staff.service.StaffReadPlatformService;
 import org.apache.fineract.portfolio.address.data.AddressData;
 import org.apache.fineract.portfolio.address.service.AddressReadPlatformService;
-import org.apache.fineract.portfolio.addresskhmer.data.FullAddressKhmer;
 import org.apache.fineract.portfolio.addresskhmer.data.VillageKhmerData;
 import org.apache.fineract.portfolio.addresskhmer.service.AddressKhmerRreadPlatformService;
 import org.apache.fineract.portfolio.client.api.ClientApiConstants;
@@ -128,7 +127,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 
 		final Long defaultOfficeId = defaultToUsersOfficeIfNull(officeId);
 		AddressData address = null;
-		FullAddressKhmer addressKhmer = null;
+		VillageKhmerData addressKhmer = null;
 
 		final Collection<OfficeData> offices = this.officeReadPlatformService.retrieveAllOfficesForDropdown();
 
@@ -141,7 +140,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 		final Boolean isAddressEnabled = configuration.isEnabled();
 		if (isAddressEnabled) {
 			address = this.addressReadPlatformService.retrieveTemplate();
-			addressKhmer = this.addressKhmerReadPlatformService.retrieveAddressKhmerTemplate();
+//			addressKhmer = this.addressKhmerReadPlatformService.retrieveAddressKhmerTemplate();
 		}
 
 		final ClientFamilyMembersData familyMemberOptions = this.clientFamilyMembersReadPlatformService

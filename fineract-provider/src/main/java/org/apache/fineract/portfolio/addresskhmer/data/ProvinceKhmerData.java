@@ -2,6 +2,7 @@ package org.apache.fineract.portfolio.addresskhmer.data;
 
 
 public class ProvinceKhmerData {
+    private Integer id;
     private Integer ProvinceID;
     private String provinceCode;
     private String ProDescription;
@@ -9,12 +10,13 @@ public class ProvinceKhmerData {
     private Integer tbl_country_id;
     
     public ProvinceKhmerData(
+            Integer id,
             Integer provinceID, 
             String provinceCode, 
             String proDescription, 
             String des_In_Khmer,
             Integer tbl_country_id) {
-    
+        this.id = id;
         this.ProvinceID = provinceID;
         this.provinceCode = provinceCode;
         this.ProDescription = proDescription;
@@ -23,6 +25,7 @@ public class ProvinceKhmerData {
     }
 
     public ProvinceKhmerData instance(
+            final Integer id,
             final Integer provinceID, 
             final String provinceCode,
             final String proDescription,
@@ -30,6 +33,7 @@ public class ProvinceKhmerData {
             final Integer tbl_country_id) {
         
         return new ProvinceKhmerData(
+                id,
                 provinceID,
                 provinceCode,
                 proDescription,

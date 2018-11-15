@@ -52,6 +52,9 @@ import org.apache.fineract.organisation.office.domain.OfficeRepositoryWrapper;
 import org.apache.fineract.organisation.staff.domain.Staff;
 import org.apache.fineract.organisation.staff.domain.StaffRepositoryWrapper;
 import org.apache.fineract.portfolio.address.service.AddressWritePlatformService;
+import org.apache.fineract.portfolio.addresskhmer.domain.VillageKhmer;
+import org.apache.fineract.portfolio.addresskhmer.domain.VillageKhmerRepositoryWrapper;
+import org.apache.fineract.portfolio.addresskhmer.service.AddressKhmerRreadPlatformService;
 import org.apache.fineract.portfolio.client.api.ClientApiConstants;
 import org.apache.fineract.portfolio.client.data.ClientDataValidator;
 import org.apache.fineract.portfolio.client.domain.AccountNumberGenerator;
@@ -107,6 +110,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
 	private final ClientRepositoryWrapper clientRepository;
 	private final ClientNonPersonRepositoryWrapper clientNonPersonRepository;
 	private final OfficeRepositoryWrapper officeRepositoryWrapper;
+	private final VillageKhmerRepositoryWrapper villageRepositoryWrapper;
 	private final NoteRepository noteRepository;
 	private final GroupRepository groupRepository;
 	private final ClientDataValidator fromApiJsonDeserializer;
@@ -133,6 +137,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
 		final ClientRepositoryWrapper clientRepository,
 		final ClientNonPersonRepositoryWrapper clientNonPersonRepository,
 		final OfficeRepositoryWrapper officeRepositoryWrapper,
+		final VillageKhmerRepositoryWrapper villageKhmerRepositoryWrapper,
 		final NoteRepository noteRepository,
 		final ClientDataValidator fromApiJsonDeserializer,
 		final AccountNumberGenerator accountNumberGenerator,
@@ -157,6 +162,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
 		this.clientRepository = clientRepository;
 		this.clientNonPersonRepository = clientNonPersonRepository;
 		this.officeRepositoryWrapper = officeRepositoryWrapper;
+		this.villageRepositoryWrapper = villageKhmerRepositoryWrapper;
 		this.noteRepository = noteRepository;
 		this.fromApiJsonDeserializer = fromApiJsonDeserializer;
 		this.accountNumberGenerator = accountNumberGenerator;
@@ -256,16 +262,19 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
 
 			this.fromApiJsonDeserializer.validateForCreate(command.json());
 
-			final GlobalConfigurationPropertyData configuration = this.configurationReadPlatformService
-				.retrieveGlobalConfiguration("Enable-Address");
+			final GlobalConfigurationPropertyData configuration = this.configurationReadPlatformService.retrieveGlobalConfiguration("Enable-Address");
 
 			final Boolean isAddressEnabled = configuration.isEnabled();
 
 			final Boolean isStaff = command.booleanObjectValueOfParameterNamed(ClientApiConstants.isStaffParamName);
 
 			final Long officeId = command.longValueOfParameterNamed(ClientApiConstants.officeIdParamName);
+			
+			final Long villageID = command.longValueOfParameterNamed(ClientApiConstants.VillageParamName);
 
 			final Office clientOffice = this.officeRepositoryWrapper.findOneWithNotFoundDetection(officeId);
+			
+			final VillageKhmer villageKhmer = this.villageRepositoryWrapper.findOneWithNotFoundDetection(villageID);
 
 			final Long groupId = command.longValueOfParameterNamed(ClientApiConstants.groupIdParamName);
 
@@ -318,8 +327,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
 				if (savingsProduct == null) { throw new SavingsProductNotFoundException(savingsProductId); }
 			}
 
-			final Integer legalFormParamValue = command
-				.integerValueOfParameterNamed(ClientApiConstants.legalFormIdParamName);
+			final Integer legalFormParamValue = command.integerValueOfParameterNamed(ClientApiConstants.legalFormIdParamName);
 			boolean isEntity = false;
 			Integer legalFormValue = null;
 			if (legalFormParamValue != null)
@@ -332,9 +340,18 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
 				}
 			}
 
-			final Client newClient = Client.createNew(currentUser, clientOffice, clientParentGroup, staff,
-				savingsProductId, gender,
-				clientType, clientClassification, legalFormValue, command);
+			final Client newClient = Client.createNew(
+			        currentUser,
+			        clientOffice,
+			        villageKhmer,
+			        clientParentGroup,
+			        staff,
+				savingsProductId, 
+				gender,
+				clientType, 
+				clientClassification, 
+				legalFormValue,
+				command);
 			this.clientRepository.save(newClient);
 			boolean rollbackTransaction = false;
 			if (newClient.isActive())

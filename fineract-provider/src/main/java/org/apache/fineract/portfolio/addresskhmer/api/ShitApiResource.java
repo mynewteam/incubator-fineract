@@ -79,6 +79,17 @@ public class ShitApiResource {
          return this.toApiJsonSerializer.serialize(ProvinceKH);
     }
     
+    
+    @GET
+    @Path("/province/country/{id}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String ProvinceByCountry(@PathParam("id") final long id) {
+
+        final Collection<ProvinceKhmerData> ProvinceKH = this.readPlatformService.retrieveProvinceByCountryId(id);
+         return this.toApiJsonSerializer.serialize(ProvinceKH);
+    }
+    
     @GET
     @Path("/district")
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -96,6 +107,16 @@ public class ShitApiResource {
     public String District(@PathParam("id") final long id) {
 
         final DistrictKhmerData DistrictKH = this.readPlatformService.retriveDistrict(id);
+         return this.toApiJsonSerializer.serialize(DistrictKH);
+    }
+    
+    @GET
+    @Path("/district/province/{id}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String DistrictByProvinceID(@PathParam("id") final long id) {
+
+        final Collection<DistrictKhmerData> DistrictKH = this.readPlatformService.retrieveDistrictByProvinceID(id);
          return this.toApiJsonSerializer.serialize(DistrictKH);
     }
     
@@ -121,6 +142,16 @@ public class ShitApiResource {
     }
     
     @GET
+    @Path("/commune/district/{id}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String CommuneByDistrict(@PathParam("id") final long id) {
+
+        final Collection<CommuneKhmerData> communeKhmerData = this.readPlatformService.retrieveCommuneByDistrictID(id);
+         return this.toApiJsonSerializer.serialize(communeKhmerData);
+    }
+    
+    @GET
     @Path("/village")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
@@ -137,6 +168,16 @@ public class ShitApiResource {
     public String Village(@PathParam("id") final long id) {
 
         final VillageKhmerData villageKhmerData = this.readPlatformService.retrieveVillage(id);
+         return this.toApiJsonSerializer.serialize(villageKhmerData);
+    }
+    
+    @GET
+    @Path("/village/commune/{id}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String VillageByCommune(@PathParam("id") final long id) {
+
+        final Collection<VillageKhmerData> villageKhmerData = this.readPlatformService.retrieveVillageByCommune(id);
          return this.toApiJsonSerializer.serialize(villageKhmerData);
     }
 }

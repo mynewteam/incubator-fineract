@@ -81,8 +81,8 @@ public final class Client extends AbstractPersistableCustom<Long> {
 	@JoinColumn(name = "image_id", nullable = true)
 	private Image image;
 
-	@ManyToOne
-	@JoinColumn(name = "tbl_village_id")
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "tbl_village_id", nullable = false)
 	private VillageKhmer villageKhmer;
 
 	/**
@@ -241,15 +241,23 @@ public final class Client extends AbstractPersistableCustom<Long> {
 	@JoinColumn(name = "reopened_by_userid", nullable = true)
 	private AppUser reopenedBy;
 
-	public static Client createNew(final AppUser currentUser, final Office clientOffice, final Group clientParentGroup,
-			final Staff staff, final Long savingsProductId, final CodeValue gender, final CodeValue clientType,
-			final CodeValue clientClassification, final Integer legalForm, final JsonCommand command) {
+	public static Client createNew(
+	        final AppUser currentUser,	        
+	        final Office clientOffice, 
+	        final VillageKhmer villageKhmer,
+	        final Group clientParentGroup,
+	        final Staff staff, 
+	        final Long savingsProductId, 
+	        final CodeValue gender, 
+	        final CodeValue clientType,
+	        final CodeValue clientClassification, 
+	        final Integer legalForm, 
+	        final JsonCommand command) {
 
 		final String accountNo = command.stringValueOfParameterNamed(ClientApiConstants.accountNoParamName);
 		final String externalId = command.stringValueOfParameterNamed(ClientApiConstants.externalIdParamName);
 		final String mobileNo = command.stringValueOfParameterNamed(ClientApiConstants.mobileNoParamName);
 		final String emailAddress = command.stringValueOfParameterNamed(ClientApiConstants.emailAddressParamName);
-
 		final String firstname = command.stringValueOfParameterNamed(ClientApiConstants.firstnameParamName);
 		final String middlename = command.stringValueOfParameterNamed(ClientApiConstants.middlenameParamName);
 		final String lastname = command.stringValueOfParameterNamed(ClientApiConstants.lastnameParamName);
@@ -282,24 +290,66 @@ public final class Client extends AbstractPersistableCustom<Long> {
 			submittedOnDate = command.localDateValueOfParameterNamed(ClientApiConstants.submittedOnDateParamName);
 		}
 		final Long savingsAccountId = null;
-		return new Client(currentUser, status, clientOffice, clientParentGroup, accountNo, firstname, middlename,
-				lastname, khmername, fullname, activationDate, officeJoiningDate, externalId, mobileNo, emailAddress,
-				staff, submittedOnDate, savingsProductId, savingsAccountId, dataOfBirth, gender, clientType,
-				clientClassification, legalForm, isStaff);
+		return new Client(
+		        currentUser, 
+		        status, 
+		        clientOffice, 
+		        villageKhmer,
+		        clientParentGroup, 
+		        accountNo, 
+		        firstname, 
+		        middlename,
+		        lastname, 
+		        khmername, 
+		        fullname, 
+		        activationDate, 
+		        officeJoiningDate, 
+		        externalId, 
+		        mobileNo, 
+		        emailAddress,
+		        staff, 
+		        submittedOnDate, 
+		        savingsProductId, 
+		        savingsAccountId, 
+		        dataOfBirth, 
+		        gender, 
+		        clientType,
+		        clientClassification, 
+		        legalForm, 
+		        isStaff);
 	}
 
 	protected Client() {
 		this.setLegalForm(null);
 	}
 
-	private Client(final AppUser currentUser, final ClientStatus status, final Office office,
-			final Group clientParentGroup, final String accountNo, final String firstname, final String middlename,
-			final String lastname, final String khmername, final String fullname, final LocalDate activationDate,
-			final LocalDate officeJoiningDate, final String externalId, final String mobileNo,
-			final String emailAddress, final Staff staff, final LocalDate submittedOnDate, final Long savingsProductId,
-			final Long savingsAccountId, final LocalDate dateOfBirth, final CodeValue gender,
-			final CodeValue clientType, final CodeValue clientClassification, final Integer legalForm,
-			final Boolean isStaff) {
+	private Client(
+	        final AppUser currentUser, 
+	        final ClientStatus status, 
+	        final Office office,
+	        final VillageKhmer villageKhmer,
+	        final Group clientParentGroup, 
+	        final String accountNo,
+	        final String firstname, 
+	        final String middlename,
+	        final String lastname, 
+	        final String khmername, 
+	        final String fullname, 
+	        final LocalDate activationDate,
+	        final LocalDate officeJoiningDate, 
+	        final String externalId, 
+	        final String mobileNo,
+	        final String emailAddress, 
+	        final Staff staff, 
+	        final LocalDate submittedOnDate, 
+	        final Long savingsProductId,
+	        final Long savingsAccountId, 
+	        final LocalDate dateOfBirth, 
+	        final CodeValue gender,
+	        final CodeValue clientType, 
+	        final CodeValue clientClassification, 
+	        final Integer legalForm,
+	        final Boolean isStaff) {
 
 		if (StringUtils.isBlank(accountNo)) {
 			this.accountNumber = new RandomPasswordGenerator(19).generate();
@@ -313,6 +363,7 @@ public final class Client extends AbstractPersistableCustom<Long> {
 
 		this.status = status.getValue();
 		this.office = office;
+		this.villageKhmer = villageKhmer;
 		if (StringUtils.isNotBlank(externalId)) {
 			this.externalId = externalId.trim();
 		} else {

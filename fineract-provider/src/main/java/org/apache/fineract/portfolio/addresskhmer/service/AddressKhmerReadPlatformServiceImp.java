@@ -30,7 +30,6 @@ import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
 import org.apache.fineract.portfolio.addresskhmer.data.CommuneKhmerData;
 import org.apache.fineract.portfolio.addresskhmer.data.CountryKhmerData;
 import org.apache.fineract.portfolio.addresskhmer.data.DistrictKhmerData;
-import org.apache.fineract.portfolio.addresskhmer.data.FullAddressKhmer;
 import org.apache.fineract.portfolio.addresskhmer.data.ProvinceKhmerData;
 import org.apache.fineract.portfolio.addresskhmer.data.VillageKhmerData;
 import org.apache.fineract.portfolio.addresskhmer.domain.CountryKhmer;
@@ -63,7 +62,7 @@ public class AddressKhmerReadPlatformServiceImp implements AddressKhmerRreadPlat
     public CountryKhmerData retrieveCountry(long id) {
         final CountryMapper mp = new CountryMapper();
         String sql = " select " + mp.CountrySchema() + " where id = ? ";
-        return this.jdbcTemplate.queryForObject(sql, new Object[] {id}, mp);
+        return this.jdbcTemplate.queryForObject(sql, new Object[] { id }, mp);
     }
 
     @Override
@@ -81,7 +80,7 @@ public class AddressKhmerReadPlatformServiceImp implements AddressKhmerRreadPlat
     public ProvinceKhmerData retrieveProvince(long id) {
         final ProvinceMapper mp = new ProvinceMapper();
         String sql = " select " + mp.ProvinceSchema() + " where id = ? ";
-        return this.jdbcTemplate.queryForObject(sql, new Object[] {id}, mp);
+        return this.jdbcTemplate.queryForObject(sql, new Object[] { id }, mp);
     }
 
     @Override
@@ -93,10 +92,24 @@ public class AddressKhmerReadPlatformServiceImp implements AddressKhmerRreadPlat
     }
 
     @Override
+    public Collection<ProvinceKhmerData> retrieveProvinceByCountryId(Long id) {
+        final ProvinceMapper mp = new ProvinceMapper();
+        String sql = "select " + mp.ProvinceSchema() + " where tbl_country_id = ? order by ProvinceID";
+        return this.jdbcTemplate.query(sql, new Object[] { id }, mp);
+    }
+
+    @Override
     public DistrictKhmerData retriveDistrict(long id) {
         final DistrictMapper mp = new DistrictMapper();
         String sql = " select " + mp.DistrictSchema() + " where id = ? ";
-        return this.jdbcTemplate.queryForObject(sql, new Object[] {id}, mp);
+        return this.jdbcTemplate.queryForObject(sql, new Object[] { id }, mp);
+    }
+
+    @Override
+    public Collection<DistrictKhmerData> retrieveDistrictByProvinceID(Long id) {
+        final DistrictMapper mp = new DistrictMapper();
+        String sql = " select " + mp.DistrictSchema() + " where tbl_province_id = ? ";
+        return this.jdbcTemplate.query(sql, new Object[] { id }, mp);
     }
 
     @Override
@@ -111,7 +124,14 @@ public class AddressKhmerReadPlatformServiceImp implements AddressKhmerRreadPlat
     public CommuneKhmerData retrieveCommune(long id) {
         final CommuneMapper mp = new CommuneMapper();
         String sql = " select " + mp.CommuneSchema() + " where id = ? ";
-        return this.jdbcTemplate.queryForObject(sql, new Object[] {id}, mp);
+        return this.jdbcTemplate.queryForObject(sql, new Object[] { id }, mp);
+    }
+
+    @Override
+    public Collection<CommuneKhmerData> retrieveCommuneByDistrictID(long id) {
+        final CommuneMapper mp = new CommuneMapper();
+        String sql = " select " + mp.CommuneSchema() + " where tbl_district_id = ? ";
+        return this.jdbcTemplate.query(sql, new Object[] { id }, mp);
     }
 
     @Override
@@ -126,7 +146,14 @@ public class AddressKhmerReadPlatformServiceImp implements AddressKhmerRreadPlat
     public VillageKhmerData retrieveVillage(long id) {
         final VillageMapper mp = new VillageMapper();
         String sql = " select " + mp.VillageSchema() + " where id = ? ";
-        return this.jdbcTemplate.queryForObject(sql, new Object[] {id}, mp);
+        return this.jdbcTemplate.queryForObject(sql, new Object[] { id }, mp);
+    }
+
+    @Override
+    public Collection<VillageKhmerData> retrieveVillageByCommune(Long id) {
+        final VillageMapper mp = new VillageMapper();
+        String sql = " select " + mp.VillageSchema() + " where tbl_commune_id = ? ";
+        return this.jdbcTemplate.query(sql, new Object[] { id }, mp);
     }
 
     @Override
@@ -140,91 +167,87 @@ public class AddressKhmerReadPlatformServiceImp implements AddressKhmerRreadPlat
     private static final class CountryMapper implements RowMapper<CountryKhmerData> {
 
         public String CountrySchema() {
-            return " CountryID, Country, Des_In_Khmer, countryCode " + " from tbl_country";
+            return " id, CountryID, Country, Des_In_Khmer, countryCode " + " from tbl_country";
         }
 
         @Override
         public CountryKhmerData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+            Integer id = rs.getInt("id");
             Integer countryID = rs.getInt("CountryID");
             String descriptionKhmer = rs.getString("Des_In_Khmer");
             String description = rs.getString("Country");
 
-            return CountryKhmerData.instance(countryID, descriptionKhmer, description);
+            return CountryKhmerData.instance(id, countryID, descriptionKhmer, description);
         }
     }
 
     private static final class ProvinceMapper implements RowMapper<ProvinceKhmerData> {
 
         public String ProvinceSchema() {
-            return " ProvinceID, ProvinceCode, ProDescription, Des_In_Khmer, tbl_country_id " + " from tbl_province ";
+            return " id, ProvinceID, ProvinceCode, ProDescription, Des_In_Khmer, tbl_country_id " + " from tbl_province ";
         }
 
         @Override
         public ProvinceKhmerData mapRow(ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+            Integer id = rs.getInt("id");
             Integer provinceID = rs.getInt("ProvinceID");
             String provinceCode = rs.getString("ProvinceCode");
             String proDescription = rs.getString("ProDescription");
             String des_In_Khmer = rs.getString("Des_In_Khmer");
             Integer tbl_country_id = rs.getInt("tbl_country_id");
-            return new ProvinceKhmerData(provinceID, provinceCode, proDescription, des_In_Khmer, tbl_country_id);
+            return new ProvinceKhmerData(id, provinceID, provinceCode, proDescription, des_In_Khmer, tbl_country_id);
         }
     }
 
     private static final class DistrictMapper implements RowMapper<DistrictKhmerData> {
 
         public String DistrictSchema() {
-            return " DistrictID, disDescription, Des_In_Khmer, tbl_province_id " + " from tbl_district ";
+            return " id, DistrictID, disDescription, Des_In_Khmer, tbl_province_id " + " from tbl_district ";
         }
 
         @Override
         public DistrictKhmerData mapRow(ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+            Integer id = rs.getInt("id");
             Integer districtID = rs.getInt("DistrictID");
             String disDescription = rs.getString("disDescription");
             String des_In_Khmer = rs.getString("Des_In_Khmer");
             Integer tbl_province_id = rs.getInt("tbl_province_id");
-            return new DistrictKhmerData(districtID, disDescription, des_In_Khmer, tbl_province_id);
+            return new DistrictKhmerData(id, districtID, disDescription, des_In_Khmer, tbl_province_id);
         }
     }
 
     private static final class CommuneMapper implements RowMapper<CommuneKhmerData> {
 
         public String CommuneSchema() {
-            return " CommuneID, comDescription, Des_In_Khmer, tbl_district_id " + " from tbl_commune ";
+            return " id, CommuneID, comDescription, Des_In_Khmer, tbl_district_id " + " from tbl_commune ";
         }
 
         @Override
         public CommuneKhmerData mapRow(ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+            Integer id = rs.getInt("id");
             Integer communeID = rs.getInt("CommuneID");
             String comDescription = rs.getString("comDescription");
             String des_In_Khmer = rs.getString("Des_In_Khmer");
             Integer tbl_district_id = rs.getInt("tbl_district_id");
-            return new CommuneKhmerData(communeID, comDescription, des_In_Khmer, tbl_district_id);
+            return new CommuneKhmerData(id, communeID, comDescription, des_In_Khmer, tbl_district_id);
         }
     }
 
     private static final class VillageMapper implements RowMapper<VillageKhmerData> {
 
         public String VillageSchema() {
-            return " villageID, villDescription, Des_In_Khmer, tbl_commune_id " + " from tbl_village ";
+            return " id, villageID, villDescription, Des_In_Khmer, tbl_commune_id " + " from tbl_village ";
         }
 
         @Override
         public VillageKhmerData mapRow(ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+            Integer id = rs.getInt("id");
             Integer villageID = rs.getInt("villageID");
             String villDescription = rs.getString("villDescription");
             String des_In_Khmer = rs.getString("Des_In_Khmer");
             Integer tbl_commune_id = rs.getInt("tbl_commune_id");
-            return new VillageKhmerData(villageID, villDescription, des_In_Khmer, tbl_commune_id);
+            return new VillageKhmerData(id, villageID, villDescription, des_In_Khmer, tbl_commune_id);
         }
     }
 
-    @Override
-    public FullAddressKhmer retrieveAddressKhmerTemplate() {
-        Collection<CountryKhmerData> country = this.retrieveAllCountry();
-        Collection<ProvinceKhmerData> province = this.RetrieveAllProvince();
-        Collection<DistrictKhmerData>district=this.retrieveAllDistrict();
-        Collection<CommuneKhmerData>commune = this.retrieveAllCommune();
-        Collection<VillageKhmerData>village=this.retrieveAllVillage();
-        return FullAddressKhmer.template(country, province, district, commune, village);
-    }
 }

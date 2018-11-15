@@ -42,6 +42,7 @@ public class ClientApiCollectionConstants extends ClientApiConstants
 			middlenameParamName,
 			lastnameParamName,
 			khmernameParamName,
+			VillageParamName,
 			fullnameParamName,
 			officeIdParamName,
 			activeParamName,

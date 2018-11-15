@@ -7,7 +7,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "tbl_village")
 public class VillageKhmer {
-
+   
     @Column(name = "VillageID")
     private String VillageID;
     

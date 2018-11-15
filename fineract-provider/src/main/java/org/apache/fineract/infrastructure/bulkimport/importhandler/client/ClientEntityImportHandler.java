@@ -31,7 +31,6 @@ import org.apache.fineract.infrastructure.bulkimport.importhandler.helper.DateSe
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.exception.*;
 import org.apache.fineract.portfolio.address.data.AddressData;
-import org.apache.fineract.portfolio.addresskhmer.data.FullAddressKhmer;
 import org.apache.fineract.portfolio.addresskhmer.data.VillageKhmerData;
 import org.apache.fineract.portfolio.client.data.ClientData;
 import org.apache.fineract.portfolio.client.data.ClientNonPersonData;
@@ -136,7 +135,7 @@ public class ClientEntityImportHandler implements ImportHandler {
             activationDate=submittedOn;
         }
         AddressData addressDataObj=null;
-        FullAddressKhmer addressKhmerDataObj=null;
+        VillageKhmerData addressKhmerDataObj=null;
         if (ImportHandlerUtils.readAsBoolean(ClientEntityConstants.ADDRESS_ENABLED,row)) {
             String addressType = ImportHandlerUtils.readAsString(ClientEntityConstants.ADDRESS_TYPE_COL, row);
             Long addressTypeId = null;
