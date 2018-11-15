@@ -50,6 +50,7 @@ import org.apache.fineract.organisation.staff.service.StaffReadPlatformService;
 import org.apache.fineract.portfolio.address.data.AddressData;
 import org.apache.fineract.portfolio.address.service.AddressReadPlatformService;
 import org.apache.fineract.portfolio.addresskhmer.data.VillageKhmerData;
+import org.apache.fineract.portfolio.addresskhmer.domain.VillageKhmer;
 import org.apache.fineract.portfolio.addresskhmer.service.AddressKhmerRreadPlatformService;
 import org.apache.fineract.portfolio.client.api.ClientApiConstants;
 import org.apache.fineract.portfolio.client.data.ClientData;
@@ -384,7 +385,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 			sqlBuilder.append(
 					"c.transfer_to_office_id as transferToOfficeId, transferToOffice.name as transferToOfficeName, ");
 			sqlBuilder.append(
-					"c.firstname as firstname, c.middlename as middlename, c.lastname as lastname, c.khmername as khmername, ");
+					"c.firstname as firstname, c.middlename as middlename, c.lastname as lastname, c.khmername as khmername, c.tbl_village_id, ");
 			sqlBuilder.append("c.fullname as fullname, c.display_name as displayName, ");
 			sqlBuilder.append("c.mobile_no as mobileNo, ");
 			sqlBuilder.append("c.is_staff as isStaff, ");
@@ -468,6 +469,8 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 
 			final Long officeId = JdbcSupport.getLong(rs, "officeId");
 			final String officeName = rs.getString("officeName");
+			
+			final VillageKhmerData villageKhmer = new VillageKhmerData(JdbcSupport.getInteger(rs, "tbl_village_id"), null, null, null, null);
 
 			final Long transferToOfficeId = JdbcSupport.getLong(rs, "transferToOfficeId");
 			final String transferToOfficeName = rs.getString("transferToOfficeName");
@@ -543,7 +546,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 					activatedByFirstname, activatedByLastname, closedOnDate, closedByUsername, closedByFirstname,
 					closedByLastname);
 
-			return ClientData.instance(accountNo, status, subStatus, officeId, officeName, transferToOfficeId,
+			return ClientData.instance(accountNo, status, subStatus, officeId, villageKhmer, officeName, transferToOfficeId,
 					transferToOfficeName, id, firstname, middlename, lastname, khmername, fullname, displayName,
 					externalId, mobileNo, emailAddress, dateOfBirth, gender, activationDate, imageId, staffId,
 					staffName, timeline, savingsProductId, savingsProductName, savingsAccountId, clienttype,
@@ -580,7 +583,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 			builder.append(
 					"c.transfer_to_office_id as transferToOfficeId, transferToOffice.name as transferToOfficeName, ");
 			builder.append(
-					"c.firstname as firstname, c.middlename as middlename, c.lastname as lastname, c.khmername as khmername, ");
+					"c.firstname as firstname, c.middlename as middlename, c.lastname as lastname, c.khmername as khmername, c.tbl_village_id, ");
 			builder.append("c.fullname as fullname, c.display_name as displayName, ");
 			builder.append("c.mobile_no as mobileNo, ");
 			builder.append("c.is_staff as isStaff, ");
@@ -663,6 +666,8 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 
 			final Long officeId = JdbcSupport.getLong(rs, "officeId");
 			final String officeName = rs.getString("officeName");
+			
+			final VillageKhmerData villageKhmerData = new VillageKhmerData(JdbcSupport.getInteger(rs, "tbl_village_id"), null, null, null, null);
 
 			final Long transferToOfficeId = JdbcSupport.getLong(rs, "transferToOfficeId");
 			final String transferToOfficeName = rs.getString("transferToOfficeName");
@@ -737,12 +742,11 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 					activatedByFirstname, activatedByLastname, closedOnDate, closedByUsername, closedByFirstname,
 					closedByLastname);
 
-			return ClientData.instance(accountNo, status, subStatus, officeId, officeName, transferToOfficeId,
+			return ClientData.instance(accountNo, status, subStatus, officeId, villageKhmerData, officeName, transferToOfficeId,
 					transferToOfficeName, id, firstname, middlename, lastname, khmername, fullname, displayName,
 					externalId, mobileNo, emailAddress, dateOfBirth, gender, activationDate, imageId, staffId,
 					staffName, timeline, savingsProductId, savingsProductName, savingsAccountId, clienttype,
 					classification, legalForm, clientNonPerson, isStaff);
-
 		}
 	}
 

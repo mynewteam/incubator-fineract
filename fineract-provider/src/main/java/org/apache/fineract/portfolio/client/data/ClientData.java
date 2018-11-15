@@ -678,6 +678,7 @@ final public class ClientData implements Comparable<ClientData>
 		final EnumOptionData status,
 		final CodeValueData subStatus,
 		final Long officeId,
+		final VillageKhmerData villageKhmer,
 		final String officeName,
 		final Long transferToOfficeId,
 		final String transferToOfficeName,
@@ -730,7 +731,7 @@ final public class ClientData implements Comparable<ClientData>
 			clientTypeOptions,
 			clientClassificationOptions, clientNonPersonConstitutionOptions, clientNonPersonMainBusinessLineOptions,
 			clientNonPerson,
-			clientLegalFormOptions, familyMemberOptions, legalForm, null, null, null, null, isStaff);
+			clientLegalFormOptions, familyMemberOptions, legalForm, null, villageKhmer, null, null, isStaff);
 
 	}
 

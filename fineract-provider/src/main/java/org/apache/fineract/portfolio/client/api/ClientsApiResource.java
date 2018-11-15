@@ -180,16 +180,13 @@ public class ClientsApiResource {
 
 		this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
 
-		final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper
-				.process(uriInfo.getQueryParameters());
+		final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
 
 		ClientData clientData = this.clientReadPlatformService.retrieveOne(clientId);
 		if (settings.isTemplate()) {
-			final ClientData templateData = this.clientReadPlatformService.retrieveTemplate(clientData.officeId(),
-					staffInSelectedOfficeOnly);
+			final ClientData templateData = this.clientReadPlatformService.retrieveTemplate(clientData.officeId(), staffInSelectedOfficeOnly);
 			clientData = ClientData.templateOnTop(clientData, templateData);
-			Collection<SavingsAccountData> savingAccountOptions = this.savingsAccountReadPlatformService
-					.retrieveForLookup(clientId, null);
+			Collection<SavingsAccountData> savingAccountOptions = this.savingsAccountReadPlatformService.retrieveForLookup(clientId, null);
 			if (savingAccountOptions != null && savingAccountOptions.size() > 0) {
 				clientData = ClientData.templateWithSavingAccountOptions(clientData, savingAccountOptions);
 			}
