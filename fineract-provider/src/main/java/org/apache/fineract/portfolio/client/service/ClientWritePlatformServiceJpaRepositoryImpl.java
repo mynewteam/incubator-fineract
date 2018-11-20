@@ -270,9 +270,9 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
 
 			final Long officeId = command.longValueOfParameterNamed(ClientApiConstants.officeIdParamName);
 			
-			final Long villageID = command.longValueOfParameterNamed(ClientApiConstants.VillageParamName);
-
-			final Office clientOffice = this.officeRepositoryWrapper.findOneWithNotFoundDetection(officeId);
+    			final Long villageID = command.longValueOfParameterNamed(ClientApiConstants.VillageParamName);
+    
+    			final Office clientOffice = this.officeRepositoryWrapper.findOneWithNotFoundDetection(officeId);
 			
 			final VillageKhmer villageKhmer = this.villageRepositoryWrapper.findOneWithNotFoundDetection(villageID);
 
@@ -531,7 +531,19 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
 				}
 				clientForUpdate.updateGender(gender);
 			}
-
+			
+			
+			if(changes.containsKey(ClientApiConstants.VillageParamName)) {
+			    final Long newValue = command.longValueOfParameterNamed(ClientApiConstants.VillageParamName);
+			    VillageKhmer villageKhmer = null;
+			    if(newValue != null) {
+			        villageKhmer = this.villageRepositoryWrapper.findOneWithNotFoundDetection(newValue);
+			    }
+			    clientForUpdate.updateVillageKhmer(villageKhmer);
+			            
+			}
+			
+			
 			if (changes.containsKey(ClientApiConstants.savingsProductIdParamName))
 			{
 				if (clientForUpdate.isActive()) { throw new ClientActiveForUpdateException(clientId,

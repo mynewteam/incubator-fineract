@@ -53,6 +53,7 @@ import org.apache.fineract.infrastructure.documentmanagement.domain.Image;
 import org.apache.fineract.infrastructure.security.service.RandomPasswordGenerator;
 import org.apache.fineract.organisation.office.domain.Office;
 import org.apache.fineract.organisation.staff.domain.Staff;
+import org.apache.fineract.portfolio.addresskhmer.data.VillageKhmerData;
 import org.apache.fineract.portfolio.addresskhmer.domain.VillageKhmer;
 import org.apache.fineract.portfolio.client.api.ClientApiConstants;
 import org.apache.fineract.portfolio.group.domain.Group;
@@ -1078,6 +1079,10 @@ public final class Client extends AbstractPersistableCustom<Long> {
 
 	public void updateGender(CodeValue gender) {
 		this.gender = gender;
+	}
+	
+	public void updateVillageKhmer(VillageKhmer villageKhmer) {
+	    this.villageKhmer = villageKhmer;
 	}
 
 	public Date dateOfBirth() {
