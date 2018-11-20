@@ -492,6 +492,10 @@ public final class ClientDataValidator {
 		if (this.fromApiJsonHelper.parameterExists(ClientApiConstants.khmernameParamName, element)) {
 			atLeastOneParameterPassedForUpdate = true;
 		}
+		
+		if(this.fromApiJsonHelper.parameterExists(ClientApiConstants.VillageParamName, element)) {
+		    atLeastOneParameterPassedForUpdate = true;
+		}
 
 		if (this.fromApiJsonHelper.parameterExists(ClientApiConstants.middlenameParamName, element)) {
 			atLeastOneParameterPassedForUpdate = true;

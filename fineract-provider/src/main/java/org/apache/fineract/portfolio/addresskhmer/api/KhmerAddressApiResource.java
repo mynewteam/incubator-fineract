@@ -26,15 +26,14 @@ import org.springframework.stereotype.Component;
 @Path("/address")
 @Component
 @Scope("singleton")
-public class ShitApiResource {
+public class KhmerAddressApiResource {
 
     private final DefaultToApiJsonSerializer<CountryKhmer> toApiJsonSerializer;
     private final AddressKhmerRreadPlatformService readPlatformService;
 
     @Autowired
-    public ShitApiResource(final DefaultToApiJsonSerializer<CountryKhmer> toApiJsonSerializer,
-            final AddressKhmerRreadPlatformService readPlatformService
-    ) {
+    public KhmerAddressApiResource(final DefaultToApiJsonSerializer<CountryKhmer> toApiJsonSerializer,
+            final AddressKhmerRreadPlatformService readPlatformService) {
         this.toApiJsonSerializer = toApiJsonSerializer;
         this.readPlatformService = readPlatformService;
     }
@@ -46,9 +45,9 @@ public class ShitApiResource {
     public String Country() {
 
         final Collection<CountryKhmerData> countrykh = this.readPlatformService.retrieveAllCountry();
-         return this.toApiJsonSerializer.serialize(countrykh);
+        return this.toApiJsonSerializer.serialize(countrykh);
     }
-    
+
     @GET
     @Path("/country/{id}")
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -56,9 +55,9 @@ public class ShitApiResource {
     public String Country(@PathParam("id") final long id) {
 
         final CountryKhmerData countrykh = this.readPlatformService.retrieveCountry(id);
-         return this.toApiJsonSerializer.serialize(countrykh);
+        return this.toApiJsonSerializer.serialize(countrykh);
     }
-    
+
     @GET
     @Path("/province")
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -66,9 +65,9 @@ public class ShitApiResource {
     public String Province() {
 
         final Collection<ProvinceKhmerData> ProvinceKH = this.readPlatformService.RetrieveAllProvince();
-         return this.toApiJsonSerializer.serialize(ProvinceKH);
+        return this.toApiJsonSerializer.serialize(ProvinceKH);
     }
-    
+
     @GET
     @Path("/province/{id}")
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -76,10 +75,9 @@ public class ShitApiResource {
     public String Profince(@PathParam("id") final long id) {
 
         final ProvinceKhmerData ProvinceKH = this.readPlatformService.retrieveProvince(id);
-         return this.toApiJsonSerializer.serialize(ProvinceKH);
+        return this.toApiJsonSerializer.serialize(ProvinceKH);
     }
-    
-    
+
     @GET
     @Path("/province/country/{id}")
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -87,9 +85,9 @@ public class ShitApiResource {
     public String ProvinceByCountry(@PathParam("id") final long id) {
 
         final Collection<ProvinceKhmerData> ProvinceKH = this.readPlatformService.retrieveProvinceByCountryId(id);
-         return this.toApiJsonSerializer.serialize(ProvinceKH);
+        return this.toApiJsonSerializer.serialize(ProvinceKH);
     }
-    
+
     @GET
     @Path("/district")
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -97,9 +95,9 @@ public class ShitApiResource {
     public String District() {
 
         final Collection<DistrictKhmerData> DistrictKH = this.readPlatformService.retrieveAllDistrict();
-         return this.toApiJsonSerializer.serialize(DistrictKH);
+        return this.toApiJsonSerializer.serialize(DistrictKH);
     }
-    
+
     @GET
     @Path("/district/{id}")
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -107,9 +105,9 @@ public class ShitApiResource {
     public String District(@PathParam("id") final long id) {
 
         final DistrictKhmerData DistrictKH = this.readPlatformService.retriveDistrict(id);
-         return this.toApiJsonSerializer.serialize(DistrictKH);
+        return this.toApiJsonSerializer.serialize(DistrictKH);
     }
-    
+
     @GET
     @Path("/district/province/{id}")
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -117,10 +115,9 @@ public class ShitApiResource {
     public String DistrictByProvinceID(@PathParam("id") final long id) {
 
         final Collection<DistrictKhmerData> DistrictKH = this.readPlatformService.retrieveDistrictByProvinceID(id);
-         return this.toApiJsonSerializer.serialize(DistrictKH);
+        return this.toApiJsonSerializer.serialize(DistrictKH);
     }
-    
-    
+
     @GET
     @Path("/commune")
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -128,9 +125,9 @@ public class ShitApiResource {
     public String Commune() {
 
         final Collection<CommuneKhmerData> communeKhmerDatas = this.readPlatformService.retrieveAllCommune();
-         return this.toApiJsonSerializer.serialize(communeKhmerDatas);
+        return this.toApiJsonSerializer.serialize(communeKhmerDatas);
     }
-    
+
     @GET
     @Path("/commune/{id}")
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -138,9 +135,9 @@ public class ShitApiResource {
     public String Commune(@PathParam("id") final long id) {
 
         final CommuneKhmerData communeKhmerData = this.readPlatformService.retrieveCommune(id);
-         return this.toApiJsonSerializer.serialize(communeKhmerData);
+        return this.toApiJsonSerializer.serialize(communeKhmerData);
     }
-    
+
     @GET
     @Path("/commune/district/{id}")
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -148,9 +145,9 @@ public class ShitApiResource {
     public String CommuneByDistrict(@PathParam("id") final long id) {
 
         final Collection<CommuneKhmerData> communeKhmerData = this.readPlatformService.retrieveCommuneByDistrictID(id);
-         return this.toApiJsonSerializer.serialize(communeKhmerData);
+        return this.toApiJsonSerializer.serialize(communeKhmerData);
     }
-    
+
     @GET
     @Path("/village")
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -158,9 +155,9 @@ public class ShitApiResource {
     public String Village() {
 
         final Collection<VillageKhmerData> villageKhmerDatas = this.readPlatformService.retrieveAllVillage();
-         return this.toApiJsonSerializer.serialize(villageKhmerDatas);
+        return this.toApiJsonSerializer.serialize(villageKhmerDatas);
     }
-    
+
     @GET
     @Path("/village/{id}")
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -168,9 +165,9 @@ public class ShitApiResource {
     public String Village(@PathParam("id") final long id) {
 
         final VillageKhmerData villageKhmerData = this.readPlatformService.retrieveVillage(id);
-         return this.toApiJsonSerializer.serialize(villageKhmerData);
+        return this.toApiJsonSerializer.serialize(villageKhmerData);
     }
-    
+
     @GET
     @Path("/village/commune/{id}")
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -178,6 +175,6 @@ public class ShitApiResource {
     public String VillageByCommune(@PathParam("id") final long id) {
 
         final Collection<VillageKhmerData> villageKhmerData = this.readPlatformService.retrieveVillageByCommune(id);
-         return this.toApiJsonSerializer.serialize(villageKhmerData);
+        return this.toApiJsonSerializer.serialize(villageKhmerData);
     }
 }

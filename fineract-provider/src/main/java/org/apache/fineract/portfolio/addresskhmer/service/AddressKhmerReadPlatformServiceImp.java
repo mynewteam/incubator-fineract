@@ -66,7 +66,6 @@ public class AddressKhmerReadPlatformServiceImp implements AddressKhmerRreadPlat
     }
 
     @Override
-    @Cacheable(value = "charges", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('ch')")
     public Collection<CountryKhmerData> retrieveAllCountry() {
 
         final CountryMapper mp = new CountryMapper();
@@ -84,7 +83,6 @@ public class AddressKhmerReadPlatformServiceImp implements AddressKhmerRreadPlat
     }
 
     @Override
-    @Cacheable(value = "charges", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('ch')")
     public Collection<ProvinceKhmerData> RetrieveAllProvince() {
         final ProvinceMapper mp = new ProvinceMapper();
         String sql = "select " + mp.ProvinceSchema() + " order by ProvinceID";
@@ -113,7 +111,6 @@ public class AddressKhmerReadPlatformServiceImp implements AddressKhmerRreadPlat
     }
 
     @Override
-    @Cacheable(value = "charges", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat('ch')")
     public Collection<DistrictKhmerData> retrieveAllDistrict() {
         final DistrictMapper mp = new DistrictMapper();
         String sql = "select " + mp.DistrictSchema() + " order by DistrictID";
@@ -250,4 +247,5 @@ public class AddressKhmerReadPlatformServiceImp implements AddressKhmerRreadPlat
         }
     }
 
+   
 }

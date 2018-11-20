@@ -40,6 +40,66 @@ public class ProvinceKhmerData {
                 des_In_Khmer, 
                 tbl_country_id);
     }
+
+    
+    public Integer getId() {
+        return this.id;
+    }
+
+    
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    
+    public Integer getProvinceID() {
+        return this.ProvinceID;
+    }
+
+    
+    public void setProvinceID(Integer provinceID) {
+        this.ProvinceID = provinceID;
+    }
+
+    
+    public String getProvinceCode() {
+        return this.provinceCode;
+    }
+
+    
+    public void setProvinceCode(String provinceCode) {
+        this.provinceCode = provinceCode;
+    }
+
+    
+    public String getProDescription() {
+        return this.ProDescription;
+    }
+
+    
+    public void setProDescription(String proDescription) {
+        this.ProDescription = proDescription;
+    }
+
+    
+    public String getDes_In_Khmer() {
+        return this.Des_In_Khmer;
+    }
+
+    
+    public void setDes_In_Khmer(String des_In_Khmer) {
+        this.Des_In_Khmer = des_In_Khmer;
+    }
+
+    
+    public long getTbl_country_id() {
+        return this.tbl_country_id;
+    }
+
+    
+    public void setTbl_country_id(Integer tbl_country_id) {
+        this.tbl_country_id = tbl_country_id;
+    }
     
    
     

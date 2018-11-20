@@ -29,5 +29,55 @@ public class CommuneKhmerData {
             final Integer tbl_district_id) {
        return new CommuneKhmerData( id, communeID, comDescription, des_In_Khmer, tbl_district_id);
     }
+
+    
+    public Integer getId() {
+        return this.id;
+    }
+
+    
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    
+    public Integer getCommuneID() {
+        return this.CommuneID;
+    }
+
+    
+    public void setCommuneID(Integer communeID) {
+        this.CommuneID = communeID;
+    }
+
+    
+    public String getComDescription() {
+        return this.comDescription;
+    }
+
+    
+    public void setComDescription(String comDescription) {
+        this.comDescription = comDescription;
+    }
+
+    
+    public String getDes_In_Khmer() {
+        return this.Des_In_Khmer;
+    }
+
+    
+    public void setDes_In_Khmer(String des_In_Khmer) {
+        this.Des_In_Khmer = des_In_Khmer;
+    }
+
+    
+    public Integer getTbl_district_id() {
+        return this.tbl_district_id;
+    }
+
+    
+    public void setTbl_district_id(Integer tbl_district_id) {
+        this.tbl_district_id = tbl_district_id;
+    }
     
 }

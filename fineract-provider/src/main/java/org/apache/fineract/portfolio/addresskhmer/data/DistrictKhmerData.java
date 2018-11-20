@@ -6,7 +6,7 @@ public class DistrictKhmerData {
     private Integer DistrictID;
     private String disDescription;
     private String Des_In_Khmer;
-    private Integer tbl_province_id;
+    private long tbl_province_id;
     
     public DistrictKhmerData(
             Integer id,
@@ -35,4 +35,56 @@ public class DistrictKhmerData {
                des_In_Khmer,
                tbl_province_id);
     }
+
+    
+    public Integer getId() {
+        return this.id;
+    }
+
+    
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    
+    public Integer getDistrictID() {
+        return this.DistrictID;
+    }
+
+    
+    public void setDistrictID(Integer districtID) {
+        this.DistrictID = districtID;
+    }
+
+    
+    public String getDisDescription() {
+        return this.disDescription;
+    }
+
+    
+    public void setDisDescription(String disDescription) {
+        this.disDescription = disDescription;
+    }
+
+    
+    public String getDes_In_Khmer() {
+        return this.Des_In_Khmer;
+    }
+
+    
+    public void setDes_In_Khmer(String des_In_Khmer) {
+        this.Des_In_Khmer = des_In_Khmer;
+    }
+
+    
+    public long getTbl_province_id() {
+        return this.tbl_province_id;
+    }
+
+    
+    public void setTbl_province_id(long tbl_province_id) {
+        this.tbl_province_id = tbl_province_id;
+    }
+    
+    
 }
