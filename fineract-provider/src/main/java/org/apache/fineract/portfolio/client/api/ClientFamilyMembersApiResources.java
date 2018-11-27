@@ -54,9 +54,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("singleton")
 public class ClientFamilyMembersApiResources {
-	private final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(
-			Arrays.asList("id", "clientId", "firstName", "middleName", "lastName", "khmername", "qualification",
-					"relationship", "maritalStatus", "gender", "dateOfBirth", "profession", "clientFamilyMemberId"));
+	private final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList("id", "clientId", "firstName",
+			"middleName", "lastName", "khmername", "tbl_village_id", "qualification", "relationship", "maritalStatus",
+			"gender", "dateOfBirth", "profession", "clientFamilyMemberId"));
 	private final String resourceNameForPermissions = "FamilyMembers";
 	private final PlatformSecurityContext context;
 	private final ClientFamilyMembersReadPlatformService readPlatformService;

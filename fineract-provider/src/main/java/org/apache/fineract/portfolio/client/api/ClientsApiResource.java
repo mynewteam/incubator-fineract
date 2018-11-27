@@ -57,6 +57,7 @@ import org.apache.fineract.infrastructure.core.service.SearchParameters;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.portfolio.accountdetails.data.AccountSummaryCollectionData;
 import org.apache.fineract.portfolio.accountdetails.service.AccountDetailsReadPlatformService;
+import org.apache.fineract.portfolio.addresskhmer.domain.VillageKhmer;
 import org.apache.fineract.portfolio.client.data.ClientData;
 import org.apache.fineract.portfolio.client.service.ClientReadPlatformService;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountData;
@@ -108,11 +109,9 @@ public class ClientsApiResource {
 	@Path("template")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
-	public String retrieveTemplate(
-	        @Context final UriInfo uriInfo, 
-	        @QueryParam("officeId") final Long officeId,
-	        @QueryParam("commandParam") final String commandParam,
-	        @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") final boolean staffInSelectedOfficeOnly) {
+	public String retrieveTemplate(@Context final UriInfo uriInfo, @QueryParam("officeId") final Long officeId,
+			@QueryParam("commandParam") final String commandParam,
+			@DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") final boolean staffInSelectedOfficeOnly) {
 
 		this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
 
@@ -144,6 +143,7 @@ public class ClientsApiResource {
 			@QueryParam("officeId") final Long officeId, @QueryParam("externalId") final String externalId,
 			@QueryParam("displayName") final String displayName, @QueryParam("firstName") final String firstname,
 			@QueryParam("lastName") final String lastname, @QueryParam("khmername") final String khmername,
+			@QueryParam("tbl_village_id") final String VillageKhmer,
 			@QueryParam("underHierarchy") final String hierarchy, @QueryParam("offset") final Integer offset,
 			@QueryParam("limit") final Integer limit, @QueryParam("orderBy") final String orderBy,
 			@QueryParam("sortOrder") final String sortOrder, @QueryParam("orphansOnly") final Boolean orphansOnly) {
@@ -180,13 +180,16 @@ public class ClientsApiResource {
 
 		this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
 
-		final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+		final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper
+				.process(uriInfo.getQueryParameters());
 
 		ClientData clientData = this.clientReadPlatformService.retrieveOne(clientId);
 		if (settings.isTemplate()) {
-			final ClientData templateData = this.clientReadPlatformService.retrieveTemplate(clientData.officeId(), staffInSelectedOfficeOnly);
+			final ClientData templateData = this.clientReadPlatformService.retrieveTemplate(clientData.officeId(),
+					staffInSelectedOfficeOnly);
 			clientData = ClientData.templateOnTop(clientData, templateData);
-			Collection<SavingsAccountData> savingAccountOptions = this.savingsAccountReadPlatformService.retrieveForLookup(clientId, null);
+			Collection<SavingsAccountData> savingAccountOptions = this.savingsAccountReadPlatformService
+					.retrieveForLookup(clientId, null);
 			if (savingAccountOptions != null && savingAccountOptions.size() > 0) {
 				clientData = ClientData.templateWithSavingAccountOptions(clientData, savingAccountOptions);
 			}

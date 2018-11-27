@@ -134,7 +134,6 @@ public class FromJsonHelper {
             }
             throw new UnsupportedParameterException(updatedUnsupportedParameters);
         }
-
     }
 
     public JsonElement parse(final String json) {

@@ -623,6 +623,11 @@ public final class Client extends AbstractPersistableCustom<Long> {
 			actualChanges.put(ClientApiConstants.fullnameParamName, newValue);
 			this.fullname = newValue;
 		}
+		
+		if(command.isChangeInLongParameterNamed(ClientApiConstants.VillageParamName, villageId()  )) {
+		    final Long newValue = command.longValueOfParameterNamed(ClientApiConstants.VillageParamName);
+		    actualChanges.put(ClientApiConstants.VillageParamName, newValue);
+		}
 
 		if (command.isChangeInLongParameterNamed(ClientApiConstants.staffIdParamName, staffId())) {
 			final Long newValue = command.longValueOfParameterNamed(ClientApiConstants.staffIdParamName);
@@ -910,6 +915,10 @@ public final class Client extends AbstractPersistableCustom<Long> {
 	public Office getOffice() {
 		return this.office;
 	}
+	
+	public VillageKhmer getVillageKhmer() {
+	    return this.villageKhmer;
+	}
 
 	public Office getTransferToOffice() {
 		return this.transferToOffice;
@@ -933,6 +942,14 @@ public final class Client extends AbstractPersistableCustom<Long> {
 			staffId = this.staff.getId();
 		}
 		return staffId;
+	}
+	
+	private Long villageId() {
+	    Long _villageId = null;
+	    if(this.villageKhmer != null) {
+	        _villageId = this.villageKhmer.getId();
+	    }
+	    return _villageId;
 	}
 
 	public void updateStaff(final Staff staff) {
