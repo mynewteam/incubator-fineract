@@ -87,6 +87,17 @@ public class KhmerAddressApiResource {
         final Collection<ProvinceKhmerData> ProvinceKH = this.readPlatformService.retrieveProvinceByCountryId(id);
         return this.toApiJsonSerializer.serialize(ProvinceKH);
     }
+    
+    @GET
+    @Path("/province/allprovince/{id}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String allProvinceByCountry(@PathParam("id") final long id) {
+        final ProvinceKhmerData province = this.readPlatformService.retrieveProvince(id);
+        
+        final Collection<ProvinceKhmerData> ProvinceKH = this.readPlatformService.retrieveProvinceByCountryId(province.getTbl_country_id());
+        return this.toApiJsonSerializer.serialize(ProvinceKH);
+    }
 
     @GET
     @Path("/district")
@@ -115,6 +126,18 @@ public class KhmerAddressApiResource {
     public String DistrictByProvinceID(@PathParam("id") final long id) {
 
         final Collection<DistrictKhmerData> DistrictKH = this.readPlatformService.retrieveDistrictByProvinceID(id);
+        return this.toApiJsonSerializer.serialize(DistrictKH);
+    }
+
+    @GET
+    @Path("/district/alldistrict/{id}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String allDistrictByProvinceID(@PathParam("id") final long id) {
+        final DistrictKhmerData district = this.readPlatformService.retriveDistrict(id);
+
+        final Collection<DistrictKhmerData> DistrictKH = this.readPlatformService
+                .retrieveDistrictByProvinceID(district.getTbl_province_id());
         return this.toApiJsonSerializer.serialize(DistrictKH);
     }
 
@@ -149,6 +172,18 @@ public class KhmerAddressApiResource {
     }
 
     @GET
+    @Path("/commune/allcommune/{id}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String allCommuneByDistrict(@PathParam("id") final long id) {
+        final CommuneKhmerData commune = this.readPlatformService.retrieveCommune(id);
+
+        final Collection<CommuneKhmerData> communeKhmerData = this.readPlatformService
+                .retrieveCommuneByDistrictID(commune.getTbl_district_id());
+        return this.toApiJsonSerializer.serialize(communeKhmerData);
+    }
+
+    @GET
     @Path("/village")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
@@ -175,6 +210,18 @@ public class KhmerAddressApiResource {
     public String VillageByCommune(@PathParam("id") final long id) {
 
         final Collection<VillageKhmerData> villageKhmerData = this.readPlatformService.retrieveVillageByCommune(id);
+        return this.toApiJsonSerializer.serialize(villageKhmerData);
+    }
+
+    @GET
+    @Path("/village/allvillage/{id}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String allVillageByvillageId(@PathParam("id") final long id) {
+        final VillageKhmerData village = this.readPlatformService.retrieveVillage(id);
+
+        final Collection<VillageKhmerData> villageKhmerData = this.readPlatformService
+                .retrieveVillageByCommune(village.getTbl_commune_id());
         return this.toApiJsonSerializer.serialize(villageKhmerData);
     }
 }
