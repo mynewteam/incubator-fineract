@@ -87,15 +87,16 @@ public class KhmerAddressApiResource {
         final Collection<ProvinceKhmerData> ProvinceKH = this.readPlatformService.retrieveProvinceByCountryId(id);
         return this.toApiJsonSerializer.serialize(ProvinceKH);
     }
-    
+
     @GET
     @Path("/province/allprovince/{id}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     public String allProvinceByCountry(@PathParam("id") final long id) {
         final ProvinceKhmerData province = this.readPlatformService.retrieveProvince(id);
-        
-        final Collection<ProvinceKhmerData> ProvinceKH = this.readPlatformService.retrieveProvinceByCountryId(province.getTbl_country_id());
+
+        final Collection<ProvinceKhmerData> ProvinceKH = this.readPlatformService
+                .retrieveProvinceByCountryId(province.getTbl_country_id());
         return this.toApiJsonSerializer.serialize(ProvinceKH);
     }
 

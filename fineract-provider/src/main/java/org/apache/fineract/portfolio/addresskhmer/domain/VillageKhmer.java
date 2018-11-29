@@ -8,10 +8,10 @@ import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 
 @Entity
 @Table(name = "tbl_village")
-public class VillageKhmer extends AbstractPersistableCustom<Long> {
+public class VillageKhmer  {
    
-    @Column(name = "VillageID")
-    private String VillageID;
+    @Column(name = "id")
+    private Long Id;
     
     @Column(name = "villDescription")
     private String villDescription;
@@ -20,16 +20,19 @@ public class VillageKhmer extends AbstractPersistableCustom<Long> {
     private String Des_In_Khmer;
 
     
-    public String getVillageID() {
-        return this.VillageID;
+    
+    
+    public Long getId() {
+        return this.Id;
     }
 
-    
-    public void setVillageID(String villageID) {
-        this.VillageID = villageID;
-    }
 
     
+    public void setId(Long id) {
+        this.Id = id;
+    }
+
+
     public String getVillDescription() {
         return this.villDescription;
     }

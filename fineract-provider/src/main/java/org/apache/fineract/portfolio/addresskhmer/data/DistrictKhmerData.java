@@ -3,19 +3,16 @@ package org.apache.fineract.portfolio.addresskhmer.data;
 
 public class DistrictKhmerData {
     private Integer id;
-    private Integer DistrictID;
     private String disDescription;
     private String Des_In_Khmer;
     private long tbl_province_id;
     
     public DistrictKhmerData(
             Integer id,
-            Integer districtID, 
             String disDescription, 
             String des_In_Khmer,
             Integer tbl_province_id) {
        this.id = id;
-        this.DistrictID = districtID;
         this.disDescription = disDescription;
         this.Des_In_Khmer = des_In_Khmer;
         this.tbl_province_id = tbl_province_id;
@@ -30,7 +27,6 @@ public class DistrictKhmerData {
 
        return new DistrictKhmerData(
                id,
-               districtID,
                disDescription,
                des_In_Khmer,
                tbl_province_id);
@@ -44,16 +40,6 @@ public class DistrictKhmerData {
     
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    
-    public Integer getDistrictID() {
-        return this.DistrictID;
-    }
-
-    
-    public void setDistrictID(Integer districtID) {
-        this.DistrictID = districtID;
     }
 
     

@@ -470,7 +470,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 			final Long officeId = JdbcSupport.getLong(rs, "officeId");
 			final String officeName = rs.getString("officeName");
 			
-			final VillageKhmerData villageKhmer = new VillageKhmerData(JdbcSupport.getInteger(rs, "tbl_village_id"), null, null, null, 0);
+			final VillageKhmerData villageKhmer = new VillageKhmerData(JdbcSupport.getInteger(rs, "tbl_village_id"), null, null, 0);
 
 			final Long transferToOfficeId = JdbcSupport.getLong(rs, "transferToOfficeId");
 			final String transferToOfficeName = rs.getString("transferToOfficeName");
@@ -667,7 +667,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 			final Long officeId = JdbcSupport.getLong(rs, "officeId");
 			final String officeName = rs.getString("officeName");
 			
-			final VillageKhmerData villageKhmerData = new VillageKhmerData(JdbcSupport.getInteger(rs, "tbl_village_id"), null, null, null, 0);
+			final VillageKhmerData villageKhmerData = new VillageKhmerData(JdbcSupport.getInteger(rs, "tbl_village_id"), null, null, 0);
 
 			final Long transferToOfficeId = JdbcSupport.getLong(rs, "transferToOfficeId");
 			final String transferToOfficeName = rs.getString("transferToOfficeName");

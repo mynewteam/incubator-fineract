@@ -8,10 +8,10 @@ import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 
 @Entity
 @Table(name = "tbl_country")
-public class CountryKhmer extends AbstractPersistableCustom<Long> {
+public class CountryKhmer {
     
-    @Column(name = "CountryID")
-    private Integer CountryID;
+    @Column(name = "id")
+    private Integer Id;
     
     @Column(name = "Country")
     private String Country;
