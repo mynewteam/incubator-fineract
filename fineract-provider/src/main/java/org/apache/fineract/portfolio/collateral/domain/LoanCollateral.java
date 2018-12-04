@@ -19,6 +19,7 @@
 package org.apache.fineract.portfolio.collateral.domain;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -39,6 +40,7 @@ import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 import org.apache.fineract.portfolio.collateral.api.CollateralApiConstants.COLLATERAL_JSON_INPUT_PARAMS;
 import org.apache.fineract.portfolio.collateral.data.CollateralData;
+import org.apache.fineract.portfolio.collateral.zland.domain.LandCollateral;
 import org.apache.fineract.portfolio.loanaccount.domain.Loan;
 
 @Entity
@@ -58,6 +60,12 @@ public class LoanCollateral extends AbstractPersistableCustom<Long> {
 
     @Column(name = "description", length = 500)
     private String description;
+    
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "collateral", orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<LandCollateral> landCollaterals = new HashSet<>();
+    
+ 
 
     public static LoanCollateral from(final CodeValue collateralType, final BigDecimal value,
             final String description) {
@@ -127,6 +135,12 @@ public class LoanCollateral extends AbstractPersistableCustom<Long> {
 
     public void setCollateralType(final CodeValue type) {
         this.type = type;
+    }
+    
+    
+    public void initializeLazyCollections()
+    {
+//            this.loanOfficerHistory.size();
     }
 
     /*

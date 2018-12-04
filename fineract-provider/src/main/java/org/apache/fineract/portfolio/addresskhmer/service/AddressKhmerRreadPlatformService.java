@@ -25,7 +25,6 @@ import org.apache.fineract.portfolio.addresskhmer.data.CountryKhmerData;
 import org.apache.fineract.portfolio.addresskhmer.data.DistrictKhmerData;
 import org.apache.fineract.portfolio.addresskhmer.data.ProvinceKhmerData;
 import org.apache.fineract.portfolio.addresskhmer.data.VillageKhmerData;
-import org.apache.fineract.portfolio.addresskhmer.domain.VillageKhmer;
 
 public interface AddressKhmerRreadPlatformService {
 

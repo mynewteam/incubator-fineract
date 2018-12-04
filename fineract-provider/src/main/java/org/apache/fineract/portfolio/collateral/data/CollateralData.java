@@ -20,9 +20,17 @@ package org.apache.fineract.portfolio.collateral.data;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 
 import org.apache.fineract.infrastructure.codes.data.CodeValueData;
 import org.apache.fineract.organisation.monetary.data.CurrencyData;
+import org.apache.fineract.portfolio.collateral.zland.domain.LandCollateral;
+import org.apache.fineract.portfolio.loanaccount.domain.LoanTrancheCharge;
 
 /**
  * Immutable data object for Collateral data.
@@ -36,6 +44,8 @@ public class CollateralData {
     @SuppressWarnings("unused")
     private final Collection<CodeValueData> allowedCollateralTypes;
     private final CurrencyData currency;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "colllateral", orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<LandCollateral> landCollateral = new HashSet<>();
    
 
     public static CollateralData instance(final Long id, final CodeValueData type, final BigDecimal value, final String description,
