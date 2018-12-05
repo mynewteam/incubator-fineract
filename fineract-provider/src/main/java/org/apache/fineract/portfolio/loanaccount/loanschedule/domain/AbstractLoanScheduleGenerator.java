@@ -2162,7 +2162,6 @@ public abstract class AbstractLoanScheduleGenerator implements LoanScheduleGener
 				}
 			}
 		}
-
 		return cumulative;
 	}
 
@@ -2263,7 +2262,7 @@ public abstract class AbstractLoanScheduleGenerator implements LoanScheduleGener
 			}
 
 			else if (loanCharge.getChargeCalculation().isPercentageOfOutstandingAmount()) {
-				amount = amount.add(principalInterestForThisPeriod.outstanding().getAmount());
+				amount = amount.add(principalInterestForThisPeriod.outstanding().getAmount()).add(principalInterestForThisPeriod.principal().getAmount());
 
 				logger.debug("Percentage of outstanding amount is raised." + amount);
 
@@ -2285,9 +2284,10 @@ public abstract class AbstractLoanScheduleGenerator implements LoanScheduleGener
 			// installment.getDueDate()).getDays();
 			BigDecimal loanChargeAmt = amount.multiply(loanCharge.getPercentage()).divide(BigDecimal.valueOf(100));
 			// loanChargeAmt = .getPrincipalOutstanding().getAmount();
-			if (loanCharge.getChargeCalculation().isPercentageOfOutstandingAmount()) {
-				loanChargeAmt = amount.multiply(loanCharge.getPercentage()).multiply(_loanTermInDays)
-						.divide(BigDecimal.valueOf(36000), 2, RoundingMode.HALF_UP);
+			if (loanCharge.getChargeCalculation().isPercentageOfOutstandingAmount()) {			    
+			    
+				loanChargeAmt = amount.multiply(loanCharge.getPercentage()).multiply(_loanTermInDays).divide(BigDecimal.valueOf(36000), 2, RoundingMode.HALF_UP); //arount here
+				
 			} else {
 				loanChargeAmt = amount.multiply(loanCharge.getPercentage()).divide(BigDecimal.valueOf(100));
 			}

@@ -144,7 +144,7 @@ public class LandCollateralCommand {
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
         
         final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("LandCollateral");
-        
+//        baseDataValidator.reset().parameter(parameter)
         
     }
     

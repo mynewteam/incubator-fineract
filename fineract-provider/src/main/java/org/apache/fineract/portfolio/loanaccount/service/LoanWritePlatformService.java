@@ -39,8 +39,7 @@ public interface LoanWritePlatformService {
 
     CommandProcessingResult disburseLoan(Long loanId, JsonCommand command, Boolean isAccountTransfer);
 
-    Map<String, Object> bulkLoanDisbursal(JsonCommand command, CollectionSheetBulkDisbursalCommand bulkDisbursalCommand,
-            Boolean isAccountTransfer);
+    Map<String, Object> bulkLoanDisbursal(JsonCommand command, CollectionSheetBulkDisbursalCommand bulkDisbursalCommand, Boolean isAccountTransfer);
 
     CommandProcessingResult undoLoanDisbursal(Long loanId, JsonCommand command);
 
@@ -72,8 +71,7 @@ public interface LoanWritePlatformService {
 
     CommandProcessingResult removeLoanOfficer(Long loanId, JsonCommand command);
 
-    void applyMeetingDateChanges(Calendar calendar, Collection<CalendarInstance> loanCalendarInstances,
-            Boolean reschedulebasedOnMeetingDates, LocalDate presentMeetingDate, LocalDate newMeetingDate);
+    void applyMeetingDateChanges(Calendar calendar, Collection<CalendarInstance> loanCalendarInstances, Boolean reschedulebasedOnMeetingDates, LocalDate presentMeetingDate, LocalDate newMeetingDate);
 
     void applyHolidaysToLoans();
 
