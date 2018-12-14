@@ -48,6 +48,7 @@ import org.apache.fineract.infrastructure.bulkimport.data.GlobalEntityType;
 import org.apache.fineract.infrastructure.bulkimport.service.BulkImportWorkbookPopulatorService;
 import org.apache.fineract.infrastructure.bulkimport.service.BulkImportWorkbookService;
 import org.apache.fineract.infrastructure.codes.data.CodeValueData;
+import org.apache.fineract.infrastructure.codes.domain.CodeValue;
 import org.apache.fineract.infrastructure.codes.service.CodeValueReadPlatformService;
 import org.apache.fineract.infrastructure.core.api.ApiParameterHelper;
 import org.apache.fineract.infrastructure.core.api.ApiRequestParameterHelper;
@@ -74,6 +75,8 @@ import org.apache.fineract.portfolio.account.service.AccountAssociationsReadPlat
 import org.apache.fineract.portfolio.account.service.PortfolioAccountReadPlatformService;
 import org.apache.fineract.portfolio.accountdetails.data.LoanAccountSummaryData;
 import org.apache.fineract.portfolio.accountdetails.service.AccountDetailsReadPlatformService;
+import org.apache.fineract.portfolio.addresskhmer.data.ProvinceKhmerData;
+import org.apache.fineract.portfolio.addresskhmer.service.AddressKhmerRreadPlatformService;
 import org.apache.fineract.portfolio.calendar.data.CalendarData;
 import org.apache.fineract.portfolio.calendar.domain.CalendarEntityType;
 import org.apache.fineract.portfolio.calendar.service.CalendarReadPlatformService;
@@ -83,6 +86,10 @@ import org.apache.fineract.portfolio.charge.service.ChargeReadPlatformService;
 import org.apache.fineract.portfolio.client.data.ClientData;
 import org.apache.fineract.portfolio.collateral.data.CollateralData;
 import org.apache.fineract.portfolio.collateral.service.CollateralReadPlatformService;
+import org.apache.fineract.portfolio.collateral.zland.api.LandCollateralApiConstrants;
+import org.apache.fineract.portfolio.collateral.zland.data.LandCollateralData;
+import org.apache.fineract.portfolio.collateral.zland.domain.LandCollateral;
+import org.apache.fineract.portfolio.collateral.zland.service.LandCollateralReadPlatformService;
 import org.apache.fineract.portfolio.floatingrates.data.InterestRatePeriodData;
 import org.apache.fineract.portfolio.fund.data.FundData;
 import org.apache.fineract.portfolio.fund.service.FundReadPlatformService;
@@ -144,7 +151,7 @@ public class LoansApiResource {
             "interestCalculationPeriodType", LoanProductConstants.allowPartialPeriodInterestCalcualtionParamName,
             "expectedFirstRepaymentOnDate", "graceOnPrincipalPayment", "recurringMoratoriumOnPrincipalPeriods", "graceOnInterestPayment",
             "graceOnInterestCharged", "interestChargedFromDate", "timeline", "totalFeeChargesAtDisbursement", "summary",
-            "repaymentSchedule", "transactions", "charges", "collateral", "guarantors", "meeting", "productOptions",
+            "repaymentSchedule", "transactions", "charges", "collateral", "landCollateral", "guarantors", "meeting", "productOptions",
             "amortizationTypeOptions", "interestTypeOptions", "interestCalculationPeriodTypeOptions", "repaymentFrequencyTypeOptions",
             "repaymentFrequencyNthDayTypeOptions", "repaymentFrequencyDaysOfWeekTypeOptions", "termFrequencyTypeOptions",
             "interestRateFrequencyTypeOptions", "fundOptions", "repaymentStrategyOptions", "chargeOptions", "loanOfficerOptions",
@@ -165,9 +172,11 @@ public class LoansApiResource {
     private final ChargeReadPlatformService chargeReadPlatformService;
     private final LoanChargeReadPlatformService loanChargeReadPlatformService;
     private final CollateralReadPlatformService loanCollateralReadPlatformService;
+    private final LandCollateralReadPlatformService landCollateralReadPlatformService;
     private final LoanScheduleCalculationPlatformService calculationPlatformService;
     private final GuarantorReadPlatformService guarantorReadPlatformService;
     private final CodeValueReadPlatformService codeValueReadPlatformService;
+    private final AddressKhmerRreadPlatformService addressKhmerRreadPlatformService;
     private final GroupReadPlatformService groupReadPlatformService;
     private final DefaultToApiJsonSerializer<LoanAccountData> toApiJsonSerializer;
     private final DefaultToApiJsonSerializer<LoanApprovalData> loanApprovalDataToApiJsonSerializer;
@@ -193,9 +202,12 @@ public class LoansApiResource {
             final LoanDropdownReadPlatformService dropdownReadPlatformService, final FundReadPlatformService fundReadPlatformService,
             final ChargeReadPlatformService chargeReadPlatformService, final LoanChargeReadPlatformService loanChargeReadPlatformService,
             final CollateralReadPlatformService loanCollateralReadPlatformService,
+            final LandCollateralReadPlatformService landCollateralReadPlatformService,
             final LoanScheduleCalculationPlatformService calculationPlatformService,
             final GuarantorReadPlatformService guarantorReadPlatformService,
-            final CodeValueReadPlatformService codeValueReadPlatformService, final GroupReadPlatformService groupReadPlatformService,
+            final CodeValueReadPlatformService codeValueReadPlatformService,
+            final AddressKhmerRreadPlatformService addressKhmerRreadPlatformService,
+            final GroupReadPlatformService groupReadPlatformService,
             final DefaultToApiJsonSerializer<LoanAccountData> toApiJsonSerializer,
             final DefaultToApiJsonSerializer<LoanApprovalData> loanApprovalDataToApiJsonSerializer,
             final DefaultToApiJsonSerializer<LoanScheduleData> loanScheduleToApiJsonSerializer,
@@ -217,9 +229,11 @@ public class LoansApiResource {
         this.chargeReadPlatformService = chargeReadPlatformService;
         this.loanChargeReadPlatformService = loanChargeReadPlatformService;
         this.loanCollateralReadPlatformService = loanCollateralReadPlatformService;
+        this.landCollateralReadPlatformService = landCollateralReadPlatformService;
         this.calculationPlatformService = calculationPlatformService;
         this.guarantorReadPlatformService = guarantorReadPlatformService;
         this.codeValueReadPlatformService = codeValueReadPlatformService;
+        this.addressKhmerRreadPlatformService = addressKhmerRreadPlatformService;
         this.groupReadPlatformService = groupReadPlatformService;
         this.toApiJsonSerializer = toApiJsonSerializer;
         this.loanApprovalDataToApiJsonSerializer = loanApprovalDataToApiJsonSerializer;
@@ -272,10 +286,14 @@ public class LoansApiResource {
     @Path("template")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public String template(@QueryParam("clientId") final Long clientId, @QueryParam("groupId") final Long groupId,
-            @QueryParam("productId") final Long productId, @QueryParam("templateType") final String templateType,
+    public String template(
+            @QueryParam("clientId") final Long clientId, 
+            @QueryParam("groupId") final Long groupId,
+            @QueryParam("productId") final Long productId, 
+            @QueryParam("templateType") final String templateType,
             @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") final boolean staffInSelectedOfficeOnly,
-            @DefaultValue("false") @QueryParam("activeOnly") final boolean onlyActive, @Context final UriInfo uriInfo) {
+            @DefaultValue("false") @QueryParam("activeOnly") final boolean onlyActive, 
+            @Context final UriInfo uriInfo) {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 
@@ -285,6 +303,11 @@ public class LoansApiResource {
         // options
         Collection<StaffData> allowedLoanOfficers = null;
         Collection<CodeValueData> loanCollateralOptions = null;
+        Collection<CodeValueData> collateralNature = null;
+        Collection<CodeValueData> collateralName = null;
+        Collection<ProvinceKhmerData>provinceOption=null;
+        Collection<CodeValueData>gender = null;
+        Collection<CodeValueData>collateralStatusOption=null;
         Collection<CalendarData> calendarOptions = null;
         LoanAccountData newLoanAccount = null;
         Long officeId = null;
@@ -299,7 +322,13 @@ public class LoansApiResource {
             throw new LoanTemplateTypeRequiredException(errorMsg);
         } else if (templateType.equals("collateral")) {
             loanCollateralOptions = this.codeValueReadPlatformService.retrieveCodeValuesByCode("LoanCollateral");
-            newLoanAccount = LoanAccountData.collateralTemplate(loanCollateralOptions);
+            collateralName = this.codeValueReadPlatformService.retrieveCodeValuesByCode("CollateralName");
+            collateralNature = this.codeValueReadPlatformService.retrieveCodeValuesByCode("CollateralNature");
+            provinceOption = this.addressKhmerRreadPlatformService.RetrieveAllProvince();
+            gender = this.codeValueReadPlatformService.retrieveCodeValuesByCode("Gender");
+            collateralStatusOption = this.codeValueReadPlatformService.retrieveCodeValuesByCode("CollateralStatus");
+            newLoanAccount = LoanAccountData.collateralTemplate(loanCollateralOptions, collateralName, collateralNature, provinceOption, gender, collateralStatusOption);
+            
         } else {
             // for JLG loan both client and group details are required
             if (templateType.equals("individual") || templateType.equals("jlg")) {
@@ -438,6 +467,7 @@ public class LoansApiResource {
         Collection<LoanChargeData> charges = null;
         Collection<GuarantorData> guarantors = null;
         Collection<CollateralData> collateral = null;
+        Collection<LandCollateralData> landCollateral = null;
         CalendarData meeting = null;
         Collection<NoteData> notes = null;
         PortfolioAccountData linkedAccount = null;
@@ -450,7 +480,7 @@ public class LoansApiResource {
 
             if (associationParameters.contains("all")) {
                 associationParameters.addAll(Arrays.asList("repaymentSchedule", "futureSchedule", "originalSchedule", "transactions",
-                        "charges", "guarantors", "collateral", "notes", "linkedAccount", "multiDisburseDetails"));
+                        "charges", "guarantors", "collateral", "landCollateral", "notes", "linkedAccount", "multiDisburseDetails"));
             }
 
             ApiParameterHelper.excludeAssociationsForResponseIfProvided(uriInfo.getQueryParameters(), associationParameters);
@@ -517,6 +547,12 @@ public class LoansApiResource {
                     collateral = null;
                 }
             }
+            
+            if(associationParameters.contains("landCollateral")) {
+                mandatoryResponseParameters.add("landCollateral");
+                landCollateral = this.landCollateralReadPlatformService.retrieveLandCollateralsForValidLoan(loanId);
+                
+            }
 
             if (associationParameters.contains("meeting")) {
                 mandatoryResponseParameters.add("meeting");
@@ -555,6 +591,11 @@ public class LoansApiResource {
         ChargeData chargeTemplate = null;
         Collection<CodeValueData> loanPurposeOptions = null;
         Collection<CodeValueData> loanCollateralOptions = null;
+        Collection<CodeValueData> collateralName = null;
+        Collection<CodeValueData> collateralNature = null;
+        Collection<ProvinceKhmerData> provinceOptions = null;
+        Collection<CodeValueData>gender = null;
+        Collection<CodeValueData>collateralStatusOption = null;
         Collection<CalendarData> calendarOptions = null;
         Collection<PortfolioAccountData> accountLinkingOptions = null;
         PaidInAdvanceData paidInAdvanceTemplate = null;
@@ -626,10 +667,10 @@ public class LoansApiResource {
         paidInAdvanceTemplate = this.loanReadPlatformService.retrieveTotalPaidInAdvance(loanId);
 
         final LoanAccountData loanAccount = LoanAccountData.associationsAndTemplate(loanBasicDetails, repaymentSchedule, loanRepayments,
-                charges, collateral, guarantors, meeting, productOptions, loanTermFrequencyTypeOptions, repaymentFrequencyTypeOptions,
+                charges, collateral, landCollateral, guarantors, meeting, productOptions, loanTermFrequencyTypeOptions, repaymentFrequencyTypeOptions,
                 repaymentFrequencyNthDayTypeOptions, repaymentFrequencyDayOfWeekTypeOptions, repaymentStrategyOptions,
                 interestRateFrequencyTypeOptions, amortizationTypeOptions, interestTypeOptions, interestCalculationPeriodTypeOptions,
-                fundOptions, chargeOptions, chargeTemplate, allowedLoanOfficers, loanPurposeOptions, loanCollateralOptions, calendarOptions,
+                fundOptions, chargeOptions, chargeTemplate, allowedLoanOfficers, loanPurposeOptions, loanCollateralOptions, collateralName, collateralNature, provinceOptions, gender, collateralStatusOption, calendarOptions,
                 notes, accountLinkingOptions, linkedAccount, disbursementData, emiAmountVariations, overdueCharges, paidInAdvanceTemplate,
                 interestRatesPeriods, clientActiveLoanOptions);
 

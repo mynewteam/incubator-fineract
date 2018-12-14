@@ -61,8 +61,9 @@ public class CollateralWritePlatformServiceJpaRepositoryImpl implements Collater
     private final CollateralCommandFromApiJsonDeserializer collateralCommandFromApiJsonDeserializer;
 
     @Autowired
-    public CollateralWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context, final LoanRepositoryWrapper loanRepositoryWrapper,
-            final LoanCollateralRepository collateralRepository, final CodeValueRepositoryWrapper codeValueRepository,
+    public CollateralWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context,
+            final LoanRepositoryWrapper loanRepositoryWrapper, final LoanCollateralRepository collateralRepository,
+            final CodeValueRepositoryWrapper codeValueRepository,
             final CollateralCommandFromApiJsonDeserializer collateralCommandFromApiJsonDeserializer) {
         this.context = context;
         this.loanRepositoryWrapper = loanRepositoryWrapper;
@@ -81,8 +82,8 @@ public class CollateralWritePlatformServiceJpaRepositoryImpl implements Collater
 
         try {
             final Loan loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanId, true);
-            final CodeValue collateralType = this.codeValueRepository.findOneByCodeNameAndIdWithNotFoundDetection(
-                    CollateralApiConstants.COLLATERAL_CODE_NAME, collateralCommand.getCollateralTypeId());
+            final CodeValue collateralType = this.codeValueRepository.findOneByCodeNameAndIdWithNotFoundDetection(CollateralApiConstants.COLLATERAL_CODE_NAME, collateralCommand.getCollateralTypeId());
+            
             final LoanCollateral collateral = LoanCollateral.fromJson(loan, collateralType, command);
 
             /**
@@ -125,8 +126,8 @@ public class CollateralWritePlatformServiceJpaRepositoryImpl implements Collater
 
             if (changes.containsKey(COLLATERAL_JSON_INPUT_PARAMS.COLLATERAL_TYPE_ID.getValue())) {
 
-                collateralType = this.codeValueRepository.findOneByCodeNameAndIdWithNotFoundDetection(
-                        CollateralApiConstants.COLLATERAL_CODE_NAME, collateralTypeId);
+                collateralType = this.codeValueRepository
+                        .findOneByCodeNameAndIdWithNotFoundDetection(CollateralApiConstants.COLLATERAL_CODE_NAME, collateralTypeId);
                 collateralForUpdate.setCollateralType(collateralType);
             }
 
@@ -156,7 +157,7 @@ public class CollateralWritePlatformServiceJpaRepositoryImpl implements Collater
     @Transactional
     @Override
     public CommandProcessingResult deleteCollateral(final Long loanId, final Long collateralId, final Long commandId) {
-        final Loan loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanId, true) ;
+        final Loan loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanId, true);
         final LoanCollateral collateral = this.collateralRepository.findByLoanIdAndId(loanId, collateralId);
         if (collateral == null) { throw new CollateralNotFoundException(loanId, collateralId); }
 

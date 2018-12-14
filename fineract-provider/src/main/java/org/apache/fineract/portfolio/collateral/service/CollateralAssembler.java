@@ -85,9 +85,7 @@ public class CollateralAssembler {
             } else {
                 // no collaterals passed, use existing ones against loan
             }
-
         }
-
         return collateralItems;
     }
 }

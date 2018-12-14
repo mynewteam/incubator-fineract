@@ -44,8 +44,7 @@ public class CollateralData {
     @SuppressWarnings("unused")
     private final Collection<CodeValueData> allowedCollateralTypes;
     private final CurrencyData currency;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "colllateral", orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<LandCollateral> landCollateral = new HashSet<>();
+    
    
 
     public static CollateralData instance(final Long id, final CodeValueData type, final BigDecimal value, final String description,

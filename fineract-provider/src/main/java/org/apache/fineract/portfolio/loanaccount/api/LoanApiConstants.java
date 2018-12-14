@@ -71,6 +71,7 @@ public interface LoanApiConstants {
     public static final String submittedOnDateParameterName = "submittedOnDate";
     public static final String submittedOnNoteParameterName = "interestChargedFromDate";
     public static final String collateralParameterName = "collateral";
+    public static final String landCollateralParameterName = "landCollateral";
     public static final String syncDisbursementWithMeetingParameterName = "syncDisbursementWithMeeting";
     public static final String linkAccountIdParameterName = "linkAccountId";
     public static final String createStandingInstructionAtDisbursementParameterName = "createStandingInstructionAtDisbursement";

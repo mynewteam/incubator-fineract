@@ -45,6 +45,8 @@ import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
 import org.apache.fineract.portfolio.client.exception.ClientNotActiveException;
 import org.apache.fineract.portfolio.collateral.domain.LoanCollateral;
 import org.apache.fineract.portfolio.collateral.service.CollateralAssembler;
+import org.apache.fineract.portfolio.collateral.zland.domain.LandCollateral;
+import org.apache.fineract.portfolio.collateral.zland.service.LandCollateralAssembler;
 import org.apache.fineract.portfolio.fund.domain.Fund;
 import org.apache.fineract.portfolio.fund.domain.FundRepository;
 import org.apache.fineract.portfolio.fund.exception.FundNotFoundException;
@@ -100,6 +102,7 @@ public class LoanAssembler
 	private final LoanScheduleAssembler loanScheduleAssembler;
 	private final LoanChargeAssembler loanChargeAssembler;
 	private final CollateralAssembler loanCollateralAssembler;
+	private final LandCollateralAssembler landCollateralAssembler;
 	private final LoanSummaryWrapper loanSummaryWrapper;
 	private final LoanRepaymentScheduleTransactionProcessorFactory loanRepaymentScheduleTransactionProcessorFactory;
 	private final HolidayRepository holidayRepository;
@@ -121,6 +124,7 @@ public class LoanAssembler
 		final LoanScheduleAssembler loanScheduleAssembler,
 		final LoanChargeAssembler loanChargeAssembler,
 		final CollateralAssembler loanCollateralAssembler,
+		final LandCollateralAssembler landCollateralAssembler,
 		final LoanSummaryWrapper loanSummaryWrapper,
 		final LoanRepaymentScheduleTransactionProcessorFactory loanRepaymentScheduleTransactionProcessorFactory,
 		final HolidayRepository holidayRepository,
@@ -140,6 +144,7 @@ public class LoanAssembler
 		this.loanScheduleAssembler = loanScheduleAssembler;
 		this.loanChargeAssembler = loanChargeAssembler;
 		this.loanCollateralAssembler = loanCollateralAssembler;
+		this.landCollateralAssembler = landCollateralAssembler;
 		this.loanSummaryWrapper = loanSummaryWrapper;
 		this.loanRepaymentScheduleTransactionProcessorFactory = loanRepaymentScheduleTransactionProcessorFactory;
 		this.holidayRepository = holidayRepository;
@@ -235,6 +240,9 @@ public class LoanAssembler
 			}
 		}
 		final Set<LoanCollateral> collateral = this.loanCollateralAssembler.fromParsedJson(element);
+		
+		final Set<LandCollateral> landCollateral = this.landCollateralAssembler.fromParsedJson(element);
+		
 		final Set<LoanCharge> loanCharges = this.loanChargeAssembler.fromParsedJson(element, disbursementDetails);
 		for (final LoanCharge loanCharge : loanCharges)
 		{
@@ -292,7 +300,7 @@ public class LoanAssembler
 				loanType.getId().intValue(),
 				loanProduct, fund, loanOfficer, loanPurpose, loanTransactionProcessingStrategy,
 				loanProductRelatedDetail, loanCharges,
-				collateral, syncDisbursementWithMeeting, fixedEmiAmount, disbursementDetails, maxOutstandingLoanBalance,
+				collateral, landCollateral, syncDisbursementWithMeeting, fixedEmiAmount, disbursementDetails, maxOutstandingLoanBalance,
 				createStandingInstructionAtDisbursement, isFloatingInterestRate, interestRateDifferential);
 
 		} else if (group != null)
@@ -310,6 +318,7 @@ public class LoanAssembler
 				loanProductRelatedDetail, 
 				loanCharges, 
 				collateral,
+				landCollateral,
 				syncDisbursementWithMeeting, 
 				fixedEmiAmount, 
 				disbursementDetails, 
@@ -334,6 +343,7 @@ public class LoanAssembler
 				loanProductRelatedDetail, 
 				loanCharges,
 				collateral,
+				landCollateral,
 				fixedEmiAmount, 
 				disbursementDetails, 
 				maxOutstandingLoanBalance, 

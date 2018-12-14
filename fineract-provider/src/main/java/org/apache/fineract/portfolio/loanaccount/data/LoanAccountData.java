@@ -25,15 +25,19 @@ import javax.persistence.Transient;
 
 import org.apache.fineract.infrastructure.bulkimport.constants.TemplatePopulateImportConstants;
 import org.apache.fineract.infrastructure.codes.data.CodeValueData;
+import org.apache.fineract.infrastructure.codes.domain.CodeValue;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.dataqueries.data.DatatableData;
 import org.apache.fineract.organisation.monetary.data.CurrencyData;
 import org.apache.fineract.organisation.staff.data.StaffData;
 import org.apache.fineract.portfolio.account.data.PortfolioAccountData;
 import org.apache.fineract.portfolio.accountdetails.data.LoanAccountSummaryData;
+import org.apache.fineract.portfolio.addresskhmer.data.ProvinceKhmerData;
 import org.apache.fineract.portfolio.calendar.data.CalendarData;
 import org.apache.fineract.portfolio.charge.data.ChargeData;
 import org.apache.fineract.portfolio.collateral.data.CollateralData;
+import org.apache.fineract.portfolio.collateral.zland.data.LandCollateralData;
+import org.apache.fineract.portfolio.collateral.zland.domain.LandCollateral;
 import org.apache.fineract.portfolio.common.domain.PeriodFrequencyType;
 import org.apache.fineract.portfolio.floatingrates.data.InterestRatePeriodData;
 import org.apache.fineract.portfolio.fund.data.FundData;
@@ -133,6 +137,7 @@ public class LoanAccountData
 	private final Collection<LoanTransactionData> transactions;
 	private final Collection<LoanChargeData> charges;
 	private final Collection<CollateralData> collateral;
+	private final Collection<LandCollateralData> landCollateral;
 	private final Collection<GuarantorData> guarantors;
 	private final CalendarData meeting;
 	private final Collection<NoteData> notes;
@@ -155,6 +160,11 @@ public class LoanAccountData
 	private final Collection<TransactionProcessingStrategyData> transactionProcessingStrategyOptions;
 	private final Collection<ChargeData> chargeOptions;
 	private final Collection<CodeValueData> loanCollateralOptions;
+	private final Collection<CodeValueData> collateralName;
+	private final Collection<CodeValueData> collateralNature;
+	private final Collection<ProvinceKhmerData> provinceOptions;
+	private final Collection<CodeValueData>gender;
+	private final Collection<CodeValueData>collateralStatusOption;
 	private final Collection<CalendarData> calendarOptions;
 
 	@Transient
@@ -433,6 +443,7 @@ public class LoanAccountData
 		this.transactions = null;
 
 		this.collateral = null;
+		this.landCollateral = null;
 		this.guarantors = null;
 		this.meeting = null;
 		this.notes = null;
@@ -453,6 +464,11 @@ public class LoanAccountData
 		this.transactionProcessingStrategyOptions = null;
 		this.chargeOptions = null;
 		this.loanCollateralOptions = null;
+		this.collateralName = null;
+		this.collateralNature = null;
+		this.provinceOptions = null;
+		this.gender = null;
+		this.collateralStatusOption = null;
 		this.calendarOptions = null;
 		this.feeChargesAtDisbursementCharged = null;
 		this.totalOverpaid = null;
@@ -545,7 +561,10 @@ public class LoanAccountData
 	 * Used to produce a {@link LoanAccountData} with only collateral options for
 	 * now.
 	 */
-	public static LoanAccountData collateralTemplate(final Collection<CodeValueData> loanCollateralOptions)
+	public static LoanAccountData collateralTemplate(final Collection<CodeValueData> loanCollateralOptions, 
+	        final Collection<CodeValueData> collateralName, final Collection<CodeValueData> collateralNature, 
+	        final Collection<ProvinceKhmerData> province, final Collection<CodeValueData> gender,
+	        final Collection<CodeValueData> collateralStatusOption)
 	{
 		final Long id = null;
 		final String accountNo = null;
@@ -606,6 +625,7 @@ public class LoanAccountData
 		final Collection<LoanTransactionData> transactions = null;
 		final Collection<LoanChargeData> charges = null;
 		final Collection<CollateralData> collateral = null;
+		final Collection<LandCollateralData> landCollateral = null;
 		final Collection<GuarantorData> guarantors = null;
 		final Collection<NoteData> notes = null;
 		final CalendarData calendarData = null;
@@ -677,13 +697,13 @@ public class LoanAccountData
 			recurringMoratoriumOnPrincipalPeriods, graceOnInterestPayment,
 			graceOnInterestCharged, interestChargedFromDate, timeline, summary, feeChargesDueAtDisbursementCharged,
 			repaymentSchedule,
-			transactions, charges, collateral, guarantors, calendarData, productOptions, termFrequencyTypeOptions,
+			transactions, charges, collateral, landCollateral, guarantors, calendarData, productOptions, termFrequencyTypeOptions,
 			repaymentFrequencyTypeOptions, repaymentFrequencyNthDayTypeOptions, repaymentFrequencyDayOfWeekTypeOptions,
 			transactionProcessingStrategyOptions, interestRateFrequencyTypeOptions, amortizationTypeOptions,
 			interestTypeOptions,
 			interestCalculationPeriodTypeOptions, fundOptions, chargeOptions, chargeTemplate, loanOfficerOptions,
 			loanPurposeOptions,
-			loanCollateralOptions, calendarOptions, syncDisbursementWithMeeting, loancounter, loanProductCounter, notes,
+			loanCollateralOptions, collateralName, collateralNature, province, gender, collateralStatusOption, calendarOptions, syncDisbursementWithMeeting, loancounter, loanProductCounter, notes,
 			accountLinkingOptions, linkedAccount, disbursementData, multiDisburseLoan, canDefineInstallmentAmount,
 			fixedEmiAmount,
 			maxOutstandingLoanBalance, emiAmountVariations, memberVariations, product, inArrears, graceOnArrearsAgeing,
@@ -765,6 +785,7 @@ public class LoanAccountData
 		final Collection<LoanTransactionData> transactions = null;
 		final Collection<LoanChargeData> charges = null;
 		final Collection<CollateralData> collateral = null;
+		final Collection<LandCollateralData> landCollateralData = null;
 		final Collection<GuarantorData> guarantors = null;
 		final Collection<NoteData> notes = null;
 		final CalendarData calendarData = null;
@@ -784,6 +805,11 @@ public class LoanAccountData
 		final Collection<StaffData> loanOfficerOptions = null;
 		final Collection<CodeValueData> loanPurposeOptions = null;
 		final Collection<CodeValueData> loanCollateralOptions = null;
+		final Collection<CodeValueData> collateralName = null;
+		final Collection<CodeValueData> collateralNature = null;
+		final Collection<ProvinceKhmerData> provinceOptions = null;
+		final Collection<CodeValueData>gender=null;
+		final Collection<CodeValueData>collateralStatusOption = null;
 		final Collection<CalendarData> calendarOptions = null;
 		final Boolean syncDisbursementWithMeeting = null;
 		final Integer loancounter = null;
@@ -838,12 +864,12 @@ public class LoanAccountData
 			recurringMoratoriumOnPrincipalPeriods, graceOnInterestPayment,
 			graceOnInterestCharged, interestChargedFromDate, timeline, summary, feeChargesDueAtDisbursementCharged,
 			repaymentSchedule,
-			transactions, charges, collateral, guarantors, calendarData, productOptions, termFrequencyTypeOptions,
+			transactions, charges, collateral,landCollateralData , guarantors, calendarData, productOptions, termFrequencyTypeOptions,
 			repaymentFrequencyTypeOptions, repaymentFrequencyNthDayTypeOptions, repaymentFrequencyDayOfWeekTypeOptions,
 			repaymentStrategyOptions, interestRateFrequencyTypeOptions, amortizationTypeOptions, interestTypeOptions,
 			interestCalculationPeriodTypeOptions, fundOptions, chargeOptions, chargeTemplate, loanOfficerOptions,
 			loanPurposeOptions,
-			loanCollateralOptions, calendarOptions, syncDisbursementWithMeeting, loancounter, loanProductCounter, notes,
+			loanCollateralOptions, collateralName, collateralNature, provinceOptions,gender, collateralStatusOption, calendarOptions, syncDisbursementWithMeeting, loancounter, loanProductCounter, notes,
 			accountLinkingOptions, linkedAccount, disbursementData, multiDisburseLoan, canDefineInstallmentAmount,
 			fixedEmiAmount,
 			maxOutstandingLoanBalance, emiAmountVariations, memberVariations, product, inArrears, graceOnArrearsAgeing,
@@ -880,13 +906,13 @@ public class LoanAccountData
 			acc.recurringMoratoriumOnPrincipalPeriods,
 			acc.graceOnInterestPayment, acc.graceOnInterestCharged, acc.interestChargedFromDate, clientAcc.timeline,
 			acc.summary,
-			acc.feeChargesAtDisbursementCharged, acc.repaymentSchedule, acc.transactions, acc.charges, acc.collateral,
+			acc.feeChargesAtDisbursementCharged, acc.repaymentSchedule, acc.transactions, acc.charges, acc.collateral,acc.landCollateral,
 			acc.guarantors,
 			acc.meeting, acc.productOptions, acc.termFrequencyTypeOptions, acc.repaymentFrequencyTypeOptions,
 			acc.repaymentFrequencyNthDayTypeOptions, acc.repaymentFrequencyDaysOfWeekTypeOptions,
 			acc.transactionProcessingStrategyOptions, acc.interestRateFrequencyTypeOptions, acc.amortizationTypeOptions,
 			acc.interestTypeOptions, acc.interestCalculationPeriodTypeOptions, acc.fundOptions, acc.chargeOptions, null,
-			acc.loanOfficerOptions, acc.loanPurposeOptions, acc.loanCollateralOptions, acc.calendarOptions,
+			acc.loanOfficerOptions, acc.loanPurposeOptions, acc.loanCollateralOptions, acc.collateralName, acc.collateralNature, acc.provinceOptions , acc.gender, acc.collateralStatusOption, acc.calendarOptions,
 			acc.syncDisbursementWithMeeting, acc.loanCounter, acc.loanProductCounter, acc.notes,
 			acc.accountLinkingOptions,
 			acc.linkedAccount, acc.disbursementDetails, acc.multiDisburseLoan, acc.canDefineInstallmentAmount,
@@ -966,6 +992,7 @@ public class LoanAccountData
 		final Collection<LoanTransactionData> transactions = null;
 		final Collection<LoanChargeData> charges = null;
 		final Collection<CollateralData> collateral = null;
+		final Collection<LandCollateralData> landCollateral = null;
 		final Collection<GuarantorData> guarantors = null;
 		final Collection<NoteData> notes = null;
 		final CalendarData calendarData = null;
@@ -985,6 +1012,11 @@ public class LoanAccountData
 		final Collection<StaffData> loanOfficerOptions = null;
 		final Collection<CodeValueData> loanPurposeOptions = null;
 		final Collection<CodeValueData> loanCollateralOptions = null;
+		final Collection<CodeValueData> collateralName=null;
+		final Collection<CodeValueData>collateralNature=null;
+		final Collection<ProvinceKhmerData> provinceOptions=null;
+		final Collection<CodeValueData>gender =null;
+		final Collection<CodeValueData>collateralStatusOption = null;
 		final Collection<CalendarData> calendarOptions = null;
 		final Boolean syncDisbursementWithMeeting = null;
 		final Integer loancounter = null;
@@ -1039,12 +1071,12 @@ public class LoanAccountData
 			recurringMoratoriumOnPrincipalPeriods, graceOnInterestPayment,
 			graceOnInterestCharged, interestChargedFromDate, timeline, summary, feeChargesDueAtDisbursementCharged,
 			repaymentSchedule,
-			transactions, charges, collateral, guarantors, calendarData, productOptions, termFrequencyTypeOptions,
+			transactions, charges, collateral, landCollateral, guarantors, calendarData, productOptions, termFrequencyTypeOptions,
 			repaymentFrequencyTypeOptions, repaymentFrequencyNthDayTypeOptions, repaymentFrequencyDayOfWeekTypeOptions,
 			repaymentStrategyOptions, interestRateFrequencyTypeOptions, amortizationTypeOptions, interestTypeOptions,
 			interestCalculationPeriodTypeOptions, fundOptions, chargeOptions, chargeTemplate, loanOfficerOptions,
 			loanPurposeOptions,
-			loanCollateralOptions, calendarOptions, syncDisbursementWithMeeting, loancounter, loanProductCounter, notes,
+			loanCollateralOptions, collateralName, collateralNature, provinceOptions, gender, collateralStatusOption, calendarOptions, syncDisbursementWithMeeting, loancounter, loanProductCounter, notes,
 			accountLinkingOptions, linkedAccount, disbursementData, multiDisburseLoan, canDefineInstallmentAmount,
 			fixedEmiAmount,
 			maxOutstandingBalance, emiAmountVariations, memberVariations, product, inArrears, graceOnArrearsAgeing,
@@ -1079,13 +1111,13 @@ public class LoanAccountData
 			acc.recurringMoratoriumOnPrincipalPeriods,
 			acc.graceOnInterestPayment, acc.graceOnInterestCharged, acc.interestChargedFromDate, groupAcc.timeline,
 			acc.summary,
-			acc.feeChargesAtDisbursementCharged, acc.repaymentSchedule, acc.transactions, acc.charges, acc.collateral,
+			acc.feeChargesAtDisbursementCharged, acc.repaymentSchedule, acc.transactions, acc.charges, acc.collateral,acc.landCollateral,
 			acc.guarantors,
 			acc.meeting, acc.productOptions, acc.termFrequencyTypeOptions, acc.repaymentFrequencyTypeOptions,
 			acc.repaymentFrequencyNthDayTypeOptions, acc.repaymentFrequencyDaysOfWeekTypeOptions,
 			acc.transactionProcessingStrategyOptions, acc.interestRateFrequencyTypeOptions, acc.amortizationTypeOptions,
 			acc.interestTypeOptions, acc.interestCalculationPeriodTypeOptions, acc.fundOptions, acc.chargeOptions, null,
-			acc.loanOfficerOptions, acc.loanPurposeOptions, acc.loanCollateralOptions, acc.calendarOptions,
+			acc.loanOfficerOptions, acc.loanPurposeOptions, acc.loanCollateralOptions, acc.collateralName, acc.collateralNature, acc.provinceOptions, acc.gender, acc.collateralStatusOption, acc.calendarOptions,
 			acc.syncDisbursementWithMeeting, acc.loanCounter, acc.loanProductCounter, acc.notes,
 			acc.accountLinkingOptions,
 			acc.linkedAccount, acc.disbursementDetails, acc.multiDisburseLoan, acc.canDefineInstallmentAmount,
@@ -1115,6 +1147,11 @@ public class LoanAccountData
 		final Collection<ChargeData> chargeOptions,
 		final Collection<CodeValueData> loanPurposeOptions,
 		final Collection<CodeValueData> loanCollateralOptions,
+		final Collection<CodeValueData> collateralName,
+		final Collection<CodeValueData> collateralNature,
+		final Collection<ProvinceKhmerData>provinceOptions,
+		final Collection<CodeValueData>gender,
+		final Collection<CodeValueData>collateralStatusOption,
 		final Integer loanCycleNumber,
 		final Collection<LoanAccountSummaryData> clientActiveLoanOptions)
 	{
@@ -1163,6 +1200,7 @@ public class LoanAccountData
 		final LoanScheduleData repaymentSchedule = null;
 		final Collection<LoanTransactionData> transactions = null;
 		final Collection<CollateralData> collateral = null;
+		final Collection<LandCollateralData> landCollateral = null;
 		final Collection<GuarantorData> guarantors = null;
 		final Collection<NoteData> notes = null;
 		final CalendarData calendarData = null;
@@ -1259,13 +1297,13 @@ public class LoanAccountData
 			product.getRecurringMoratoriumOnPrincipalPeriods(), product.getGraceOnInterestPayment(),
 			product.getGraceOnInterestCharged(), interestChargedFromDate, timeline, summary,
 			feeChargesDueAtDisbursementCharged,
-			repaymentSchedule, transactions, charges, collateral, guarantors, calendarData, productOptions,
+			repaymentSchedule, transactions, charges, collateral,landCollateral, guarantors, calendarData, productOptions,
 			termFrequencyTypeOptions,
 			repaymentFrequencyTypeOptions, repaymentFrequencyNthDayTypeOptions, repaymentFrequencyDayOfWeekTypeOptions,
 			repaymentStrategyOptions, interestRateFrequencyTypeOptions, amortizationTypeOptions, interestTypeOptions,
 			interestCalculationPeriodTypeOptions, fundOptions, chargeOptions, chargeTemplate, loanOfficerOptions,
 			loanPurposeOptions,
-			loanCollateralOptions, calendarOptions, syncDisbursementWithMeeting, loancounter, loanProductCounter, notes,
+			loanCollateralOptions, collateralName, collateralNature, provinceOptions, gender, collateralStatusOption, calendarOptions, syncDisbursementWithMeeting, loancounter, loanProductCounter, notes,
 			accountLinkingOptions, linkedAccount, disbursementData, product.getMultiDisburseLoan(),
 			product.canDefineInstallmentAmount(), fixedEmi, product.getOutstandingLoanBalance(), emiAmountVariations,
 			memberVariations,
@@ -1286,6 +1324,7 @@ public class LoanAccountData
 		final LoanScheduleData repaymentSchedule = null;
 		final Collection<LoanTransactionData> transactions = null;
 		final Collection<CollateralData> collateral = null;
+		final Collection<LandCollateralData> landCollateral = null;
 		final Collection<GuarantorData> guarantors = null;
 		final Collection<NoteData> notes = null;
 		final CalendarData calendarData = null;
@@ -1303,6 +1342,11 @@ public class LoanAccountData
 		final Collection<StaffData> loanOfficerOptions = null;
 		final Collection<CodeValueData> loanPurposeOptions = null;
 		final Collection<CodeValueData> loanCollateralOptions = null;
+		final Collection<CodeValueData> collateralName=null;
+		final Collection<CodeValueData> collateralNature=null;
+		final Collection<ProvinceKhmerData>provinceOptions=null;
+		final Collection<CodeValueData>gender=null;
+		final Collection<CodeValueData>collateralStatusOption=null;
 		final Collection<CalendarData> calendarOptions = null;
 		final PaidInAdvanceData paidInAdvance = null;
 
@@ -1333,13 +1377,13 @@ public class LoanAccountData
 			product.getGraceOnPrincipalPayment(), product.getRecurringMoratoriumOnPrincipalPeriods(),
 			product.getGraceOnInterestPayment(), product.getGraceOnInterestCharged(), acc.interestChargedFromDate,
 			acc.timeline,
-			acc.summary, acc.feeChargesAtDisbursementCharged, repaymentSchedule, transactions, charges, collateral,
+			acc.summary, acc.feeChargesAtDisbursementCharged, repaymentSchedule, transactions, charges, collateral,landCollateral,
 			guarantors,
 			calendarData, productOptions, termFrequencyTypeOptions, repaymentFrequencyTypeOptions, null, null,
 			repaymentStrategyOptions, interestRateFrequencyTypeOptions, amortizationTypeOptions, interestTypeOptions,
 			interestCalculationPeriodTypeOptions, fundOptions, chargeOptions, chargeTemplate, loanOfficerOptions,
 			loanPurposeOptions,
-			loanCollateralOptions, calendarOptions, acc.syncDisbursementWithMeeting, acc.loanCounter,
+			loanCollateralOptions, collateralName, collateralNature, provinceOptions , gender, collateralStatusOption, calendarOptions, acc.syncDisbursementWithMeeting, acc.loanCounter,
 			acc.loanProductCounter, notes,
 			acc.accountLinkingOptions, acc.linkedAccount, acc.disbursementDetails, product.getMultiDisburseLoan(),
 			product.canDefineInstallmentAmount(), acc.fixedEmiAmount, product.getOutstandingLoanBalance(),
@@ -1445,6 +1489,7 @@ public class LoanAccountData
 		final Collection<LoanTransactionData> transactions = null;
 		final Collection<LoanChargeData> charges = null;
 		final Collection<CollateralData> collateral = null;
+		final Collection<LandCollateralData>landCollateral=null;
 		final Collection<GuarantorData> guarantors = null;
 		final Collection<NoteData> notes = null;
 		final CalendarData calendarData = null;
@@ -1464,6 +1509,11 @@ public class LoanAccountData
 		final Collection<StaffData> loanOfficerOptions = null;
 		final Collection<CodeValueData> loanPurposeOptions = null;
 		final Collection<CodeValueData> loanCollateralOptions = null;
+		final Collection<CodeValueData>collateralName = null;
+		final Collection<CodeValueData>collateralNature= null;
+		final Collection<ProvinceKhmerData>provinceOptions=null;
+		final Collection<CodeValueData>gender=null;
+		final Collection<CodeValueData>collateralStatusOption=null;
 		final Collection<CalendarData> calendarOptions = null;
 		final Collection<PortfolioAccountData> accountLinkingOptions = null;
 		final PortfolioAccountData linkedAccount = null;
@@ -1492,13 +1542,13 @@ public class LoanAccountData
 			allowPartialPeriodInterestCalcualtion, expectedFirstRepaymentOnDate, graceOnPrincipalPayment,
 			recurringMoratoriumOnPrincipalPeriods, graceOnInterestPayment,
 			graceOnInterestCharged, interestChargedFromDate, timeline, loanSummary, feeChargesDueAtDisbursementCharged,
-			repaymentSchedule, transactions, charges, collateral, guarantors, calendarData, productOptions,
+			repaymentSchedule, transactions, charges, collateral, landCollateral, guarantors, calendarData, productOptions,
 			termFrequencyTypeOptions,
 			repaymentFrequencyTypeOptions, repaymentFrequencyNthDayTypeOptions, repaymentFrequencyDayOfWeekTypeOptions,
 			repaymentStrategyOptions, interestRateFrequencyTypeOptions, amortizationTypeOptions, interestTypeOptions,
 			interestCalculationPeriodTypeOptions, fundOptions, chargeOptions, chargeTemplate, loanOfficerOptions,
 			loanPurposeOptions,
-			loanCollateralOptions, calendarOptions, syncDisbursementWithMeeting, loancounter, loanProductCounter, notes,
+			loanCollateralOptions, collateralName, collateralNature, provinceOptions, gender, collateralStatusOption, calendarOptions, syncDisbursementWithMeeting, loancounter, loanProductCounter, notes,
 			accountLinkingOptions, linkedAccount, disbursementData, multiDisburseLoan, canDefineInstallmentAmount,
 			fixedEmiAmont,
 			outstandingLoanBalance, emiAmountVariations, memberVariations, product, inArrears, graceOnArrearsAgeing,
@@ -1521,6 +1571,7 @@ public class LoanAccountData
 		final Collection<LoanTransactionData> transactions,
 		final Collection<LoanChargeData> charges,
 		final Collection<CollateralData> collateral,
+		final Collection<LandCollateralData>landCollateral,
 		final Collection<GuarantorData> guarantors,
 		final CalendarData calendarData,
 		final Collection<LoanProductData> productOptions,
@@ -1539,6 +1590,11 @@ public class LoanAccountData
 		final Collection<StaffData> loanOfficerOptions,
 		final Collection<CodeValueData> loanPurposeOptions,
 		final Collection<CodeValueData> loanCollateralOptions,
+		final Collection<CodeValueData>collateralName,
+		final Collection<CodeValueData>collateralNature,
+		final Collection<ProvinceKhmerData>provinceOptions,
+		final Collection<CodeValueData>gender,
+		final Collection<CodeValueData>collateralStatusOption,
 		final Collection<CalendarData> calendarOptions,
 		final Collection<NoteData> notes,
 		final Collection<PortfolioAccountData> accountLinkingOptions,
@@ -1574,7 +1630,7 @@ public class LoanAccountData
 			acc.recurringMoratoriumOnPrincipalPeriods,
 			acc.graceOnInterestPayment, acc.graceOnInterestCharged, acc.interestChargedFromDate, acc.timeline,
 			acc.summary,
-			acc.feeChargesAtDisbursementCharged, repaymentSchedule, transactions, charges, collateral, guarantors,
+			acc.feeChargesAtDisbursementCharged, repaymentSchedule, transactions, charges, collateral, landCollateral, guarantors,
 			calendarData,
 			productOptions, termFrequencyTypeOptions, repaymentFrequencyTypeOptions,
 			repaymentFrequencyNthDayTypeOptions,
@@ -1582,7 +1638,7 @@ public class LoanAccountData
 			interestRateFrequencyTypeOptions,
 			amortizationTypeOptions, interestTypeOptions, interestCalculationPeriodTypeOptions, fundOptions,
 			chargeOptions,
-			chargeTemplate, loanOfficerOptions, loanPurposeOptions, loanCollateralOptions, calendarOptions,
+			chargeTemplate, loanOfficerOptions, loanPurposeOptions, loanCollateralOptions, collateralName, collateralNature, provinceOptions, gender, collateralStatusOption, calendarOptions,
 			acc.syncDisbursementWithMeeting, acc.loanCounter, acc.loanProductCounter, notes, accountLinkingOptions,
 			linkedAccount,
 			disbursementDetails, acc.multiDisburseLoan, acc.canDefineInstallmentAmount, acc.fixedEmiAmount,
@@ -1602,13 +1658,37 @@ public class LoanAccountData
 		final Collection<CalendarData> calendarOptions,
 		final Collection<PortfolioAccountData> accountLinkingOptions)
 	{
-		return associationsAndTemplate(acc, acc.repaymentSchedule, acc.transactions, acc.charges, acc.collateral,
+		return associationsAndTemplate(
+		        acc, acc.repaymentSchedule, 
+		        acc.transactions, 
+		        acc.charges, 
+		        acc.collateral,
+		        acc.landCollateral,
 			acc.guarantors,
-			acc.meeting, productOptions, acc.termFrequencyTypeOptions, acc.repaymentFrequencyTypeOptions,
-			acc.repaymentFrequencyNthDayTypeOptions, acc.repaymentFrequencyDaysOfWeekTypeOptions,
-			acc.transactionProcessingStrategyOptions, acc.interestRateFrequencyTypeOptions, acc.amortizationTypeOptions,
-			acc.interestTypeOptions, acc.interestCalculationPeriodTypeOptions, acc.fundOptions, acc.chargeOptions, null,
-			allowedLoanOfficers, acc.loanPurposeOptions, acc.loanCollateralOptions, calendarOptions, acc.notes,
+			acc.meeting, 
+			productOptions, 
+			acc.termFrequencyTypeOptions, 
+			acc.repaymentFrequencyTypeOptions,
+			acc.repaymentFrequencyNthDayTypeOptions, 
+			acc.repaymentFrequencyDaysOfWeekTypeOptions,
+			acc.transactionProcessingStrategyOptions, 
+			acc.interestRateFrequencyTypeOptions, 
+			acc.amortizationTypeOptions,
+			acc.interestTypeOptions, 
+			acc.interestCalculationPeriodTypeOptions, 
+			acc.fundOptions, 
+			acc.chargeOptions, 
+			null,
+			allowedLoanOfficers, 
+			acc.loanPurposeOptions, 
+			acc.loanCollateralOptions, 
+			acc.collateralName,
+			acc.collateralNature,
+			acc.provinceOptions,
+			acc.gender,
+			acc.collateralStatusOption,
+			calendarOptions, 
+			acc.notes,
 			accountLinkingOptions,
 			acc.linkedAccount, acc.disbursementDetails, acc.emiAmountVariations, acc.overdueCharges, acc.paidInAdvance,
 			acc.interestRatesPeriods, acc.clientActiveLoanOptions);
@@ -1634,13 +1714,13 @@ public class LoanAccountData
 			acc.recurringMoratoriumOnPrincipalPeriods,
 			acc.graceOnInterestPayment, acc.graceOnInterestCharged, acc.interestChargedFromDate, acc.timeline,
 			acc.summary,
-			acc.feeChargesAtDisbursementCharged, acc.repaymentSchedule, acc.transactions, acc.charges, acc.collateral,
+			acc.feeChargesAtDisbursementCharged, acc.repaymentSchedule, acc.transactions, acc.charges, acc.collateral,acc.landCollateral,
 			acc.guarantors,
 			acc.meeting, acc.productOptions, acc.termFrequencyTypeOptions, acc.repaymentFrequencyTypeOptions,
 			acc.repaymentFrequencyNthDayTypeOptions, acc.repaymentFrequencyDaysOfWeekTypeOptions,
 			acc.transactionProcessingStrategyOptions, acc.interestRateFrequencyTypeOptions, acc.amortizationTypeOptions,
 			acc.interestTypeOptions, acc.interestCalculationPeriodTypeOptions, acc.fundOptions, acc.chargeOptions, null,
-			acc.loanOfficerOptions, acc.loanPurposeOptions, acc.loanCollateralOptions, acc.calendarOptions,
+			acc.loanOfficerOptions, acc.loanPurposeOptions, acc.loanCollateralOptions, acc.collateralName, acc.collateralNature, acc.provinceOptions, acc.gender, acc.collateralStatusOption, acc.calendarOptions,
 			acc.syncDisbursementWithMeeting, acc.loanCounter, acc.loanProductCounter, acc.notes,
 			acc.accountLinkingOptions,
 			acc.linkedAccount, acc.disbursementDetails, acc.multiDisburseLoan, acc.canDefineInstallmentAmount,
@@ -1722,13 +1802,13 @@ public class LoanAccountData
 			acc.recurringMoratoriumOnPrincipalPeriods,
 			acc.graceOnInterestPayment, acc.graceOnInterestCharged, acc.interestChargedFromDate, acc.timeline,
 			acc.summary,
-			acc.feeChargesAtDisbursementCharged, acc.repaymentSchedule, acc.transactions, acc.charges, acc.collateral,
+			acc.feeChargesAtDisbursementCharged, acc.repaymentSchedule, acc.transactions, acc.charges, acc.collateral,acc.landCollateral,
 			acc.guarantors,
 			acc.meeting, acc.productOptions, acc.termFrequencyTypeOptions, acc.repaymentFrequencyTypeOptions,
 			acc.repaymentFrequencyNthDayTypeOptions, acc.repaymentFrequencyDaysOfWeekTypeOptions,
 			acc.transactionProcessingStrategyOptions, acc.interestRateFrequencyTypeOptions, acc.amortizationTypeOptions,
 			acc.interestTypeOptions, acc.interestCalculationPeriodTypeOptions, acc.fundOptions, acc.chargeOptions, null,
-			acc.loanOfficerOptions, acc.loanPurposeOptions, acc.loanCollateralOptions, acc.calendarOptions,
+			acc.loanOfficerOptions, acc.loanPurposeOptions, acc.loanCollateralOptions, acc.collateralName, acc.collateralNature, acc.provinceOptions, acc.gender, acc.collateralStatusOption, acc.calendarOptions,
 			acc.syncDisbursementWithMeeting, acc.loanCounter, acc.loanProductCounter, acc.notes,
 			acc.accountLinkingOptions,
 			acc.linkedAccount, acc.disbursementDetails, acc.multiDisburseLoan, acc.canDefineInstallmentAmount,
@@ -1770,13 +1850,13 @@ public class LoanAccountData
 			acc.recurringMoratoriumOnPrincipalPeriods,
 			acc.graceOnInterestPayment, acc.graceOnInterestCharged, acc.interestChargedFromDate, acc.timeline,
 			acc.summary,
-			acc.feeChargesAtDisbursementCharged, acc.repaymentSchedule, acc.transactions, acc.charges, acc.collateral,
+			acc.feeChargesAtDisbursementCharged, acc.repaymentSchedule, acc.transactions, acc.charges, acc.collateral,acc.landCollateral,
 			acc.guarantors,
 			acc.meeting, acc.productOptions, acc.termFrequencyTypeOptions, acc.repaymentFrequencyTypeOptions,
 			acc.repaymentFrequencyNthDayTypeOptions, acc.repaymentFrequencyDaysOfWeekTypeOptions,
 			acc.transactionProcessingStrategyOptions, acc.interestRateFrequencyTypeOptions, acc.amortizationTypeOptions,
 			acc.interestTypeOptions, acc.interestCalculationPeriodTypeOptions, acc.fundOptions, acc.chargeOptions, null,
-			acc.loanOfficerOptions, acc.loanPurposeOptions, acc.loanCollateralOptions, acc.calendarOptions,
+			acc.loanOfficerOptions, acc.loanPurposeOptions, acc.loanCollateralOptions, acc.collateralName, acc.collateralNature, acc.provinceOptions, acc.gender, acc.collateralStatusOption, acc.calendarOptions,
 			acc.syncDisbursementWithMeeting, acc.loanCounter, acc.loanProductCounter, acc.notes,
 			acc.accountLinkingOptions,
 			acc.linkedAccount, acc.disbursementDetails, acc.multiDisburseLoan, acc.canDefineInstallmentAmount,
@@ -1810,12 +1890,12 @@ public class LoanAccountData
 			acc.recurringMoratoriumOnPrincipalPeriods, acc.graceOnInterestPayment, acc.graceOnInterestCharged,
 			acc.interestChargedFromDate, acc.timeline, acc.summary, acc.feeChargesAtDisbursementCharged,
 			acc.repaymentSchedule,
-			acc.transactions, acc.charges, acc.collateral, acc.guarantors, acc.meeting, acc.productOptions,
+			acc.transactions, acc.charges, acc.collateral, acc.landCollateral, acc.guarantors, acc.meeting, acc.productOptions,
 			acc.termFrequencyTypeOptions, acc.repaymentFrequencyTypeOptions, acc.repaymentFrequencyNthDayTypeOptions,
 			acc.repaymentFrequencyDaysOfWeekTypeOptions, acc.transactionProcessingStrategyOptions,
 			acc.interestRateFrequencyTypeOptions, acc.amortizationTypeOptions, acc.interestTypeOptions,
 			acc.interestCalculationPeriodTypeOptions, acc.fundOptions, acc.chargeOptions, null, acc.loanOfficerOptions,
-			acc.loanPurposeOptions, acc.loanCollateralOptions, acc.calendarOptions, acc.syncDisbursementWithMeeting,
+			acc.loanPurposeOptions, acc.loanCollateralOptions, acc.collateralName, acc.collateralNature, acc.provinceOptions, acc.gender, acc.collateralStatusOption, acc.calendarOptions, acc.syncDisbursementWithMeeting,
 			acc.loanCounter,
 			acc.loanProductCounter, acc.notes, acc.accountLinkingOptions, acc.linkedAccount, acc.disbursementDetails,
 			acc.multiDisburseLoan, acc.canDefineInstallmentAmount, acc.fixedEmiAmount, acc.maxOutstandingLoanBalance,
@@ -1853,13 +1933,13 @@ public class LoanAccountData
 			acc.recurringMoratoriumOnPrincipalPeriods,
 			acc.graceOnInterestPayment, acc.graceOnInterestCharged, acc.interestChargedFromDate, acc.timeline,
 			acc.summary,
-			acc.feeChargesAtDisbursementCharged, acc.repaymentSchedule, acc.transactions, acc.charges, acc.collateral,
+			acc.feeChargesAtDisbursementCharged, acc.repaymentSchedule, acc.transactions, acc.charges, acc.collateral, acc.landCollateral,
 			acc.guarantors,
 			acc.meeting, acc.productOptions, acc.termFrequencyTypeOptions, acc.repaymentFrequencyTypeOptions,
 			acc.repaymentFrequencyNthDayTypeOptions, acc.repaymentFrequencyDaysOfWeekTypeOptions,
 			acc.transactionProcessingStrategyOptions, acc.interestRateFrequencyTypeOptions, acc.amortizationTypeOptions,
 			acc.interestTypeOptions, acc.interestCalculationPeriodTypeOptions, acc.fundOptions, acc.chargeOptions, null,
-			acc.loanOfficerOptions, acc.loanPurposeOptions, acc.loanCollateralOptions, acc.calendarOptions,
+			acc.loanOfficerOptions, acc.loanPurposeOptions, acc.loanCollateralOptions, acc.collateralName, acc.collateralNature, acc.provinceOptions, acc.gender, acc.collateralStatusOption, acc.calendarOptions,
 			acc.syncDisbursementWithMeeting, acc.loanCounter, acc.loanProductCounter, acc.notes,
 			acc.accountLinkingOptions,
 			acc.linkedAccount, acc.disbursementDetails, acc.multiDisburseLoan, acc.canDefineInstallmentAmount,
@@ -1931,6 +2011,7 @@ public class LoanAccountData
 		final Collection<LoanTransactionData> transactions,
 		final Collection<LoanChargeData> charges,
 		final Collection<CollateralData> collateral,
+		final Collection<LandCollateralData> landCollateral,
 		final Collection<GuarantorData> guarantors,
 		final CalendarData meeting,
 		final Collection<LoanProductData> productOptions,
@@ -1949,6 +2030,11 @@ public class LoanAccountData
 		final Collection<StaffData> loanOfficerOptions,
 		final Collection<CodeValueData> loanPurposeOptions,
 		final Collection<CodeValueData> loanCollateralOptions,
+		final Collection<CodeValueData> collateralNameOptions,
+		final Collection<CodeValueData> collateralNatureOptions,
+		final Collection<ProvinceKhmerData> provinceOptions,
+		final Collection<CodeValueData> gender,
+		final Collection<CodeValueData> collateralStatusOption,
 		final Collection<CalendarData> calendarOptions,
 		final Boolean syncDisbursementWithMeeting,
 		final Integer loanCounter,
@@ -2053,6 +2139,7 @@ public class LoanAccountData
 		this.transactions = transactions;
 		this.charges = charges;
 		this.collateral = collateral;
+		this.landCollateral = landCollateral;
 		this.guarantors = guarantors;
 		this.meeting = meeting;
 		this.notes = notes;
@@ -2115,6 +2202,33 @@ public class LoanAccountData
 		{
 			this.loanCollateralOptions = loanCollateralOptions;
 		}
+		
+		if(CollectionUtils.isEmpty(collateralNameOptions)) {
+		    this.collateralName = null;
+		}else {
+		    this.collateralName = collateralNameOptions;
+		}
+		
+		if(CollectionUtils.isEmpty(collateralNatureOptions)) {
+                    this.collateralNature = null;
+                }else {
+                    this.collateralNature = collateralNatureOptions;
+                }
+		
+		this.provinceOptions = provinceOptions;
+		
+		if(CollectionUtils.isEmpty(gender)) {
+		    this.gender=null;
+		}else {
+		    this.gender=gender;
+		}
+		
+		if(CollectionUtils.isEmpty(collateralStatusOption)) {
+                    this.collateralStatusOption=null;
+                }else {
+                    this.collateralStatusOption=collateralStatusOption;
+                }
+		
 
 		if (CollectionUtils.isEmpty(calendarOptions))
 		{
@@ -2346,8 +2460,13 @@ public class LoanAccountData
 	public static LoanAccountData emptyTemplate()
 	{
 		final Collection<CodeValueData> loanCollateralOptions = null;
+		final Collection<CodeValueData> collateralName = null;
+		final Collection<CodeValueData> collateralNature = null;
+		final Collection<ProvinceKhmerData> provinceOption=null;
+		final Collection<CodeValueData>gender = null;
+		final Collection<CodeValueData>collateralStatusOption=null;
 
-		return LoanAccountData.collateralTemplate(loanCollateralOptions);
+		return LoanAccountData.collateralTemplate(loanCollateralOptions, collateralName, collateralNature, provinceOption, gender, collateralStatusOption);
 	}
 
 	public boolean isLoanProductLinkedToFloatingRate()

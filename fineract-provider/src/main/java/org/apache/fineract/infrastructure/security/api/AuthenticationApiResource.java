@@ -64,7 +64,8 @@ public class AuthenticationApiResource {
     public AuthenticationApiResource(
             @Qualifier("customAuthenticationProvider") final DaoAuthenticationProvider customAuthenticationProvider,
             final ToApiJsonSerializer<AuthenticatedUserData> apiJsonSerializerService,
-            final SpringSecurityPlatformSecurityContext springSecurityPlatformSecurityContext, TwoFactorUtils twoFactorUtils) {
+            final SpringSecurityPlatformSecurityContext springSecurityPlatformSecurityContext,
+            TwoFactorUtils twoFactorUtils) {
         this.customAuthenticationProvider = customAuthenticationProvider;
         this.apiJsonSerializerService = apiJsonSerializerService;
         this.springSecurityPlatformSecurityContext = springSecurityPlatformSecurityContext;
@@ -73,7 +74,8 @@ public class AuthenticationApiResource {
 
     @POST
     @Produces({ MediaType.APPLICATION_JSON })
-    public String authenticate(@QueryParam("username") final String username, @QueryParam("password") final String password) {
+    public String authenticate(@QueryParam("username") final String username,
+            @QueryParam("password") final String password) {
 
         final Authentication authentication = new UsernamePasswordAuthenticationToken(username, password);
         final Authentication authenticationCheck = this.customAuthenticationProvider.authenticate(authentication);
@@ -104,15 +106,15 @@ public class AuthenticationApiResource {
 
             final EnumOptionData organisationalRole = principal.organisationalRoleData();
 
-            boolean isTwoFactorRequired = twoFactorUtils.isTwoFactorAuthEnabled() && !
-                    principal.hasSpecificPermissionTo(TwoFactorConstants.BYPASS_TWO_FACTOR_PERMISSION);
+            boolean isTwoFactorRequired = twoFactorUtils.isTwoFactorAuthEnabled()
+                    && !principal.hasSpecificPermissionTo(TwoFactorConstants.BYPASS_TWO_FACTOR_PERMISSION);
             if (this.springSecurityPlatformSecurityContext.doesPasswordHasToBeRenewed(principal)) {
                 authenticatedUserData = new AuthenticatedUserData(username, principal.getId(),
                         new String(base64EncodedAuthenticationKey), isTwoFactorRequired);
             } else {
 
-                authenticatedUserData = new AuthenticatedUserData(username, officeId, officeName, staffId, staffDisplayName,
-                        organisationalRole, roles, permissions, principal.getId(),
+                authenticatedUserData = new AuthenticatedUserData(username, officeId, officeName, staffId,
+                        staffDisplayName, organisationalRole, roles, permissions, principal.getId(),
                         new String(base64EncodedAuthenticationKey), isTwoFactorRequired);
             }
 

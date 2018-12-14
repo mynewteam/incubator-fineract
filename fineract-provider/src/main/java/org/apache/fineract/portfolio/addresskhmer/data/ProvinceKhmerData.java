@@ -3,7 +3,6 @@ package org.apache.fineract.portfolio.addresskhmer.data;
 
 public class ProvinceKhmerData {
     private Integer id;
-    private String provinceCode;
     private String ProDescription;
     private String Des_In_Khmer;
     private Integer tbl_country_id;
@@ -19,7 +18,7 @@ public class ProvinceKhmerData {
         this.tbl_country_id = tbl_country_id;
     }
 
-    public ProvinceKhmerData instance(
+    public static ProvinceKhmerData instance(
             final Integer id,
             final String proDescription,
             final String des_In_Khmer,
@@ -43,15 +42,6 @@ public class ProvinceKhmerData {
     }
 
     
-    public String getProvinceCode() {
-        return this.provinceCode;
-    }
-
-    
-    public void setProvinceCode(String provinceCode) {
-        this.provinceCode = provinceCode;
-    }
-
     
     public String getProDescription() {
         return this.ProDescription;
@@ -81,6 +71,8 @@ public class ProvinceKhmerData {
     public void setTbl_country_id(Integer tbl_country_id) {
         this.tbl_country_id = tbl_country_id;
     }
+    
+    
     
    
     

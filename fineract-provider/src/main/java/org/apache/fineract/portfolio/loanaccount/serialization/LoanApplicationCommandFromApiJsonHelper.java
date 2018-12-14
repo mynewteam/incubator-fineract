@@ -87,6 +87,7 @@ public final class LoanApplicationCommandFromApiJsonHelper {
             LoanApiConstants.inArrearsToleranceParameterName,
             LoanApiConstants.chargesParameterName,
             LoanApiConstants.collateralParameterName, // optional
+            LoanApiConstants.landCollateralParameterName,
             LoanApiConstants.transactionProcessingStrategyIdParameterName, // settings
             LoanApiConstants.calendarIdParameterName, // optional
             LoanApiConstants.syncDisbursementWithMeetingParameterName,// optional

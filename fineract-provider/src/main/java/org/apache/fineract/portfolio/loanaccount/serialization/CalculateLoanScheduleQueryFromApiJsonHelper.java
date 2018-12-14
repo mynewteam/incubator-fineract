@@ -46,10 +46,16 @@ public final class CalculateLoanScheduleQueryFromApiJsonHelper {
     /**
      * The parameters supported for this command.
      */
-    final Set<String> supportedParameters = new HashSet<>(Arrays.asList(LoanApiConstants.idParameterName,
-            LoanApiConstants.clientIdParameterName, LoanApiConstants.groupIdParameterName, LoanApiConstants.loanTypeParameterName,
-            LoanApiConstants.calendarIdParameterName, LoanApiConstants.productIdParameterName, LoanApiConstants.accountNoParameterName,
-            LoanApiConstants.externalIdParameterName, LoanApiConstants.fundIdParameterName, LoanApiConstants.loanOfficerIdParameterName,
+    final Set<String> supportedParameters = new HashSet<>(
+            Arrays.asList(LoanApiConstants.idParameterName,
+            LoanApiConstants.clientIdParameterName, 
+            LoanApiConstants.groupIdParameterName, 
+            LoanApiConstants.loanTypeParameterName,
+            LoanApiConstants.calendarIdParameterName, 
+            LoanApiConstants.productIdParameterName, 
+            LoanApiConstants.accountNoParameterName,
+            LoanApiConstants.externalIdParameterName, 
+            LoanApiConstants.fundIdParameterName, LoanApiConstants.loanOfficerIdParameterName,
             LoanApiConstants.loanPurposeIdParameterName, LoanApiConstants.transactionProcessingStrategyIdParameterName,
             LoanApiConstants.principalParamName, LoanApiConstants.inArrearsToleranceParameterName,
             LoanApiConstants.interestRatePerPeriodParameterName, LoanApiConstants.repaymentEveryParameterName,
@@ -63,7 +69,9 @@ public final class CalculateLoanScheduleQueryFromApiJsonHelper {
             LoanApiConstants.graceOnInterestChargedParameterName, LoanApiConstants.interestChargedFromDateParameterName,
             LoanApiConstants.submittedOnDateParameterName, LoanApiConstants.submittedOnNoteParameterName,
             LoanApiConstants.localeParameterName, LoanApiConstants.dateFormatParameterName, LoanApiConstants.chargesParameterName,
-            LoanApiConstants.collateralParameterName, LoanApiConstants.syncDisbursementWithMeetingParameterName,
+            LoanApiConstants.collateralParameterName, 
+            LoanApiConstants.landCollateralParameterName,
+            LoanApiConstants.syncDisbursementWithMeetingParameterName,
             LoanApiConstants.linkAccountIdParameterName, LoanApiConstants.disbursementDataParameterName,
             LoanApiConstants.emiAmountParameterName, LoanApiConstants.maxOutstandingBalanceParameterName,
             LoanProductConstants.graceOnArrearsAgeingParameterName, LoanApiConstants.createStandingInstructionAtDisbursementParameterName,

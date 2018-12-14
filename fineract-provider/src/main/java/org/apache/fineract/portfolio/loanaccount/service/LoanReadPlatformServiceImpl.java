@@ -58,6 +58,8 @@ import org.apache.fineract.portfolio.accountdetails.data.LoanAccountSummaryData;
 import org.apache.fineract.portfolio.accountdetails.domain.AccountType;
 import org.apache.fineract.portfolio.accountdetails.service.AccountDetailsReadPlatformService;
 import org.apache.fineract.portfolio.accountdetails.service.AccountEnumerations;
+import org.apache.fineract.portfolio.addresskhmer.data.ProvinceKhmerData;
+import org.apache.fineract.portfolio.addresskhmer.service.AddressKhmerRreadPlatformService;
 import org.apache.fineract.portfolio.calendar.data.CalendarData;
 import org.apache.fineract.portfolio.calendar.domain.CalendarEntityType;
 import org.apache.fineract.portfolio.calendar.service.CalendarReadPlatformService;
@@ -143,6 +145,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
     private final FundReadPlatformService fundReadPlatformService;
     private final ChargeReadPlatformService chargeReadPlatformService;
     private final CodeValueReadPlatformService codeValueReadPlatformService;
+    private final AddressKhmerRreadPlatformService addressKhmerRreadPlatformService;
     private final CalendarReadPlatformService calendarReadPlatformService;
     private final StaffReadPlatformService staffReadPlatformService;
     private final PaginationHelper<LoanAccountData> paginationHelper = new PaginationHelper<>();
@@ -162,7 +165,9 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
             final LoanProductReadPlatformService loanProductReadPlatformService, final ClientReadPlatformService clientReadPlatformService,
             final GroupReadPlatformService groupReadPlatformService, final LoanDropdownReadPlatformService loanDropdownReadPlatformService,
             final FundReadPlatformService fundReadPlatformService, final ChargeReadPlatformService chargeReadPlatformService,
-            final CodeValueReadPlatformService codeValueReadPlatformService, final RoutingDataSource dataSource,
+            final CodeValueReadPlatformService codeValueReadPlatformService,
+            final AddressKhmerRreadPlatformService addressKhmerRreadPlatformService,
+            final RoutingDataSource dataSource,
             final CalendarReadPlatformService calendarReadPlatformService, final StaffReadPlatformService staffReadPlatformService,
             final PaymentTypeReadPlatformService paymentTypeReadPlatformService,
             final LoanRepaymentScheduleTransactionProcessorFactory loanRepaymentScheduleTransactionProcessorFactory,
@@ -180,6 +185,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
         this.fundReadPlatformService = fundReadPlatformService;
         this.chargeReadPlatformService = chargeReadPlatformService;
         this.codeValueReadPlatformService = codeValueReadPlatformService;
+        this.addressKhmerRreadPlatformService = addressKhmerRreadPlatformService;
         this.calendarReadPlatformService = calendarReadPlatformService;
         this.staffReadPlatformService = staffReadPlatformService;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
@@ -1403,8 +1409,12 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
         final Collection<TransactionProcessingStrategyData> repaymentStrategyOptions = this.loanDropdownReadPlatformService
                 .retreiveTransactionProcessingStrategies();
         final Collection<CodeValueData> loanPurposeOptions = this.codeValueReadPlatformService.retrieveCodeValuesByCode("LoanPurpose");
-        final Collection<CodeValueData> loanCollateralOptions = this.codeValueReadPlatformService
-                .retrieveCodeValuesByCode("LoanCollateral");
+        final Collection<CodeValueData> loanCollateralOptions = this.codeValueReadPlatformService.retrieveCodeValuesByCode("LoanCollateral");
+        final Collection<CodeValueData> collateralName = this.codeValueReadPlatformService.retrieveCodeValuesByCode("CollateralName");
+        final Collection<CodeValueData> collateralNature = this.codeValueReadPlatformService.retrieveCodeValuesByCode("CollateralNature");
+        final Collection<ProvinceKhmerData> provinceOption= this.addressKhmerRreadPlatformService.RetrieveAllProvince();
+        final Collection<CodeValueData>gender = this.codeValueReadPlatformService.retrieveCodeValuesByCode("Gender");
+        final Collection<CodeValueData>collateralStatusOption = this.codeValueReadPlatformService.retrieveCodeValuesByCode("CollateralStatus");
         Collection<ChargeData> chargeOptions = null;
         if (loanProduct.getMultiDisburseLoan()) {
             chargeOptions = this.chargeReadPlatformService.retrieveLoanProductApplicableCharges(productId,
@@ -1419,7 +1429,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
             if (clientId == null) {
                 loanCycleCounter = retriveLoanCounter(groupId, AccountType.GROUP.getValue(), loanProduct.getId());
             } else {
-                loanCycleCounter = retriveLoanCounter(clientId, loanProduct.getId());
+                loanCycleCounter = retriveLoanCounter(clientId, loanProduct.getId()); 
             }
         }
 
@@ -1431,7 +1441,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
         return LoanAccountData.loanProductWithTemplateDefaults(loanProduct, loanTermFrequencyTypeOptions, repaymentFrequencyTypeOptions,
                 repaymentFrequencyNthDayTypeOptions, repaymentFrequencyDaysOfWeekTypeOptions, repaymentStrategyOptions,
                 interestRateFrequencyTypeOptions, amortizationTypeOptions, interestTypeOptions, interestCalculationPeriodTypeOptions,
-                fundOptions, chargeOptions, loanPurposeOptions, loanCollateralOptions, loanCycleCounter, clientActiveLoanOptions);
+                fundOptions, chargeOptions, loanPurposeOptions, loanCollateralOptions, collateralName, collateralNature, provinceOption, gender, collateralStatusOption, loanCycleCounter, clientActiveLoanOptions);
     }
 
     @Override

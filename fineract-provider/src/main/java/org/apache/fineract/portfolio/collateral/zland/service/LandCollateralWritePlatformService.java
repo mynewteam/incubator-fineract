@@ -5,9 +5,9 @@ import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 
 public interface LandCollateralWritePlatformService  {
     
-    CommandProcessingResult addLandCollateral(Long loanCollateralId, JsonCommand command);
+    CommandProcessingResult addLandCollateral(Long LoanId, JsonCommand command);
 
-    CommandProcessingResult updateLandCollateral(Long loanCollateralId, Long landId, JsonCommand command);
+    CommandProcessingResult updateLandCollateral(Long LoanId, Long landId, JsonCommand command);
 
-    CommandProcessingResult deleteLandCollateral(Long loanCollateralId, Long landId, Long commandId);
+    CommandProcessingResult deleteLandCollateral(Long LoanId, Long landId, Long commandId);
 }

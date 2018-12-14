@@ -88,6 +88,8 @@ import org.apache.fineract.portfolio.charge.exception.LoanChargeCannotBeAddedExc
 import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.collateral.data.CollateralData;
 import org.apache.fineract.portfolio.collateral.domain.LoanCollateral;
+import org.apache.fineract.portfolio.collateral.zland.data.LandCollateralData;
+import org.apache.fineract.portfolio.collateral.zland.domain.LandCollateral;
 import org.apache.fineract.portfolio.common.domain.DayOfWeekType;
 import org.apache.fineract.portfolio.common.domain.NthDayType;
 import org.apache.fineract.portfolio.common.domain.PeriodFrequencyType;
@@ -321,6 +323,9 @@ public class Loan extends AbstractPersistableCustom<Long>
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "loan", orphanRemoval = true, fetch = FetchType.LAZY)
 	private Set<LoanCollateral> collateral = null;
+	
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "loan", orphanRemoval = true, fetch = FetchType.LAZY)
+	private Set<LandCollateral> landCollateral = null;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "loan", orphanRemoval = true, fetch = FetchType.LAZY)
 	private Set<LoanOfficerAssignmentHistory> loanOfficerHistory;
@@ -432,6 +437,7 @@ public class Loan extends AbstractPersistableCustom<Long>
 		final LoanProductRelatedDetail loanRepaymentScheduleDetail,
 		final Set<LoanCharge> loanCharges,
 		final Set<LoanCollateral> collateral,
+		final Set<LandCollateral> landCollateral,
 		final BigDecimal fixedEmiAmount,
 		final List<LoanDisbursementDetails> disbursementDetails,
 		final BigDecimal maxOutstandingLoanBalance,
@@ -445,7 +451,7 @@ public class Loan extends AbstractPersistableCustom<Long>
 
 		return new Loan(accountNo, client, group, loanType, fund, officer, loanPurpose, transactionProcessingStrategy,
 			loanProduct,
-			loanRepaymentScheduleDetail, status, loanCharges, collateral, syncDisbursementWithMeeting, fixedEmiAmount,
+			loanRepaymentScheduleDetail, status, loanCharges, collateral, landCollateral, syncDisbursementWithMeeting, fixedEmiAmount,
 			disbursementDetails, maxOutstandingLoanBalance, createStandingInstructionAtDisbursement,
 			isFloatingInterestRate,
 			interestRateDifferential);
@@ -463,6 +469,7 @@ public class Loan extends AbstractPersistableCustom<Long>
 		final LoanProductRelatedDetail loanRepaymentScheduleDetail,
 		final Set<LoanCharge> loanCharges,
 		final Set<LoanCollateral> collateral,
+		final Set<LandCollateral> landCollateral,
 		final Boolean syncDisbursementWithMeeting,
 		final BigDecimal fixedEmiAmount,
 		final List<LoanDisbursementDetails> disbursementDetails,
@@ -475,7 +482,7 @@ public class Loan extends AbstractPersistableCustom<Long>
 		final Client client = null;
 		return new Loan(accountNo, client, group, loanType, fund, officer, loanPurpose, transactionProcessingStrategy,
 			loanProduct,
-			loanRepaymentScheduleDetail, status, loanCharges, collateral, syncDisbursementWithMeeting, fixedEmiAmount,
+			loanRepaymentScheduleDetail, status, loanCharges, collateral, landCollateral, syncDisbursementWithMeeting, fixedEmiAmount,
 			disbursementDetails, maxOutstandingLoanBalance, createStandingInstructionAtDisbursement,
 			isFloatingInterestRate,
 			interestRateDifferential);
@@ -494,6 +501,7 @@ public class Loan extends AbstractPersistableCustom<Long>
 		final LoanProductRelatedDetail loanRepaymentScheduleDetail,
 		final Set<LoanCharge> loanCharges,
 		final Set<LoanCollateral> collateral,
+		final Set<LandCollateral> landCollateral,
 		final Boolean syncDisbursementWithMeeting,
 		final BigDecimal fixedEmiAmount,
 		final List<LoanDisbursementDetails> disbursementDetails,
@@ -505,7 +513,7 @@ public class Loan extends AbstractPersistableCustom<Long>
 		final LoanStatus status = null;
 		return new Loan(accountNo, client, group, loanType, fund, officer, loanPurpose, transactionProcessingStrategy,
 			loanProduct,
-			loanRepaymentScheduleDetail, status, loanCharges, collateral, syncDisbursementWithMeeting, fixedEmiAmount,
+			loanRepaymentScheduleDetail, status, loanCharges, collateral, landCollateral, syncDisbursementWithMeeting, fixedEmiAmount,
 			disbursementDetails, maxOutstandingLoanBalance, createStandingInstructionAtDisbursement,
 			isFloatingInterestRate,
 			interestRateDifferential);
@@ -531,6 +539,7 @@ public class Loan extends AbstractPersistableCustom<Long>
 		final LoanStatus loanStatus,
 		final Set<LoanCharge> loanCharges,
 		final Set<LoanCollateral> collateral,
+		final Set<LandCollateral> landCollateral,
 		final Boolean syncDisbursementWithMeeting,
 		final BigDecimal fixedEmiAmount,
 		final List<LoanDisbursementDetails> disbursementDetails,
@@ -587,6 +596,13 @@ public class Loan extends AbstractPersistableCustom<Long>
 		{
 			this.collateral = null;
 		}
+		
+		if(landCollateral != null && !landCollateral.isEmpty()) {
+		    this.landCollateral = associateWithLandCollateralLoan(landCollateral);
+		}else {
+		    this.landCollateral = null;
+		}
+		
 		this.loanOfficerHistory = null;
 
 		this.syncDisbursementWithMeeting = syncDisbursementWithMeeting;
@@ -654,6 +670,13 @@ public class Loan extends AbstractPersistableCustom<Long>
 			item.associateWith(this);
 		}
 		return collateral;
+	}
+	
+	private Set<LandCollateral> associateWithLandCollateralLoan(final Set<LandCollateral> landCollateral){
+	    for(final LandCollateral land : landCollateral) {
+	        land.associateWith(this);
+	    }
+	    return landCollateral;
 	}
 
 	public boolean isAccountNumberRequiresAutoGeneration()
@@ -1436,6 +1459,14 @@ public class Loan extends AbstractPersistableCustom<Long>
 		this.collateral.clear();
 		this.collateral.addAll(associateWithThisLoan(loanCollateral));
 	}
+	
+	public void updateLandCollateral(final Set<LandCollateral> landCollateral) {
+	    if(this.landCollateral == null) {
+	        this.landCollateral = new HashSet<>();
+	    }
+	    this.landCollateral.clear();
+	    this.landCollateral.addAll(associateWithLandCollateralLoan(landCollateral));
+	}
 
 	public void updateLoanSchedule(final LoanScheduleModel modifiedLoanSchedule, AppUser currentUser)
 	{
@@ -1618,6 +1649,7 @@ public class Loan extends AbstractPersistableCustom<Long>
 		final JsonCommand command,
 		final Set<LoanCharge> possiblyModifedLoanCharges,
 		final Set<LoanCollateral> possiblyModifedLoanCollateralItems,
+		final Set<LandCollateral> possiblyModifedLandCollateralItems,
 		final AprCalculator aprCalculator,
 		boolean isChargesModified,
 		final LoanProduct loanProduct)
@@ -1883,6 +1915,13 @@ public class Loan extends AbstractPersistableCustom<Long>
 			{
 				actualChanges.put(collateralParamName, listOfLoanCollateralData(possiblyModifedLoanCollateralItems));
 			}
+		}
+		
+		final String landCollateralParamName = "landCollateral";
+		if(command.parameterExists(landCollateralParamName)) {
+		    if(!possiblyModifedLandCollateralItems.equals(this.landCollateral)) {
+		        actualChanges.put(landCollateralParamName, listOfLandCollateralData(possiblyModifedLandCollateralItems));
+		    }
 		}
 
 		final String loanTermFrequencyParamName = "loanTermFrequency";
@@ -2382,6 +2421,23 @@ public class Loan extends AbstractPersistableCustom<Long>
 		existingLoanCollateral = loanCollateralList.toArray(new CollateralData[loanCollateralList.size()]);
 
 		return existingLoanCollateral;
+	}
+	
+	private LandCollateralData[] listOfLandCollateralData(final Set<LandCollateral> setOfLandCollateral) {
+	    LandCollateralData[] existingLandCollateral = null;
+
+            final List<LandCollateralData> landCollateralList = new ArrayList<>();
+            for (final LandCollateral landCollateral : setOfLandCollateral)
+            {
+
+                    final LandCollateralData data = landCollateral.toData();
+
+                    landCollateralList.add(data);
+            }
+
+            existingLandCollateral = landCollateralList.toArray(new LandCollateralData[landCollateralList.size()]);
+
+            return existingLandCollateral;
 	}
 
 	private LoanChargeCommand[] getLoanCharges(final Set<LoanCharge> setOfLoanCharges)
@@ -5357,6 +5413,10 @@ public class Loan extends AbstractPersistableCustom<Long>
 	{
 		return this.collateral;
 	}
+	
+	public Set<LandCollateral> getLandCollateral(){
+	    return this.landCollateral;
+	}
 
 	public BigDecimal getProposedPrincipal()
 	{
@@ -8215,6 +8275,7 @@ public class Loan extends AbstractPersistableCustom<Long>
 		this.disbursementDetails.size();
 		this.loanTermVariations.size();
 		this.collateral.size();
+		this.landCollateral.size();
 		this.loanOfficerHistory.size();
 	}
 

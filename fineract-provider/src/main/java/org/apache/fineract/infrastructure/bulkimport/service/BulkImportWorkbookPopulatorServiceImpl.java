@@ -213,7 +213,7 @@ public class BulkImportWorkbookPopulatorServiceImpl implements BulkImportWorkboo
 	}
 
 
-	private WorkbookPopulator populateClientWorkbook(final String entityType ,final Long officeId, final Long staffId) {
+    private WorkbookPopulator populateClientWorkbook(final String entityType ,final Long officeId, final Long staffId) {
     this.context.authenticatedUser().validateHasReadPermission(TemplatePopulateImportConstants.OFFICE_ENTITY_TYPE);
     this.context.authenticatedUser().validateHasReadPermission(TemplatePopulateImportConstants.STAFF_ENTITY_TYPE);
     List<OfficeData> offices = fetchOffices(officeId);

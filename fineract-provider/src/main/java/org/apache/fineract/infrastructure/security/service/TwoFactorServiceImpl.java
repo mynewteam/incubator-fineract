@@ -50,8 +50,6 @@ import org.springframework.stereotype.Service;
 @Profile("twofactor")
 public class TwoFactorServiceImpl implements TwoFactorService {
 
-
-
     private final AccessTokenGenerationService accessTokenGenerationService;
     private final PlatformEmailService emailService;
     private final SmsMessageScheduledJobService smsMessageScheduledJobService;
@@ -64,12 +62,9 @@ public class TwoFactorServiceImpl implements TwoFactorService {
 
     @Autowired
     public TwoFactorServiceImpl(AccessTokenGenerationService accessTokenGenerationService,
-            PlatformEmailService emailService,
-            SmsMessageScheduledJobService smsMessageScheduledJobService,
-            OTPRequestRepository otpRequestRepository,
-            TFAccessTokenRepository tfAccessTokenRepository,
-            SmsMessageRepository smsMessageRepository,
-            TwoFactorConfigurationService configurationService) {
+            PlatformEmailService emailService, SmsMessageScheduledJobService smsMessageScheduledJobService,
+            OTPRequestRepository otpRequestRepository, TFAccessTokenRepository tfAccessTokenRepository,
+            SmsMessageRepository smsMessageRepository, TwoFactorConfigurationService configurationService) {
         this.accessTokenGenerationService = accessTokenGenerationService;
         this.emailService = emailService;
         this.smsMessageScheduledJobService = smsMessageScheduledJobService;
@@ -79,17 +74,16 @@ public class TwoFactorServiceImpl implements TwoFactorService {
         this.configurationService = configurationService;
     }
 
-
     @Override
     public List<OTPDeliveryMethod> getDeliveryMethodsForUser(final AppUser user) {
         List<OTPDeliveryMethod> deliveryMethods = new ArrayList<>();
 
         OTPDeliveryMethod smsMethod = getSMSDeliveryMethodForUser(user);
-        if(smsMethod != null) {
+        if (smsMethod != null) {
             deliveryMethods.add(smsMethod);
         }
         OTPDeliveryMethod emailDelivery = getEmailDeliveryMethodForUser(user);
-        if(emailDelivery != null) {
+        if (emailDelivery != null) {
             deliveryMethods.add(emailDelivery);
         }
 
@@ -98,10 +92,10 @@ public class TwoFactorServiceImpl implements TwoFactorService {
 
     @Override
     public OTPRequest createNewOTPToken(final AppUser user, final String deliveryMethodName,
-                                        final boolean extendedAccessToken) {
-        if(TwoFactorConstants.SMS_DELIVERY_METHOD_NAME.equalsIgnoreCase(deliveryMethodName)) {
+            final boolean extendedAccessToken) {
+        if (TwoFactorConstants.SMS_DELIVERY_METHOD_NAME.equalsIgnoreCase(deliveryMethodName)) {
             OTPDeliveryMethod smsDelivery = getSMSDeliveryMethodForUser(user);
-            if(smsDelivery == null) {
+            if (smsDelivery == null) {
                 throw new OTPDeliveryMethodInvalidException();
             }
             final OTPRequest request = generateNewToken(smsDelivery, extendedAccessToken);
@@ -113,9 +107,9 @@ public class TwoFactorServiceImpl implements TwoFactorService {
                     configurationService.getSMSProviderId());
             otpRequestRepository.addOTPRequest(user, request);
             return request;
-        } else if(TwoFactorConstants.EMAIL_DELIVERY_METHOD_NAME.equalsIgnoreCase(deliveryMethodName)) {
+        } else if (TwoFactorConstants.EMAIL_DELIVERY_METHOD_NAME.equalsIgnoreCase(deliveryMethodName)) {
             OTPDeliveryMethod emailDelivery = getEmailDeliveryMethodForUser(user);
-            if(emailDelivery == null) {
+            if (emailDelivery == null) {
                 throw new OTPDeliveryMethodInvalidException();
             }
             final OTPRequest request = generateNewToken(emailDelivery, extendedAccessToken);
@@ -132,13 +126,12 @@ public class TwoFactorServiceImpl implements TwoFactorService {
     }
 
     @Override
-    @CachePut(value = "userTFAccessToken",
-            key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil)" +
-                    ".getTenant().getTenantIdentifier().concat(#user.username).concat(#result.token + 'tok')")
+    @CachePut(value = "userTFAccessToken", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil)"
+            + ".getTenant().getTenantIdentifier().concat(#user.username).concat(#result.token + 'tok')")
     public TFAccessToken createAccessTokenFromOTP(final AppUser user, final String otpToken) {
 
         OTPRequest otpRequest = otpRequestRepository.getOTPRequestForUser(user);
-        if(otpRequest == null || !otpRequest.isValid() || !otpRequest.getToken().equalsIgnoreCase(otpToken)) {
+        if (otpRequest == null || !otpRequest.isValid() || !otpRequest.getToken().equalsIgnoreCase(otpToken)) {
             throw new OTPTokenInvalidException();
         }
 
@@ -146,7 +139,7 @@ public class TwoFactorServiceImpl implements TwoFactorService {
 
         String token = accessTokenGenerationService.generateRandomToken();
         int liveTime;
-        if(otpRequest.getMetadata().isExtendedAccessToken()) {
+        if (otpRequest.getMetadata().isExtendedAccessToken()) {
             liveTime = configurationService.getAccessTokenExtendedLiveTime();
         } else {
             liveTime = configurationService.getAccessTokenLiveTime();
@@ -160,21 +153,20 @@ public class TwoFactorServiceImpl implements TwoFactorService {
     public void validateTwoFactorAccessToken(AppUser user, String token) {
         TFAccessToken accessToken = fetchAccessTokenForUser(user, token);
 
-        if(accessToken == null || !accessToken.isValid()) {
+        if (accessToken == null || !accessToken.isValid()) {
             throw new AccessTokenInvalidIException();
         }
     }
 
     @Override
-    @CacheEvict(value = "userTFAccessToken",
-            key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil)" +
-                    ".getTenant().getTenantIdentifier().concat(#user.username).concat(#result.token + 'tok')")
+    @CacheEvict(value = "userTFAccessToken", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil)"
+            + ".getTenant().getTenantIdentifier().concat(#user.username).concat(#result.token + 'tok')")
     public TFAccessToken invalidateAccessToken(final AppUser user, final JsonCommand command) {
 
         final String token = command.stringValueOfParameterNamed("token");
         final TFAccessToken accessToken = fetchAccessTokenForUser(user, token);
 
-        if(accessToken == null || !accessToken.isValid()) {
+        if (accessToken == null || !accessToken.isValid()) {
             throw new AccessTokenInvalidIException();
         }
 
@@ -185,27 +177,26 @@ public class TwoFactorServiceImpl implements TwoFactorService {
     }
 
     @Override
-    @Cacheable(value = "userTFAccessToken",
-            key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil)" +
-                    ".getTenant().getTenantIdentifier().concat(#user.username).concat(#token + 'tok')")
+    @Cacheable(value = "userTFAccessToken", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil)"
+            + ".getTenant().getTenantIdentifier().concat(#user.username).concat(#token + 'tok')")
     public TFAccessToken fetchAccessTokenForUser(final AppUser user, final String token) {
         return tfAccessTokenRepository.findByUserAndToken(user, token);
     }
 
     private OTPDeliveryMethod getSMSDeliveryMethodForUser(final AppUser user) {
-        if(!configurationService.isSMSEnabled()) {
+        if (!configurationService.isSMSEnabled()) {
             return null;
         }
 
-        if(configurationService.getSMSProviderId() == null) {
+        if (configurationService.getSMSProviderId() == null) {
             return null;
         }
 
-        if(user.getStaff() == null) {
+        if (user.getStaff() == null) {
             return null;
         }
         String mobileNo = user.getStaff().mobileNo();
-        if(StringUtils.isBlank(mobileNo)) {
+        if (StringUtils.isBlank(mobileNo)) {
             return null;
         }
 
@@ -213,7 +204,7 @@ public class TwoFactorServiceImpl implements TwoFactorService {
     }
 
     private OTPDeliveryMethod getEmailDeliveryMethodForUser(final AppUser user) {
-        if(!configurationService.isEmailEnabled()) {
+        if (!configurationService.isEmailEnabled()) {
             return null;
         }
 

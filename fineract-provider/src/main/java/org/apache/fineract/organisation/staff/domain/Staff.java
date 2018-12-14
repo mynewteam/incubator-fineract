@@ -51,7 +51,8 @@ public class Staff extends AbstractPersistableCustom<Long> {
 
     @Column(name = "lastname", length = 50)
     private String lastname;
-
+    
+   
     @Column(name = "display_name", length = 100)
     private String displayName;
 
@@ -96,6 +97,9 @@ public class Staff extends AbstractPersistableCustom<Long> {
 
         final String lastnameParamName = "lastname";
         final String lastname = command.stringValueOfParameterNamed(lastnameParamName);
+        
+        final String khmernameParamName = "khmername";
+        final String khmername = command.stringValueOfParameterNamed(khmernameParamName);
 
         final String externalIdParamName = "externalId";
         final String externalId = command.stringValueOfParameterNamedAllowingNull(externalIdParamName);
@@ -177,7 +181,7 @@ public class Staff extends AbstractPersistableCustom<Long> {
             this.lastname = newValue;
             lastnameChanged = true;
         }
-
+        
         if (firstnameChanged || lastnameChanged) {
             deriveDisplayName(this.firstname);
         }

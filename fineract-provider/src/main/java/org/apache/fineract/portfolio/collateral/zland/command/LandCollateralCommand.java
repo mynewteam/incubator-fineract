@@ -6,37 +6,37 @@ import java.util.List;
 
 import org.apache.fineract.infrastructure.core.data.ApiParameterError;
 import org.apache.fineract.infrastructure.core.data.DataValidatorBuilder;
+import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.infrastructure.codes.data.CodeValueData;
 import org.apache.fineract.portfolio.addresskhmer.data.ProvinceKhmerData;
+import org.apache.fineract.portfolio.collateral.api.CollateralApiConstants.COLLATERAL_JSON_INPUT_PARAMS;
 import org.apache.fineract.portfolio.collateral.data.CollateralData;
-import org.apache.fineract.portfolio.collateral.zland.data.CollateralNameData;
-import org.apache.fineract.portfolio.collateral.zland.data.CollateralNatureData;
+import org.apache.fineract.portfolio.collateral.zland.api.LandCollateralApiConstrants.LAND_COLLATERAL_JSON_INPUT_PARAMS;
 import org.joda.time.LocalDate;
 
 public class LandCollateralCommand {
-    private final Long id;
+
     private final LocalDate dateIssue;
     private final String size;
     private final BigDecimal oldPrice;
     private final Integer NumberOfCopy;
-    private final CodeValueData status;
+    private final Long status;
     private final String detailLocation;
     private final String ownerName1;
-    private final CodeValueData gender1;
+    private final Long gender1;
     private final String passportId1;
     private final String ownerName2;
-    private final CodeValueData gender2;
+    private final Long gender2;
     private final String passportId2;
-    private final CollateralData collateralData;
-    private final ProvinceKhmerData provinceKhmerData;
-    private final CollateralNameData collateralName;
-    private final CollateralNatureData collateralNature;
+    private final Long collateralId;
+    private final Long provinceId;
+    private final Long collateralNameId;
+    private final Long collateralNatureId;
     
-    public LandCollateralCommand(Long id, LocalDate dateIssue, String size, BigDecimal oldPrice, Integer numberOfCopy, CodeValueData status,
-            String detailLocation, String ownerName1, CodeValueData gender1, String passportId1, String ownerName2, CodeValueData gender2,
-            String passportId2, CollateralData collateralData, ProvinceKhmerData provinceKhmerData, CollateralNameData collateralName,
-            CollateralNatureData collateralNature) {
-        this.id = id;
+    public LandCollateralCommand(LocalDate dateIssue, String size, BigDecimal oldPrice, Integer numberOfCopy, Long status,
+            String detailLocation, String ownerName1, Long gender1, String passportId1, String ownerName2, Long gender2,
+            String passportId2, Long collateralId, Long provinceId, Long collateralNameId, Long collateralNatureId) {
+       
         this.dateIssue = dateIssue;
         this.size = size;
         this.oldPrice = oldPrice;
@@ -49,107 +49,134 @@ public class LandCollateralCommand {
         this.ownerName2 = ownerName2;
         this.gender2 = gender2;
         this.passportId2 = passportId2;
-        this.collateralData = collateralData;
-        this.provinceKhmerData = provinceKhmerData;
-        this.collateralName = collateralName;
-        this.collateralNature = collateralNature;
+        this.collateralId = collateralId;
+        this.provinceId = provinceId;
+        this.collateralNameId = collateralNameId;
+        this.collateralNatureId = collateralNatureId;
     }
-
     
-    public Long getId() {
-        return this.id;
-    }
-
     
     public LocalDate getDateIssue() {
         return this.dateIssue;
     }
+
+
 
     
     public String getSize() {
         return this.size;
     }
 
+
+
     
     public BigDecimal getOldPrice() {
         return this.oldPrice;
     }
+
+
 
     
     public Integer getNumberOfCopy() {
         return this.NumberOfCopy;
     }
 
+
+
     
-    public CodeValueData getStatus() {
+    public Long getStatus() {
         return this.status;
     }
+
+
 
     
     public String getDetailLocation() {
         return this.detailLocation;
     }
 
+
+
     
     public String getOwnerName1() {
         return this.ownerName1;
     }
 
+
+
     
-    public CodeValueData getGender1() {
+    public Long getGender1() {
         return this.gender1;
     }
+
+
 
     
     public String getPassportId1() {
         return this.passportId1;
     }
 
+
+
     
     public String getOwnerName2() {
         return this.ownerName2;
     }
 
+
+
     
-    public CodeValueData getGender2() {
+    public Long getGender2() {
         return this.gender2;
     }
+
+
 
     
     public String getPassportId2() {
         return this.passportId2;
     }
 
+
+
     
-    public CollateralData getCollateralData() {
-        return this.collateralData;
+    public Long getCollateralId() {
+        return this.collateralId;
+    }
+
+
+
+    
+    public Long getProvinceId() {
+        return this.provinceId;
+    }
+
+
+
+    
+    public Long getCollateralNameId() {
+        return this.collateralNameId;
     }
 
     
-    public ProvinceKhmerData getProvinceKhmerData() {
-        return this.provinceKhmerData;
+    public Long getCollateralNatureId() {
+        return this.collateralNatureId;
     }
 
-    
-    public CollateralNameData getCollateralName() {
-        return this.collateralName;
-    }
 
-    
-    public CollateralNatureData getCollateralNature() {
-        return this.collateralNature;
-    }
-    
-    public void validateForCreate() {
+    public void validateForCreateAndUpdate() {
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
+        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("Landcollateral");
+        baseDataValidator.reset().parameter(LAND_COLLATERAL_JSON_INPUT_PARAMS.COLLATERAL_ID.getValue()).value(this.collateralId).notNull().longGreaterThanZero();
+        baseDataValidator.reset().parameter(LAND_COLLATERAL_JSON_INPUT_PARAMS.PROVINCE_ID.getValue()).value(this.provinceId).notNull().longGreaterThanZero();
+        baseDataValidator.reset().parameter(LAND_COLLATERAL_JSON_INPUT_PARAMS.COLLATERAL_NAME.getValue()).value(this.collateralNameId).notNull().longGreaterThanZero();
+        baseDataValidator.reset().parameter(LAND_COLLATERAL_JSON_INPUT_PARAMS.COLLATERAL_NATURE.getValue()).value(this.collateralNatureId).notNull().longGreaterThanZero();
         
-        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("LandCollateral");
-//        baseDataValidator.reset().parameter(parameter)
-        
+        if(!dataValidationErrors.isEmpty()) {
+            throw new PlatformApiDataValidationException("validation.msg.validation.errors.exist", "Validation error exist.", dataValidationErrors);
+        }
     }
     
-    public void validateForUpdate() {
-        
-    }
+    
     
 }

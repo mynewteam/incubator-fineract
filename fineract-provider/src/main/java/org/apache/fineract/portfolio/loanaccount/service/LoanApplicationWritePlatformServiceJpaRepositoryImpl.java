@@ -68,6 +68,8 @@ import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
 import org.apache.fineract.portfolio.client.exception.ClientNotActiveException;
 import org.apache.fineract.portfolio.collateral.domain.LoanCollateral;
 import org.apache.fineract.portfolio.collateral.service.CollateralAssembler;
+import org.apache.fineract.portfolio.collateral.zland.domain.LandCollateral;
+import org.apache.fineract.portfolio.collateral.zland.service.LandCollateralAssembler;
 import org.apache.fineract.portfolio.common.BusinessEventNotificationConstants.BUSINESS_ENTITY;
 import org.apache.fineract.portfolio.common.BusinessEventNotificationConstants.BUSINESS_EVENTS;
 import org.apache.fineract.portfolio.common.domain.PeriodFrequencyType;
@@ -131,6 +133,7 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
 	private final LoanProductRepository loanProductRepository;
 	private final LoanChargeAssembler loanChargeAssembler;
 	private final CollateralAssembler loanCollateralAssembler;
+	private final LandCollateralAssembler  landCollateralAssembler;
 	private final AprCalculator aprCalculator;
 	private final AccountNumberGenerator accountNumberGenerator;
 	private final LoanSummaryWrapper loanSummaryWrapper;
@@ -164,6 +167,7 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
 		final LoanAssembler loanAssembler,
 		final LoanChargeAssembler loanChargeAssembler,
 		final CollateralAssembler loanCollateralAssembler,
+		final LandCollateralAssembler landCollateralAssembler,
 		final LoanRepositoryWrapper loanRepositoryWrapper,
 		final NoteRepository noteRepository,
 		final LoanScheduleCalculationPlatformService calculationPlatformService,
@@ -199,6 +203,7 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
 		this.loanAssembler = loanAssembler;
 		this.loanChargeAssembler = loanChargeAssembler;
 		this.loanCollateralAssembler = loanCollateralAssembler;
+		this.landCollateralAssembler = landCollateralAssembler;
 		this.loanRepositoryWrapper = loanRepositoryWrapper;
 		this.noteRepository = noteRepository;
 		this.calculationPlatformService = calculationPlatformService;
@@ -263,6 +268,7 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
 			this.fromApiJsonDeserializer.validateForCreate(command.json(), isMeetingMandatoryForJLGLoans, loanProduct);
 
 			final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
+			
 			final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
 				.resource("loan");
 
@@ -731,12 +737,12 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
 				}
 			}
 
-			final Set<LoanCollateral> possiblyModifedLoanCollateralItems = this.loanCollateralAssembler
-				.fromParsedJson(command.parsedJson());
+			final Set<LoanCollateral> possiblyModifedLoanCollateralItems = this.loanCollateralAssembler.fromParsedJson(command.parsedJson());
+			final Set<LandCollateral> possiblyModifedLandCollateralItems = this.landCollateralAssembler.fromParsedJson(command.parsedJson());
 
 			final Map<String, Object> changes = existingLoanApplication.loanApplicationModification(command,
 				possiblyModifedLoanCharges,
-				possiblyModifedLoanCollateralItems, this.aprCalculator, isChargeModified, loanProductForValidations);
+				possiblyModifedLoanCollateralItems, possiblyModifedLandCollateralItems, this.aprCalculator, isChargeModified, loanProductForValidations);
 
 			if (changes.containsKey("expectedDisbursementDate"))
 			{
