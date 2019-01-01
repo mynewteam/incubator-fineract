@@ -2164,7 +2164,9 @@ public abstract class AbstractLoanScheduleGenerator implements LoanScheduleGener
 		}
 		return cumulative;
 	}
-
+	
+//	Sothea KH
+//	Caculate Fee Charg 
 	private Money calculateSpecificDueDateChargeWithPercentage(final Money principalDisbursed,
 			final Money totalInterestChargedForFullLoanTerm, Money cumulative, final LoanCharge loanCharge) {
 		BigDecimal amount = BigDecimal.ZERO;
@@ -2182,7 +2184,7 @@ public abstract class AbstractLoanScheduleGenerator implements LoanScheduleGener
 			amount = amount.add(principalDisbursed.getAmount());
 
 		}
-
+		     
 		BigDecimal loanChargeAmt = amount.multiply(loanCharge.getPercentage()).divide(BigDecimal.valueOf(100));
 		cumulative = cumulative.plus(loanChargeAmt);
 		return cumulative;
@@ -2286,7 +2288,7 @@ public abstract class AbstractLoanScheduleGenerator implements LoanScheduleGener
 			// loanChargeAmt = .getPrincipalOutstanding().getAmount();
 			if (loanCharge.getChargeCalculation().isPercentageOfOutstandingAmount()) {			    
 			    
-				loanChargeAmt = amount.multiply(loanCharge.getPercentage()).multiply(_loanTermInDays).divide(BigDecimal.valueOf(36000), 2, RoundingMode.HALF_UP); //arount here
+				loanChargeAmt = amount.multiply(loanCharge.getPercentage()).multiply(_loanTermInDays).divide(BigDecimal.valueOf(36500), 2, RoundingMode.HALF_UP); //arount here
 				
 			} else {
 				loanChargeAmt = amount.multiply(loanCharge.getPercentage()).divide(BigDecimal.valueOf(100));

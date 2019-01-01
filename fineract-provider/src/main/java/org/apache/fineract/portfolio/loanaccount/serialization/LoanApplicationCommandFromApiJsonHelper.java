@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.fineract.infrastructure.codes.domain.CodeValue;
 import org.apache.fineract.infrastructure.core.data.ApiParameterError;
 import org.apache.fineract.infrastructure.core.data.DataValidatorBuilder;
 import org.apache.fineract.infrastructure.core.exception.InvalidJsonException;
@@ -466,6 +467,75 @@ public final class LoanApplicationCommandFromApiJsonHelper {
                 baseDataValidator.reset().parameter(collateralParameterName).expectedArrayButIsNot();
             }
         }
+        
+        //land collateral
+        final String landCollateralParameterName = "landCollateral";
+        if(element.isJsonObject() && this.fromApiJsonHelper.parameterExists(landCollateralParameterName, element)) {
+            final JsonObject topLevelJsonElement = element.getAsJsonObject();
+            final Locale locale = this.fromApiJsonHelper.extractLocaleParameter(topLevelJsonElement);
+            if(topLevelJsonElement.get("landCollateral").isJsonArray()) {
+                final Type landCollateralParameterTypeOfMap = new TypeToken<Map<String, Object>>(){}.getType();
+                final Set<String> supportedParameters = new HashSet<>(
+                        Arrays.asList("locale","dateFormat","dateIssue","size","oldPrice","NumberOfCopy","status","detailLocation","ownerName1","gender1","passportId1",
+                                "ownerName2", "gender2","passportId2","provinceId","collateralNameId","collateralNatureId"));
+                
+                final JsonArray array = topLevelJsonElement.get("landCollateral").getAsJsonArray();
+                for(int i = 1; i<= array.size(); i++) {
+                    final JsonObject landColateralItemElement = array.get(i-1).getAsJsonObject();
+                    final String landCollateralJson = this.fromApiJsonHelper.toJson(landColateralItemElement);
+                    this.fromApiJsonHelper.checkForUnsupportedParameters(landCollateralParameterTypeOfMap, landCollateralJson, supportedParameters);
+                    
+                    final LocalDate dateIssue = this.fromApiJsonHelper.extractLocalDateNamed("dateIssue", landColateralItemElement);
+                    baseDataValidator.reset().parameter("landCollateral").parameterAtIndexArray("dateIssue", i).value(dateIssue).ignoreIfNull();
+                    
+                    final String size =  this.fromApiJsonHelper.extractStringNamed("size", landColateralItemElement);
+                    baseDataValidator.reset().parameter("landCollateral").parameterAtIndexArray("size", i).value(size).ignoreIfNull();      
+                    
+                    final BigDecimal oldPrice = this.fromApiJsonHelper.extractBigDecimalNamed("oldPrice", landColateralItemElement, locale);
+                    baseDataValidator.reset().parameter("landCollateral").parameterAtIndexArray("oldPrice", i).value(oldPrice).ignoreIfNull();
+                    
+                    final Integer numberOfCopy = this.fromApiJsonHelper.extractIntegerNamed("NumberOfCopy", landColateralItemElement, locale);
+                    baseDataValidator.reset().parameter("landCollateral").parameterAtIndexArray("NumberOfCopy", i).value(numberOfCopy).ignoreIfNull();
+                    
+                    final Long status = this.fromApiJsonHelper.extractLongNamed("status", landColateralItemElement);
+                    baseDataValidator.reset().parameter("landCollateral").parameterAtIndexArray("status", i).value(status).notBlank().longGreaterThanZero();
+                    
+                    final String detailLocation = this.fromApiJsonHelper.extractStringNamed("detailLocation", landColateralItemElement);
+                    baseDataValidator.reset().parameter("landCollateral").parameterAtIndexArray("detailLocation", i).value(detailLocation).ignoreIfNull();
+                    
+                    final String ownerName1 = this.fromApiJsonHelper.extractStringNamed("ownerName1", landColateralItemElement);
+                    baseDataValidator.reset().parameter("landCollateral").parameterAtIndexArray("ownerName1", i).value(ownerName1).ignoreIfNull().notExceedingLengthOf(50);
+                    
+                    final Long gender1 = this.fromApiJsonHelper.extractLongNamed("gender1", landColateralItemElement);
+                    baseDataValidator.reset().parameter("landCollateral").parameterAtIndexArray("gender1", i).value(gender1).notBlank().longGreaterThanZero();
+                    
+                    final String passportId1 = this.fromApiJsonHelper.extractStringNamed("passportId1", landColateralItemElement);
+                    baseDataValidator.reset().parameter("landCollateral").parameterAtIndexArray("passportId1", i).value(passportId1).ignoreIfNull().notExceedingLengthOf(50);
+                    
+                    final String ownerName2 = this.fromApiJsonHelper.extractStringNamed("ownerName2", landColateralItemElement);
+                    baseDataValidator.reset().parameter("landCollateral").parameterAtIndexArray("ownerName2", i).value(ownerName2).ignoreIfNull().notExceedingLengthOf(50);
+                    
+                    final Long gender2 = this.fromApiJsonHelper.extractLongNamed("gender2", landColateralItemElement);
+                    baseDataValidator.reset().parameter("landCollateral").parameterAtIndexArray("gender2", i).value(gender2).notBlank().longGreaterThanZero();
+                    
+                    final String PassportId2 = this.fromApiJsonHelper.extractStringNamed("passportId2", landColateralItemElement);
+                    baseDataValidator.reset().parameter("landCollateral").parameterAtIndexArray("passportId2", i).value(PassportId2).ignoreIfNull().notExceedingLengthOf(50);
+                    
+                    final Long provinceId2 = this.fromApiJsonHelper.extractLongNamed("provinceId", landColateralItemElement);
+                    baseDataValidator.reset().parameter("landCollateral").parameterAtIndexArray("provinceId", i).value(provinceId2).notBlank().longGreaterThanZero();
+                    
+                    final Long collateralNameId = this.fromApiJsonHelper.extractLongNamed("collateralNameId", landColateralItemElement);
+                    baseDataValidator.reset().parameter("landCollateral").parameterAtIndexArray("collateralNameId", i).value(collateralNameId).notBlank().longGreaterThanZero();
+                    
+                    final Long collateralNatureId = this.fromApiJsonHelper.extractLongNamed("collateralNatureId", landColateralItemElement);
+                    baseDataValidator.reset().parameter("landCollateral").parameterAtIndexArray("collateralNatureId", i).value(collateralNatureId).notBlank().longGreaterThanZero();
+                    
+                }
+            }
+        }
+        
+        
+        
 
         if (this.fromApiJsonHelper.parameterExists(LoanApiConstants.emiAmountParameterName, element)) {
             if (!(loanProduct.canDefineInstallmentAmount() || loanProduct.isMultiDisburseLoan())) {
@@ -1153,11 +1223,8 @@ public final class LoanApplicationCommandFromApiJsonHelper {
                 final Integer interestType = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(interestTypeParameterName, element);
                 baseDataValidator.reset().parameter(interestTypeParameterName).value(interestType).ignoreIfNull()
                         .integerSameAsNumber(InterestMethod.DECLINING_BALANCE.getValue());
-
             }
-
         }
-
     }
 
     public void validateLoanCharges(final Set<LoanCharge> charges, final List<ApiParameterError> dataValidationErrors) {
@@ -1169,7 +1236,6 @@ public final class LoanApplicationCommandFromApiJsonHelper {
                 case PERCENT_OF_AMOUNT:
                     if (loanCharge.isInstalmentFee()) {
                         errorcode = "installment." + LoanApiConstants.LOAN_CHARGE_CAN_NOT_BE_ADDED_WITH_PRINCIPAL_CALCULATION_TYPE;
-
                     }
                 break;
                 case PERCENT_OF_AMOUNT_AND_INTEREST:

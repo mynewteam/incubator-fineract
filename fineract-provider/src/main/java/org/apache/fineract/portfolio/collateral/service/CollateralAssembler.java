@@ -61,8 +61,8 @@ public class CollateralAssembler {
             if (topLevelJsonElement.has("collateral") && topLevelJsonElement.get("collateral").isJsonArray()) {
                 final JsonArray array = topLevelJsonElement.get("collateral").getAsJsonArray();
                 final Locale locale = this.fromApiJsonHelper.extractLocaleParameter(topLevelJsonElement);
+                
                 for (int i = 0; i < array.size(); i++) {
-
                     final JsonObject collateralItemElement = array.get(i).getAsJsonObject();
 
                     final Long id = this.fromApiJsonHelper.extractLongNamed("id", collateralItemElement);

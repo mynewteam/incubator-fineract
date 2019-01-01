@@ -61,13 +61,13 @@ public class LandCommandFromApiJsonDeserializer extends AbstractFromApiJsonDeser
         
         
         
-        final Long collateralId = this.fromApiJsonhelper.extractLongNamed(LAND_COLLATERAL_JSON_INPUT_PARAMS.COLLATERAL_ID.getValue(), element);
+//        final Long collateralId = this.fromApiJsonhelper.extractLongNamed(LAND_COLLATERAL_JSON_INPUT_PARAMS.COLLATERAL_ID.getValue(), element);
         final Long provinceId = this.fromApiJsonhelper.extractLongNamed(LAND_COLLATERAL_JSON_INPUT_PARAMS.PROVINCE_ID.getValue(), element);
         final Long collateralNameId = this.fromApiJsonhelper.extractLongNamed(LAND_COLLATERAL_JSON_INPUT_PARAMS.COLLATERAL_NAME.getValue(), element);
         final Long collateralNatureId = this.fromApiJsonhelper.extractLongNamed(LAND_COLLATERAL_JSON_INPUT_PARAMS.COLLATERAL_NATURE.getValue(), element);
         
         
-        return new LandCollateralCommand( dateIssue, size, oldPrice, numberOfCopy, status, detailLocation, ownerName1, gender1, passportId1, ownerName2, gender2, passportId2, collateralId, provinceId, collateralNameId, collateralNatureId);
+        return new LandCollateralCommand( dateIssue, size, oldPrice, numberOfCopy, status, detailLocation, ownerName1, gender1, passportId1, ownerName2, gender2, passportId2, provinceId, collateralNameId, collateralNatureId);
     }
 
 }

@@ -28,14 +28,13 @@ public class LandCollateralCommand {
     private final String ownerName2;
     private final Long gender2;
     private final String passportId2;
-    private final Long collateralId;
     private final Long provinceId;
     private final Long collateralNameId;
     private final Long collateralNatureId;
     
     public LandCollateralCommand(LocalDate dateIssue, String size, BigDecimal oldPrice, Integer numberOfCopy, Long status,
             String detailLocation, String ownerName1, Long gender1, String passportId1, String ownerName2, Long gender2,
-            String passportId2, Long collateralId, Long provinceId, Long collateralNameId, Long collateralNatureId) {
+            String passportId2, Long provinceId, Long collateralNameId, Long collateralNatureId) {
        
         this.dateIssue = dateIssue;
         this.size = size;
@@ -49,125 +48,75 @@ public class LandCollateralCommand {
         this.ownerName2 = ownerName2;
         this.gender2 = gender2;
         this.passportId2 = passportId2;
-        this.collateralId = collateralId;
         this.provinceId = provinceId;
         this.collateralNameId = collateralNameId;
         this.collateralNatureId = collateralNatureId;
     }
     
-    
     public LocalDate getDateIssue() {
         return this.dateIssue;
     }
 
-
-
-    
     public String getSize() {
         return this.size;
     }
 
-
-
-    
     public BigDecimal getOldPrice() {
         return this.oldPrice;
     }
 
-
-
-    
     public Integer getNumberOfCopy() {
         return this.NumberOfCopy;
     }
 
-
-
-    
     public Long getStatus() {
         return this.status;
     }
 
-
-
-    
     public String getDetailLocation() {
         return this.detailLocation;
     }
 
-
-
-    
     public String getOwnerName1() {
         return this.ownerName1;
     }
 
-
-
-    
     public Long getGender1() {
         return this.gender1;
     }
 
-
-
-    
     public String getPassportId1() {
         return this.passportId1;
     }
 
-
-
-    
     public String getOwnerName2() {
         return this.ownerName2;
     }
 
-
-
-    
     public Long getGender2() {
         return this.gender2;
     }
 
-
-
-    
     public String getPassportId2() {
         return this.passportId2;
     }
 
-
-
-    
-    public Long getCollateralId() {
-        return this.collateralId;
-    }
-
-
-
-    
     public Long getProvinceId() {
         return this.provinceId;
     }
 
-
-
-    
     public Long getCollateralNameId() {
         return this.collateralNameId;
     }
 
-    
     public Long getCollateralNatureId() {
         return this.collateralNatureId;
     }
 
-
     public void validateForCreateAndUpdate() {
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
-        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("Landcollateral");
-        baseDataValidator.reset().parameter(LAND_COLLATERAL_JSON_INPUT_PARAMS.COLLATERAL_ID.getValue()).value(this.collateralId).notNull().longGreaterThanZero();
+        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("landCollateral");
+//        baseDataValidator.reset().parameter(LAND_COLLATERAL_JSON_INPUT_PARAMS.COLLATERAL_ID.getValue()).value(this.collateralId).notNull().longGreaterThanZero();
         baseDataValidator.reset().parameter(LAND_COLLATERAL_JSON_INPUT_PARAMS.PROVINCE_ID.getValue()).value(this.provinceId).notNull().longGreaterThanZero();
         baseDataValidator.reset().parameter(LAND_COLLATERAL_JSON_INPUT_PARAMS.COLLATERAL_NAME.getValue()).value(this.collateralNameId).notNull().longGreaterThanZero();
         baseDataValidator.reset().parameter(LAND_COLLATERAL_JSON_INPUT_PARAMS.COLLATERAL_NATURE.getValue()).value(this.collateralNatureId).notNull().longGreaterThanZero();
@@ -176,7 +125,4 @@ public class LandCollateralCommand {
             throw new PlatformApiDataValidationException("validation.msg.validation.errors.exist", "Validation error exist.", dataValidationErrors);
         }
     }
-    
-    
-    
 }

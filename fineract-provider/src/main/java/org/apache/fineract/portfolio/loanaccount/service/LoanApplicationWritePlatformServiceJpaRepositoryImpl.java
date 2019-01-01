@@ -372,9 +372,9 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
 			this.loanRepositoryWrapper.save(newLoanApplication);
 			
 			logger.info("class LoanApplicationWritePlatformServiceJpaRepositoryImpl");
-			logger.info("-----------------------------------------------------------");
-			logger.info("Sothea Working On: Line 322 : newLoanApplication: LoanID=" + newLoanApplication.getId());
-			logger.info("-----------------------------------------------------------");
+//			logger.info("-----------------------------------------------------------");
+//			logger.info("Sothea Working On: Line 322 : newLoanApplication: LoanID=" + newLoanApplication.getId());
+//			logger.info("-----------------------------------------------------------");
 			
 			
 			if (loanProduct.isInterestRecalculationEnabled())
@@ -740,9 +740,7 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
 			final Set<LoanCollateral> possiblyModifedLoanCollateralItems = this.loanCollateralAssembler.fromParsedJson(command.parsedJson());
 			final Set<LandCollateral> possiblyModifedLandCollateralItems = this.landCollateralAssembler.fromParsedJson(command.parsedJson());
 
-			final Map<String, Object> changes = existingLoanApplication.loanApplicationModification(command,
-				possiblyModifedLoanCharges,
-				possiblyModifedLoanCollateralItems, possiblyModifedLandCollateralItems, this.aprCalculator, isChargeModified, loanProductForValidations);
+			final Map<String, Object> changes = existingLoanApplication.loanApplicationModification(command, possiblyModifedLoanCharges, possiblyModifedLoanCollateralItems, possiblyModifedLandCollateralItems, this.aprCalculator, isChargeModified, loanProductForValidations);
 
 			if (changes.containsKey("expectedDisbursementDate"))
 			{
@@ -1239,8 +1237,7 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
 	private void handleDataIntegrityIssues(final JsonCommand command, final Throwable realCause, final Exception dve)
 	{
 
-		if (realCause.getMessage().contains("loan_account_no_UNIQUE")
-			|| realCause.getCause().getMessage().contains("loan_account_no_UNIQUE"))
+		if (realCause.getMessage().contains("loan_account_no_UNIQUE") || realCause.getCause().getMessage().contains("loan_account_no_UNIQUE"))
 		{
 
 			final String accountNo = command.stringValueOfParameterNamed("accountNo");

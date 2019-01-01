@@ -22,10 +22,4 @@ public class CountryKhmer {
     @Column(name = "countryCode")
     private String countryCode;
 
-    
-
-   
-    
-    
-
 }
