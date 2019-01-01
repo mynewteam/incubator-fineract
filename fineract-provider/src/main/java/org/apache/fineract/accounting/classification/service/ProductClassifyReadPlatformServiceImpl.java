@@ -5,9 +5,12 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.beanutils.locale.converters.DateLocaleConverter;
 import org.apache.fineract.accounting.classification.data.LoanArriaClassifyData;
 import org.apache.fineract.accounting.classification.data.LoanLastValueAccForMoveData;
+import org.apache.fineract.accounting.classification.data.LoanSubTypeData;
 import org.apache.fineract.accounting.classification.data.ProductClassifyMappingData;
+import org.apache.fineract.accounting.classification.data.ProductSubTypeMappingData;
 import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,24 +34,82 @@ public class ProductClassifyReadPlatformServiceImpl implements ProductClassifyRe
 	public List<ProductClassifyMappingData> retrieveProductClassifyList(Long ProductId, Integer Agging) {
 		ProductClassifyDataMapper mapper = new ProductClassifyDataMapper();
 		final String sql = "SELECT id, description, min_aging,max_aging, acc_dr_id, acc_cr_id, acc_product_mapping_id, type,class_acc FROM acc_product_classify_mapping  WHERE  acc_product_mapping_id = ? AND (? between min_aging and max_aging)";
-		logger.debug(sql + ":ProductId:"+ProductId+", Agging:"+Agging);
+		// logger.debug(sql + ":ProductId:"+ProductId+", Agging:"+Agging);
 		return this.jdbctemplate.query(sql, mapper, new Object[] {ProductId, Agging} );
 	}
 	
 	@Override
+	public List<ProductSubTypeMappingData> retrieveProductSubTypeMappingList(Long ProductId, Integer Age) {
+		ProductSubTypeMappingDataMapper mapper = new ProductSubTypeMappingDataMapper();
+		final String sql = "select st.* from loan_product_subtype_mapping st where ((? between min_age and max_age ) or (? >= min_age  and max_age=-1)) and product_id=?";
+		logger.debug(sql + ":ProductId:"+ProductId+", Age:"+Age);
+		return this.jdbctemplate.query(sql, mapper, new Object[] {Age,Age, Age, ProductId} );
+	}
+	
+	@Override
+	public List<ProductSubTypeMappingData> retrieveProductSubTypeMappingListForChangeType(Long loan_subtype_status_id, Long product_id) {
+		ProductSubTypeMappingDataMapper mapper = new ProductSubTypeMappingDataMapper();
+		final String sql = "select st.* from loan_product_subtype_mapping st where st.loan_subtype_status_id not in(?) and product_id=?";
+		 logger.debug(sql + ":loan_subtype_status_id:"+loan_subtype_status_id+", product_id:"+product_id);
+		return this.jdbctemplate.query(sql, mapper, new Object[] {loan_subtype_status_id,product_id} );
+	}
+	
+//	
+	@SuppressWarnings("deprecation")
+	@Override
+	public List<LoanSubTypeData> retrieveSubTypeByLoanIdAndDate(Long LoanId,Date TranDate) {
+		LoanSubTypeDataMapping mapper = new LoanSubTypeDataMapping();
+		final String sql = "select ml.id as loanid, ml.loan_subtype_status_id, ag.*,(TO_DAYS(?) - TO_DAYS(ag.overdue_since_date_derived)) AS days_in_arrears from m_loan ml left join m_loan_arrears_aging ag on ml.id=ag.loan_id where ml.id =? and TO_DAYS(ag.overdue_since_date_derived)<TO_DAYS(?)";
+		 logger.debug(sql + ":LoanId:"+LoanId+"TranDate:"+TranDate);
+		return this.jdbctemplate.query(sql, mapper, new Object[] {TranDate,LoanId,TranDate} );
+	}
+//	retrieveAccForCurrentAccStatusDataByLoanIdAndAccIdLoanSubTypeData
+	private static final class LoanSubTypeDataMapping implements RowMapper<LoanSubTypeData>{
+		@Override
+		public LoanSubTypeData mapRow(ResultSet rs, int rowNum) throws SQLException {
+			 Long loanId=rs.getLong("loanId");
+			 int loan_subtype_status_id=rs.getInt("loan_subtype_status_id");
+			 Date overdue_since_date_derived=rs.getDate("overdue_since_date_derived");
+			 Integer days_in_arrears=rs.getInt("days_in_arrears");
+			 Long product_id=rs.getLong("product_id");
+			
+			return new LoanSubTypeData(loanId,loan_subtype_status_id,overdue_since_date_derived,days_in_arrears,product_id);
+		}
+	}
+	
+	
+	@Override
 	public List<LoanArriaClassifyData> retrieveLoanArriaClassifyDataByLoanId(Long LoanId) {
 		LoanArriaClassifyDataMapper mapper = new LoanArriaClassifyDataMapper();
-		final String sql = "select client_account_no, account_number, loan_outstanding, overdue_since_date_derived, days_in_arrears from v_loan_aging_detail where account_number = ?";
+		final String sql = "select client_account_no, product_id,  account_number, loan_outstanding, overdue_since_date_derived, days_in_arrears from v_loan_aging_detail where account_number = ?";
 		return this.jdbctemplate.query(sql, mapper, new Object[] {LoanId} );
+	}
+	
+	@Override
+	public List<LoanArriaClassifyData> retrieveLoanArriaDataByLoanIdAndDate(Long LoanId,Date TranDate) {
+		
+		LoanArriaClassifyDataMapper mapper = new LoanArriaClassifyDataMapper();
+		final String sql = "select client_account_no, product_id,  account_number, loan_outstanding, overdue_since_date_derived, days_in_arrears from v_loan_aging_detail1 where account_number = ?";
+		logger.debug(sql + ":LoanId:"+LoanId+"TranDate:"+TranDate);
+		return this.jdbctemplate.query(sql, mapper, new Object[] {LoanId,TranDate} );
 	}
 	
 	@Override
 	public List<LoanArriaClassifyData> retrieveLoanArriaClassifyDataByLoanId(Long LoanId, Date AccrDate) {
 		
 		LoanArriaClassifyDataMapper mapper = new LoanArriaClassifyDataMapper();
-		final String sql = "select client_account_no, account_number, loan_outstanding, overdue_since_date_derived, (TO_DAYS(?) - TO_DAYS(overdue_since_date_derived)) AS days_in_arrear from v_loan_aging_detail where account_number = ? and  overdue_since_date_derived < ?";
-		logger.debug(sql + ":LoanId:"+LoanId+", AccrDate:"+AccrDate+",  AccrDate:"+AccrDate+"");
+		final String sql = "select client_account_no, product_id,  account_number, loan_outstanding, overdue_since_date_derived,(TO_DAYS(?) - TO_DAYS(overdue_since_date_derived)) AS days_in_arrear from v_loan_aging_detail where account_number = ? and  overdue_since_date_derived < ?";
+		 logger.debug(sql + ":LoanId:"+LoanId+", AccrDate:"+AccrDate+",  AccrDate:"+AccrDate+"");
 		return this.jdbctemplate.query(sql, mapper, new Object[] {AccrDate, LoanId, AccrDate} );
+		
+	}
+	
+	@Override
+	public List<LoanArriaClassifyData> retrieveLoanArriaByDate(Date AccrDate) {
+		LoanArriaClassifyDataMapper mapper = new LoanArriaClassifyDataMapper();
+		final String sql = "select client_account_no, product_id,  account_number, loan_outstanding, overdue_since_date_derived, (TO_DAYS(?) - TO_DAYS(overdue_since_date_derived)) AS days_in_arrear from v_loan_aging_detail where overdue_since_date_derived < ?";
+		 logger.debug(sql + ":AccrDate:"+AccrDate);
+		return this.jdbctemplate.query(sql, mapper, new Object[] {AccrDate, AccrDate} );
 		
 	}
 	
@@ -56,10 +117,9 @@ public class ProductClassifyReadPlatformServiceImpl implements ProductClassifyRe
 	public List<LoanLastValueAccForMoveData> retrieveLoanLastValueAccForMoveDataByLoanIdAndAccId(Long LoanId,Long AccId) {
 		LoanLastValueAccForMoveDataMapper mapper = new LoanLastValueAccForMoveDataMapper();
 		final String sql = "SELECT loan_id, account_id,  SUM(amount) AS last_running_balance  FROM v_m_loan_transation_acc_gl_journal_entry where loan_id=? and account_id=? group by loan_id, account_id";
-		logger.trace("trace:" + sql + ":LoanId:"+LoanId+", AccId:"+AccId);
+		// logger.trace("trace:" + sql + ":LoanId:"+LoanId+", AccId:"+AccId);
 		return this.jdbctemplate.query(sql, mapper, new Object[] {LoanId, AccId} );
 	}
-	
 	
 	@SuppressWarnings("deprecation")
 	@Override
@@ -73,11 +133,11 @@ public class ProductClassifyReadPlatformServiceImpl implements ProductClassifyRe
 	public List<LoanLastValueAccForMoveData> retrieveLoanLastValueAccForMoveDataByLoanIdForFirstAcc(Long LoanId,Long ProductId,Long AccId)  {
 		LoanLastValueAccForMoveDataMapper mapper = new LoanLastValueAccForMoveDataMapper();
 		final String sql = "SELECT loan_id, account_id,  SUM(amount) AS last_running_balance  FROM v_m_loan_transation_acc_gl_journal_entry where loan_id=? and account_id in (select ap.acc_cr_id from acc_product_classify_mapping ap where  ap.acc_product_mapping_id=? and ap.type=2 and ap.acc_cr_id !=? order by id desc) group by loan_id, account_id ";
-		logger.debug("trace:" + "SELECT loan_id, account_id,  SUM(amount) AS last_running_balance  FROM v_m_loan_transation_acc_gl_journal_entry where loan_id="+LoanId+" and account_id in (select ap.acc_cr_id from acc_product_classify_mapping ap where  ap.acc_product_mapping_id="+ProductId+" and ap.type=2 and ap.acc_cr_id !="+AccId+" order by id desc) group by loan_id, account_id ");
+		 logger.debug("trace:" + "SELECT loan_id, account_id,  SUM(amount) AS last_running_balance  FROM v_m_loan_transation_acc_gl_journal_entry where loan_id="+LoanId+" and account_id in (select ap.acc_cr_id from acc_product_classify_mapping ap where  ap.acc_product_mapping_id="+ProductId+" and ap.type=2 and ap.acc_cr_id !="+AccId+" order by id desc) group by loan_id, account_id ");
 		return this.jdbctemplate.query(sql, mapper, new Object[] {LoanId,ProductId,AccId} );
 	}
-//	retrieveAccForCurrentAccStatusDataByLoanIdAndAccId
 	
+//	retrieveAccForCurrentAccStatusDataByLoanIdAndAccId
 	private static final class ProductClassifyDataMapper implements RowMapper<ProductClassifyMappingData>{
 		@Override
 		public ProductClassifyMappingData mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -93,6 +153,21 @@ public class ProductClassifyReadPlatformServiceImpl implements ProductClassifyRe
 		}
 	}
 	
+	private static final class ProductSubTypeMappingDataMapper implements RowMapper<ProductSubTypeMappingData>{
+		@Override
+		public ProductSubTypeMappingData mapRow(ResultSet rs, int rowNum) throws SQLException {
+			 Integer id=rs.getInt("id");;
+			 Integer product_id=rs.getInt("product_id");
+			 Integer loan_subtype_status_id=rs.getInt("loan_subtype_status_id");
+			 Integer min_age=rs.getInt("min_age");
+			 Integer max_age=rs.getInt("max_age");
+			 Long portfolio_acc_id=rs.getLong("portfolio_acc_id");
+			 Long int_receivable_acc_id=rs.getLong("int_receivable_acc_id");
+			 Long income_acc_id=rs.getLong("income_acc_id");
+			return new ProductSubTypeMappingData(id,product_id,loan_subtype_status_id,min_age,max_age,portfolio_acc_id,int_receivable_acc_id,income_acc_id);
+		}
+	}
+	
 	private static final class LoanArriaClassifyDataMapper implements RowMapper<LoanArriaClassifyData>{
 
 		@Override
@@ -103,8 +178,9 @@ public class ProductClassifyReadPlatformServiceImpl implements ProductClassifyRe
 			double loan_outstanding = rs.getDouble("loan_outstanding");
 			Date overdue_since_date_derived = rs.getDate("overdue_since_date_derived");
 			Integer days_in_arrears = rs.getInt("days_in_arrear");
-//			logger.debug("public LoanArriaClassifyData mapRow(ResultSet rs, int rowNum) throws SQLException {");
-			return new LoanArriaClassifyData(client_account_no, account_number, loan_outstanding, overdue_since_date_derived, days_in_arrears);
+			Long product_id = rs.getLong("product_id");
+			// logger.debug("public LoanArriaClassifyData mapRow(ResultSet rs, int rowNum) throws SQLException {");
+			return new LoanArriaClassifyData(client_account_no, account_number, loan_outstanding, overdue_since_date_derived, days_in_arrears,product_id);
 		}
 	}
 	
@@ -119,4 +195,14 @@ public class ProductClassifyReadPlatformServiceImpl implements ProductClassifyRe
 		}
 	}
 
+	public int updateLoanChangeSubType(Long LoanId, Date AccrTillDate) {
+			
+		return 0;
+	}
+
+	@Override
+	public int retrieveProductSubTypeByLoanId(Long LoanId) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

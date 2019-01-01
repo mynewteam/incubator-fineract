@@ -26,17 +26,36 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.fineract.accounting.classification.data.ProductSubTypeMappingData;
+import org.apache.fineract.accounting.classification.service.ProductClassifyReadPlatformServiceImpl;
 import org.apache.fineract.accounting.closure.domain.GLClosure;
 import org.apache.fineract.accounting.common.AccountingConstants.ACCRUAL_ACCOUNTS_FOR_LOAN;
 import org.apache.fineract.accounting.common.AccountingConstants.CASH_ACCOUNTS_FOR_LOAN;
 import org.apache.fineract.accounting.common.AccountingConstants.FINANCIAL_ACTIVITY;
 import org.apache.fineract.accounting.glaccount.domain.GLAccount;
+import org.apache.fineract.accounting.glaccount.domain.GLAccountRepositoryWrapper;
 import org.apache.fineract.accounting.journalentry.data.ChargePaymentDTO;
 import org.apache.fineract.accounting.journalentry.data.LoanDTO;
 import org.apache.fineract.accounting.journalentry.data.LoanTransactionDTO;
+import org.apache.fineract.accounting.journalentry.domain.JournalEntry;
+import org.apache.fineract.accounting.journalentry.domain.JournalEntryRepository;
+import org.apache.fineract.accounting.journalentry.domain.JournalEntryType;
+import org.apache.fineract.accounting.producttoaccountmapping.domain.PortfolioProductType;
 import org.apache.fineract.organisation.office.domain.Office;
+import org.apache.fineract.portfolio.client.domain.ClientTransaction;
+import org.apache.fineract.portfolio.loanaccount.domain.LoanTransaction;
+import org.apache.fineract.portfolio.paymentdetail.domain.PaymentDetail;
+import org.apache.fineract.portfolio.savings.domain.SavingsAccountTransaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.apache.commons.lang.StringUtils;
+import org.apache.fineract.accounting.classification.data.LoanArriaClassifyData;
+import org.apache.fineract.accounting.classification.data.LoanLastValueAccForMoveData;
+import org.apache.fineract.accounting.classification.data.LoanSubTypeData;
+import org.apache.fineract.accounting.classification.data.ProductClassifyMappingData;
+import org.apache.fineract.accounting.classification.data.ProductSubTypeMappingData;
+import org.apache.fineract.accounting.classification.service.ProductClassifyReadPlatformService;
+import org.apache.fineract.accounting.classification.service.ProductClassifyReadPlatformServiceImpl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,37 +65,53 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
 
     private final AccountingProcessorHelper helper;
     private final static Logger logger = LoggerFactory.getLogger(AccrualBasedAccountingProcessorForLoan.class);
+    private final ProductClassifyReadPlatformServiceImpl productClassifyReadPlatformServiceImpl;
+    private final GLAccountRepositoryWrapper accountRepositoryWrapper;
+    private final JournalEntryRepository glJournalEntryRepository;
     @Autowired
-    public AccrualBasedAccountingProcessorForLoan(final AccountingProcessorHelper accountingProcessorHelper) {
+    public AccrualBasedAccountingProcessorForLoan(
+    		final AccountingProcessorHelper accountingProcessorHelper,
+    		final ProductClassifyReadPlatformServiceImpl productClassifyReadPlatformServiceImpl,
+    		final GLAccountRepositoryWrapper accountRepositoryWrapper,
+    		final JournalEntryRepository glJournalEntryRepository
+    		) {
         this.helper = accountingProcessorHelper;
+        	this.productClassifyReadPlatformServiceImpl=productClassifyReadPlatformServiceImpl;
+        	this.accountRepositoryWrapper=accountRepositoryWrapper;
+        	this.glJournalEntryRepository=glJournalEntryRepository;
     }
 
     @Override
     public void createJournalEntriesForLoan(final LoanDTO loanDTO) {
-        
+        //sothea will edit.
     	final GLClosure latestGLClosure = this.helper.getLatestClosureByBranch(loanDTO.getOfficeId());
     	
         final Office office = this.helper.getOfficeById(loanDTO.getOfficeId());
         
         for (final LoanTransactionDTO loanTransactionDTO : loanDTO.getNewLoanTransactions()) {
-            
+           
         	final Date transactionDate = loanTransactionDTO.getTransactionDate();
+        	
             this.helper.checkForBranchClosures(latestGLClosure, transactionDate);
 
+            logger.debug("createJournalEntriesForChangeSubTypes(loanDTO, loanTransactionDTO, office);");
+            
             /** Handle Disbursements **/
             if (loanTransactionDTO.getTransactionType().isDisbursement()) {
                 createJournalEntriesForDisbursements(loanDTO, loanTransactionDTO, office);
+                
             }
 
             /*** Handle Accruals ***/
             if (loanTransactionDTO.getTransactionType().isAccrual()) {
-                
-                // logger.debug("---Sothea_Check---");
-                // logger.debug("createJournalEntriesForAccruals(loanDTO, loanTransactionDTO, office);");
-                // logger.debug("---Sothea_Check---");
-                
-                createJournalEntriesForAccruals(loanDTO, loanTransactionDTO, office);
-                
+              logger.debug("---Sothea_Check---");
+              logger.debug("changeLoanSubType(loanDTO, loanTransactionDTO, office);");
+              logger.debug("---Sothea_Check---");    
+            	changeLoanSubType(loanDTO, loanTransactionDTO, office);
+//               LoanProductSubTypes
+                // End Loan Change Sub Type
+//                createJournalEntriesForAccruals(loanDTO, loanTransactionDTO, office);
+             
 //                logger.debug("---Sothea_Check---");
 //                logger.debug("createJournalEntriesForAccruals(loanDTO, loanTransactionDTO, office);");
 //                logger.debug("---Sothea_Check---");
@@ -92,30 +127,135 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
                     || loanTransactionDTO.getTransactionType().isChargePayment()) {
                 createJournalEntriesForRepaymentsAndWriteOffs(loanDTO, loanTransactionDTO, office, false, loanTransactionDTO
                         .getTransactionType().isRepaymentAtDisbursement());
+                List<LoanSubTypeData> loanSubTypeData=null;
+//		        final Long mLoanId = loanDTO.getLoanId();
+//		        loanSubTypeData = this.productClassifyReadPlatformServiceImpl.retrieveSubTypeByLoanIdAndDate( loanDTO.getLoanId(),loanTransactionDTO.getTransactionDate());
+                
             }
 
             /** Logic for handling recovery payments **/
             else if (loanTransactionDTO.getTransactionType().isRecoveryRepayment()) {
                 createJournalEntriesForRecoveryRepayments(loanDTO, loanTransactionDTO, office);
-            }
+                List<LoanSubTypeData> loanSubTypeData=null;
+//		        final Long mLoanId = loanDTO.getLoanId();
+//		        loanSubTypeData = this.productClassifyReadPlatformServiceImpl.retrieveSubTypeByLoanIdAndDate( loanDTO.getLoanId(),loanTransactionDTO.getTransactionDate());
+                
+            	}
 
             /** Logic for Refunds of Overpayments **/
             else if (loanTransactionDTO.getTransactionType().isRefund()) {
                 createJournalEntriesForRefund(loanDTO, loanTransactionDTO, office);
+                 List<LoanSubTypeData> loanSubTypeData=null;
+//		        final Long mLoanId = loanDTO.getLoanId();
+//		        loanSubTypeData = this.productClassifyReadPlatformServiceImpl.retrieveSubTypeByLoanIdAndDate( loanDTO.getLoanId(),loanTransactionDTO.getTransactionDate());
+                
             }
 
             /** Handle Write Offs, waivers and their reversals **/
             else if ((loanTransactionDTO.getTransactionType().isWriteOff() || loanTransactionDTO.getTransactionType().isWaiveInterest() || loanTransactionDTO
                     .getTransactionType().isWaiveCharges())) {
                 createJournalEntriesForRepaymentsAndWriteOffs(loanDTO, loanTransactionDTO, office, true, false);
+                 List<LoanSubTypeData> loanSubTypeData=null;
+//		        final Long mLoanId = loanDTO.getLoanId();
+//		        loanSubTypeData = this.productClassifyReadPlatformServiceImpl.retrieveSubTypeByLoanIdAndDate( loanDTO.getLoanId(),loanTransactionDTO.getTransactionDate());
+                
             }
 
             /** Logic for Refunds of Active Loans **/
             else if (loanTransactionDTO.getTransactionType().isRefundForActiveLoans()) {
                 createJournalEntriesForRefundForActiveLoan(loanDTO, loanTransactionDTO, office);
-            }
+                 List<LoanSubTypeData> loanSubTypeData=null;
+//		        final Long mLoanId = loanDTO.getLoanId();
+//		        loanSubTypeData = this.productClassifyReadPlatformServiceImpl.retrieveSubTypeByLoanIdAndDate( loanDTO.getLoanId(),loanTransactionDTO.getTransactionDate());
+             }
         }
     }
+    
+    //Change Loan Subtype
+    
+    private void changeLoanSubType(LoanDTO loanDTO, LoanTransactionDTO loanTransactionDTO, final Office office)
+    {
+    	List<LoanSubTypeData> loanSubTypeData=null;
+        final Long mLoanId = loanDTO.getLoanId();
+        
+        loanSubTypeData = this.productClassifyReadPlatformServiceImpl.retrieveSubTypeByLoanIdAndDate(loanDTO.getLoanId(),loanTransactionDTO.getTransactionDate());
+       
+        logger.debug("loanSubTypeData = this.productClassifyReadPlatformServiceImpl.retrieveSubTypeByLoanIdAndDate(loanDTO.getLoanId()"+loanDTO.getLoanId()+",loanTransactionDTO.getTransactionDate():"+loanTransactionDTO.getTransactionDate()+");");
+        
+        List<ProductSubTypeMappingData> productSubTypeMappingData =null;
+        for(LoanSubTypeData row : loanSubTypeData) {
+        	logger.debug("for(LoanSubTypeData row : loanSubTypeData) { number:1");
+        	int dayArria=0;
+				dayArria = row.getDays_in_arrears();
+				
+        	if (dayArria > 0) {
+    			try {
+    				productSubTypeMappingData = this.productClassifyReadPlatformServiceImpl.retrieveProductSubTypeMappingList(row.getProduct_id(), dayArria);
+    			} catch (Exception ex) {
+    				logger.debug("trac:  = if (dayArria > 0) {: " + ex.toString());
+    			}
+    		}
+    		if (productSubTypeMappingData != null) {
+    			for (ProductSubTypeMappingData pSubtype : productSubTypeMappingData) {
+    				int AgeMappingSubType = pSubtype.getLoan_subtype_status_id();
+    				logger.debug("int AgeMappingSubType:"+ AgeMappingSubType+"= pSubtype.getLoan_subtype_status_id();");
+    				
+    				int CurrentLoanSubType = row.getLoan_subtype_status_id();
+    				
+    				Long LoanId = row.getLoanId();
+    				Long  AccId = pSubtype.getPortfolio_acc_id();
+//    				Move Portfolio
+    				List<LoanLastValueAccForMoveData>  loanLastValueAccForMoveData=null;
+    				loanLastValueAccForMoveData = this.productClassifyReadPlatformServiceImpl.retrieveLoanLastValueAccForMoveDataByLoanIdAndAccId(LoanId, AccId);
+    				for(LoanLastValueAccForMoveData dMove: loanLastValueAccForMoveData) {
+    					BigDecimal amount = BigDecimal.valueOf(dMove.getLast_running_balance());
+    					if(amount.equals(BigDecimal.ZERO) == false) {
+    						GLAccount debitAccount = getGLAccountById((Long.valueOf(pSubtype.getIncome_acc_id())));
+    						GLAccount creditAccount = getGLAccountById((Long.valueOf(dMove.getAccount_id())));
+        					createDebitJournalEntryForLoan(office, loanDTO.getCurrencyCode(), debitAccount, LoanId,"8888",loanTransactionDTO.getTransactionDate() , amount);
+        					createDebitJournalEntryForLoan(office, loanDTO.getCurrencyCode(), creditAccount, LoanId,"8888",loanTransactionDTO.getTransactionDate() , amount);
+    					}
+    				}
+//    				BigDecimal LastValueAccForMove = BigDecimal.ZERO;
+//    				GLAccount debitAccount = getGLAccountById((Long.valueOf(pSubtype.getInt_receivable_acc_id())));
+//    				GLAccount creditAccount = getGLAccountById((Long.valueOf(pSubtype.getIncome_acc_id())));
+//    				if (LastValueAccForMove.compareTo(BigDecimal.valueOf(0)) == 1) {
+//    					createDebitJournalEntryForLoan(office, currencyCode, debitAccount, loanId,
+//    							transactionId, transactionDate, amount);
+//    					createCreditJournalEntryForLoan(office, currencyCode, creditAccount, loanId,
+//    							transactionId, transactionDate, amount);
+//    				}
+    			}
+    		} else {
+    			
+    		}
+        }
+    }
+    ///sothea 
+	private void createDebitJournalEntryForLoan(final Office office, final String currencyCode, final GLAccount account,
+			final Long loanId, final String transactionId, final Date transactionDate, final BigDecimal amount) {
+		final boolean manualEntry = false;
+		LoanTransaction loanTransaction = null;
+		SavingsAccountTransaction savingsAccountTransaction = null;
+		ClientTransaction clientTransaction = null;
+		final PaymentDetail paymentDetail = null;
+		final Long shareTransactionId = null;
+		String modifiedTransactionId = transactionId;
+
+		if (StringUtils.isNumeric(transactionId)) {
+			long id = Long.parseLong(transactionId);
+//			loanTransaction = this.loanTransactionRepository.findOne(id);
+			modifiedTransactionId = "L" + transactionId;
+		}
+		final JournalEntry journalEntry = JournalEntry.createNew(office, paymentDetail, account, currencyCode,
+				modifiedTransactionId, manualEntry, transactionDate, JournalEntryType.DEBIT, amount, null,
+				PortfolioProductType.LOAN.getValue(), loanId, null, loanTransaction, savingsAccountTransaction,
+				clientTransaction, shareTransactionId);
+		this.glJournalEntryRepository.saveAndFlush(journalEntry);
+	}
+    private GLAccount getGLAccountById(final Long accountId) {
+		return this.accountRepositoryWrapper.findOneWithNotFoundDetection(accountId);
+	}
 
     /**
      * Debit loan Portfolio and credit Fund source for Disbursement.
@@ -392,16 +532,11 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
         final BigDecimal penaltiesAmount = loanTransactionDTO.getPenalties();
         final boolean isReversed = loanTransactionDTO.isReversed();
         final Long paymentTypeId = loanTransactionDTO.getPaymentTypeId();
-//        final Date  accruedTill = loanTransactionDTO();
+//        final Date  accruedTill = loanTransactionDTO.g();
 
         // create journal entries for recognizing interest (or reversal)
         
         if (interestAmount != null && !(interestAmount.compareTo(BigDecimal.ZERO) == 0)) {
-        	
-        	// logger.debug(" trace: this.helper.createAccrualBasedJournalEntriesAndReversalsForLoan(office, currencyCode,\n" + 
-        	// 		"                    ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue():"+ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue()+", ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue():"+ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue()+",\n" + 
-        	// 		"                    loanProductId:"+loanProductId+", paymentTypeId, loanId:"+loanId+", transactionId, transactionDate:"+transactionDate+", interestAmount:"+interestAmount+", isReversed);");
-        	
             this.helper.createAccrualBasedJournalEntriesAndReversalsForLoan(
             		office, 
             		currencyCode,
@@ -449,8 +584,7 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
                     loanTransactionDTO.getPenaltyPayments());
         }
     }
-
-    private void createJournalEntriesForRefund(final LoanDTO loanDTO, final LoanTransactionDTO loanTransactionDTO, final Office office) {
+  private void createJournalEntriesForRefund(final LoanDTO loanDTO, final LoanTransactionDTO loanTransactionDTO, final Office office) {
         // loan properties
         final Long loanProductId = loanDTO.getLoanProductId();
         final Long loanId = loanDTO.getLoanId();
