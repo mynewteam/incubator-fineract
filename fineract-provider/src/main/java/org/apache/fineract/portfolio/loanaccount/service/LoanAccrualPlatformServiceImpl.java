@@ -254,8 +254,8 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 					// Move Interest Receivable Ledger
 					if (interestReceivableGLAmount != 0) {
 
-						GLAccount debitGLAccount = glAccountRepository.findOne(currentIncomeAccId);
-						GLAccount creditGLAccount = glAccountRepository.findOne(incomeAccId);
+						GLAccount debitGLAccount = glAccountRepository.findOne(incomeAccId);
+						GLAccount creditGLAccount = glAccountRepository.findOne(currentIncomeAccId);
 						BigDecimal amount = BigDecimal.valueOf((Math.ceil(interestReceivableGLAmount)));
 						
 						addChangeSubTypeTransaction(loanId, loanSubtypeStatusId, officeId, currencyCode, debitGLAccount,

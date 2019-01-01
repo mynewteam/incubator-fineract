@@ -106,6 +106,7 @@ public class AccountingProcessorHelper {
 	private final ProductClassifyReadPlatformService classifyReadPlatformService;
 	private final static Logger logger = LoggerFactory.getLogger(AccountingProcessorHelper.class);
 	private final LoanSubtypeMappingReadPlatformService loanSubtypeMappingReadPlatformService;
+
 	@Autowired
 	public AccountingProcessorHelper(final JournalEntryRepository glJournalEntryRepository,
 			final ProductToGLAccountMappingRepository accountMappingRepository,
@@ -131,7 +132,7 @@ public class AccountingProcessorHelper {
 		this.accountRepositoryWrapper = accountRepositoryWrapper;
 		this.clientTransactionRepository = clientTransactionRepositoryWrapper;
 		this.classifyReadPlatformService = classifyReadPlatformServices;
-		this.loanSubtypeMappingReadPlatformService =loanSubtypeMappingReadPlatformService;
+		this.loanSubtypeMappingReadPlatformService = loanSubtypeMappingReadPlatformService;
 	}
 
 	public LoanDTO populateLoanDtoFromMap(
@@ -427,7 +428,6 @@ public class AccountingProcessorHelper {
 				loanProductId, paymentTypeId, loanId, transactionId, transactionDate, amount);
 	}
 
-	
 	public void createAccrualBasedJournalEntriesAndReversalsForLoanChangeSubType(
 
 			final Office office, final String currencyCode, final Integer accountTypeToBeDebited, // 7
@@ -448,7 +448,7 @@ public class AccountingProcessorHelper {
 //		createJournalEntriesForLoan(office, currencyCode, accountTypeToDebitId, // 7
 //				accountTypeToCreditId, // 3
 //				loanProductId, paymentTypeId, loanId, transactionId, transactionDate, amount);
-		
+
 		createJournalEntriesForLoan(office, currencyCode, accountTypeToDebitId, // 7
 				accountTypeToCreditId, // 3
 				loanProductId, paymentTypeId, loanId, transactionId, transactionDate, amount);
@@ -645,7 +645,6 @@ public class AccountingProcessorHelper {
 		return this.officeRepositoryWrapper.findOneWithNotFoundDetection(officeId);
 	}
 
-
 	private void createJournalEntriesForLoan(final Office office, final String currencyCode,
 			final int accountTypeToDebitId, final int accountTypeToCreditId, final Long loanProductId,
 			final Long paymentTypeId, final Long loanId, final String transactionId, final Date transactionDate,
@@ -657,39 +656,44 @@ public class AccountingProcessorHelper {
 		final GLAccount creditAccount = getLinkedGLAccountForLoanProduct(loanProductId, accountTypeToCreditId,
 				paymentTypeId, loanId);
 
-		createDebitJournalEntryForLoan(office, currencyCode, debitAccount, loanId, transactionId, transactionDate, amount);
-		
+		createDebitJournalEntryForLoan(office, currencyCode, debitAccount, loanId, transactionId, transactionDate,
+				amount);
+
 		createCreditJournalEntryForLoan(office, currencyCode, creditAccount, loanId, transactionId, transactionDate,
 				amount);
 	}
-	
-	//create Journal Entries For Accrual Loan
+
+	// create Journal Entries For Accrual Loan
 	private void createJournalEntriesForLoanAccrual(final Office office, final String currencyCode,
 			final int accountTypeToDebitId, final int accountTypeToCreditId, final Long loanProductId,
 			final Long paymentTypeId, final Long loanId, final String transactionId, final Date transactionDate,
 			final BigDecimal amount) {
 
 		Integer days_in_arrear = 0;
-		Collection<LoanArrearClassifyData> loanArrearClassifyDatas = this.loanSubtypeMappingReadPlatformService.retrieveLoanArrearsClassifyDataByDateAndLoanId(transactionDate, loanId);
 		
-		for(LoanArrearClassifyData loanArrearClassifyData:loanArrearClassifyDatas) {
+		Collection<LoanArrearClassifyData> loanArrearClassifyDatas = this.loanSubtypeMappingReadPlatformService
+				.retrieveLoanArrearsClassifyDataByDateAndLoanId(transactionDate, loanId);
+
+		for (LoanArrearClassifyData loanArrearClassifyData : loanArrearClassifyDatas) {
 			days_in_arrear = loanArrearClassifyData.getDaysInArrears();
 		}
-		
-		final GLAccount debitAccount = getLinkedGLAccountForLoanProductAndAccrual(loanProductId, accountTypeToDebitId, paymentTypeId, days_in_arrear);
+
+		final GLAccount debitAccount = getLinkedGLAccountForLoanProductAndAccrual(loanProductId, accountTypeToDebitId,
+				paymentTypeId, days_in_arrear);
 
 		final GLAccount creditAccount = getLinkedGLAccountForLoanProductAndAccrual(loanProductId, accountTypeToCreditId,
-		paymentTypeId, days_in_arrear);
-		
-try {
-	createDebitJournalEntryForLoan(office, currencyCode, debitAccount, loanId, transactionId, transactionDate, amount);
-	
-	createCreditJournalEntryForLoan(office, currencyCode, creditAccount, loanId, transactionId, transactionDate,
-			amount);
-}catch(Exception ex) {
-	System.out.print(ex);
-}
-		
+				paymentTypeId, days_in_arrear);
+
+		try {
+			createDebitJournalEntryForLoan(office, currencyCode, debitAccount, loanId, transactionId, transactionDate,
+					amount);
+
+			createCreditJournalEntryForLoan(office, currencyCode, creditAccount, loanId, transactionId, transactionDate,
+					amount);
+		} catch (Exception ex) {
+			System.out.print(ex);
+		}
+
 	}
 
 	private void createJournalEntriesForSavings(final Office office, final String currencyCode,
@@ -1317,7 +1321,6 @@ try {
 					.findByFinancialActivityTypeWithNotFoundDetection(accountMappingTypeId);
 
 			glAccount = financialActivityAccount.getGlAccount();
-			
 
 		} else {
 
@@ -1356,29 +1359,31 @@ try {
 		return glAccount;
 
 	}
-	
-	public GLAccount getLinkedGLAccountForLoanProductAndAccrual(final Long loanProductId, final int accountMappingTypeId,
-			final Long paymentTypeId, Integer days_in_arrear) {
 
-			GLAccount glAccount = null;
-			Collection<LoanProductSubtypeMappingData> loanProductSubtypeMappingDatas = this.loanSubtypeMappingReadPlatformService.retrieveLoanProductSubtypeMappings(loanProductId, days_in_arrear);
-			GLAccount gl = null;
-			
+	public GLAccount getLinkedGLAccountForLoanProductAndAccrual(final Long loanProductId,
+			final int accountMappingTypeId, final Long paymentTypeId, Integer days_in_arrear) {
+
+		GLAccount glAccount = null;
+		Collection<LoanProductSubtypeMappingData> loanProductSubtypeMappingDatas = this.loanSubtypeMappingReadPlatformService
+				.retrieveLoanProductSubtypeMappings(loanProductId, days_in_arrear);
+		GLAccount gl = null;
+
 //			 ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue(), //7
 //             ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue(), //3
 
-		    for(LoanProductSubtypeMappingData product: loanProductSubtypeMappingDatas) {
-		    	if (accountMappingTypeId == ACCRUAL_ACCOUNTS_FOR_LOAN.LOAN_PORTFOLIO.getValue()) {
-					gl = this.getGLAccountById(product.getPortfolioAccId());
-				} else if (accountMappingTypeId == ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue()) {
-					gl = this.getGLAccountById(product.getIntReceivableAccId());
-				} else if (accountMappingTypeId == ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue()) {
-					gl = this.getGLAccountById(product.getIncomeAccId());
-				}
-		    	
-		    	glAccount = gl;
-		    }
+		for (LoanProductSubtypeMappingData product : loanProductSubtypeMappingDatas) {
 			
+			if (accountMappingTypeId == ACCRUAL_ACCOUNTS_FOR_LOAN.LOAN_PORTFOLIO.getValue()) {
+				gl = this.getGLAccountById(product.getPortfolioAccId());
+			} else if (accountMappingTypeId == ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue()) {
+				gl = this.getGLAccountById(product.getIntReceivableAccId());
+			} else if (accountMappingTypeId == ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue()) {
+				gl = this.getGLAccountById(product.getIncomeAccId());
+			}
+			
+			glAccount = gl;
+		}
+
 		return glAccount;
 
 	}
