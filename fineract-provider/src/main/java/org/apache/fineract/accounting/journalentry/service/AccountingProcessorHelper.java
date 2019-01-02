@@ -20,18 +20,19 @@ package org.apache.fineract.accounting.journalentry.service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.fineract.accounting.classification.data.LoanArriaClassifyData;
-import org.apache.fineract.accounting.classification.data.LoanLastValueAccForMoveData;
-import org.apache.fineract.accounting.classification.data.ProductClassifyMappingData;
 import org.apache.fineract.accounting.classification.data.ProductSubTypeMappingData;
 import org.apache.fineract.accounting.classification.service.ProductClassifyReadPlatformService;
 import org.apache.fineract.accounting.classification.service.ProductClassifyReadPlatformServiceImpl;
+import org.apache.fineract.accounting.classify.data.LoanArrearClassifyData;
+import org.apache.fineract.accounting.classify.data.LoanProductSubtypeMappingData;
+import org.apache.fineract.accounting.classify.service.LoanSubtypeMappingReadPlatformService;
 import org.apache.fineract.accounting.closure.domain.GLClosure;
 import org.apache.fineract.accounting.closure.domain.GLClosureRepository;
 import org.apache.fineract.accounting.common.AccountingConstants.ACCRUAL_ACCOUNTS_FOR_LOAN;
@@ -103,10 +104,8 @@ public class AccountingProcessorHelper {
 	private final SavingsAccountTransactionRepository savingsAccountTransactionRepository;
 	private final AccountTransfersReadPlatformService accountTransfersReadPlatformService;
 	private final ProductClassifyReadPlatformService classifyReadPlatformService;
-	private final ProductClassifyReadPlatformServiceImpl productClassifyReadPlatformServiceImpl;
-
 	private final static Logger logger = LoggerFactory.getLogger(AccountingProcessorHelper.class);
-
+	private final LoanSubtypeMappingReadPlatformService loanSubtypeMappingReadPlatformService;
 	@Autowired
 	public AccountingProcessorHelper(final JournalEntryRepository glJournalEntryRepository,
 			final ProductToGLAccountMappingRepository accountMappingRepository,
@@ -118,7 +117,8 @@ public class AccountingProcessorHelper {
 			final GLAccountRepositoryWrapper accountRepositoryWrapper,
 			final ClientTransactionRepositoryWrapper clientTransactionRepositoryWrapper,
 			final ProductClassifyReadPlatformService classifyReadPlatformServices,
-			final ProductClassifyReadPlatformServiceImpl productClassifyReadPlatformServiceImpl) {
+			final ProductClassifyReadPlatformServiceImpl productClassifyReadPlatformServiceImpl,
+			final LoanSubtypeMappingReadPlatformService loanSubtypeMappingReadPlatformService) {
 
 		this.glJournalEntryRepository = glJournalEntryRepository;
 		this.accountMappingRepository = accountMappingRepository;
@@ -131,7 +131,7 @@ public class AccountingProcessorHelper {
 		this.accountRepositoryWrapper = accountRepositoryWrapper;
 		this.clientTransactionRepository = clientTransactionRepositoryWrapper;
 		this.classifyReadPlatformService = classifyReadPlatformServices;
-		this.productClassifyReadPlatformServiceImpl = productClassifyReadPlatformServiceImpl;
+		this.loanSubtypeMappingReadPlatformService =loanSubtypeMappingReadPlatformService;
 	}
 
 	public LoanDTO populateLoanDtoFromMap(
@@ -418,13 +418,16 @@ public class AccountingProcessorHelper {
 			accountTypeToCreditId = accountTypeToBeDebited;
 		}
 
-		createJournalEntriesForLoan(office, currencyCode, accountTypeToDebitId, // 7
+//		createJournalEntriesForLoan(office, currencyCode, accountTypeToDebitId, // 7
+//				accountTypeToCreditId, // 3
+//				loanProductId, paymentTypeId, loanId, transactionId, transactionDate, amount);
+//		
+		createJournalEntriesForLoanAccrual(office, currencyCode, accountTypeToDebitId, // 7
 				accountTypeToCreditId, // 3
 				loanProductId, paymentTypeId, loanId, transactionId, transactionDate, amount);
 	}
 
-	/// Loan Change SubType
-	/// createAccrualBasedJournalEntriesAndReversalsForLoanChangeSubType
+	
 	public void createAccrualBasedJournalEntriesAndReversalsForLoanChangeSubType(
 
 			final Office office, final String currencyCode, final Integer accountTypeToBeDebited, // 7
@@ -442,6 +445,10 @@ public class AccountingProcessorHelper {
 			accountTypeToCreditId = accountTypeToBeDebited;
 		}
 
+//		createJournalEntriesForLoan(office, currencyCode, accountTypeToDebitId, // 7
+//				accountTypeToCreditId, // 3
+//				loanProductId, paymentTypeId, loanId, transactionId, transactionDate, amount);
+		
 		createJournalEntriesForLoan(office, currencyCode, accountTypeToDebitId, // 7
 				accountTypeToCreditId, // 3
 				loanProductId, paymentTypeId, loanId, transactionId, transactionDate, amount);
@@ -638,346 +645,51 @@ public class AccountingProcessorHelper {
 		return this.officeRepositoryWrapper.findOneWithNotFoundDetection(officeId);
 	}
 
-	// Sothea Check
+
 	private void createJournalEntriesForLoan(final Office office, final String currencyCode,
 			final int accountTypeToDebitId, final int accountTypeToCreditId, final Long loanProductId,
 			final Long paymentTypeId, final Long loanId, final String transactionId, final Date transactionDate,
 			final BigDecimal amount) {
 
-		BigDecimal amountOutString = BigDecimal.valueOf(0);
+		final GLAccount debitAccount = getLinkedGLAccountForLoanProduct(loanProductId, accountTypeToDebitId,
+				paymentTypeId, loanId);
 
-		List<ProductClassifyMappingData> productClassify = null;
-		List<ProductSubTypeMappingData> productSubTypeMappingData = null;
-		List<LoanArriaClassifyData> loanArriaClassifyData = null;
+		final GLAccount creditAccount = getLinkedGLAccountForLoanProduct(loanProductId, accountTypeToCreditId,
+				paymentTypeId, loanId);
 
-		int dayArria = 0;
-		try {
-			loanArriaClassifyData = this.productClassifyReadPlatformServiceImpl
-					.retrieveLoanArriaClassifyDataByLoanId(loanId, transactionDate);
-		} catch (Exception ex) {
-			logger.debug("trac:  = loanArriaClassifyData" + ex.toString());
-		}
-
-		// .debug("final List<LoanArriaClassifyData> loanArriaClassifyData =
-		// this.productClassifyReadPlatformServiceImpl.retrieveLoanArriaClassifyDataByLoanId(loanId"+loanId+");");
-
-		for (LoanArriaClassifyData row : loanArriaClassifyData) {
-			try {
-				logger.debug("trac: getAccCrId:" + row.getDays_in_arrears());
-				amountOutString = BigDecimal.valueOf(row.getLoan_outstanding());
-				dayArria = row.getDays_in_arrears();
-			} catch (Exception ex) {
-				logger.debug("trac:  = for (LoanArriaClassifyData row : loanArriaClassifyData) {" + ex.toString());
-			}
-
-		}
-
-		if (dayArria > 0) {
-
-			try {
-
-				productSubTypeMappingData = this.productClassifyReadPlatformServiceImpl
-						.retrieveProductSubTypeMappingList(loanProductId, dayArria);
-
-			} catch (Exception ex) {
-				logger.debug("trac:  = if (dayArria > 0) {: " + ex.toString());
-			}
-
-		}
-
-		if (productSubTypeMappingData != null) {
-
-			for (ProductSubTypeMappingData pSubtype : productSubTypeMappingData) {
-
-				BigDecimal LastValueAccForMove = BigDecimal.ZERO;
-				GLAccount debitAccount = getGLAccountById((Long.valueOf(pSubtype.getInt_receivable_acc_id())));
-				GLAccount creditAccount = getGLAccountById((Long.valueOf(pSubtype.getIncome_acc_id())));
-				if (LastValueAccForMove.compareTo(BigDecimal.valueOf(0)) == 1) {
-					createDebitJournalEntryForLoan(office, currencyCode, debitAccount, loanId, transactionId,
-							transactionDate, amount);
-					createCreditJournalEntryForLoan(office, currencyCode, creditAccount, loanId, transactionId,
-							transactionDate, amount);
-				}
-			}
-
-		} else {
-
-			final GLAccount debitAccount = getLinkedGLAccountForLoanProduct(loanProductId, accountTypeToDebitId,
-					paymentTypeId, loanId);
-
-			final GLAccount creditAccount = getLinkedGLAccountForLoanProduct(loanProductId, accountTypeToCreditId,
-					paymentTypeId, loanId);
-
-//			final GLAccount creditAccount = getGLAccountById((Long.valueOf(239)));
-
-//			createDebitJournalEntryForLoan(office, currencyCode, debitAccount, loanId, transactionId, transactionDate,amount);
-//			createCreditJournalEntryForLoan(office, currencyCode, creditAccount, loanId, transactionId, transactionDate,amount);
-
-			createDebitJournalEntryForLoan(office, currencyCode, debitAccount, loanId, transactionId, transactionDate,
-					amount);
-			createCreditJournalEntryForLoan(office, currencyCode, creditAccount, loanId, transactionId, transactionDate,
-					amount);
-		}
-
+		createDebitJournalEntryForLoan(office, currencyCode, debitAccount, loanId, transactionId, transactionDate, amount);
+		
+		createCreditJournalEntryForLoan(office, currencyCode, creditAccount, loanId, transactionId, transactionDate,
+				amount);
 	}
-
-	private void createJournalEntriesForLoan(final Office office, final String currencyCode,
+	
+	//create Journal Entries For Accrual Loan
+	private void createJournalEntriesForLoanAccrual(final Office office, final String currencyCode,
 			final int accountTypeToDebitId, final int accountTypeToCreditId, final Long loanProductId,
 			final Long paymentTypeId, final Long loanId, final String transactionId, final Date transactionDate,
-			final BigDecimal amount, final Date AccDate) {
+			final BigDecimal amount) {
 
-//		BigDecimal amount1 = BigDecimal.valueOf(1000);
-		BigDecimal amountOutString = BigDecimal.valueOf(0);
-
-		List<ProductClassifyMappingData> productClassify = null;
-		List<LoanLastValueAccForMoveData> loanLastValueAccForMoveData = null;
-		List<LoanArriaClassifyData> loanArriaClassifyData = null;
-		List<LoanArriaClassifyData> loanArriaClassifyDataAccr = null;
-		List<ProductSubTypeMappingData> productSubTypeMappingData = null;
-
-		int dayArria = 0;
-
-		logger.debug(
-				"final List<LoanArriaClassifyData> loanArriaClassifyData = this.productClassifyReadPlatformServiceImpl.retrieveLoanArriaClassifyDataByLoanId(loanId"
-						+ loanId + ");");
-
-		try {
-
-//			loanArriaClassifyData = this.productClassifyReadPlatformServiceImpl.retrieveLoanArriaByDate(AccDate);
-//			loanArriaClassifyData = this.productClassifyReadPlatformServiceImpl.retrieveLoanArriaClassifyDataByLoanId(loanId,AccDate);
-
-		} catch (Exception ex) {
-
-			logger.debug("trac:  = loanArriaClassifyData" + ex.toString());
+		Integer days_in_arrear = 0;
+		Collection<LoanArrearClassifyData> loanArrearClassifyDatas = this.loanSubtypeMappingReadPlatformService.retrieveLoanArrearsClassifyDataByDateAndLoanId(transactionDate, loanId);
+		
+		for(LoanArrearClassifyData loanArrearClassifyData:loanArrearClassifyDatas) {
+			days_in_arrear = loanArrearClassifyData.getDaysInArrears();
 		}
+		
+		final GLAccount debitAccount = getLinkedGLAccountForLoanProductAndAccrual(loanProductId, accountTypeToDebitId, paymentTypeId, days_in_arrear);
 
-		for (LoanArriaClassifyData row : loanArriaClassifyData) {
-
-			try {
-				logger.debug("trac: getAccCrId:" + row.getDays_in_arrears());
-				amountOutString = BigDecimal.valueOf(row.getLoan_outstanding());
-				dayArria = row.getDays_in_arrears();
-				Long arriaLoanId = 0l;
-				Long arrialoanProductId = 0l;
-				arriaLoanId = Long.valueOf(row.getAccount_number());
-				arrialoanProductId = Long.valueOf(row.getProduct_id());
-				if (dayArria > 0) {
-					try {
-						productSubTypeMappingData = this.productClassifyReadPlatformServiceImpl
-								.retrieveProductSubTypeMappingList(arrialoanProductId, dayArria);
-
-//						productClassify = this.productClassifyReadPlatformServiceImpl.retrieveProductClassifyList(loanProductId, dayArria);
-						List<ProductSubTypeMappingData> productSubTypeMappingDataMove = null;
-
-						if (productSubTypeMappingData != null) {
-							for (ProductSubTypeMappingData productSubType : productSubTypeMappingData) {
-
-								Long subTypeStatusId = Long.valueOf(productSubType.getLoan_subtype_status_id());
-								productSubTypeMappingDataMove = this.productClassifyReadPlatformServiceImpl
-										.retrieveProductSubTypeMappingListForChangeType(subTypeStatusId, loanProductId);
-
-								for (ProductSubTypeMappingData productSubTypeMove : productSubTypeMappingDataMove) {
-
-									// Move Portfolio ACCOUNT
-									loanLastValueAccForMoveData = this.productClassifyReadPlatformServiceImpl
-											.retrieveLoanLastValueAccForMoveDataByLoanIdAndAccId(
-													Long.valueOf(row.getAccount_number()),
-													Long.valueOf(productSubTypeMove.getPortfolio_acc_id()));
-
-									for (LoanLastValueAccForMoveData loanLastValueAcc : loanLastValueAccForMoveData) {
-
-										logger.trace(
-												"trace: for (LoanLastValueAccForMoveData loanLastValueAcc: loanLastValueAccForMoveData) {");
-
-										BigDecimal LastValueAccForMove = BigDecimal.ZERO;
-										GLAccount creditAccountForMoveFrom = getGLAccountById(
-												(Long.valueOf(loanLastValueAcc.getAccount_id())));
-										GLAccount creditAccountForMoveTo = getGLAccountById(
-												(Long.valueOf(productSubType.getPortfolio_acc_id())));
-
-										try {
-											LastValueAccForMove = BigDecimal
-													.valueOf(loanLastValueAcc.getLast_running_balance());
-										} catch (Exception ex) {
-										}
-
-										logger.debug(
-												"Trace: Move Portfolio ACCOUNT BigDecimal LastValueAccForMove = BigDecimal.valueOf(row.getLast_running_balance():"
-														+ LastValueAccForMove + ");");
-
-										if (LastValueAccForMove.compareTo(BigDecimal.valueOf(0)) == 1) {
-											createDebitJournalEntryForLoan(office, currencyCode, creditAccountForMoveTo,
-													arriaLoanId, transactionId, transactionDate, LastValueAccForMove);
-											createCreditJournalEntryForLoan(office, currencyCode,
-													creditAccountForMoveFrom, arriaLoanId, transactionId,
-													transactionDate, LastValueAccForMove);
-										}
-
-									}
-
-									// Move Portfolio ACCOUNT
-									loanLastValueAccForMoveData = null;
-									loanLastValueAccForMoveData = this.productClassifyReadPlatformServiceImpl
-											.retrieveLoanLastValueAccForMoveDataByLoanIdAndAccId(
-													Long.valueOf(row.getAccount_number()),
-													Long.valueOf(productSubTypeMove.getInt_receivable_acc_id()));
-
-									for (LoanLastValueAccForMoveData loanLastValueAcc : loanLastValueAccForMoveData) {
-										logger.trace(
-												"trace: for (LoanLastValueAccForMoveData loanLastValueAcc: loanLastValueAccForMoveData) {");
-
-										BigDecimal LastValueAccForMove = BigDecimal.ZERO;
-										GLAccount creditAccountForMoveFrom = getGLAccountById(
-												(Long.valueOf(loanLastValueAcc.getAccount_id())));
-										GLAccount creditAccountForMoveTo = getGLAccountById(
-												(Long.valueOf(productSubType.getInt_receivable_acc_id())));
-
-										try {
-											LastValueAccForMove = BigDecimal
-													.valueOf(loanLastValueAcc.getLast_running_balance());
-										} catch (Exception ex) {
-										}
-
-										logger.debug(
-												"Trace: Move Portfolio ACCOUNT BigDecimal LastValueAccForMove = BigDecimal.valueOf(row.getLast_running_balance():"
-														+ LastValueAccForMove + ");");
-
-										if (LastValueAccForMove.compareTo(BigDecimal.valueOf(0)) == 1) {
-											createDebitJournalEntryForLoan(office, currencyCode, creditAccountForMoveTo,
-													arriaLoanId, transactionId, transactionDate, LastValueAccForMove);
-											createCreditJournalEntryForLoan(office, currencyCode,
-													creditAccountForMoveFrom, arriaLoanId, transactionId,
-													transactionDate, LastValueAccForMove);
-										}
-
-									}
-
-									// Move Portfolio Interest
-									loanLastValueAccForMoveData = null;
-									loanLastValueAccForMoveData = this.productClassifyReadPlatformServiceImpl
-											.retrieveLoanLastValueAccForMoveDataByLoanIdAndAccId(arriaLoanId,
-													Long.valueOf(productSubTypeMove.getIncome_acc_id()));
-
-									for (LoanLastValueAccForMoveData loanLastValueAcc : loanLastValueAccForMoveData) {
-										logger.trace(
-												"trace: for (LoanLastValueAccForMoveData loanLastValueAcc: loanLastValueAccForMoveData) {");
-
-										BigDecimal LastValueAccForMove = BigDecimal.ZERO;
-										GLAccount creditAccountForMoveFrom = getGLAccountById(
-												(Long.valueOf(loanLastValueAcc.getAccount_id())));
-										GLAccount creditAccountForMoveTo = getGLAccountById(
-												(Long.valueOf(productSubType.getInt_receivable_acc_id())));
-
-										try {
-											LastValueAccForMove = BigDecimal
-													.valueOf(loanLastValueAcc.getLast_running_balance());
-										} catch (Exception ex) {
-										}
-
-										logger.debug(
-												"Trace: Move Portfolio ACCOUNT BigDecimal LastValueAccForMove = BigDecimal.valueOf(row.getLast_running_balance():"
-														+ LastValueAccForMove + ");");
-
-										if (LastValueAccForMove.equals(BigDecimal.valueOf(0)) == false) {
-											createDebitJournalEntryForLoan(office, currencyCode,
-													creditAccountForMoveFrom, arriaLoanId, transactionId,
-													transactionDate, LastValueAccForMove);
-											createCreditJournalEntryForLoan(office, currencyCode,
-													creditAccountForMoveTo, arriaLoanId, transactionId, transactionDate,
-													LastValueAccForMove);
-										}
-
-									}
-
-								}
-
-							}
-
-						}
-
-					} catch (Exception ex) {
-						logger.debug("trac:  = if (dayArria > 0) {: " + ex.toString());
-					}
-
-				}
-
-			} catch (Exception ex) {
-				logger.debug("trac:  = for (LoanArriaClassifyData row : loanArriaClassifyData) {" + ex.toString());
-			}
-
-		}
-
-		int dayArriaAccr = 0;
-
-		List<ProductSubTypeMappingData> productSubTypeMappingDataAccr = null;
-
-		loanArriaClassifyDataAccr = this.productClassifyReadPlatformServiceImpl
-				.retrieveLoanArriaClassifyDataByLoanId(loanId, AccDate);
-
-		for (LoanArriaClassifyData row : loanArriaClassifyDataAccr) {
-
-//			logger.debug("trac: getAccCrId:" + row.getDays_in_arrears());
-//			amountOutString = BigDecimal.valueOf(row.getLoan_outstanding());
-			dayArriaAccr = row.getDays_in_arrears();
-//			Long arriaLoanId = 0l;
-//			Long arrialoanProductId =  0l;
-//			arriaLoanId = Long.valueOf(row.getAccount_number());
-//			arrialoanProductId = Long.valueOf(row.getProduct_id());
-
-		}
-
-		if (dayArriaAccr > 0) {
-
-			productSubTypeMappingDataAccr = this.productClassifyReadPlatformServiceImpl
-					.retrieveProductSubTypeMappingList(loanProductId, dayArriaAccr);
-
-			if (productSubTypeMappingDataAccr != null) {
-
-				for (ProductSubTypeMappingData subTypeRow : productSubTypeMappingDataAccr) {
-
-					logger.debug("trac: Loan_subtype_status_id:" + subTypeRow.getLoan_subtype_status_id());
-
-					final GLAccount debitAccount = getGLAccountById(
-							(Long.valueOf(subTypeRow.getInt_receivable_acc_id())));
-
-//					BigDecimal amountTest = BigDecimal.valueOf(1000);
-
-					final GLAccount creditAccount = getGLAccountById((Long.valueOf(subTypeRow.getIncome_acc_id())));
-//
-////					final GLAccount creditAccount = getGLAccountById((Long.valueOf(239)));
-//
-////					createDebitJournalEntryForLoan(office, currencyCode, debitAccount, loanId, transactionId, transactionDate,amount);
-////					createCreditJournalEntryForLoan(office, currencyCode, creditAccount, loanId, transactionId, transactionDate,amount);
-//
-					createDebitJournalEntryForLoan(office, currencyCode, debitAccount, loanId, transactionId,
-							transactionDate, amount);
-					createCreditJournalEntryForLoan(office, currencyCode, creditAccount, loanId, transactionId,
-							transactionDate, amount);
-
-				}
-
-			}
-
-		} else {
-			final GLAccount debitAccount = getLinkedGLAccountForLoanProduct(loanProductId, accountTypeToDebitId,
-					paymentTypeId, loanId);
-
-//	BigDecimal amountTest = BigDecimal.valueOf(1000);
-
-			final GLAccount creditAccount = getLinkedGLAccountForLoanProduct(loanProductId, accountTypeToCreditId,
-					paymentTypeId, loanId);
-
-//	final GLAccount creditAccount = getGLAccountById((Long.valueOf(239)));
-
-//	createDebitJournalEntryForLoan(office, currencyCode, debitAccount, loanId, transactionId, transactionDate,amount);
-//	createCreditJournalEntryForLoan(office, currencyCode, creditAccount, loanId, transactionId, transactionDate,amount);
-
-			createDebitJournalEntryForLoan(office, currencyCode, debitAccount, loanId, transactionId, transactionDate,
-					amount);
-			createCreditJournalEntryForLoan(office, currencyCode, creditAccount, loanId, transactionId, transactionDate,
-					amount);
-		}
-
+		final GLAccount creditAccount = getLinkedGLAccountForLoanProductAndAccrual(loanProductId, accountTypeToCreditId,
+		paymentTypeId, days_in_arrear);
+		
+try {
+	createDebitJournalEntryForLoan(office, currencyCode, debitAccount, loanId, transactionId, transactionDate, amount);
+	
+	createCreditJournalEntryForLoan(office, currencyCode, creditAccount, loanId, transactionId, transactionDate,
+			amount);
+}catch(Exception ex) {
+	System.out.print(ex);
+}
+		
 	}
 
 	private void createJournalEntriesForSavings(final Office office, final String currencyCode,
@@ -1316,9 +1028,8 @@ public class AccountingProcessorHelper {
 		this.glJournalEntryRepository.saveAndFlush(journalEntry);
 	}
 
-	private void createCreditJournalEntryForLoan(final Office office, final String currencyCode,
-			final GLAccount account, final Long loanId, final String transactionId, final Date transactionDate,
-			final BigDecimal amount) {
+	public void createCreditJournalEntryForLoan(final Office office, final String currencyCode, final GLAccount account,
+			final Long loanId, final String transactionId, final Date transactionDate, final BigDecimal amount) {
 		final boolean manualEntry = false;
 		LoanTransaction loanTransaction = null;
 		SavingsAccountTransaction savingsAccountTransaction = null;
@@ -1371,7 +1082,7 @@ public class AccountingProcessorHelper {
 		this.glJournalEntryRepository.saveAndFlush(journalEntry);
 	}
 
-	private void createDebitJournalEntryForLoan(final Office office, final String currencyCode, final GLAccount account,
+	public void createDebitJournalEntryForLoan(final Office office, final String currencyCode, final GLAccount account,
 			final Long loanId, final String transactionId, final Date transactionDate, final BigDecimal amount) {
 
 		final boolean manualEntry = false;
@@ -1606,12 +1317,13 @@ public class AccountingProcessorHelper {
 					.findByFinancialActivityTypeWithNotFoundDetection(accountMappingTypeId);
 
 			glAccount = financialActivityAccount.getGlAccount();
-			logger.trace("--- trace:glAccount = financialActivityAccount.getGlAccount(); ---");
+			
 
 		} else {
 
-			ProductSubTypeMappingData product = this.classifyReadPlatformService.retrieveProductSubtypeMappingDataByProductId(loanId);
-			
+			ProductSubTypeMappingData product = this.classifyReadPlatformService
+					.retrieveProductSubtypeMappingDataByProductId(loanId);
+
 			GLAccount gl = null;
 			if (accountMappingTypeId == ACCRUAL_ACCOUNTS_FOR_LOAN.LOAN_PORTFOLIO.getValue()) {
 				gl = this.getGLAccountById(product.getPortfolio_acc_id());
@@ -1620,17 +1332,15 @@ public class AccountingProcessorHelper {
 			} else if (accountMappingTypeId == ACCRUAL_ACCOUNTS_FOR_LOAN.INCOME_FROM_FEES.getValue()) {
 				gl = this.getGLAccountById(product.getInt_receivable_acc_id());
 			}
-		
-
 
 //			ProductToGLAccountMapping accountMapping = this.accountMappingRepository.findCoreProductToFinAccountMapping(
 //					loanDTO.getLoanProductId(), PortfolioProductType.LOAN.getValue(), accountMappingTypeId);
 
-		/****
-		 * Get more specific mapping for FUND source accounts (based on payment
-		 * channels). Note that fund source placeholder ID would be same for both cash
-		 * and accrual accounts
-		 ***/
+			/****
+			 * Get more specific mapping for FUND source accounts (based on payment
+			 * channels). Note that fund source placeholder ID would be same for both cash
+			 * and accrual accounts
+			 ***/
 
 //			if (accountMappingTypeId == CASH_ACCOUNTS_FOR_LOAN.FUND_SOURCE.getValue()) {
 //				final ProductToGLAccountMapping paymentChannelSpecificAccountMapping = this.accountMappingRepository
@@ -1641,8 +1351,35 @@ public class AccountingProcessorHelper {
 //				}
 //			}
 
-		glAccount = gl;
-	}return glAccount;
+			glAccount = gl;
+		}
+		return glAccount;
+
+	}
+	
+	public GLAccount getLinkedGLAccountForLoanProductAndAccrual(final Long loanProductId, final int accountMappingTypeId,
+			final Long paymentTypeId, Integer days_in_arrear) {
+
+			GLAccount glAccount = null;
+			Collection<LoanProductSubtypeMappingData> loanProductSubtypeMappingDatas = this.loanSubtypeMappingReadPlatformService.retrieveLoanProductSubtypeMappings(loanProductId, days_in_arrear);
+			GLAccount gl = null;
+			
+//			 ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue(), //7
+//             ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue(), //3
+
+		    for(LoanProductSubtypeMappingData product: loanProductSubtypeMappingDatas) {
+		    	if (accountMappingTypeId == ACCRUAL_ACCOUNTS_FOR_LOAN.LOAN_PORTFOLIO.getValue()) {
+					gl = this.getGLAccountById(product.getPortfolioAccId());
+				} else if (accountMappingTypeId == ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue()) {
+					gl = this.getGLAccountById(product.getIntReceivableAccId());
+				} else if (accountMappingTypeId == ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue()) {
+					gl = this.getGLAccountById(product.getIncomeAccId());
+				}
+		    	
+		    	glAccount = gl;
+		    }
+			
+		return glAccount;
 
 	}
 

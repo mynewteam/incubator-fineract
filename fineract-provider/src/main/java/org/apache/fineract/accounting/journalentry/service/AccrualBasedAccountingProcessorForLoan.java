@@ -83,7 +83,7 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
 
     @Override
     public void createJournalEntriesForLoan(final LoanDTO loanDTO) {
-        //sothea will edit.
+      
     	final GLClosure latestGLClosure = this.helper.getLatestClosureByBranch(loanDTO.getOfficeId());
     	
         final Office office = this.helper.getOfficeById(loanDTO.getOfficeId());
@@ -94,8 +94,7 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
         	
             this.helper.checkForBranchClosures(latestGLClosure, transactionDate);
 
-            logger.debug("createJournalEntriesForChangeSubTypes(loanDTO, loanTransactionDTO, office);");
-            
+           
             /** Handle Disbursements **/
             if (loanTransactionDTO.getTransactionType().isDisbursement()) {
                 createJournalEntriesForDisbursements(loanDTO, loanTransactionDTO, office);
@@ -104,17 +103,9 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
 
             /*** Handle Accruals ***/
             if (loanTransactionDTO.getTransactionType().isAccrual()) {
-              logger.debug("---Sothea_Check---");
-              logger.debug("changeLoanSubType(loanDTO, loanTransactionDTO, office);");
-              logger.debug("---Sothea_Check---");    
-            	changeLoanSubType(loanDTO, loanTransactionDTO, office);
-//               LoanProductSubTypes
-                // End Loan Change Sub Type
+            
                 createJournalEntriesForAccruals(loanDTO, loanTransactionDTO, office);
-             
-//                logger.debug("---Sothea_Check---");
-//                logger.debug("createJournalEntriesForAccruals(loanDTO, loanTransactionDTO, office);");
-//                logger.debug("---Sothea_Check---");
+  
             }
 
             /***
@@ -126,47 +117,35 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
                     || loanTransactionDTO.getTransactionType().isRepaymentAtDisbursement()
                     || loanTransactionDTO.getTransactionType().isChargePayment()) {
                 createJournalEntriesForRepaymentsAndWriteOffs(loanDTO, loanTransactionDTO, office, false, loanTransactionDTO.getTransactionType().isRepaymentAtDisbursement());
-               // List<LoanSubTypeData> loanSubTypeData=null;
-//		        final Long mLoanId = loanDTO.getLoanId();
-//		        loanSubTypeData = this.productClassifyReadPlatformServiceImpl.retrieveSubTypeByLoanIdAndDate( loanDTO.getLoanId(),loanTransactionDTO.getTransactionDate());
-                
+
             }
 
             /** Logic for handling recovery payments **/
             else if (loanTransactionDTO.getTransactionType().isRecoveryRepayment()) {
                 createJournalEntriesForRecoveryRepayments(loanDTO, loanTransactionDTO, office);
-                List<LoanSubTypeData> loanSubTypeData=null;
-//		        final Long mLoanId = loanDTO.getLoanId();
-//		        loanSubTypeData = this.productClassifyReadPlatformServiceImpl.retrieveSubTypeByLoanIdAndDate( loanDTO.getLoanId(),loanTransactionDTO.getTransactionDate());
                 
+
             	}
 
             /** Logic for Refunds of Overpayments **/
             else if (loanTransactionDTO.getTransactionType().isRefund()) {
                 createJournalEntriesForRefund(loanDTO, loanTransactionDTO, office);
-                 List<LoanSubTypeData> loanSubTypeData=null;
-//		        final Long mLoanId = loanDTO.getLoanId();
-//		        loanSubTypeData = this.productClassifyReadPlatformServiceImpl.retrieveSubTypeByLoanIdAndDate( loanDTO.getLoanId(),loanTransactionDTO.getTransactionDate());
-                
+
             }
 
             /** Handle Write Offs, waivers and their reversals **/
             else if ((loanTransactionDTO.getTransactionType().isWriteOff() || loanTransactionDTO.getTransactionType().isWaiveInterest() || loanTransactionDTO
                     .getTransactionType().isWaiveCharges())) {
                 createJournalEntriesForRepaymentsAndWriteOffs(loanDTO, loanTransactionDTO, office, true, false);
-                 List<LoanSubTypeData> loanSubTypeData=null;
-//		        final Long mLoanId = loanDTO.getLoanId();
-//		        loanSubTypeData = this.productClassifyReadPlatformServiceImpl.retrieveSubTypeByLoanIdAndDate( loanDTO.getLoanId(),loanTransactionDTO.getTransactionDate());
-                
+                 
+
             }
 
             /** Logic for Refunds of Active Loans **/
             else if (loanTransactionDTO.getTransactionType().isRefundForActiveLoans()) {
                 createJournalEntriesForRefundForActiveLoan(loanDTO, loanTransactionDTO, office);
-                 List<LoanSubTypeData> loanSubTypeData=null;
-//		        final Long mLoanId = loanDTO.getLoanId();
-//		        loanSubTypeData = this.productClassifyReadPlatformServiceImpl.retrieveSubTypeByLoanIdAndDate( loanDTO.getLoanId(),loanTransactionDTO.getTransactionDate());
-             }
+                 
+            }
         }
     }
     
@@ -565,6 +544,7 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
                     isReversed, 
                     loanTransactionDTO.getFeePayments());
         }
+        
         // create journal entries for the penalties application (or reversal)
         if (penaltiesAmount != null && !(penaltiesAmount.compareTo(BigDecimal.ZERO) == 0)) {
 

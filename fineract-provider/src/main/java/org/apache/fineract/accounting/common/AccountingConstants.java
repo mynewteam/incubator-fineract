@@ -30,8 +30,16 @@ public class AccountingConstants {
 
     /*** Accounting placeholders for cash based accounting for loan products ***/
     public static enum CASH_ACCOUNTS_FOR_LOAN {
-        FUND_SOURCE(1), LOAN_PORTFOLIO(2), INTEREST_ON_LOANS(3), INCOME_FROM_FEES(4), INCOME_FROM_PENALTIES(5), LOSSES_WRITTEN_OFF(6), TRANSFERS_SUSPENSE(
-                10), OVERPAYMENT(11), INCOME_FROM_RECOVERY(12);
+        
+    	FUND_SOURCE(1), 
+        LOAN_PORTFOLIO(2), 
+        INTEREST_ON_LOANS(3), 
+        INCOME_FROM_FEES(4), 
+        INCOME_FROM_PENALTIES(5), 
+        LOSSES_WRITTEN_OFF(6), 
+        TRANSFERS_SUSPENSE(10), 
+        OVERPAYMENT(11), 
+        INCOME_FROM_RECOVERY(12);
 
         private final Integer value;
 
