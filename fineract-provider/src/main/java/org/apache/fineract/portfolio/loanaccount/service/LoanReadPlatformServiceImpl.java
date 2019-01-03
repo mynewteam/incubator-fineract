@@ -1633,7 +1633,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
         sqlBuilder
                 .append("select ")
                 .append(mapper.schema())
-                .append(" where (recaldet.is_compounding_to_be_posted_as_transaction is null or recaldet.is_compounding_to_be_posted_as_transaction = 0) ")
+                .append(" where ls.loan_id=3 and (recaldet.is_compounding_to_be_posted_as_transaction is null or recaldet.is_compounding_to_be_posted_as_transaction = 0) ")
                 .append(" and (((ls.fee_charges_amount <> if(ls.accrual_fee_charges_derived is null,0, ls.accrual_fee_charges_derived))")
                 .append(" or ( ls.penalty_charges_amount <> if(ls.accrual_penalty_charges_derived is null,0,ls.accrual_penalty_charges_derived))")
                 .append(" or ( ls.interest_amount <> if(ls.accrual_interest_derived is null,0,ls.accrual_interest_derived)))")
@@ -1659,7 +1659,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
         sqlBuilder
                 .append("select ")
                 .append(mapper.schema())
-                .append(" where  (recaldet.is_compounding_to_be_posted_as_transaction is null or recaldet.is_compounding_to_be_posted_as_transaction = 0) ")
+                .append(" where ls.loan_id=3 and  (recaldet.is_compounding_to_be_posted_as_transaction is null or recaldet.is_compounding_to_be_posted_as_transaction = 0) ")
                 .append(" and (((ls.fee_charges_amount <> if(ls.accrual_fee_charges_derived is null,0, ls.accrual_fee_charges_derived))")
                 .append(" or (ls.penalty_charges_amount <> if(ls.accrual_penalty_charges_derived is null,0,ls.accrual_penalty_charges_derived))")
                 .append(" or (ls.interest_amount <> if(ls.accrual_interest_derived is null,0,ls.accrual_interest_derived)))")

@@ -38,27 +38,28 @@ import org.springframework.stereotype.Component;
 @Scope("singleton")
 public class AccrualAccountingApiResource {
 
-    private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
-    private final DefaultToApiJsonSerializer<String> apiJsonSerializerService;
+	private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
+	private final DefaultToApiJsonSerializer<String> apiJsonSerializerService;
 
-    @Autowired
-    public AccrualAccountingApiResource(final DefaultToApiJsonSerializer<String> apiJsonSerializerService,
-            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
-        this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
-        this.apiJsonSerializerService = apiJsonSerializerService;
+	@Autowired
+	public AccrualAccountingApiResource(final DefaultToApiJsonSerializer<String> apiJsonSerializerService,
+			final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
+		this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
+		this.apiJsonSerializerService = apiJsonSerializerService;
 
-    }
+	}
 
-    @POST
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
-    public String executePeriodicAccrualAccounting(final String jsonRequestBody) {
+	@POST
+	@Consumes({ MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+	public String executePeriodicAccrualAccounting(final String jsonRequestBody) {
 
-        final CommandWrapper commandRequest = new CommandWrapperBuilder().excuteAccrualAccounting().withJson(jsonRequestBody).build();
+		final CommandWrapper commandRequest = new CommandWrapperBuilder().excuteAccrualAccounting()
+				.withJson(jsonRequestBody).build();
 
-        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+		final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
 
-        return this.apiJsonSerializerService.serialize(result);
-    }
+		return this.apiJsonSerializerService.serialize(result);
+	}
 
 }

@@ -1,13 +1,13 @@
-package org.apache.fineract.accounting.classification.service;
+package org.apache.fineract.accounting.classify.service;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.fineract.accounting.classification.data.LoanArriaClassifyData;
-import org.apache.fineract.accounting.classification.data.LoanLastValueAccForMoveData;
-import org.apache.fineract.accounting.classification.data.ProductClassifyMappingData;
+import org.apache.fineract.accounting.classify.data.LoanArriaClassifyData;
+import org.apache.fineract.accounting.classify.data.LoanLastValueAccForMoveData;
+import org.apache.fineract.accounting.classify.data.ProductClassifyMappingData;
 import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -414,9 +414,15 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
         
         if (interestAmount != null && !(interestAmount.compareTo(BigDecimal.ZERO) == 0)) {
         	
+<<<<<<< HEAD
         	// logger.debug(" trace: this.helper.createAccrualBasedJournalEntriesAndReversalsForLoan(office, currencyCode,\n" + 
         	// 		"                    ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue():"+ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue()+", ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue():"+ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue()+",\n" + 
         	// 		"                    loanProductId:"+loanProductId+", paymentTypeId, loanId:"+loanId+", transactionId, transactionDate:"+transactionDate+", interestAmount:"+interestAmount+", isReversed);");
+=======
+//        	logger.debug(" trace: this.helper.createAccrualBasedJournalEntriesAndReversalsForLoan(office, currencyCode,\n" + 
+//        			"                    ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue():"+ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue()+", ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue():"+ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue()+",\n" + 
+//        			"                    loanProductId:"+loanProductId+", paymentTypeId, loanId:"+loanId+", transactionId, transactionDate:"+transactionDate+", interestAmount:"+interestAmount+", isReversed);");
+>>>>>>> fb6182761552d16a3ff8b4228eace826bb34ad10
         	
             this.helper.createAccrualBasedJournalEntriesAndReversalsForLoan(
             		office, 
