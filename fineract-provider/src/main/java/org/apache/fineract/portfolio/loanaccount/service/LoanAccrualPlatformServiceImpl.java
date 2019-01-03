@@ -147,6 +147,7 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 		 // Change Loan SubtypeStatus By ArreaAging
 
 		for (final LoanArrearClassifyData loanArrearClassifyData : loanArrearClassifyDatas) {
+			
 			Long loanId = loanArrearClassifyData.getAccountNumber();
 			String clientAccountNo = loanArrearClassifyData.getClientAccountNo();
 			Long accountNumber = loanArrearClassifyData.getAccountNumber();
@@ -161,6 +162,7 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 			// get Current SubtypeStatus with CurrentData 
 			Collection<LoanProductSubtypeMappingData> newLoanProductSubtypeMappingDatas = this.loanSubtypeMappingReadPlatformService
 					.retrieveLoanProductSubtypeMappings(productId, daysInArrears);
+			
 			// Long productId;
 			int loanSubtypeStatusId = 0;
 			int minAge;
@@ -190,11 +192,17 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 					.retrieveLoanProductSubtypeMappingBySubtypeStatusId(productId, currentloanSubtypeStatusId);
 
 			for (LoanProductSubtypeMappingData currentloanProductSubtypeMappingData : currentLoanProductSubtypeMappingDatas) {
+				
 				currentPortfolioAccId = currentloanProductSubtypeMappingData.getPortfolioAccId();
 				currentIntReceivableAccId = currentloanProductSubtypeMappingData.getIntReceivableAccId();
 				currentIncomeAccId = currentloanProductSubtypeMappingData.getIncomeAccId();
+				
 			}
 
+			if(currentIncomeAccId==1141) { 
+				System.out.print(currentIncomeAccId);
+				}
+			
 			if (currentPortfolioAccId != null) {
 				if (currentloanSubtypeStatusId != loanSubtypeStatusId) {
 
@@ -212,18 +220,21 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 
 					Collection<GLAccountAmountData> glPortfolioAmountDatas = this.loanSubtypeMappingReadPlatformService
 							.retrieveLoanGLAccountAmountData(officeId, tilldate, loanId, currentPortfolioAccId);
+					
 					for (GLAccountAmountData glAccountAmountData : glPortfolioAmountDatas) {
 						portfolioGLAmount = glAccountAmountData.getBalance();
 					}
 
 					Collection<GLAccountAmountData> glInterestReceivableGLAmountAmountDatas = this.loanSubtypeMappingReadPlatformService
 							.retrieveLoanGLAccountAmountData(officeId, tilldate, loanId, currentIntReceivableAccId);
+					
 					for (GLAccountAmountData glAccountAmountData : glInterestReceivableGLAmountAmountDatas) {
 						interestReceivableGLAmount = glAccountAmountData.getBalance();
 					}
 
 					Collection<GLAccountAmountData> glIncomeGLAmountDatas = this.loanSubtypeMappingReadPlatformService
 							.retrieveLoanGLAccountAmountData(officeId, tilldate, loanId, currentIncomeAccId);
+					
 					for (GLAccountAmountData glAccountAmountData : glIncomeGLAmountDatas) {
 						incomeGLAmount = glAccountAmountData.getBalance();
 					}
@@ -254,8 +265,8 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 					// Move Interest Receivable Ledger
 					if (interestReceivableGLAmount != 0) {
 
-						GLAccount debitGLAccount = glAccountRepository.findOne(incomeAccId);
-						GLAccount creditGLAccount = glAccountRepository.findOne(currentIncomeAccId);
+						GLAccount debitGLAccount = glAccountRepository.findOne(intReceivableAccId);
+						GLAccount creditGLAccount = glAccountRepository.findOne(currentIntReceivableAccId);
 						BigDecimal amount = BigDecimal.valueOf((Math.ceil(interestReceivableGLAmount)));
 						
 						addChangeSubTypeTransaction(loanId, loanSubtypeStatusId, officeId, currencyCode, debitGLAccount,
@@ -267,7 +278,7 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 						
 						GLAccount debitGLAccount = glAccountRepository.findOne(currentIncomeAccId);
 						GLAccount creditGLAccount = glAccountRepository.findOne(incomeAccId);
-						BigDecimal amount = BigDecimal.valueOf((Math.ceil(portfolioGLAmount)));
+						BigDecimal amount = BigDecimal.valueOf((Math.ceil(incomeGLAmount)));
 						
 						addChangeSubTypeTransaction(loanId, loanSubtypeStatusId, officeId, currencyCode, debitGLAccount,
 								creditGLAccount, transactionDate, amount);

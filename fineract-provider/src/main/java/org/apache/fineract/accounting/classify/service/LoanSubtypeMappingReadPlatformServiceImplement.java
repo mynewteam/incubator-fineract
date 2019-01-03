@@ -150,7 +150,7 @@ public class LoanSubtypeMappingReadPlatformServiceImplement implements LoanSubty
 		sqlBuilder.append(" select ");
 		sqlBuilder.append(
 				" v.office_id, v.currency_code,v.client_account_no,v.account_number, v.product_id, v.loan_subtype_status_id , v.loan_outstanding, v.overdue_since_date_derived ");
-		sqlBuilder.append(" , datediff(date(:tilldate) , date(v.overdue_since_date_derived)) AS \"days_in_arrea\" ");
+		sqlBuilder.append(" , datediff(date(:tilldate) , date(v.overdue_since_date_derived)) AS days_in_arrea ");
 		sqlBuilder.append(" from v_loan_aging_detail v");
 		sqlBuilder.append(" where v.overdue_since_date_derived < :tilldate ");
 		SqlParameterSource paramSource = new MapSqlParameterSource().addValue("tilldate", tilldate.toString());

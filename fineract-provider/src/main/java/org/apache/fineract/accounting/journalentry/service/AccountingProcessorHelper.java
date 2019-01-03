@@ -404,7 +404,8 @@ public class AccountingProcessorHelper {
 	 */
 	public void createAccrualBasedJournalEntriesAndReversalsForLoan(
 
-			final Office office, final String currencyCode, final Integer accountTypeToBeDebited, // 7
+			final Office office, final String currencyCode, 
+			final Integer accountTypeToBeDebited, // 7
 			final Integer accountTypeToBeCredited, // 3
 			final Long loanProductId, final Long paymentTypeId, final Long loanId, final String transactionId,
 			final Date transactionDate, final BigDecimal amount, final Boolean isReversal) {
@@ -1375,9 +1376,9 @@ public class AccountingProcessorHelper {
 			
 			if (accountMappingTypeId == ACCRUAL_ACCOUNTS_FOR_LOAN.LOAN_PORTFOLIO.getValue()) {
 				gl = this.getGLAccountById(product.getPortfolioAccId());
-			} else if (accountMappingTypeId == ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue()) {
+			} else if (accountMappingTypeId == ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue()) { // Accrual
 				gl = this.getGLAccountById(product.getIntReceivableAccId());
-			} else if (accountMappingTypeId == ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue()) {
+			} else if (accountMappingTypeId == ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue()) { //Interest Income
 				gl = this.getGLAccountById(product.getIncomeAccId());
 			}
 			
@@ -1451,6 +1452,7 @@ public class AccountingProcessorHelper {
 			 * channels). Note that fund source placeholder ID would be same for both cash
 			 * and accrual accounts
 			 ***/
+			
 			if (accountMappingTypeId == CASH_ACCOUNTS_FOR_SAVINGS.SAVINGS_REFERENCE.getValue()) {
 				final ProductToGLAccountMapping paymentChannelSpecificAccountMapping = this.accountMappingRepository
 						.findByProductIdAndProductTypeAndFinancialAccountTypeAndPaymentTypeId(savingsProductId,
