@@ -2292,7 +2292,7 @@ public abstract class AbstractLoanScheduleGenerator implements LoanScheduleGener
 			else if (loanCharge.getChargeCalculation().isPercentageOfOutstandingAmount()) {
 				amount = amount.add(principalInterestForThisPeriod.outstanding().getAmount()).add(principalInterestForThisPeriod.principal().getAmount());
 
-				logger.debug("Percentage of outstanding amount is raised." + amount);
+				// logger.debug("Percentage of outstanding amount is raised." + amount);
 
 			} else {
 				amount = amount.add(principalInterestForThisPeriod.principal().getAmount());

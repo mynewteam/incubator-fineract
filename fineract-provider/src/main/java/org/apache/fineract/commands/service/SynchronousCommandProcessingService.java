@@ -79,12 +79,10 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
     @Override
     public CommandProcessingResult processAndLogCommand(final CommandWrapper wrapper, final JsonCommand command,
             final boolean isApprovedByChecker) {
-    	
-    	
-    	
-    	logger.debug("--------Sothea Check processAndLogCommand-----------");
-    	logger.debug(command.json());
-    	logger.debug("--------End Sothea Check-----------");
+                
+    	// logger.debug("--------Sothea Check processAndLogCommand-----------");
+    	// logger.debug(command.json());
+    	// logger.debug("--------End Sothea Check-----------");
     	
         final boolean rollbackTransaction = this.configurationDomainService.isMakerCheckerEnabledForTask(wrapper.taskPermissionName());
 

@@ -147,7 +147,7 @@ public class FineractEntityAccessReadServiceImpl implements FineractEntityAccess
     	        str.append("from  m_entity_to_entity_mapping eem ");
     	        str.append("where eem.rel_id = ? ");
     	        str.append("and eem.from_id = ? ");
-        logger.debug(str.toString());
+        // logger.debug(str.toString());
         return str.toString();
     }
 

@@ -31,7 +31,7 @@ public class ProductClassifyReadPlatformServiceImpl implements ProductClassifyRe
 	public List<ProductClassifyMappingData> retrieveProductClassifyList(Long ProductId, Integer Agging) {
 		ProductClassifyDataMapper mapper = new ProductClassifyDataMapper();
 		final String sql = "SELECT id, description, min_aging,max_aging, acc_dr_id, acc_cr_id, acc_product_mapping_id, type,class_acc FROM acc_product_classify_mapping  WHERE  acc_product_mapping_id = ? AND (? between min_aging and max_aging)";
-		logger.debug(sql + ":ProductId:"+ProductId+", Agging:"+Agging);
+		// logger.debug(sql + ":ProductId:"+ProductId+", Agging:"+Agging);
 		return this.jdbctemplate.query(sql, mapper, new Object[] {ProductId, Agging} );
 	}
 	
@@ -47,7 +47,7 @@ public class ProductClassifyReadPlatformServiceImpl implements ProductClassifyRe
 		
 		LoanArriaClassifyDataMapper mapper = new LoanArriaClassifyDataMapper();
 		final String sql = "select client_account_no, account_number, loan_outstanding, overdue_since_date_derived, (TO_DAYS(?) - TO_DAYS(overdue_since_date_derived)) AS days_in_arrear from v_loan_aging_detail where account_number = ? and  overdue_since_date_derived < ?";
-		logger.debug(sql + ":LoanId:"+LoanId+", AccrDate:"+AccrDate+",  AccrDate:"+AccrDate+"");
+		// logger.debug(sql + ":LoanId:"+LoanId+", AccrDate:"+AccrDate+",  AccrDate:"+AccrDate+"");
 		return this.jdbctemplate.query(sql, mapper, new Object[] {AccrDate, LoanId, AccrDate} );
 		
 	}
@@ -56,7 +56,7 @@ public class ProductClassifyReadPlatformServiceImpl implements ProductClassifyRe
 	public List<LoanLastValueAccForMoveData> retrieveLoanLastValueAccForMoveDataByLoanIdAndAccId(Long LoanId,Long AccId) {
 		LoanLastValueAccForMoveDataMapper mapper = new LoanLastValueAccForMoveDataMapper();
 		final String sql = "SELECT loan_id, account_id,  SUM(amount) AS last_running_balance  FROM v_m_loan_transation_acc_gl_journal_entry where loan_id=? and account_id=? group by loan_id, account_id";
-		logger.trace("trace:" + sql + ":LoanId:"+LoanId+", AccId:"+AccId);
+		// logger.trace("trace:" + sql + ":LoanId:"+LoanId+", AccId:"+AccId);
 		return this.jdbctemplate.query(sql, mapper, new Object[] {LoanId, AccId} );
 	}
 	
@@ -73,7 +73,7 @@ public class ProductClassifyReadPlatformServiceImpl implements ProductClassifyRe
 	public List<LoanLastValueAccForMoveData> retrieveLoanLastValueAccForMoveDataByLoanIdForFirstAcc(Long LoanId,Long ProductId,Long AccId)  {
 		LoanLastValueAccForMoveDataMapper mapper = new LoanLastValueAccForMoveDataMapper();
 		final String sql = "SELECT loan_id, account_id,  SUM(amount) AS last_running_balance  FROM v_m_loan_transation_acc_gl_journal_entry where loan_id=? and account_id in (select ap.acc_cr_id from acc_product_classify_mapping ap where  ap.acc_product_mapping_id=? and ap.type=2 and ap.acc_cr_id !=? order by id desc) group by loan_id, account_id ";
-		logger.debug("trace:" + "SELECT loan_id, account_id,  SUM(amount) AS last_running_balance  FROM v_m_loan_transation_acc_gl_journal_entry where loan_id="+LoanId+" and account_id in (select ap.acc_cr_id from acc_product_classify_mapping ap where  ap.acc_product_mapping_id="+ProductId+" and ap.type=2 and ap.acc_cr_id !="+AccId+" order by id desc) group by loan_id, account_id ");
+		// logger.debug("trace:" + "SELECT loan_id, account_id,  SUM(amount) AS last_running_balance  FROM v_m_loan_transation_acc_gl_journal_entry where loan_id="+LoanId+" and account_id in (select ap.acc_cr_id from acc_product_classify_mapping ap where  ap.acc_product_mapping_id="+ProductId+" and ap.type=2 and ap.acc_cr_id !="+AccId+" order by id desc) group by loan_id, account_id ");
 		return this.jdbctemplate.query(sql, mapper, new Object[] {LoanId,ProductId,AccId} );
 	}
 //	retrieveAccForCurrentAccStatusDataByLoanIdAndAccId
@@ -103,7 +103,7 @@ public class ProductClassifyReadPlatformServiceImpl implements ProductClassifyRe
 			double loan_outstanding = rs.getDouble("loan_outstanding");
 			Date overdue_since_date_derived = rs.getDate("overdue_since_date_derived");
 			Integer days_in_arrears = rs.getInt("days_in_arrear");
-			logger.debug("public LoanArriaClassifyData mapRow(ResultSet rs, int rowNum) throws SQLException {");
+			// logger.debug("public LoanArriaClassifyData mapRow(ResultSet rs, int rowNum) throws SQLException {");
 			return new LoanArriaClassifyData(client_account_no, account_number, loan_outstanding, overdue_since_date_derived, days_in_arrears);
 		}
 	}

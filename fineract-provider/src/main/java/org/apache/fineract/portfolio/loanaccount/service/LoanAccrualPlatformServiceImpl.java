@@ -139,7 +139,7 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
         
     	Collection<Long> loanIds = this.loanReadPlatformService.retrieveLoanIdsWithPendingIncomePostingTransactions();
         
-        logger.debug("Collection<Long> loanIds"+loanIds.toString()+" = this.loanReadPlatformService.retrieveLoanIdsWithPendingIncomePostingTransactions();");
+        // logger.debug("Collection<Long> loanIds"+loanIds.toString()+" = this.loanReadPlatformService.retrieveLoanIdsWithPendingIncomePostingTransactions();");
     	
         if(loanIds != null && loanIds.size() > 0){
             StringBuilder sb = new StringBuilder();

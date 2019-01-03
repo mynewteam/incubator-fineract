@@ -65,6 +65,9 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
 
             /** Handle Disbursements **/
             if (loanTransactionDTO.getTransactionType().isDisbursement()) {
+        	  logger.debug("---Sothea_Check---");
+              logger.debug(":Transaction for Handle Disbursements:");
+              logger.debug("---Sothea_Check---");
                 createJournalEntriesForDisbursements(loanDTO, loanTransactionDTO, office);
             }
 
@@ -72,14 +75,11 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
             if (loanTransactionDTO.getTransactionType().isAccrual()) {
                 
                 logger.debug("---Sothea_Check---");
-                logger.debug("createJournalEntriesForAccruals(loanDTO, loanTransactionDTO, office);");
+                logger.debug(":Transaction for Accrual:");
                 logger.debug("---Sothea_Check---");
                 
                 createJournalEntriesForAccruals(loanDTO, loanTransactionDTO, office);
                 
-//                logger.debug("---Sothea_Check---");
-//                logger.debug("createJournalEntriesForAccruals(loanDTO, loanTransactionDTO, office);");
-//                logger.debug("---Sothea_Check---");
             }
 
             /***
@@ -90,28 +90,45 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
             else if (loanTransactionDTO.getTransactionType().isRepayment()
                     || loanTransactionDTO.getTransactionType().isRepaymentAtDisbursement()
                     || loanTransactionDTO.getTransactionType().isChargePayment()) {
-                createJournalEntriesForRepaymentsAndWriteOffs(loanDTO, loanTransactionDTO, office, false, loanTransactionDTO
-                        .getTransactionType().isRepaymentAtDisbursement());
+            	
+	    	  logger.debug("---Sothea_Check---");
+	          logger.debug(":Transaction for Handle repayments, repayments at disbursement and reversal of Repayments and Repayments at disbursement:");
+	          logger.debug("---Sothea_Check---");            	
+	          
+	          createJournalEntriesForRepaymentsAndWriteOffs(loanDTO, loanTransactionDTO, office, false, loanTransactionDTO.getTransactionType().isRepaymentAtDisbursement());
+                
             }
 
             /** Logic for handling recovery payments **/
             else if (loanTransactionDTO.getTransactionType().isRecoveryRepayment()) {
+            	logger.debug("---Sothea_Check---");
+                logger.debug(":Transaction for Logic for handling recovery payments:");
+                logger.debug("---Sothea_Check---");
                 createJournalEntriesForRecoveryRepayments(loanDTO, loanTransactionDTO, office);
             }
 
             /** Logic for Refunds of Overpayments **/
             else if (loanTransactionDTO.getTransactionType().isRefund()) {
+            	logger.debug("---Sothea_Check---");
+                logger.debug(":Transaction for Logic for Refunds of Overpayments:");
+                logger.debug("---Sothea_Check---");
                 createJournalEntriesForRefund(loanDTO, loanTransactionDTO, office);
             }
 
             /** Handle Write Offs, waivers and their reversals **/
             else if ((loanTransactionDTO.getTransactionType().isWriteOff() || loanTransactionDTO.getTransactionType().isWaiveInterest() || loanTransactionDTO
                     .getTransactionType().isWaiveCharges())) {
+            	logger.debug("---Sothea_Check---");
+                logger.debug(":Transaction for Handle Write Offs, waivers and their reversals:");
+                logger.debug("---Sothea_Check---");
                 createJournalEntriesForRepaymentsAndWriteOffs(loanDTO, loanTransactionDTO, office, true, false);
             }
 
             /** Logic for Refunds of Active Loans **/
             else if (loanTransactionDTO.getTransactionType().isRefundForActiveLoans()) {
+            	logger.debug("---Sothea_Check---");
+                logger.debug(":Transaction for Logic for Refunds of Active Loans:");
+                logger.debug("---Sothea_Check---");
                 createJournalEntriesForRefundForActiveLoan(loanDTO, loanTransactionDTO, office);
             }
         }
@@ -397,9 +414,9 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
         
         if (interestAmount != null && !(interestAmount.compareTo(BigDecimal.ZERO) == 0)) {
         	
-        	logger.debug(" trace: this.helper.createAccrualBasedJournalEntriesAndReversalsForLoan(office, currencyCode,\n" + 
-        			"                    ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue():"+ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue()+", ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue():"+ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue()+",\n" + 
-        			"                    loanProductId:"+loanProductId+", paymentTypeId, loanId:"+loanId+", transactionId, transactionDate:"+transactionDate+", interestAmount:"+interestAmount+", isReversed);");
+        	// logger.debug(" trace: this.helper.createAccrualBasedJournalEntriesAndReversalsForLoan(office, currencyCode,\n" + 
+        	// 		"                    ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue():"+ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue()+", ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue():"+ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue()+",\n" + 
+        	// 		"                    loanProductId:"+loanProductId+", paymentTypeId, loanId:"+loanId+", transactionId, transactionDate:"+transactionDate+", interestAmount:"+interestAmount+", isReversed);");
         	
             this.helper.createAccrualBasedJournalEntriesAndReversalsForLoan(
             		office, 

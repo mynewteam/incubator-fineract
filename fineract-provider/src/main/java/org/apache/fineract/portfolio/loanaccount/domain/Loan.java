@@ -6649,7 +6649,7 @@ public class Loan extends AbstractPersistableCustom<Long>
 		HashMap<String, Object> feeDetails = new HashMap<>();
 		
 		System.out.println("--- private void addUpdateIncomeAndAccrualTransaction( ---" );
-		logger.debug("--- trace: private void addUpdateIncomeAndAccrualTransaction( ---" );
+		// logger.debug("--- trace: private void addUpdateIncomeAndAccrualTransaction( ---" );
 		
 		if (this.loanInterestRecalculationDetails.getInterestRecalculationCompoundingMethod()
 			.equals(InterestRecalculationCompoundingMethod.INTEREST))

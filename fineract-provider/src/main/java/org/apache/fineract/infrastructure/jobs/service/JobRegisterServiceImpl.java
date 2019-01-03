@@ -114,7 +114,7 @@ public class JobRegisterServiceImpl implements JobRegisterService, ApplicationLi
     public void loadAllJobs() {
         final List<FineractPlatformTenant> allTenants = this.tenantDetailsService.findAllTenants();
 
-        logger.debug(" trace: public void loadAllJobs() {");
+        // logger.debug(" trace: public void loadAllJobs() {");
 
         for (final FineractPlatformTenant tenant : allTenants) {
             ThreadLocalContextUtil.setTenant(tenant);

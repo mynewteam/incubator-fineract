@@ -90,10 +90,10 @@ public class GLClosureWritePlatformServiceJpaRepositoryImpl implements GLClosure
             }
             
             
-            logger.debug("-----------Sothea Check----------");
-            logger.debug("-----------GLClosureWritePlatformServiceJpaRepositoryImpl----------");
-            logger.debug(command.json().toString());
-            logger.debug("-----------Sothea Check----------");
+            // logger.debug("-----------Sothea Check----------");
+            // logger.debug("-----------GLClosureWritePlatformServiceJpaRepositoryImpl----------");
+            // logger.debug(command.json().toString());
+            // logger.debug("-----------Sothea Check----------");
             
             final GLClosure glClosure = GLClosure.fromJson(office, command);
 
