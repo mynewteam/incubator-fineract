@@ -97,11 +97,14 @@ public class DecliningBalanceInterestLoanScheduleGenerator extends AbstractLoanS
 				&& loanTermVariation.isApplicable(periodStartDate, periodEndDate))
 			{
 				LocalDate fromDate = loanTermVariation.getTermApplicableFrom();
+				
 				if (fromDate == null)
 				{
 					fromDate = periodStartDate;
 				}
+				
 				interestRates.put(fromDate, loanTermVariation.getDecimalValue());
+				
 				if (!principalVariation.containsKey(fromDate))
 				{
 					principalVariation.put(fromDate, balanceForInterestCalculation.zero());
@@ -118,6 +121,7 @@ public class DecliningBalanceInterestLoanScheduleGenerator extends AbstractLoanS
 				if (!principal.getKey().isAfter(periodEndDate))
 				{
 					int interestForDays = Days.daysBetween(interestStartDate, principal.getKey()).getDays();
+					
 					if (interestForDays > 0)
 					{
 						final PrincipalInterest result = loanApplicationTerms.calculateTotalInterestForPeriod(

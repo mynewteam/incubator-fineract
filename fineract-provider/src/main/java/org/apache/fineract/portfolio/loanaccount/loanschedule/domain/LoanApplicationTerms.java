@@ -38,6 +38,7 @@ import org.apache.fineract.portfolio.common.domain.DaysInMonthType;
 import org.apache.fineract.portfolio.common.domain.DaysInYearType;
 import org.apache.fineract.portfolio.common.domain.NthDayType;
 import org.apache.fineract.portfolio.common.domain.PeriodFrequencyType;
+import org.apache.fineract.portfolio.loanaccount.api.LoansApiResource;
 import org.apache.fineract.portfolio.loanaccount.data.DisbursementData;
 import org.apache.fineract.portfolio.loanaccount.data.HolidayDetailDTO;
 import org.apache.fineract.portfolio.loanaccount.data.LoanTermVariationsData;
@@ -58,6 +59,10 @@ import org.joda.time.Period;
 import org.joda.time.PeriodType;
 import org.joda.time.Weeks;
 import org.joda.time.Years;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import sun.util.logging.resources.logging;
 
 public final class LoanApplicationTerms
 {
@@ -211,6 +216,10 @@ public final class LoanApplicationTerms
 	private int extraPeriods = 0;
 	private boolean isEqualAmortization;
 
+	
+	 private final static Logger logger = LoggerFactory.getLogger(LoanApplicationTerms.class);
+	
+	
 	public static LoanApplicationTerms assembleFrom(
 		final ApplicationCurrency currency,
 		final Integer loanTermFrequency,
@@ -778,8 +787,11 @@ public final class LoanApplicationTerms
 					mc.getRoundingMode());
 
 				totalInterestCharged = totalInterestChargedForLoanTerm.minus(totalGraceOnInterestCharged);
+				
 				break;
 			case DECLINING_BALANCE:
+//			    final Money totalInterestChargeForLoanTerm = 
+			    break;
 			case INVALID:
 				break;
 		}
@@ -807,11 +819,11 @@ public final class LoanApplicationTerms
 				switch (this.amortizationMethod)
 				{
 					case EQUAL_INSTALLMENTS:
-						Money totalPmtForThisInstallment = pmtForInstallment(calculator, outstandingBalance,
-							periodNumber, mc);
-						principalForInstallment = calculatePrincipalDueForInstallment(periodNumber,
-							totalPmtForThisInstallment,
-							interestForThisInstallment);
+						Money totalPmtForThisInstallment = pmtForInstallment(calculator, outstandingBalance, periodNumber, mc);
+//						
+						logger.info("totalPmtForThisInstallment: " + totalPmtForThisInstallment.getAmount().toString());
+						principalForInstallment = calculatePrincipalDueForInstallment(periodNumber, totalPmtForThisInstallment, interestForThisInstallment);
+						
 						break;
 					case EQUAL_PRINCIPAL:
 						principalForInstallment = calculateEqualPrincipalDueForInstallment(mc, periodNumber);
@@ -840,12 +852,8 @@ public final class LoanApplicationTerms
 		final int periodsElapsed = periodNumber - 1;
 		// with periodic interest for default month and year for
 		// equal installment
-		final BigDecimal periodicInterestRateForRepaymentPeriod = periodicInterestRate(calculator, mc,
-			DaysInMonthType.DAYS_30,
-			DaysInYearType.DAYS_365, periodStartDate, periodEndDate, true);
-		Money totalPmtForThisInstallment = calculateTotalDueForEqualInstallmentRepaymentPeriod(
-			periodicInterestRateForRepaymentPeriod,
-			outstandingBalance, periodsElapsed);
+		final BigDecimal periodicInterestRateForRepaymentPeriod = periodicInterestRate(calculator, mc, DaysInMonthType.DAYS_30, DaysInYearType.DAYS_365, periodStartDate, periodEndDate, true);
+		Money totalPmtForThisInstallment = calculateTotalDueForEqualInstallmentRepaymentPeriod(periodicInterestRateForRepaymentPeriod,outstandingBalance, periodsElapsed);
 		return totalPmtForThisInstallment;
 	}
 
@@ -896,8 +904,36 @@ public final class LoanApplicationTerms
 			case FLAT:
 				if (this.isEqualAmortization() && this.totalInterestDue != null
 					&& this.interestMethod.isDecliningBalnce())
-				{
-					interestForInstallment = flatInterestPerInstallment(mc, this.totalInterestDue);
+				{   
+//				        OLD
+					//interestForInstallment = flatInterestPerInstallment(mc, this.totalInterestDue);
+//					Edit
+				    
+				        final Money interestForThisInstallmentBeforeGrace = calculateDecliningInterestDueForInstallmentBeforeApplyingGrace(
+	                                        calculator, mc, outstandingBalance, periodStartDate, periodEndDate);
+
+	                                final Money interestForThisInstallmentAfterGrace = calculateDecliningInterestDueForInstallmentAfterApplyingGrace(
+	                                        calculator, interestCalculationGraceOnRepaymentPeriodFraction, mc, outstandingBalance, periodNumber,
+	                                        periodStartDate, periodEndDate);
+
+	                                interestForInstallment = interestForThisInstallmentAfterGrace;
+	                                if (interestForThisInstallmentAfterGrace.isGreaterThanZero())
+	                                {
+	                                        interestForInstallment = interestBroughtForwardDueToGrace
+	                                                .plus(interestForThisInstallmentAfterGrace);
+	                                        interestBroughtForwardDueToGrace = interestBroughtForwardDueToGrace.zero();
+	                                } else if (isInterestFreeGracePeriod(periodNumber))
+	                                {
+	                                        interestForInstallment = interestForInstallment.zero();
+	                                } else if (isInterestFreeGracePeriodFromDate(interestCalculationGraceOnRepaymentPeriodFraction))
+	                                {
+	                                        interestForInstallment = interestForThisInstallmentAfterGrace;
+	                                } else
+	                                {
+	                                        interestBroughtForwardDueToGrace = interestBroughtForwardDueToGrace
+	                                                .plus(interestForThisInstallmentBeforeGrace);
+	                                }
+					
 				} else
 				{
 					switch (this.amortizationMethod)
@@ -907,7 +943,8 @@ public final class LoanApplicationTerms
 							// instalments where interest is applicable
 							interestForInstallment = calculateTotalFlatInterestForInstallmentAveragingOutGracePeriods(
 								calculator,
-								periodNumber, mc);
+								periodNumber, 
+								mc);
 							break;
 						case EQUAL_PRINCIPAL:
 							// interest follows time-value of money and is
@@ -1322,12 +1359,9 @@ public final class LoanApplicationTerms
 				break;
 			case DAILY:
 				// For daily work out number of days in the period
-				BigDecimal numberOfDaysInPeriod = BigDecimal
-					.valueOf(Days.daysBetween(periodStartDate, periodEndDate).getDays());
+				BigDecimal numberOfDaysInPeriod = BigDecimal.valueOf(Days.daysBetween(periodStartDate, periodEndDate).getDays());
 
-				final BigDecimal oneDayOfYearInterestRate = this.annualNominalInterestRate
-					.divide(loanTermPeriodsInYearBigDecimal, mc)
-					.divide(divisor, mc);
+				final BigDecimal oneDayOfYearInterestRate = this.annualNominalInterestRate.divide(loanTermPeriodsInYearBigDecimal, mc).divide(divisor, mc);
 
 				switch (this.repaymentPeriodFrequencyType)
 				{
@@ -1582,8 +1616,9 @@ public final class LoanApplicationTerms
 
 			if (this.installmentAmountInMultiplesOf != null)
 			{
-				installmentAmount = Money.roundToMultiplesOf(installmentAmount, this.installmentAmountInMultiplesOf);
+				//installmentAmount = Money.roundToMultiplesOf(installmentAmount, this.installmentAmountInMultiplesOf);
 			}
+			
 			setFixedEmiAmount(BigDecimal.valueOf(installmentAmount));
 		}
 		return getFixedEmiAmount().doubleValue();
@@ -1739,14 +1774,28 @@ public final class LoanApplicationTerms
 			this.currency.getDecimalPlaces(),
 			this.currency.getCurrencyInMultiplesOf());
 
-		return LoanProductRelatedDetail.createFrom(currency, this.principal.getAmount(), this.interestRatePerPeriod,
-			this.interestRatePeriodFrequencyType, this.annualNominalInterestRate, this.interestMethod,
-			this.interestCalculationPeriodMethod, this.allowPartialPeriodInterestCalcualtion, this.repaymentEvery,
-			this.repaymentPeriodFrequencyType, this.numberOfRepayments, this.principalGrace,
-			this.recurringMoratoriumOnPrincipalPeriods, this.interestPaymentGrace,
-			this.interestChargingGrace, this.amortizationMethod, this.inArrearsTolerance.getAmount(),
+		return LoanProductRelatedDetail.createFrom(
+		        currency, 
+		        this.principal.getAmount(), 
+		        this.interestRatePerPeriod,
+			this.interestRatePeriodFrequencyType, 
+			this.annualNominalInterestRate, 
+			this.interestMethod,
+			this.interestCalculationPeriodMethod, 
+			this.allowPartialPeriodInterestCalcualtion, 
+			this.repaymentEvery,
+			this.repaymentPeriodFrequencyType, 
+			this.numberOfRepayments, 
+			this.principalGrace,
+			this.recurringMoratoriumOnPrincipalPeriods, 
+			this.interestPaymentGrace,
+			this.interestChargingGrace, 
+			this.amortizationMethod, 
+			this.inArrearsTolerance.getAmount(),
 			this.graceOnArrearsAgeing,
-			this.daysInMonthType.getValue(), this.daysInYearType.getValue(), this.interestRecalculationEnabled,
+			this.daysInMonthType.getValue(), 
+			this.daysInYearType.getValue(), 
+			this.interestRecalculationEnabled,
 			this.isEqualAmortization);
 	}
 

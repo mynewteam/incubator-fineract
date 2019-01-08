@@ -269,8 +269,7 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
 
 			final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
 			
-			final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
-				.resource("loan");
+			final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("loan");
 
 			// Loan Cycle
 			if (loanProduct.useBorrowerCycle())

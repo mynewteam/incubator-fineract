@@ -76,6 +76,7 @@ import org.apache.fineract.portfolio.floatingrates.service.FloatingRatesReadPlat
 import org.apache.fineract.portfolio.group.domain.Group;
 import org.apache.fineract.portfolio.group.domain.GroupRepositoryWrapper;
 import org.apache.fineract.portfolio.loanaccount.api.LoanApiConstants;
+import org.apache.fineract.portfolio.loanaccount.api.LoansApiResource;
 import org.apache.fineract.portfolio.loanaccount.data.DisbursementData;
 import org.apache.fineract.portfolio.loanaccount.data.HolidayDetailDTO;
 import org.apache.fineract.portfolio.loanaccount.data.LoanTermVariationsData;
@@ -89,7 +90,6 @@ import org.apache.fineract.portfolio.loanaccount.domain.LoanTermVariations;
 import org.apache.fineract.portfolio.loanaccount.domain.transactionprocessor.LoanRepaymentScheduleTransactionProcessor;
 import org.apache.fineract.portfolio.loanaccount.exception.LoanApplicationDateException;
 import org.apache.fineract.portfolio.loanaccount.exception.MinDaysBetweenDisbursalAndFirstRepaymentViolationException;
-import org.apache.fineract.portfolio.loanaccount.loanschedule.data.LoanScheduleParams;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.domain.AprCalculator;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.domain.LoanApplicationTerms;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.domain.LoanScheduleGenerator;
@@ -114,12 +114,19 @@ import org.apache.fineract.portfolio.loanproduct.service.LoanEnumerations;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+//import ch.qos.logback.classic.Logger;
 
 @Service
 public class LoanScheduleAssembler
@@ -142,6 +149,8 @@ public class LoanScheduleAssembler
 	private final CalendarInstanceRepository calendarInstanceRepository;
 	private final PlatformSecurityContext context;
 	private final LoanUtilService loanUtilService;
+	
+	 private final static Logger logger = LoggerFactory.getLogger(LoanScheduleAssembler.class);
 
 	@Autowired
 	public LoanScheduleAssembler(
@@ -202,33 +211,25 @@ public class LoanScheduleAssembler
 			.findOneWithNotFoundDetection(currency);
 
 		// loan terms
-		final Integer loanTermFrequency = this.fromApiJsonHelper.extractIntegerWithLocaleNamed("loanTermFrequency",
-			element);
-		final Integer loanTermFrequencyType = this.fromApiJsonHelper
-			.extractIntegerWithLocaleNamed("loanTermFrequencyType", element);
+		final Integer loanTermFrequency = this.fromApiJsonHelper.extractIntegerWithLocaleNamed("loanTermFrequency", element);
+		final Integer loanTermFrequencyType = this.fromApiJsonHelper.extractIntegerWithLocaleNamed("loanTermFrequencyType", element);
 		final PeriodFrequencyType loanTermPeriodFrequencyType = PeriodFrequencyType.fromInt(loanTermFrequencyType);
 
-		final Integer numberOfRepayments = this.fromApiJsonHelper.extractIntegerWithLocaleNamed("numberOfRepayments",
-			element);
+		final Integer numberOfRepayments = this.fromApiJsonHelper.extractIntegerWithLocaleNamed("numberOfRepayments", element);
 		final Integer repaymentEvery = this.fromApiJsonHelper.extractIntegerWithLocaleNamed("repaymentEvery", element);
-		final Integer repaymentFrequencyType = this.fromApiJsonHelper
-			.extractIntegerWithLocaleNamed("repaymentFrequencyType", element);
+		final Integer repaymentFrequencyType = this.fromApiJsonHelper.extractIntegerWithLocaleNamed("repaymentFrequencyType", element);
 		final PeriodFrequencyType repaymentPeriodFrequencyType = PeriodFrequencyType.fromInt(repaymentFrequencyType);
-		final Integer nthDay = this.fromApiJsonHelper.extractIntegerWithLocaleNamed("repaymentFrequencyNthDayType",
-			element);
-		final Integer dayOfWeek = this.fromApiJsonHelper
-			.extractIntegerWithLocaleNamed("repaymentFrequencyDayOfWeekType", element);
+		final Integer nthDay = this.fromApiJsonHelper.extractIntegerWithLocaleNamed("repaymentFrequencyNthDayType", element);
+		final Integer dayOfWeek = this.fromApiJsonHelper.extractIntegerWithLocaleNamed("repaymentFrequencyDayOfWeekType", element);
 		final DayOfWeekType weekDayType = DayOfWeekType.fromInt(dayOfWeek);
 
-		final Integer amortizationType = this.fromApiJsonHelper.extractIntegerWithLocaleNamed("amortizationType",
-			element);
+		final Integer amortizationType = this.fromApiJsonHelper.extractIntegerWithLocaleNamed("amortizationType", element);
 		final AmortizationMethod amortizationMethod = AmortizationMethod.fromInt(amortizationType);
 
 		boolean isEqualAmortization = false;
 		if (this.fromApiJsonHelper.parameterExists(LoanApiConstants.isEqualAmortizationParam, element))
 		{
-			isEqualAmortization = this.fromApiJsonHelper.extractBooleanNamed(LoanApiConstants.isEqualAmortizationParam,
-				element);
+			isEqualAmortization = this.fromApiJsonHelper.extractBooleanNamed(LoanApiConstants.isEqualAmortizationParam, element);
 		}
 
 		// interest terms
@@ -787,18 +788,26 @@ public class LoanScheduleAssembler
 		final MathContext mc = new MathContext(8, roundingMode);
 		HolidayDetailDTO detailDTO = new HolidayDetailDTO(isHolidayEnabled, holidays, workingDays);
 
-		LoanScheduleGenerator loanScheduleGenerator = this.loanScheduleFactory
-			.create(loanApplicationTerms.getInterestMethod());
+		LoanScheduleGenerator loanScheduleGenerator = this.loanScheduleFactory.create(loanApplicationTerms.getInterestMethod());
+		
 		if (loanApplicationTerms.isEqualAmortization())
 		{
 			if (loanApplicationTerms.getInterestMethod().isDecliningBalnce())
 			{
+//			    Logger("loanApplicationTerms.getInterestMethod().isDecliningBalnce():");
+			    
+			    logger.info("My Debug TEST loanApplicationTerms.getInterestMethod(): " + loanApplicationTerms.getInterestMethod().isDecliningBalnce());
+			    
 				final LoanScheduleGenerator decliningLoanScheduleGenerator = this.loanScheduleFactory.create(InterestMethod.DECLINING_BALANCE);
+				
 				LoanScheduleModel loanSchedule = decliningLoanScheduleGenerator.generate(mc, loanApplicationTerms, loanCharges, detailDTO);
 
-				loanApplicationTerms .updateTotalInterestDue( Money.of(loanApplicationTerms.getCurrency(), loanSchedule.getTotalInterestCharged()));
+				loanApplicationTerms.updateTotalInterestDue( Money.of(loanApplicationTerms.getCurrency(), loanSchedule.getTotalInterestCharged()));
+				
+			}else {
+
+	                        loanScheduleGenerator = this.loanScheduleFactory.create(InterestMethod.FLAT);   
 			}
-			loanScheduleGenerator = this.loanScheduleFactory.create(InterestMethod.FLAT);
 		} else
 		{
 			loanScheduleGenerator = this.loanScheduleFactory.create(loanApplicationTerms.getInterestMethod());

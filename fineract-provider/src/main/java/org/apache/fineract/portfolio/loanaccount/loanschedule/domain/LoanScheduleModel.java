@@ -61,7 +61,8 @@ public final class LoanScheduleModel
 		final BigDecimal totalFeeChargesCharged,
 		final BigDecimal totalPenaltyChargesCharged,
 		final BigDecimal totalRepaymentExpected,
-		final BigDecimal totalOutstanding)
+		final BigDecimal totalOutstanding
+		)
 	{
 
 		return new LoanScheduleModel(

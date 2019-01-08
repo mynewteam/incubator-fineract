@@ -18,12 +18,21 @@
  */
 package org.apache.fineract.portfolio.loanaccount.loanschedule.domain;
 
+import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSerializer;
+import org.apache.fineract.portfolio.loanaccount.api.LoansApiResource;
+import org.apache.fineract.portfolio.loanaccount.data.LoanAccountData;
 import org.apache.fineract.portfolio.loanproduct.domain.InterestMethod;
 import org.springframework.stereotype.Component;
+import org.springframework.util.SerializationUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class DefaultLoanScheduleGeneratorFactory implements LoanScheduleGeneratorFactory {
 
+    
+    private final static Logger logger = LoggerFactory.getLogger(DefaultLoanScheduleGeneratorFactory.class);
+    
     @Override
     public LoanScheduleGenerator create(final InterestMethod interestMethod) {
 
@@ -35,6 +44,8 @@ public class DefaultLoanScheduleGeneratorFactory implements LoanScheduleGenerato
             break;
             case DECLINING_BALANCE:
                 loanScheduleGenerator = new DecliningBalanceInterestLoanScheduleGenerator();
+                logger.info("class DefaultLoanScheduleGeneratorFactory implements LoanScheduleGeneratorFactory: " );
+                logger.info("My Debug TEST loanScheduleGenerator: "+ loanScheduleGenerator.toString());
             break;
             case INVALID:
             break;
