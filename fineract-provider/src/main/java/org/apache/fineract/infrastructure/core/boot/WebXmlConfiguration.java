@@ -68,7 +68,7 @@ public class WebXmlConfiguration {
         // LoggingFilter.class.getName());
         return jerseyServletRegistration;
     }
-
+ 
     @Bean
     public FilterRegistrationBean filterRegistrationBean() {
         FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
@@ -76,5 +76,4 @@ public class WebXmlConfiguration {
         filterRegistrationBean.setEnabled(false);
         return filterRegistrationBean;
     }
-
 }

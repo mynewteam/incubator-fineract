@@ -46,5 +46,4 @@
 	<bean id="txTemplate" class="org.springframework.transaction.support.TransactionTemplate">
 		<property name="transactionManager" ref="transactionManager"></property>
 	</bean>	
-
 </beans>

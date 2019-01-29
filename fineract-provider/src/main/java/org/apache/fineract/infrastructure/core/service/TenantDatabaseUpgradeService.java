@@ -32,10 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import com.googlecode.flyway.core.Flyway;
-import com.googlecode.flyway.core.api.FlywayException;
-import com.googlecode.flyway.core.util.jdbc.DriverDataSource;
-
 /**
  * A service that picks up on tenants that are configured to auto-update their
  * specific schema on application startup.
@@ -64,19 +60,19 @@ public class TenantDatabaseUpgradeService {
         for (final FineractPlatformTenant tenant : tenants) {
             final FineractPlatformTenantConnection connection = tenant.getConnection();
             if (connection.isAutoUpdateEnabled()) {
-                final Flyway flyway = new Flyway();
-                String connectionProtocol = driverConfig.constructProtocol(connection.getSchemaServer(), connection.getSchemaServerPort(), connection.getSchemaName()) ;
-                DriverDataSource source = new DriverDataSource(driverConfig.getDriverClassName(), connectionProtocol, connection.getSchemaUsername(), connection.getSchemaPassword()) ;
-                flyway.setDataSource(source);
-                flyway.setLocations("sql/migrations/core_db");
-                flyway.setOutOfOrder(true);
-                try {
-                    flyway.migrate();
-                } catch (FlywayException e) {
-                    String betterMessage = e.getMessage() + "; for Tenant DB URL: " + connectionProtocol + ", username: "
-                            + connection.getSchemaUsername();
-                    throw new FlywayException(betterMessage, e.getCause());
-                }
+//                final Flyway flyway = new Flyway();
+//                String connectionProtocol = driverConfig.constructProtocol(connection.getSchemaServer(), connection.getSchemaServerPort(), connection.getSchemaName()) ;
+//                DriverDataSource source = new DriverDataSource(driverConfig.getDriverClassName(), connectionProtocol, connection.getSchemaUsername(), connection.getSchemaPassword()) ;
+//                flyway.setDataSource(source);
+//                flyway.setLocations("sql/migrations/core_db");
+//                flyway.setOutOfOrder(true);
+//                try {
+//                    flyway.migrate();
+//                } catch (FlywayException e) {
+//                    String betterMessage = e.getMessage() + "; for Tenant DB URL: " + connectionProtocol + ", username: "
+//                            + connection.getSchemaUsername();
+//                    throw new FlywayException(betterMessage, e.getCause());
+//                }
             }
         }
     }
@@ -86,11 +82,11 @@ public class TenantDatabaseUpgradeService {
      * itself.
      */
     private void upgradeTenantDB() {
-        final Flyway flyway = new Flyway();
-        flyway.setDataSource(tenantDataSource);
-        flyway.setLocations("sql/migrations/list_db");
-        flyway.setOutOfOrder(true);
-        flyway.migrate();
+//        final Flyway flyway = new Flyway();
+//        flyway.setDataSource(tenantDataSource);
+//        flyway.setLocations("sql/migrations/list_db");
+//        flyway.setOutOfOrder(true);
+//        flyway.migrate();
 
         tenantDataSourcePortFixService.fixUpTenantsSchemaServerPort();
     }

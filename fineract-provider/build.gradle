@@ -64,8 +64,8 @@ project.ext.springOauthVersion = '2.0.4.RELEASE'
 project.ext.jerseyVersion = '1.17'
 project.ext.springDataJpaVersion = '1.7.0.RELEASE' // also change spring-boot-gradle-plugin version above
 
-project.ext.mysqlUser='root'
-project.ext.mysqlPassword='mysql'
+project.ext.mysqlUser='C##VMICROWEB'
+project.ext.mysqlPassword='123'
 
 
 group = 'org.apache.fineract'
@@ -288,9 +288,9 @@ findbugs {
     sourceSets = [sourceSets.main] 
 }
 
-//compileJava{
+// compileJava{
 //    dependsOn rat
-//}
+// }
 
 war {
 	from('../licenses/binary/') { // notice the parens
@@ -399,7 +399,9 @@ configurations {
     driver
 }
 dependencies {
-    driver 'mysql:mysql-connector-java:5.1.16'
+    // driver 'mysql:mysql-connector-java:5.1.16'
+    driver 'com.oracle:ojdbc6:11.2.0.3'
+   // classpath 'com.oracle:ucp:12.2.0.1'
 }
 
 test {
@@ -416,18 +418,18 @@ configurations.driver.each {File file ->
 
 task createDB<<{
     description= "Creates the Database. Needs database name to be passed (like: -PdbName=someDBname)"
-    sql = Sql.newInstance( 'jdbc:mysql://localhost:3306/', mysqlUser, mysqlPassword, 'com.mysql.jdbc.Driver' )
+    sql = Sql.newInstance( 'jdbc:oracle:thin:@192.168.56.104:1521:', mysqlUser, mysqlPassword, 'oracle.jdbc.OracleDriver' )
     sql.execute( 'create database '+"`$dbName`" )
 }
 
 task dropDB<<{
     description= "Drops the specified database. The database name has to be passed (like: -PdbName=someDBname)"
-    sql = Sql.newInstance( 'jdbc:mysql://localhost:3306/', mysqlUser, mysqlPassword, 'com.mysql.jdbc.Driver' )
+    sql = Sql.newInstance( 'jdbc:oracle:thin:@192.168.56.104:1521:', mysqlUser, mysqlPassword, 'oracle.jdbc.OracleDriver' )
     sql.execute( 'DROP DATABASE '+"`$dbName`")
 }
 task setBlankPassword<<{
-    sql = Sql.newInstance( 'jdbc:mysql://localhost:3306/', mysqlUser, mysqlPassword, 'com.mysql.jdbc.Driver' )
-    sql.execute('USE `mifosplatform-tenants`')
+    sql = Sql.newInstance( 'jdbc:oracle:thin:@192.168.56.104:1521:', mysqlUser, mysqlPassword, 'oracle.jdbc.OracleDriver' )
+    sql.execute('USE `ORCL`')
     sql.execute('UPDATE mifosplatform-tenants.tenants SET schema_server = \'localhost\', schema_server_port = \'3306\', schema_username = \'mifos\', schema_password = \'mysql\' WHERE id=1;')
 }
 
@@ -446,8 +448,8 @@ buildscript {
 
 
 flyway {
-    url = "jdbc:mysql://localhost:3306/mifostenant-default"
-	driver = "com.mysql.jdbc.Driver"
+    url = "jdbc:oracle:thin:@192.168.56.104:1521:orcl"
+	driver = "oracle.jdbc.OracleDriver"
     user = mysqlUser
     password = mysqlPassword
 }
@@ -456,13 +458,13 @@ task migrateTenantDB<<{
     description="Migrates a Tenant DB. Optionally can pass dbName. Defaults to 'mifostenant-default' (Example: -PdbName=someTenantDBname)"
 
 	def filePath = "filesystem:$projectDir" + '/src/main/resources/sql/migrations/core_db'
-	def tenantDbName = 'mifostenant-default';
+	def tenantDbName = 'ORCL';
     if (rootProject.hasProperty("dbName")) {
 		tenantDbName = rootProject.getProperty("dbName")
 	}
 	
-    flyway.url= "jdbc:mysql://localhost:3306/$tenantDbName"
-	flyway.driver = "com.mysql.jdbc.Driver"
+    flyway.url= "jdbc:oracle:thin:@192.168.56.104:1521:$tenantDbName"
+	flyway.driver = "oracle.jdbc.OracleDriver"
     flyway.locations= [filePath]
     /**We use ${ as the prefix for strecthy reporting, do not want them to be interpreted by Flyway**/
     flyway.placeholderPrefix = "\$\${"
@@ -473,13 +475,13 @@ task showTenantDBInfo<<{
     description="Shows the migration info for a Tenant DB. Optionally can pass dbName. Defaults to 'mifostenant-default' (Example: -PdbName=someTenantDBname)"
     
 	def filePath = "filesystem:$projectDir" + '/src/main/resources/sql/migrations/core_db'
-    def tenantDbName = 'mifostenant-default';
+    def tenantDbName = 'ORCL';
     if (rootProject.hasProperty("dbName")) {
 		tenantDbName = rootProject.getProperty("dbName")
 	}
 	
-    flyway.url= "jdbc:mysql://localhost:3306/$tenantDbName"
-	flyway.driver = "com.mysql.jdbc.Driver"
+    flyway.url= "jdbc:oracle:thin:@192.168.56.104:1521:$tenantDbName"
+	flyway.driver = "oracle.jdbc.OracleDriver"
     flyway.locations= [filePath]
     flywayInfo.execute()
 }
@@ -489,13 +491,13 @@ task migrateTenantListDB<<{
     description="Migrates a Tenant List DB. Optionally can pass dbName. Defaults to 'mifosplatform-tenants' (Example: -PdbName=someDBname)"
 
 	def filePath = "filesystem:$projectDir" + '/src/main/resources/sql/migrations/list_db'
- 	def tenantsDbName = 'mifosplatform-tenants';
+ 	def tenantsDbName = 'ORCL';
     if (rootProject.hasProperty("dbName")) {
 		tenantsDbName = rootProject.getProperty("dbName")
 	}
 	
-    flyway.url= "jdbc:mysql://localhost:3306/$tenantsDbName"
-	flyway.driver = "com.mysql.jdbc.Driver"
+    flyway.url= "jdbc:oracle:thin:@192.168.56.104:1521:$tenantsDbName"
+	flyway.driver = "oracle.jdbc.OracleDriver"
     flyway.locations= [filePath]
 
     flywayMigrate.execute()
@@ -505,13 +507,13 @@ task showTenantListDBInfo<<{
     description="Shows the migration info for a List DB. Optionally can pass dbName. Defaults to 'mifosplatform-tenants' (Example: -PdbName=someDBname)"
     
 	def filePath = "filesystem:$projectDir" + '/src/main/resources/sql/migrations/list_db'
-    def tenantsDbName = 'mifosplatform-tenants';
+    def tenantsDbName = 'ORCL';
     if (rootProject.hasProperty("dbName")) {
 		tenantsDbName = rootProject.getProperty("dbName")
 	}
     
-    flyway.url= "jdbc:mysql://localhost:3306/$tenantsDbName"
-	flyway.driver = "com.mysql.jdbc.Driver"
+    flyway.url= "jdbc:oracle:thin:@192.168.56.104:1521:$tenantsDbName"
+	flyway.driver = "oracle.jdbc.OracleDriver"
     flyway.locations= [filePath]
     flywayInfo.execute()
 }
@@ -520,13 +522,13 @@ task repairTenantDB<<{
     description="repair migrate"
     
 	def filePath = "filesystem:$projectDir" + '/src/main/resources/sql/migrations/list_db'
-    def tenantsDbName = 'mifosplatform-tenants';
+    def tenantsDbName = 'ORCL';
     if (rootProject.hasProperty("dbName")) {
         tenantsDbName = rootProject.getProperty("dbName")
     }
     
-    flyway.url= "jdbc:mysql://localhost:3306/$tenantsDbName"
-	flyway.driver = "com.mysql.jdbc.Driver"
+    flyway.url= "jdbc:oracle:thin:@192.168.56.104:1521:$tenantsDbName"
+	flyway.driver = "oracle.jdbc.OracleDriver"
     flyway.locations= [filePath]
     flywayRepair.execute()
 }

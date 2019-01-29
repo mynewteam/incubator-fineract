@@ -47,8 +47,8 @@ public class TomcatJdbcDataSourcePerTenantService implements RoutingDataSourceSe
     private final DataSource tenantDataSource;
 
     @Autowired
-    private JDBCDriverConfig driverConfig ;
-    
+    private JDBCDriverConfig driverConfig;
+
     @Autowired
     public TomcatJdbcDataSourcePerTenantService(final @Qualifier("tenantDataSourceJndi") DataSource tenantDataSource) {
         this.tenantDataSource = tenantDataSource;
@@ -60,7 +60,7 @@ public class TomcatJdbcDataSourcePerTenantService implements RoutingDataSourceSe
         // default to tenant database datasource
         DataSource tenantDataSource = this.tenantDataSource;
 
-        final FineractPlatformTenant tenant = ThreadLocalContextUtil.getTenant(); 
+        final FineractPlatformTenant tenant = ThreadLocalContextUtil.getTenant();
         if (tenant != null) {
             final FineractPlatformTenantConnection tenantConnection = tenant.getConnection();
 
@@ -87,8 +87,9 @@ public class TomcatJdbcDataSourcePerTenantService implements RoutingDataSourceSe
         // http://www.tomcatexpert.com/blog/2010/04/01/configuring-jdbc-pool-high-concurrency
 
         // see also org.apache.fineract.DataSourceProperties.setDefaults()
-    	 String jdbcUrl = this.driverConfig.constructProtocol(tenantConnectionObj.getSchemaServer(), tenantConnectionObj.getSchemaServerPort(), tenantConnectionObj.getSchemaName()) ;
-        //final String jdbcUrl = tenantConnectionObj.databaseURL();
+        String jdbcUrl = this.driverConfig.constructProtocol(tenantConnectionObj.getSchemaServer(),
+                tenantConnectionObj.getSchemaServerPort(), tenantConnectionObj.getSchemaName());
+        // final String jdbcUrl = tenantConnectionObj.databaseURL();
         final PoolConfiguration poolConfiguration = new PoolProperties();
         poolConfiguration.setDriverClassName(this.driverConfig.getDriverClassName());
         poolConfiguration.setName(tenantConnectionObj.getSchemaName() + "_pool");
@@ -107,7 +108,7 @@ public class TomcatJdbcDataSourcePerTenantService implements RoutingDataSourceSe
         poolConfiguration.setLogAbandoned(tenantConnectionObj.isLogAbandoned());
         poolConfiguration.setAbandonWhenPercentageFull(tenantConnectionObj.getAbandonWhenPercentageFull());
         poolConfiguration.setDefaultAutoCommit(true);
-        
+
         /**
          * Vishwas- Do we need to enable the below properties and add
          * ResetAbandonedTimer for long running batch Jobs?

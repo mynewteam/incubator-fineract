@@ -141,7 +141,8 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 		final Boolean isAddressEnabled = configuration.isEnabled();
 		if (isAddressEnabled) {
 			address = this.addressReadPlatformService.retrieveTemplate();
-//			addressKhmer = this.addressKhmerReadPlatformService.retrieveAddressKhmerTemplate();
+			// addressKhmer =
+			// this.addressKhmerReadPlatformService.retrieveAddressKhmerTemplate();
 		}
 
 		final ClientFamilyMembersData familyMemberOptions = this.clientFamilyMembersReadPlatformService
@@ -183,8 +184,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 		return ClientData.template(defaultOfficeId, new LocalDate(), offices, staffOptions, null, genderOptions,
 				savingsProductDatas, clientTypeOptions, clientClassificationOptions, clientNonPersonConstitutionOptions,
 				clientNonPersonMainBusinessLineOptions, clientLegalFormOptions, familyMemberOptions, address,
-				addressKhmer,
-				isAddressEnabled, datatableTemplates);
+				addressKhmer, isAddressEnabled, datatableTemplates);
 	}
 
 	@Override
@@ -229,10 +229,10 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 			}
 
 			if (searchParameters.isLimited()) {
-				sqlBuilder.append(" limit ").append(searchParameters.getLimit());
-				if (searchParameters.isOffset()) {
-					sqlBuilder.append(" offset ").append(searchParameters.getOffset());
-				}
+				// sqlBuilder.append(" limit ").append(searchParameters.getLimit());
+				// if (searchParameters.isOffset()) {
+				// sqlBuilder.append(" offset ").append(searchParameters.getOffset());
+				// }
 			}
 		}
 		final String sqlCountRows = "SELECT FOUND_ROWS()";
@@ -469,8 +469,9 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 
 			final Long officeId = JdbcSupport.getLong(rs, "officeId");
 			final String officeName = rs.getString("officeName");
-			
-			final VillageKhmerData villageKhmer = new VillageKhmerData(JdbcSupport.getInteger(rs, "tbl_village_id"), null, null, 0);
+
+			final VillageKhmerData villageKhmer = new VillageKhmerData(JdbcSupport.getInteger(rs, "tbl_village_id"),
+					null, null, 0);
 
 			final Long transferToOfficeId = JdbcSupport.getLong(rs, "transferToOfficeId");
 			final String transferToOfficeName = rs.getString("transferToOfficeName");
@@ -546,10 +547,10 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 					activatedByFirstname, activatedByLastname, closedOnDate, closedByUsername, closedByFirstname,
 					closedByLastname);
 
-			return ClientData.instance(accountNo, status, subStatus, officeId, villageKhmer, officeName, transferToOfficeId,
-					transferToOfficeName, id, firstname, middlename, lastname, khmername, fullname, displayName,
-					externalId, mobileNo, emailAddress, dateOfBirth, gender, activationDate, imageId, staffId,
-					staffName, timeline, savingsProductId, savingsProductName, savingsAccountId, clienttype,
+			return ClientData.instance(accountNo, status, subStatus, officeId, villageKhmer, officeName,
+					transferToOfficeId, transferToOfficeName, id, firstname, middlename, lastname, khmername, fullname,
+					displayName, externalId, mobileNo, emailAddress, dateOfBirth, gender, activationDate, imageId,
+					staffId, staffName, timeline, savingsProductId, savingsProductName, savingsAccountId, clienttype,
 					classification, legalForm, clientNonPerson, isStaff);
 
 		}
@@ -666,8 +667,9 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 
 			final Long officeId = JdbcSupport.getLong(rs, "officeId");
 			final String officeName = rs.getString("officeName");
-			
-			final VillageKhmerData villageKhmerData = new VillageKhmerData(JdbcSupport.getInteger(rs, "tbl_village_id"), null, null, 0);
+
+			final VillageKhmerData villageKhmerData = new VillageKhmerData(JdbcSupport.getInteger(rs, "tbl_village_id"),
+					null, null, 0);
 
 			final Long transferToOfficeId = JdbcSupport.getLong(rs, "transferToOfficeId");
 			final String transferToOfficeName = rs.getString("transferToOfficeName");
@@ -742,10 +744,10 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 					activatedByFirstname, activatedByLastname, closedOnDate, closedByUsername, closedByFirstname,
 					closedByLastname);
 
-			return ClientData.instance(accountNo, status, subStatus, officeId, villageKhmerData, officeName, transferToOfficeId,
-					transferToOfficeName, id, firstname, middlename, lastname, khmername, fullname, displayName,
-					externalId, mobileNo, emailAddress, dateOfBirth, gender, activationDate, imageId, staffId,
-					staffName, timeline, savingsProductId, savingsProductName, savingsAccountId, clienttype,
+			return ClientData.instance(accountNo, status, subStatus, officeId, villageKhmerData, officeName,
+					transferToOfficeId, transferToOfficeName, id, firstname, middlename, lastname, khmername, fullname,
+					displayName, externalId, mobileNo, emailAddress, dateOfBirth, gender, activationDate, imageId,
+					staffId, staffName, timeline, savingsProductId, savingsProductName, savingsAccountId, clienttype,
 					classification, legalForm, clientNonPerson, isStaff);
 		}
 	}

@@ -18,13 +18,12 @@
  */
 package org.apache.fineract.infrastructure.core.domain;
 
-
 /**
  * Holds DB server connection details.
  *
  */
 public class FineractPlatformTenantConnection {
-    
+
     private final Long connectionId;
     private final String schemaServer;
     private final String schemaServerPort;
@@ -47,14 +46,17 @@ public class FineractPlatformTenantConnection {
     private final int maxRetriesOnDeadlock;
     private final int maxIntervalBetweenRetries;
     private final boolean testOnBorrow;
-    
-    public FineractPlatformTenantConnection(final Long connectionId,final String schemaName, String schemaServer,final String schemaServerPort,final String schemaUsername,final String schemaPassword,
-            final boolean autoUpdateEnabled,final int initialSize,final long validationInterval,final boolean removeAbandoned,final int removeAbandonedTimeout,
-            final boolean logAbandoned,final int abandonWhenPercentageFull,final int maxActive,final int minIdle,final int maxIdle,final int suspectTimeout,
-            final int timeBetweenEvictionRunsMillis,final int minEvictableIdleTimeMillis,final int maxRetriesOnDeadlock,final int maxIntervalBetweenRetries,final boolean tesOnBorrow) {
-       
+
+    public FineractPlatformTenantConnection(final Long connectionId, final String schemaName, String schemaServer,
+            final String schemaServerPort, final String schemaUsername, final String schemaPassword,
+            final boolean autoUpdateEnabled, final int initialSize, final long validationInterval,
+            final boolean removeAbandoned, final int removeAbandonedTimeout, final boolean logAbandoned,
+            final int abandonWhenPercentageFull, final int maxActive, final int minIdle, final int maxIdle,
+            final int suspectTimeout, final int timeBetweenEvictionRunsMillis, final int minEvictableIdleTimeMillis,
+            final int maxRetriesOnDeadlock, final int maxIntervalBetweenRetries, final boolean tesOnBorrow) {
+
         this.connectionId = connectionId;
-        this.schemaName =schemaName;
+        this.schemaName = schemaName;
         this.schemaServer = schemaServer;
         this.schemaServerPort = schemaServerPort;
         this.schemaUsername = schemaUsername;
@@ -74,17 +76,19 @@ public class FineractPlatformTenantConnection {
         this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
         this.maxRetriesOnDeadlock = maxRetriesOnDeadlock;
         this.maxIntervalBetweenRetries = maxIntervalBetweenRetries;
-        this.testOnBorrow=tesOnBorrow;
+        this.testOnBorrow = tesOnBorrow;
     }
 
-    //The Connection Protocol should be built based on jdbc.properties. We can't hard code this here and also, constructing protocol is not this class
-    //responsibility
-    /*public String databaseURL() {
-        final String url = new StringBuilder("jdbc:mysql:thin://").append(this.schemaServer).append(':').append(this.schemaServerPort)
-                .append('/').append(this.schemaName).toString();
-        return url;
-    }*/
-    
+    // The Connection Protocol should be built based on jdbc.properties. We can't
+    // hard code this here and also, constructing protocol is not this class
+    // responsibility
+    /*
+     * public String databaseURL() { final String url = new
+     * StringBuilder("jdbc:mysql:thin://").append(this.schemaServer).append(':').
+     * append(this.schemaServerPort)
+     * .append('/').append(this.schemaName).toString(); return url; }
+     */
+
     /**
      * @return the schemaServer
      */
@@ -92,7 +96,6 @@ public class FineractPlatformTenantConnection {
         return this.schemaServer;
     }
 
-    
     /**
      * @return the schemaServerPort
      */
@@ -100,7 +103,6 @@ public class FineractPlatformTenantConnection {
         return this.schemaServerPort;
     }
 
-    
     /**
      * @return the schemaUsername
      */
@@ -108,7 +110,6 @@ public class FineractPlatformTenantConnection {
         return this.schemaUsername;
     }
 
-    
     /**
      * @return the schemaPassword
      */
@@ -116,7 +117,6 @@ public class FineractPlatformTenantConnection {
         return this.schemaPassword;
     }
 
-    
     /**
      * @return the autoUpdateEnabled
      */
@@ -124,7 +124,6 @@ public class FineractPlatformTenantConnection {
         return this.autoUpdateEnabled;
     }
 
-    
     /**
      * @return the initialSize
      */
@@ -132,7 +131,6 @@ public class FineractPlatformTenantConnection {
         return this.initialSize;
     }
 
-    
     /**
      * @return the validationInterval
      */
@@ -140,7 +138,6 @@ public class FineractPlatformTenantConnection {
         return this.validationInterval;
     }
 
-    
     /**
      * @return the removeAbandoned
      */
@@ -148,7 +145,6 @@ public class FineractPlatformTenantConnection {
         return this.removeAbandoned;
     }
 
-    
     /**
      * @return the removeAbandonedTimeout
      */
@@ -156,7 +152,6 @@ public class FineractPlatformTenantConnection {
         return this.removeAbandonedTimeout;
     }
 
-    
     /**
      * @return the logAbandoned
      */
@@ -164,7 +159,6 @@ public class FineractPlatformTenantConnection {
         return this.logAbandoned;
     }
 
-    
     /**
      * @return the abandonWhenPercentageFull
      */
@@ -172,7 +166,6 @@ public class FineractPlatformTenantConnection {
         return this.abandonWhenPercentageFull;
     }
 
-    
     /**
      * @return the maxActive
      */
@@ -180,7 +173,6 @@ public class FineractPlatformTenantConnection {
         return this.maxActive;
     }
 
-    
     /**
      * @return the minIdle
      */
@@ -188,7 +180,6 @@ public class FineractPlatformTenantConnection {
         return this.minIdle;
     }
 
-    
     /**
      * @return the maxIdle
      */
@@ -196,7 +187,6 @@ public class FineractPlatformTenantConnection {
         return this.maxIdle;
     }
 
-    
     /**
      * @return the suspectTimeout
      */
@@ -204,7 +194,6 @@ public class FineractPlatformTenantConnection {
         return this.suspectTimeout;
     }
 
-    
     /**
      * @return the timeBetweenEvictionRunsMillis
      */
@@ -212,7 +201,6 @@ public class FineractPlatformTenantConnection {
         return this.timeBetweenEvictionRunsMillis;
     }
 
-    
     /**
      * @return the minEvictableIdleTimeMillis
      */
@@ -220,7 +208,6 @@ public class FineractPlatformTenantConnection {
         return this.minEvictableIdleTimeMillis;
     }
 
-    
     /**
      * @return the maxRetriesOnDeadlock
      */
@@ -228,7 +215,6 @@ public class FineractPlatformTenantConnection {
         return this.maxRetriesOnDeadlock;
     }
 
-    
     /**
      * @return the maxIntervalBetweenRetries
      */
@@ -247,8 +233,9 @@ public class FineractPlatformTenantConnection {
     public String getSchemaName() {
         return schemaName;
     }
+
     @Override
     public String toString() {
-        return this.schemaName+":"+this.schemaServer+":"+this.schemaServerPort;
+        return this.schemaName + ":" + this.schemaServer + ":" + this.schemaServerPort;
     }
 }

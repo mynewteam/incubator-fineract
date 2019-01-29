@@ -62,10 +62,7 @@ import org.joda.time.Years;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sun.util.logging.resources.logging;
-
-public final class LoanApplicationTerms
-{
+public final class LoanApplicationTerms {
 
 	private final ApplicationCurrency currency;
 
@@ -216,193 +213,123 @@ public final class LoanApplicationTerms
 	private int extraPeriods = 0;
 	private boolean isEqualAmortization;
 
-	
-	 private final static Logger logger = LoggerFactory.getLogger(LoanApplicationTerms.class);
-	
-	
-	public static LoanApplicationTerms assembleFrom(
-		final ApplicationCurrency currency,
-		final Integer loanTermFrequency,
-		final PeriodFrequencyType loanTermPeriodFrequencyType,
-		final Integer numberOfRepayments,
-		final Integer repaymentEvery,
-		final PeriodFrequencyType repaymentPeriodFrequencyType,
-		Integer nthDay,
-		DayOfWeekType weekDayType,
-		final AmortizationMethod amortizationMethod,
-		final InterestMethod interestMethod,
-		final BigDecimal interestRatePerPeriod,
-		final PeriodFrequencyType interestRatePeriodFrequencyType,
-		final BigDecimal annualNominalInterestRate,
-		final InterestCalculationPeriodMethod interestCalculationPeriodMethod,
-		final boolean allowPartialPeriodInterestCalcualtion,
-		final Money principalMoney,
-		final LocalDate expectedDisbursementDate,
-		final LocalDate repaymentsStartingFromDate,
-		final LocalDate calculatedRepaymentsStartingFromDate,
-		final Integer graceOnPrincipalPayment,
-		final Integer recurringMoratoriumOnPrincipalPeriods,
-		final Integer graceOnInterestPayment,
-		final Integer graceOnInterestCharged,
-		final LocalDate interestChargedFromDate,
-		final Money inArrearsTolerance,
-		final boolean multiDisburseLoan,
-		final BigDecimal emiAmount,
-		final List<DisbursementData> disbursementDatas,
-		final BigDecimal maxOutstandingBalance,
-		final Integer graceOnArrearsAgeing,
-		final DaysInMonthType daysInMonthType,
-		final DaysInYearType daysInYearType,
-		final boolean isInterestRecalculationEnabled,
-		final RecalculationFrequencyType recalculationFrequencyType,
-		final CalendarInstance restCalendarInstance,
-		final InterestRecalculationCompoundingMethod interestRecalculationCompoundingMethod,
-		final CalendarInstance compoundingCalendarInstance,
-		final RecalculationFrequencyType compoundingFrequencyType,
-		final BigDecimal principalThresholdForLastInstalment,
-		final Integer installmentAmountInMultiplesOf,
-		final LoanPreClosureInterestCalculationStrategy preClosureInterestCalculationStrategy,
-		final Calendar loanCalendar,
-		BigDecimal approvedAmount,
-		List<LoanTermVariationsData> loanTermVariations,
-		Boolean isInterestChargedFromDateSameAsDisbursalDateEnabled,
-		final Integer numberOfdays,
-		boolean isSkipRepaymentOnFirstDayofMonth,
-		final HolidayDetailDTO holidayDetailDTO,
-		final boolean allowCompoundingOnEod,
-		final boolean isEqualAmortization)
-	{
+	private final static Logger logger = LoggerFactory.getLogger(LoanApplicationTerms.class);
+
+	public static LoanApplicationTerms assembleFrom(final ApplicationCurrency currency, final Integer loanTermFrequency,
+			final PeriodFrequencyType loanTermPeriodFrequencyType, final Integer numberOfRepayments,
+			final Integer repaymentEvery, final PeriodFrequencyType repaymentPeriodFrequencyType, Integer nthDay,
+			DayOfWeekType weekDayType, final AmortizationMethod amortizationMethod, final InterestMethod interestMethod,
+			final BigDecimal interestRatePerPeriod, final PeriodFrequencyType interestRatePeriodFrequencyType,
+			final BigDecimal annualNominalInterestRate,
+			final InterestCalculationPeriodMethod interestCalculationPeriodMethod,
+			final boolean allowPartialPeriodInterestCalcualtion, final Money principalMoney,
+			final LocalDate expectedDisbursementDate, final LocalDate repaymentsStartingFromDate,
+			final LocalDate calculatedRepaymentsStartingFromDate, final Integer graceOnPrincipalPayment,
+			final Integer recurringMoratoriumOnPrincipalPeriods, final Integer graceOnInterestPayment,
+			final Integer graceOnInterestCharged, final LocalDate interestChargedFromDate,
+			final Money inArrearsTolerance, final boolean multiDisburseLoan, final BigDecimal emiAmount,
+			final List<DisbursementData> disbursementDatas, final BigDecimal maxOutstandingBalance,
+			final Integer graceOnArrearsAgeing, final DaysInMonthType daysInMonthType,
+			final DaysInYearType daysInYearType, final boolean isInterestRecalculationEnabled,
+			final RecalculationFrequencyType recalculationFrequencyType, final CalendarInstance restCalendarInstance,
+			final InterestRecalculationCompoundingMethod interestRecalculationCompoundingMethod,
+			final CalendarInstance compoundingCalendarInstance,
+			final RecalculationFrequencyType compoundingFrequencyType,
+			final BigDecimal principalThresholdForLastInstalment, final Integer installmentAmountInMultiplesOf,
+			final LoanPreClosureInterestCalculationStrategy preClosureInterestCalculationStrategy,
+			final Calendar loanCalendar, BigDecimal approvedAmount, List<LoanTermVariationsData> loanTermVariations,
+			Boolean isInterestChargedFromDateSameAsDisbursalDateEnabled, final Integer numberOfdays,
+			boolean isSkipRepaymentOnFirstDayofMonth, final HolidayDetailDTO holidayDetailDTO,
+			final boolean allowCompoundingOnEod, final boolean isEqualAmortization) {
 
 		final LoanRescheduleStrategyMethod rescheduleStrategyMethod = null;
 		final CalendarHistoryDataWrapper calendarHistoryDataWrapper = null;
 		return new LoanApplicationTerms(currency, loanTermFrequency, loanTermPeriodFrequencyType, numberOfRepayments,
-			repaymentEvery,
-			repaymentPeriodFrequencyType, nthDay, weekDayType, amortizationMethod, interestMethod,
-			interestRatePerPeriod,
-			interestRatePeriodFrequencyType, annualNominalInterestRate, interestCalculationPeriodMethod,
-			allowPartialPeriodInterestCalcualtion, principalMoney, expectedDisbursementDate, repaymentsStartingFromDate,
-			calculatedRepaymentsStartingFromDate, graceOnPrincipalPayment, recurringMoratoriumOnPrincipalPeriods,
-			graceOnInterestPayment, graceOnInterestCharged,
-			interestChargedFromDate, inArrearsTolerance, multiDisburseLoan, emiAmount, disbursementDatas,
-			maxOutstandingBalance,
-			graceOnArrearsAgeing, daysInMonthType, daysInYearType, isInterestRecalculationEnabled,
-			rescheduleStrategyMethod,
-			interestRecalculationCompoundingMethod, restCalendarInstance, recalculationFrequencyType,
-			compoundingCalendarInstance,
-			compoundingFrequencyType, principalThresholdForLastInstalment, installmentAmountInMultiplesOf,
-			preClosureInterestCalculationStrategy, loanCalendar, approvedAmount, loanTermVariations,
-			calendarHistoryDataWrapper,
-			isInterestChargedFromDateSameAsDisbursalDateEnabled, numberOfdays, isSkipRepaymentOnFirstDayofMonth,
-			holidayDetailDTO,
-			allowCompoundingOnEod, isEqualAmortization);
+				repaymentEvery, repaymentPeriodFrequencyType, nthDay, weekDayType, amortizationMethod, interestMethod,
+				interestRatePerPeriod, interestRatePeriodFrequencyType, annualNominalInterestRate,
+				interestCalculationPeriodMethod, allowPartialPeriodInterestCalcualtion, principalMoney,
+				expectedDisbursementDate, repaymentsStartingFromDate, calculatedRepaymentsStartingFromDate,
+				graceOnPrincipalPayment, recurringMoratoriumOnPrincipalPeriods, graceOnInterestPayment,
+				graceOnInterestCharged, interestChargedFromDate, inArrearsTolerance, multiDisburseLoan, emiAmount,
+				disbursementDatas, maxOutstandingBalance, graceOnArrearsAgeing, daysInMonthType, daysInYearType,
+				isInterestRecalculationEnabled, rescheduleStrategyMethod, interestRecalculationCompoundingMethod,
+				restCalendarInstance, recalculationFrequencyType, compoundingCalendarInstance, compoundingFrequencyType,
+				principalThresholdForLastInstalment, installmentAmountInMultiplesOf,
+				preClosureInterestCalculationStrategy, loanCalendar, approvedAmount, loanTermVariations,
+				calendarHistoryDataWrapper, isInterestChargedFromDateSameAsDisbursalDateEnabled, numberOfdays,
+				isSkipRepaymentOnFirstDayofMonth, holidayDetailDTO, allowCompoundingOnEod, isEqualAmortization);
 
 	}
 
-	public static LoanApplicationTerms assembleFrom(
-		final ApplicationCurrency applicationCurrency,
-		final Integer loanTermFrequency,
-		final PeriodFrequencyType loanTermPeriodFrequencyType,
-		NthDayType nthDay,
-		DayOfWeekType dayOfWeek,
-		final LocalDate expectedDisbursementDate,
-		final LocalDate repaymentsStartingFromDate,
-		final LocalDate calculatedRepaymentsStartingFromDate,
-		final Money inArrearsTolerance,
-		final LoanProductRelatedDetail loanProductRelatedDetail,
-		final boolean multiDisburseLoan,
-		final BigDecimal emiAmount,
-		final List<DisbursementData> disbursementDatas,
-		final BigDecimal maxOutstandingBalance,
-		final LocalDate interestChargedFromDate,
-		final BigDecimal principalThresholdForLastInstalment,
-		final Integer installmentAmountInMultiplesOf,
-		final RecalculationFrequencyType recalculationFrequencyType,
-		final CalendarInstance restCalendarInstance,
-		final InterestRecalculationCompoundingMethod compoundingMethod,
-		final CalendarInstance compoundingCalendarInstance,
-		final RecalculationFrequencyType compoundingFrequencyType,
-		final LoanPreClosureInterestCalculationStrategy loanPreClosureInterestCalculationStrategy,
-		final LoanRescheduleStrategyMethod rescheduleStrategyMethod,
-		BigDecimal approvedAmount,
-		BigDecimal annualNominalInterestRate,
-		List<LoanTermVariationsData> loanTermVariations,
-		final Integer numberOfdays,
-		final boolean isSkipRepaymentOnFirstDayofMonth,
-		final Calendar loanCalendar,
-		final HolidayDetailDTO holidayDetailDTO,
-		final boolean allowCompoundingOnEod)
-	{
+	public static LoanApplicationTerms assembleFrom(final ApplicationCurrency applicationCurrency,
+			final Integer loanTermFrequency, final PeriodFrequencyType loanTermPeriodFrequencyType, NthDayType nthDay,
+			DayOfWeekType dayOfWeek, final LocalDate expectedDisbursementDate,
+			final LocalDate repaymentsStartingFromDate, final LocalDate calculatedRepaymentsStartingFromDate,
+			final Money inArrearsTolerance, final LoanProductRelatedDetail loanProductRelatedDetail,
+			final boolean multiDisburseLoan, final BigDecimal emiAmount, final List<DisbursementData> disbursementDatas,
+			final BigDecimal maxOutstandingBalance, final LocalDate interestChargedFromDate,
+			final BigDecimal principalThresholdForLastInstalment, final Integer installmentAmountInMultiplesOf,
+			final RecalculationFrequencyType recalculationFrequencyType, final CalendarInstance restCalendarInstance,
+			final InterestRecalculationCompoundingMethod compoundingMethod,
+			final CalendarInstance compoundingCalendarInstance,
+			final RecalculationFrequencyType compoundingFrequencyType,
+			final LoanPreClosureInterestCalculationStrategy loanPreClosureInterestCalculationStrategy,
+			final LoanRescheduleStrategyMethod rescheduleStrategyMethod, BigDecimal approvedAmount,
+			BigDecimal annualNominalInterestRate, List<LoanTermVariationsData> loanTermVariations,
+			final Integer numberOfdays, final boolean isSkipRepaymentOnFirstDayofMonth, final Calendar loanCalendar,
+			final HolidayDetailDTO holidayDetailDTO, final boolean allowCompoundingOnEod) {
 		final CalendarHistoryDataWrapper calendarHistoryDataWrapper = null;
 
 		return assembleFrom(applicationCurrency, loanTermFrequency, loanTermPeriodFrequencyType, nthDay, dayOfWeek,
-			expectedDisbursementDate, repaymentsStartingFromDate, calculatedRepaymentsStartingFromDate,
-			inArrearsTolerance,
-			loanProductRelatedDetail, multiDisburseLoan, emiAmount, disbursementDatas, maxOutstandingBalance,
-			interestChargedFromDate,
-			principalThresholdForLastInstalment, installmentAmountInMultiplesOf, recalculationFrequencyType,
-			restCalendarInstance,
-			compoundingMethod, compoundingCalendarInstance, compoundingFrequencyType,
-			loanPreClosureInterestCalculationStrategy,
-			rescheduleStrategyMethod, loanCalendar, approvedAmount, annualNominalInterestRate, loanTermVariations,
-			calendarHistoryDataWrapper, numberOfdays, isSkipRepaymentOnFirstDayofMonth, holidayDetailDTO,
-			allowCompoundingOnEod);
+				expectedDisbursementDate, repaymentsStartingFromDate, calculatedRepaymentsStartingFromDate,
+				inArrearsTolerance, loanProductRelatedDetail, multiDisburseLoan, emiAmount, disbursementDatas,
+				maxOutstandingBalance, interestChargedFromDate, principalThresholdForLastInstalment,
+				installmentAmountInMultiplesOf, recalculationFrequencyType, restCalendarInstance, compoundingMethod,
+				compoundingCalendarInstance, compoundingFrequencyType, loanPreClosureInterestCalculationStrategy,
+				rescheduleStrategyMethod, loanCalendar, approvedAmount, annualNominalInterestRate, loanTermVariations,
+				calendarHistoryDataWrapper, numberOfdays, isSkipRepaymentOnFirstDayofMonth, holidayDetailDTO,
+				allowCompoundingOnEod);
 	}
 
-	public static LoanApplicationTerms assembleFrom(
-		final ApplicationCurrency applicationCurrency,
-		final Integer loanTermFrequency,
-		final PeriodFrequencyType loanTermPeriodFrequencyType,
-		NthDayType nthDay,
-		DayOfWeekType dayOfWeek,
-		final LocalDate expectedDisbursementDate,
-		final LocalDate repaymentsStartingFromDate,
-		final LocalDate calculatedRepaymentsStartingFromDate,
-		final Money inArrearsTolerance,
-		final LoanProductRelatedDetail loanProductRelatedDetail,
-		final boolean multiDisburseLoan,
-		final BigDecimal emiAmount,
-		final List<DisbursementData> disbursementDatas,
-		final BigDecimal maxOutstandingBalance,
-		final LocalDate interestChargedFromDate,
-		final BigDecimal principalThresholdForLastInstalment,
-		final Integer installmentAmountInMultiplesOf,
-		final RecalculationFrequencyType recalculationFrequencyType,
-		final CalendarInstance restCalendarInstance,
-		final InterestRecalculationCompoundingMethod compoundingMethod,
-		final CalendarInstance compoundingCalendarInstance,
-		final RecalculationFrequencyType compoundingFrequencyType,
-		final LoanPreClosureInterestCalculationStrategy loanPreClosureInterestCalculationStrategy,
-		final LoanRescheduleStrategyMethod rescheduleStrategyMethod,
-		final Calendar loanCalendar,
-		BigDecimal approvedAmount,
-		BigDecimal annualNominalInterestRate,
-		final List<LoanTermVariationsData> loanTermVariations,
-		final CalendarHistoryDataWrapper calendarHistoryDataWrapper,
-		final Integer numberOfdays,
-		final boolean isSkipRepaymentOnFirstDayofMonth,
-		final HolidayDetailDTO holidayDetailDTO,
-		final boolean allowCompoundingOnEod)
-	{
+	public static LoanApplicationTerms assembleFrom(final ApplicationCurrency applicationCurrency,
+			final Integer loanTermFrequency, final PeriodFrequencyType loanTermPeriodFrequencyType, NthDayType nthDay,
+			DayOfWeekType dayOfWeek, final LocalDate expectedDisbursementDate,
+			final LocalDate repaymentsStartingFromDate, final LocalDate calculatedRepaymentsStartingFromDate,
+			final Money inArrearsTolerance, final LoanProductRelatedDetail loanProductRelatedDetail,
+			final boolean multiDisburseLoan, final BigDecimal emiAmount, final List<DisbursementData> disbursementDatas,
+			final BigDecimal maxOutstandingBalance, final LocalDate interestChargedFromDate,
+			final BigDecimal principalThresholdForLastInstalment, final Integer installmentAmountInMultiplesOf,
+			final RecalculationFrequencyType recalculationFrequencyType, final CalendarInstance restCalendarInstance,
+			final InterestRecalculationCompoundingMethod compoundingMethod,
+			final CalendarInstance compoundingCalendarInstance,
+			final RecalculationFrequencyType compoundingFrequencyType,
+			final LoanPreClosureInterestCalculationStrategy loanPreClosureInterestCalculationStrategy,
+			final LoanRescheduleStrategyMethod rescheduleStrategyMethod, final Calendar loanCalendar,
+			BigDecimal approvedAmount, BigDecimal annualNominalInterestRate,
+			final List<LoanTermVariationsData> loanTermVariations,
+			final CalendarHistoryDataWrapper calendarHistoryDataWrapper, final Integer numberOfdays,
+			final boolean isSkipRepaymentOnFirstDayofMonth, final HolidayDetailDTO holidayDetailDTO,
+			final boolean allowCompoundingOnEod) {
 
 		final Integer numberOfRepayments = loanProductRelatedDetail.getNumberOfRepayments();
 		final Integer repaymentEvery = loanProductRelatedDetail.getRepayEvery();
 		final PeriodFrequencyType repaymentPeriodFrequencyType = loanProductRelatedDetail
-			.getRepaymentPeriodFrequencyType();
+				.getRepaymentPeriodFrequencyType();
 		final AmortizationMethod amortizationMethod = loanProductRelatedDetail.getAmortizationMethod();
 		final InterestMethod interestMethod = loanProductRelatedDetail.getInterestMethod();
 		final BigDecimal interestRatePerPeriod = loanProductRelatedDetail.getNominalInterestRatePerPeriod();
 		final PeriodFrequencyType interestRatePeriodFrequencyType = loanProductRelatedDetail
-			.getInterestPeriodFrequencyType();
+				.getInterestPeriodFrequencyType();
 		final InterestCalculationPeriodMethod interestCalculationPeriodMethod = loanProductRelatedDetail
-			.getInterestCalculationPeriodMethod();
+				.getInterestCalculationPeriodMethod();
 		final boolean allowPartialPeriodInterestCalcualtion = loanProductRelatedDetail
-			.isAllowPartialPeriodInterestCalcualtion();
+				.isAllowPartialPeriodInterestCalcualtion();
 		final Money principalMoney = loanProductRelatedDetail.getPrincipal();
 
 		//
 		final Integer graceOnPrincipalPayment = loanProductRelatedDetail.graceOnPrincipalPayment();
 		final Integer recurringMoratoriumOnPrincipalPeriods = loanProductRelatedDetail
-			.recurringMoratoriumOnPrincipalPeriods();
+				.recurringMoratoriumOnPrincipalPeriods();
 		final Integer graceOnInterestPayment = loanProductRelatedDetail.graceOnInterestPayment();
 		final Integer graceOnInterestCharged = loanProductRelatedDetail.graceOnInterestCharged();
 
@@ -413,77 +340,59 @@ public final class LoanApplicationTerms
 		final boolean isInterestChargedFromDateSameAsDisbursalDateEnabled = false;
 		final boolean isEqualAmortization = loanProductRelatedDetail.isEqualAmortization();
 		return new LoanApplicationTerms(applicationCurrency, loanTermFrequency, loanTermPeriodFrequencyType,
-			numberOfRepayments,
-			repaymentEvery, repaymentPeriodFrequencyType, ((nthDay != null) ? nthDay.getValue() : null), dayOfWeek,
-			amortizationMethod,
-			interestMethod, interestRatePerPeriod, interestRatePeriodFrequencyType, annualNominalInterestRate,
-			interestCalculationPeriodMethod, allowPartialPeriodInterestCalcualtion, principalMoney,
-			expectedDisbursementDate,
-			repaymentsStartingFromDate, calculatedRepaymentsStartingFromDate, graceOnPrincipalPayment,
-			recurringMoratoriumOnPrincipalPeriods, graceOnInterestPayment,
-			graceOnInterestCharged, interestChargedFromDate, inArrearsTolerance, multiDisburseLoan, emiAmount,
-			disbursementDatas,
-			maxOutstandingBalance, loanProductRelatedDetail.getGraceOnDueDate(), daysInMonthType, daysInYearType,
-			isInterestRecalculationEnabled, rescheduleStrategyMethod, compoundingMethod, restCalendarInstance,
-			recalculationFrequencyType, compoundingCalendarInstance, compoundingFrequencyType,
-			principalThresholdForLastInstalment,
-			installmentAmountInMultiplesOf, loanPreClosureInterestCalculationStrategy, loanCalendar, approvedAmount,
-			loanTermVariations, calendarHistoryDataWrapper, isInterestChargedFromDateSameAsDisbursalDateEnabled,
-			numberOfdays,
-			isSkipRepaymentOnFirstDayofMonth, holidayDetailDTO, allowCompoundingOnEod, isEqualAmortization);
+				numberOfRepayments, repaymentEvery, repaymentPeriodFrequencyType,
+				((nthDay != null) ? nthDay.getValue() : null), dayOfWeek, amortizationMethod, interestMethod,
+				interestRatePerPeriod, interestRatePeriodFrequencyType, annualNominalInterestRate,
+				interestCalculationPeriodMethod, allowPartialPeriodInterestCalcualtion, principalMoney,
+				expectedDisbursementDate, repaymentsStartingFromDate, calculatedRepaymentsStartingFromDate,
+				graceOnPrincipalPayment, recurringMoratoriumOnPrincipalPeriods, graceOnInterestPayment,
+				graceOnInterestCharged, interestChargedFromDate, inArrearsTolerance, multiDisburseLoan, emiAmount,
+				disbursementDatas, maxOutstandingBalance, loanProductRelatedDetail.getGraceOnDueDate(), daysInMonthType,
+				daysInYearType, isInterestRecalculationEnabled, rescheduleStrategyMethod, compoundingMethod,
+				restCalendarInstance, recalculationFrequencyType, compoundingCalendarInstance, compoundingFrequencyType,
+				principalThresholdForLastInstalment, installmentAmountInMultiplesOf,
+				loanPreClosureInterestCalculationStrategy, loanCalendar, approvedAmount, loanTermVariations,
+				calendarHistoryDataWrapper, isInterestChargedFromDateSameAsDisbursalDateEnabled, numberOfdays,
+				isSkipRepaymentOnFirstDayofMonth, holidayDetailDTO, allowCompoundingOnEod, isEqualAmortization);
 	}
 
-	public static LoanApplicationTerms assembleFrom(
-		final ApplicationCurrency applicationCurrency,
-		final Integer loanTermFrequency,
-		final PeriodFrequencyType loanTermPeriodFrequencyType,
-		final LocalDate expectedDisbursementDate,
-		final LocalDate repaymentsStartingFromDate,
-		final LocalDate calculatedRepaymentsStartingFromDate,
-		final Money inArrearsTolerance,
-		final LoanProductRelatedDetail loanProductRelatedDetail,
-		final boolean multiDisburseLoan,
-		final BigDecimal emiAmount,
-		final List<DisbursementData> disbursementDatas,
-		final BigDecimal maxOutstandingBalance,
-		final LocalDate interestChargedFromDate,
-		final LoanInterestRecalculationDetails interestRecalculationDetails,
-		final CalendarInstance restCalendarInstance,
-		final RecalculationFrequencyType recalculationFrequencyType,
-		final CalendarInstance compoundingCalendarInstance,
-		final RecalculationFrequencyType compoundingFrequencyType,
-		final BigDecimal principalThresholdForLastInstalment,
-		final Integer installmentAmountInMultiplesOf,
-		final LoanPreClosureInterestCalculationStrategy loanPreClosureInterestCalculationStrategy,
-		final Calendar loanCalendar,
-		BigDecimal approvedAmount,
-		final BigDecimal annualNominalInterestRate,
-		final List<LoanTermVariationsData> loanTermVariations,
-		Integer numberOfdays,
-		boolean isSkipRepaymentOnFirstDayofMonth,
-		final HolidayDetailDTO holidayDetailDTO,
-		final boolean allowCompoundingOnEod)
-	{
+	public static LoanApplicationTerms assembleFrom(final ApplicationCurrency applicationCurrency,
+			final Integer loanTermFrequency, final PeriodFrequencyType loanTermPeriodFrequencyType,
+			final LocalDate expectedDisbursementDate, final LocalDate repaymentsStartingFromDate,
+			final LocalDate calculatedRepaymentsStartingFromDate, final Money inArrearsTolerance,
+			final LoanProductRelatedDetail loanProductRelatedDetail, final boolean multiDisburseLoan,
+			final BigDecimal emiAmount, final List<DisbursementData> disbursementDatas,
+			final BigDecimal maxOutstandingBalance, final LocalDate interestChargedFromDate,
+			final LoanInterestRecalculationDetails interestRecalculationDetails,
+			final CalendarInstance restCalendarInstance, final RecalculationFrequencyType recalculationFrequencyType,
+			final CalendarInstance compoundingCalendarInstance,
+			final RecalculationFrequencyType compoundingFrequencyType,
+			final BigDecimal principalThresholdForLastInstalment, final Integer installmentAmountInMultiplesOf,
+			final LoanPreClosureInterestCalculationStrategy loanPreClosureInterestCalculationStrategy,
+			final Calendar loanCalendar, BigDecimal approvedAmount, final BigDecimal annualNominalInterestRate,
+			final List<LoanTermVariationsData> loanTermVariations, Integer numberOfdays,
+			boolean isSkipRepaymentOnFirstDayofMonth, final HolidayDetailDTO holidayDetailDTO,
+			final boolean allowCompoundingOnEod) {
 
 		final Integer numberOfRepayments = loanProductRelatedDetail.getNumberOfRepayments();
 		final Integer repaymentEvery = loanProductRelatedDetail.getRepayEvery();
 		final PeriodFrequencyType repaymentPeriodFrequencyType = loanProductRelatedDetail
-			.getRepaymentPeriodFrequencyType();
+				.getRepaymentPeriodFrequencyType();
 		final AmortizationMethod amortizationMethod = loanProductRelatedDetail.getAmortizationMethod();
 		final InterestMethod interestMethod = loanProductRelatedDetail.getInterestMethod();
 		final BigDecimal interestRatePerPeriod = loanProductRelatedDetail.getNominalInterestRatePerPeriod();
 		final PeriodFrequencyType interestRatePeriodFrequencyType = loanProductRelatedDetail
-			.getInterestPeriodFrequencyType();
+				.getInterestPeriodFrequencyType();
 		final InterestCalculationPeriodMethod interestCalculationPeriodMethod = loanProductRelatedDetail
-			.getInterestCalculationPeriodMethod();
+				.getInterestCalculationPeriodMethod();
 		final boolean allowPartialPeriodInterestCalcualtion = loanProductRelatedDetail
-			.isAllowPartialPeriodInterestCalcualtion();
+				.isAllowPartialPeriodInterestCalcualtion();
 		final Money principalMoney = loanProductRelatedDetail.getPrincipal();
 
 		//
 		final Integer graceOnPrincipalPayment = loanProductRelatedDetail.graceOnPrincipalPayment();
 		final Integer recurringMoratoriumOnPrincipalPeriods = loanProductRelatedDetail
-			.recurringMoratoriumOnPrincipalPeriods();
+				.recurringMoratoriumOnPrincipalPeriods();
 		final Integer graceOnInterestPayment = loanProductRelatedDetail.graceOnInterestPayment();
 		final Integer graceOnInterestCharged = loanProductRelatedDetail.graceOnInterestCharged();
 
@@ -493,128 +402,89 @@ public final class LoanApplicationTerms
 		final boolean isInterestRecalculationEnabled = loanProductRelatedDetail.isInterestRecalculationEnabled();
 		LoanRescheduleStrategyMethod rescheduleStrategyMethod = null;
 		InterestRecalculationCompoundingMethod interestRecalculationCompoundingMethod = null;
-		if (isInterestRecalculationEnabled)
-		{
+		if (isInterestRecalculationEnabled) {
 			rescheduleStrategyMethod = interestRecalculationDetails.getRescheduleStrategyMethod();
 			interestRecalculationCompoundingMethod = interestRecalculationDetails
-				.getInterestRecalculationCompoundingMethod();
+					.getInterestRecalculationCompoundingMethod();
 		}
 		final CalendarHistoryDataWrapper calendarHistoryDataWrapper = null;
 		final boolean isInterestChargedFromDateSameAsDisbursalDateEnabled = false;
 		final boolean isEqualAmortization = loanProductRelatedDetail.isEqualAmortization();
 		return new LoanApplicationTerms(applicationCurrency, loanTermFrequency, loanTermPeriodFrequencyType,
-			numberOfRepayments,
-			repaymentEvery, repaymentPeriodFrequencyType, null, null, amortizationMethod, interestMethod,
-			interestRatePerPeriod,
-			interestRatePeriodFrequencyType, annualNominalInterestRate, interestCalculationPeriodMethod,
-			allowPartialPeriodInterestCalcualtion, principalMoney, expectedDisbursementDate, repaymentsStartingFromDate,
-			calculatedRepaymentsStartingFromDate, graceOnPrincipalPayment, recurringMoratoriumOnPrincipalPeriods,
-			graceOnInterestPayment, graceOnInterestCharged,
-			interestChargedFromDate, inArrearsTolerance, multiDisburseLoan, emiAmount, disbursementDatas,
-			maxOutstandingBalance,
-			loanProductRelatedDetail.getGraceOnDueDate(), daysInMonthType, daysInYearType,
-			isInterestRecalculationEnabled,
-			rescheduleStrategyMethod, interestRecalculationCompoundingMethod, restCalendarInstance,
-			recalculationFrequencyType,
-			compoundingCalendarInstance, compoundingFrequencyType, principalThresholdForLastInstalment,
-			installmentAmountInMultiplesOf,
-			loanPreClosureInterestCalculationStrategy, loanCalendar, approvedAmount, loanTermVariations,
-			calendarHistoryDataWrapper,
-			isInterestChargedFromDateSameAsDisbursalDateEnabled, numberOfdays, isSkipRepaymentOnFirstDayofMonth,
-			holidayDetailDTO,
-			allowCompoundingOnEod, isEqualAmortization);
+				numberOfRepayments, repaymentEvery, repaymentPeriodFrequencyType, null, null, amortizationMethod,
+				interestMethod, interestRatePerPeriod, interestRatePeriodFrequencyType, annualNominalInterestRate,
+				interestCalculationPeriodMethod, allowPartialPeriodInterestCalcualtion, principalMoney,
+				expectedDisbursementDate, repaymentsStartingFromDate, calculatedRepaymentsStartingFromDate,
+				graceOnPrincipalPayment, recurringMoratoriumOnPrincipalPeriods, graceOnInterestPayment,
+				graceOnInterestCharged, interestChargedFromDate, inArrearsTolerance, multiDisburseLoan, emiAmount,
+				disbursementDatas, maxOutstandingBalance, loanProductRelatedDetail.getGraceOnDueDate(), daysInMonthType,
+				daysInYearType, isInterestRecalculationEnabled, rescheduleStrategyMethod,
+				interestRecalculationCompoundingMethod, restCalendarInstance, recalculationFrequencyType,
+				compoundingCalendarInstance, compoundingFrequencyType, principalThresholdForLastInstalment,
+				installmentAmountInMultiplesOf, loanPreClosureInterestCalculationStrategy, loanCalendar, approvedAmount,
+				loanTermVariations, calendarHistoryDataWrapper, isInterestChargedFromDateSameAsDisbursalDateEnabled,
+				numberOfdays, isSkipRepaymentOnFirstDayofMonth, holidayDetailDTO, allowCompoundingOnEod,
+				isEqualAmortization);
 
 	}
 
-	public static LoanApplicationTerms assembleFrom(
-		final LoanApplicationTerms applicationTerms,
-		final List<LoanTermVariationsData> loanTermVariations)
-	{
+	public static LoanApplicationTerms assembleFrom(final LoanApplicationTerms applicationTerms,
+			final List<LoanTermVariationsData> loanTermVariations) {
 		return new LoanApplicationTerms(applicationTerms.currency, applicationTerms.loanTermFrequency,
-			applicationTerms.loanTermPeriodFrequencyType, applicationTerms.numberOfRepayments,
-			applicationTerms.repaymentEvery,
-			applicationTerms.repaymentPeriodFrequencyType, applicationTerms.nthDay, applicationTerms.weekDayType,
-			applicationTerms.amortizationMethod, applicationTerms.interestMethod,
-			applicationTerms.interestRatePerPeriod,
-			applicationTerms.interestRatePeriodFrequencyType, applicationTerms.annualNominalInterestRate,
-			applicationTerms.interestCalculationPeriodMethod, applicationTerms.allowPartialPeriodInterestCalcualtion,
-			applicationTerms.principal, applicationTerms.expectedDisbursementDate,
-			applicationTerms.repaymentsStartingFromDate,
-			applicationTerms.calculatedRepaymentsStartingFromDate, applicationTerms.principalGrace,
-			applicationTerms.recurringMoratoriumOnPrincipalPeriods, applicationTerms.interestPaymentGrace,
-			applicationTerms.interestChargingGrace, applicationTerms.interestChargedFromDate,
-			applicationTerms.inArrearsTolerance, applicationTerms.multiDisburseLoan,
-			applicationTerms.actualFixedEmiAmount,
-			applicationTerms.disbursementDatas, applicationTerms.maxOutstandingBalance,
-			applicationTerms.graceOnArrearsAgeing,
-			applicationTerms.daysInMonthType, applicationTerms.daysInYearType,
-			applicationTerms.interestRecalculationEnabled,
-			applicationTerms.rescheduleStrategyMethod, applicationTerms.interestRecalculationCompoundingMethod,
-			applicationTerms.restCalendarInstance, applicationTerms.recalculationFrequencyType,
-			applicationTerms.compoundingCalendarInstance, applicationTerms.compoundingFrequencyType,
-			applicationTerms.principalThresholdForLastInstalment, applicationTerms.installmentAmountInMultiplesOf,
-			applicationTerms.preClosureInterestCalculationStrategy, applicationTerms.loanCalendar,
-			applicationTerms.approvedPrincipal.getAmount(), loanTermVariations,
-			applicationTerms.calendarHistoryDataWrapper,
-			applicationTerms.isInterestChargedFromDateSameAsDisbursalDateEnabled, applicationTerms.numberOfDays,
-			applicationTerms.isSkipRepaymentOnFirstDayOfMonth, applicationTerms.holidayDetailDTO,
-			applicationTerms.allowCompoundingOnEod, applicationTerms.isEqualAmortization);
+				applicationTerms.loanTermPeriodFrequencyType, applicationTerms.numberOfRepayments,
+				applicationTerms.repaymentEvery, applicationTerms.repaymentPeriodFrequencyType, applicationTerms.nthDay,
+				applicationTerms.weekDayType, applicationTerms.amortizationMethod, applicationTerms.interestMethod,
+				applicationTerms.interestRatePerPeriod, applicationTerms.interestRatePeriodFrequencyType,
+				applicationTerms.annualNominalInterestRate, applicationTerms.interestCalculationPeriodMethod,
+				applicationTerms.allowPartialPeriodInterestCalcualtion, applicationTerms.principal,
+				applicationTerms.expectedDisbursementDate, applicationTerms.repaymentsStartingFromDate,
+				applicationTerms.calculatedRepaymentsStartingFromDate, applicationTerms.principalGrace,
+				applicationTerms.recurringMoratoriumOnPrincipalPeriods, applicationTerms.interestPaymentGrace,
+				applicationTerms.interestChargingGrace, applicationTerms.interestChargedFromDate,
+				applicationTerms.inArrearsTolerance, applicationTerms.multiDisburseLoan,
+				applicationTerms.actualFixedEmiAmount, applicationTerms.disbursementDatas,
+				applicationTerms.maxOutstandingBalance, applicationTerms.graceOnArrearsAgeing,
+				applicationTerms.daysInMonthType, applicationTerms.daysInYearType,
+				applicationTerms.interestRecalculationEnabled, applicationTerms.rescheduleStrategyMethod,
+				applicationTerms.interestRecalculationCompoundingMethod, applicationTerms.restCalendarInstance,
+				applicationTerms.recalculationFrequencyType, applicationTerms.compoundingCalendarInstance,
+				applicationTerms.compoundingFrequencyType, applicationTerms.principalThresholdForLastInstalment,
+				applicationTerms.installmentAmountInMultiplesOf, applicationTerms.preClosureInterestCalculationStrategy,
+				applicationTerms.loanCalendar, applicationTerms.approvedPrincipal.getAmount(), loanTermVariations,
+				applicationTerms.calendarHistoryDataWrapper,
+				applicationTerms.isInterestChargedFromDateSameAsDisbursalDateEnabled, applicationTerms.numberOfDays,
+				applicationTerms.isSkipRepaymentOnFirstDayOfMonth, applicationTerms.holidayDetailDTO,
+				applicationTerms.allowCompoundingOnEod, applicationTerms.isEqualAmortization);
 	}
 
-	private LoanApplicationTerms(
-		final ApplicationCurrency currency,
-		final Integer loanTermFrequency,
-		final PeriodFrequencyType loanTermPeriodFrequencyType,
-		final Integer numberOfRepayments,
-		final Integer repaymentEvery,
-		final PeriodFrequencyType repaymentPeriodFrequencyType,
-		final Integer nthDay,
-		final DayOfWeekType weekDayType,
-		final AmortizationMethod amortizationMethod,
-		final InterestMethod interestMethod,
-		final BigDecimal interestRatePerPeriod,
-		final PeriodFrequencyType interestRatePeriodFrequencyType,
-		final BigDecimal annualNominalInterestRate,
-		final InterestCalculationPeriodMethod interestCalculationPeriodMethod,
-		final boolean allowPartialPeriodInterestCalcualtion,
-		final Money principal,
-		final LocalDate expectedDisbursementDate,
-		final LocalDate repaymentsStartingFromDate,
-		final LocalDate calculatedRepaymentsStartingFromDate,
-		final Integer principalGrace,
-		final Integer recurringMoratoriumOnPrincipalPeriods,
-		final Integer interestPaymentGrace,
-		final Integer interestChargingGrace,
-		final LocalDate interestChargedFromDate,
-		final Money inArrearsTolerance,
-		final boolean multiDisburseLoan,
-		final BigDecimal emiAmount,
-		final List<DisbursementData> disbursementDatas,
-		final BigDecimal maxOutstandingBalance,
-		final Integer graceOnArrearsAgeing,
-		final DaysInMonthType daysInMonthType,
-		final DaysInYearType daysInYearType,
-		final boolean isInterestRecalculationEnabled,
-		final LoanRescheduleStrategyMethod rescheduleStrategyMethod,
-		final InterestRecalculationCompoundingMethod interestRecalculationCompoundingMethod,
-		final CalendarInstance restCalendarInstance,
-		final RecalculationFrequencyType recalculationFrequencyType,
-		final CalendarInstance compoundingCalendarInstance,
-		final RecalculationFrequencyType compoundingFrequencyType,
-		final BigDecimal principalThresholdForLastInstalment,
-		final Integer installmentAmountInMultiplesOf,
-		final LoanPreClosureInterestCalculationStrategy preClosureInterestCalculationStrategy,
-		final Calendar loanCalendar,
-		BigDecimal approvedAmount,
-		List<LoanTermVariationsData> loanTermVariations,
-		final CalendarHistoryDataWrapper calendarHistoryDataWrapper,
-		Boolean isInterestChargedFromDateSameAsDisbursalDateEnabled,
-		final Integer numberOfdays,
-		final boolean isSkipRepaymentOnFirstDayofMonth,
-		final HolidayDetailDTO holidayDetailDTO,
-		final boolean allowCompoundingOnEod,
-		final boolean isEqualAmortization)
-	{
+	private LoanApplicationTerms(final ApplicationCurrency currency, final Integer loanTermFrequency,
+			final PeriodFrequencyType loanTermPeriodFrequencyType, final Integer numberOfRepayments,
+			final Integer repaymentEvery, final PeriodFrequencyType repaymentPeriodFrequencyType, final Integer nthDay,
+			final DayOfWeekType weekDayType, final AmortizationMethod amortizationMethod,
+			final InterestMethod interestMethod, final BigDecimal interestRatePerPeriod,
+			final PeriodFrequencyType interestRatePeriodFrequencyType, final BigDecimal annualNominalInterestRate,
+			final InterestCalculationPeriodMethod interestCalculationPeriodMethod,
+			final boolean allowPartialPeriodInterestCalcualtion, final Money principal,
+			final LocalDate expectedDisbursementDate, final LocalDate repaymentsStartingFromDate,
+			final LocalDate calculatedRepaymentsStartingFromDate, final Integer principalGrace,
+			final Integer recurringMoratoriumOnPrincipalPeriods, final Integer interestPaymentGrace,
+			final Integer interestChargingGrace, final LocalDate interestChargedFromDate,
+			final Money inArrearsTolerance, final boolean multiDisburseLoan, final BigDecimal emiAmount,
+			final List<DisbursementData> disbursementDatas, final BigDecimal maxOutstandingBalance,
+			final Integer graceOnArrearsAgeing, final DaysInMonthType daysInMonthType,
+			final DaysInYearType daysInYearType, final boolean isInterestRecalculationEnabled,
+			final LoanRescheduleStrategyMethod rescheduleStrategyMethod,
+			final InterestRecalculationCompoundingMethod interestRecalculationCompoundingMethod,
+			final CalendarInstance restCalendarInstance, final RecalculationFrequencyType recalculationFrequencyType,
+			final CalendarInstance compoundingCalendarInstance,
+			final RecalculationFrequencyType compoundingFrequencyType,
+			final BigDecimal principalThresholdForLastInstalment, final Integer installmentAmountInMultiplesOf,
+			final LoanPreClosureInterestCalculationStrategy preClosureInterestCalculationStrategy,
+			final Calendar loanCalendar, BigDecimal approvedAmount, List<LoanTermVariationsData> loanTermVariations,
+			final CalendarHistoryDataWrapper calendarHistoryDataWrapper,
+			Boolean isInterestChargedFromDateSameAsDisbursalDateEnabled, final Integer numberOfdays,
+			final boolean isSkipRepaymentOnFirstDayofMonth, final HolidayDetailDTO holidayDetailDTO,
+			final boolean allowCompoundingOnEod, final boolean isEqualAmortization) {
 
 		this.currency = currency;
 		this.loanTermFrequency = loanTermFrequency;
@@ -671,11 +541,9 @@ public final class LoanApplicationTerms
 		this.variationsDataWrapper = new LoanTermVariationsDataWrapper(loanTermVariations);
 		this.actualNumberOfRepayments = numberOfRepayments + getLoanTermVariations().adjustNumberOfRepayments();
 		this.adjustPrincipalForFlatLoans = principal.zero();
-		if (this.calculatedRepaymentsStartingFromDate == null)
-		{
+		if (this.calculatedRepaymentsStartingFromDate == null) {
 			this.seedDate = this.expectedDisbursementDate;
-		} else
-		{
+		} else {
 			this.seedDate = this.calculatedRepaymentsStartingFromDate;
 		}
 		this.calendarHistoryDataWrapper = calendarHistoryDataWrapper;
@@ -691,39 +559,29 @@ public final class LoanApplicationTerms
 		this.isEqualAmortization = isEqualAmortization;
 	}
 
-	public Money adjustPrincipalIfLastRepaymentPeriod(
-		final Money principalForPeriod,
-		final Money totalCumulativePrincipalToDate,
-		final int periodNumber)
-	{
+	public Money adjustPrincipalIfLastRepaymentPeriod(final Money principalForPeriod,
+			final Money totalCumulativePrincipalToDate, final int periodNumber) {
 
 		Money adjusted = principalForPeriod;
 
 		final Money totalPrincipalRemaining = this.principal.minus(totalCumulativePrincipalToDate);
-		if (totalPrincipalRemaining.isLessThanZero())
-		{
+		if (totalPrincipalRemaining.isLessThanZero()) {
 			// paid too much principal, subtract amount that overpays from
 			// principal paid for period.
 			adjusted = principalForPeriod.minus(totalPrincipalRemaining.abs());
-		} else if (this.actualFixedEmiAmount != null)
-		{
+		} else if (this.actualFixedEmiAmount != null) {
 			final Money difference = this.principal.minus(totalCumulativePrincipalToDate);
 			final Money principalThreshold = principalForPeriod.multipliedBy(this.principalThresholdForLastInstalment)
-				.dividedBy(100,
-					MoneyHelper.getRoundingMode());
-			if (difference.isLessThan(principalThreshold))
-			{
+					.dividedBy(100, MoneyHelper.getRoundingMode());
+			if (difference.isLessThan(principalThreshold)) {
 				adjusted = principalForPeriod.plus(difference.abs());
 			}
-		} else if (isLastRepaymentPeriod(this.actualNumberOfRepayments, periodNumber))
-		{
+		} else if (isLastRepaymentPeriod(this.actualNumberOfRepayments, periodNumber)) {
 
 			final Money difference = totalCumulativePrincipalToDate.minus(this.principal);
-			if (difference.isLessThanZero())
-			{
+			if (difference.isLessThanZero()) {
 				adjusted = principalForPeriod.plus(difference.abs());
-			} else if (difference.isGreaterThanZero())
-			{
+			} else if (difference.isGreaterThanZero()) {
 				adjusted = principalForPeriod.minus(difference.abs());
 			}
 		}
@@ -731,34 +589,25 @@ public final class LoanApplicationTerms
 		return adjusted;
 	}
 
-	public Money adjustInterestIfLastRepaymentPeriod(
-		final Money interestForThisPeriod,
-		final Money totalCumulativeInterestToDate,
-		final Money totalInterestDueForLoan,
-		final int periodNumber)
-	{
+	public Money adjustInterestIfLastRepaymentPeriod(final Money interestForThisPeriod,
+			final Money totalCumulativeInterestToDate, final Money totalInterestDueForLoan, final int periodNumber) {
 
 		Money adjusted = interestForThisPeriod;
 
 		final Money totalInterestRemaining = totalInterestDueForLoan.minus(totalCumulativeInterestToDate);
-		if (totalInterestRemaining.isLessThanZero())
-		{
+		if (totalInterestRemaining.isLessThanZero()) {
 			// paid too much interest, subtract amount that overpays from
 			// interest paid for period.
 			adjusted = interestForThisPeriod.minus(totalInterestRemaining.abs());
-		} else if (isLastRepaymentPeriod(this.actualNumberOfRepayments, periodNumber))
-		{
+		} else if (isLastRepaymentPeriod(this.actualNumberOfRepayments, periodNumber)) {
 			final Money interestDifference = totalCumulativeInterestToDate.minus(totalInterestDueForLoan);
-			if (interestDifference.isLessThanZero())
-			{
+			if (interestDifference.isLessThanZero()) {
 				adjusted = interestForThisPeriod.plus(interestDifference.abs());
-			} else if (interestDifference.isGreaterThanZero())
-			{
+			} else if (interestDifference.isGreaterThanZero()) {
 				adjusted = interestForThisPeriod.minus(interestDifference.abs());
 			}
 		}
-		if (adjusted.isLessThanZero())
-		{
+		if (adjusted.isLessThanZero()) {
 			adjusted = adjusted.plus(adjusted);
 		}
 		return adjusted;
@@ -769,82 +618,70 @@ public final class LoanApplicationTerms
 	 * settings.
 	 * 
 	 */
-	public Money calculateTotalInterestCharged(final PaymentPeriodsInOneYearCalculator calculator, final MathContext mc)
-	{
+	public Money calculateTotalInterestCharged(final PaymentPeriodsInOneYearCalculator calculator,
+			final MathContext mc) {
 
 		Money totalInterestCharged = this.principal.zero();
 
-		switch (this.interestMethod)
-		{
-			case FLAT:
-				final Money totalInterestChargedForLoanTerm = calculateTotalFlatInterestDueWithoutGrace(calculator, mc);
+		switch (this.interestMethod) {
+		case FLAT:
+			final Money totalInterestChargedForLoanTerm = calculateTotalFlatInterestDueWithoutGrace(calculator, mc);
 
-				final Money totalInterestPerInstallment = calculateTotalInterestPerInstallmentWithoutGrace(calculator,
-					mc);
+			final Money totalInterestPerInstallment = calculateTotalInterestPerInstallmentWithoutGrace(calculator, mc);
 
-				final Money totalGraceOnInterestCharged = totalInterestPerInstallment.multiplyRetainScale(
-					getInterestChargingGrace(),
-					mc.getRoundingMode());
+			final Money totalGraceOnInterestCharged = totalInterestPerInstallment
+					.multiplyRetainScale(getInterestChargingGrace(), mc.getRoundingMode());
 
-				totalInterestCharged = totalInterestChargedForLoanTerm.minus(totalGraceOnInterestCharged);
-				
-				break;
-			case DECLINING_BALANCE:
-//			    final Money totalInterestChargeForLoanTerm = 
-			    break;
-			case INVALID:
-				break;
+			totalInterestCharged = totalInterestChargedForLoanTerm.minus(totalGraceOnInterestCharged);
+
+			break;
+		case DECLINING_BALANCE:
+			// final Money totalInterestChargeForLoanTerm =
+			break;
+		case INVALID:
+			break;
 		}
 
 		return totalInterestCharged;
 	}
 
-	public Money calculateTotalPrincipalForPeriod(
-		final PaymentPeriodsInOneYearCalculator calculator,
-		final Money outstandingBalance,
-		final int periodNumber,
-		final MathContext mc,
-		Money interestForThisInstallment)
-	{
+	public Money calculateTotalPrincipalForPeriod(final PaymentPeriodsInOneYearCalculator calculator,
+			final Money outstandingBalance, final int periodNumber, final MathContext mc,
+			Money interestForThisInstallment) {
 
 		Money principalForInstallment = this.principal.zero();
 
-		switch (this.interestMethod)
-		{
-			case FLAT:
-				principalForInstallment = calculateTotalPrincipalPerPeriodWithoutGrace(mc, periodNumber,
+		switch (this.interestMethod) {
+		case FLAT:
+			principalForInstallment = calculateTotalPrincipalPerPeriodWithoutGrace(mc, periodNumber,
 					interestForThisInstallment);
+			break;
+		case DECLINING_BALANCE:
+			switch (this.amortizationMethod) {
+			case EQUAL_INSTALLMENTS:
+				Money totalPmtForThisInstallment = pmtForInstallment(calculator, outstandingBalance, periodNumber, mc);
+				//
+				logger.info("totalPmtForThisInstallment: " + totalPmtForThisInstallment.getAmount().toString());
+				principalForInstallment = calculatePrincipalDueForInstallment(periodNumber, totalPmtForThisInstallment,
+						interestForThisInstallment);
+
 				break;
-			case DECLINING_BALANCE:
-				switch (this.amortizationMethod)
-				{
-					case EQUAL_INSTALLMENTS:
-						Money totalPmtForThisInstallment = pmtForInstallment(calculator, outstandingBalance, periodNumber, mc);
-//						
-						logger.info("totalPmtForThisInstallment: " + totalPmtForThisInstallment.getAmount().toString());
-						principalForInstallment = calculatePrincipalDueForInstallment(periodNumber, totalPmtForThisInstallment, interestForThisInstallment);
-						
-						break;
-					case EQUAL_PRINCIPAL:
-						principalForInstallment = calculateEqualPrincipalDueForInstallment(mc, periodNumber);
-						break;
-					case INVALID:
-						break;
-				}
+			case EQUAL_PRINCIPAL:
+				principalForInstallment = calculateEqualPrincipalDueForInstallment(mc, periodNumber);
 				break;
 			case INVALID:
 				break;
+			}
+			break;
+		case INVALID:
+			break;
 		}
 
 		return principalForInstallment;
 	}
 
-	public Money pmtForInstallment(
-		final PaymentPeriodsInOneYearCalculator calculator,
-		final Money outstandingBalance,
-		final int periodNumber,
-		final MathContext mc)
-	{
+	public Money pmtForInstallment(final PaymentPeriodsInOneYearCalculator calculator, final Money outstandingBalance,
+			final int periodNumber, final MathContext mc) {
 		// Calculate exact period from disbursement date
 		final LocalDate periodStartDate = getExpectedDisbursementDate().withDayOfMonth(1);
 		final LocalDate periodEndDate = getPeriodEndDate(periodStartDate);
@@ -852,187 +689,158 @@ public final class LoanApplicationTerms
 		final int periodsElapsed = periodNumber - 1;
 		// with periodic interest for default month and year for
 		// equal installment
-		final BigDecimal periodicInterestRateForRepaymentPeriod = periodicInterestRate(calculator, mc, DaysInMonthType.DAYS_30, DaysInYearType.DAYS_365, periodStartDate, periodEndDate, true);
-		Money totalPmtForThisInstallment = calculateTotalDueForEqualInstallmentRepaymentPeriod(periodicInterestRateForRepaymentPeriod,outstandingBalance, periodsElapsed);
+		final BigDecimal periodicInterestRateForRepaymentPeriod = periodicInterestRate(calculator, mc,
+				DaysInMonthType.DAYS_30, DaysInYearType.DAYS_365, periodStartDate, periodEndDate, true);
+		Money totalPmtForThisInstallment = calculateTotalDueForEqualInstallmentRepaymentPeriod(
+				periodicInterestRateForRepaymentPeriod, outstandingBalance, periodsElapsed);
 		return totalPmtForThisInstallment;
 	}
 
-	private LocalDate getPeriodEndDate(final LocalDate startDate)
-	{
+	private LocalDate getPeriodEndDate(final LocalDate startDate) {
 		LocalDate dueRepaymentPeriodDate = startDate;
-		switch (this.repaymentPeriodFrequencyType)
-		{
-			case DAYS:
-				dueRepaymentPeriodDate = startDate.plusDays(this.repaymentEvery);
-				break;
-			case WEEKS:
-				dueRepaymentPeriodDate = startDate.plusWeeks(this.repaymentEvery);
-				break;
-			case MONTHS:
-				dueRepaymentPeriodDate = startDate.plusMonths(this.repaymentEvery);
-				break;
-			case YEARS:
-				dueRepaymentPeriodDate = startDate.plusYears(this.repaymentEvery);
-				break;
-			case INVALID:
-				break;
+		switch (this.repaymentPeriodFrequencyType) {
+		case DAYS:
+			dueRepaymentPeriodDate = startDate.plusDays(this.repaymentEvery);
+			break;
+		case WEEKS:
+			dueRepaymentPeriodDate = startDate.plusWeeks(this.repaymentEvery);
+			break;
+		case MONTHS:
+			dueRepaymentPeriodDate = startDate.plusMonths(this.repaymentEvery);
+			break;
+		case YEARS:
+			dueRepaymentPeriodDate = startDate.plusYears(this.repaymentEvery);
+			break;
+		case INVALID:
+			break;
 		}
 		return dueRepaymentPeriodDate;
 	}
 
-	public PrincipalInterest calculateTotalInterestForPeriod(
-		final PaymentPeriodsInOneYearCalculator calculator,
-		final double interestCalculationGraceOnRepaymentPeriodFraction,
-		final int periodNumber,
-		final MathContext mc,
-		final Money cumulatingInterestPaymentDueToGrace,
-		final Money outstandingBalance,
-		final LocalDate periodStartDate,
-		final LocalDate periodEndDate)
-	{
+	public PrincipalInterest calculateTotalInterestForPeriod(final PaymentPeriodsInOneYearCalculator calculator,
+			final double interestCalculationGraceOnRepaymentPeriodFraction, final int periodNumber,
+			final MathContext mc, final Money cumulatingInterestPaymentDueToGrace, final Money outstandingBalance,
+			final LocalDate periodStartDate, final LocalDate periodEndDate) {
 
 		Money interestForInstallment = this.principal.zero();
 		Money interestBroughtForwardDueToGrace = cumulatingInterestPaymentDueToGrace.copy();
 		InterestMethod interestMethod = this.interestMethod;
 
-		if (this.isEqualAmortization() && this.totalInterestDue != null)
-		{
+		if (this.isEqualAmortization() && this.totalInterestDue != null) {
 			interestMethod = InterestMethod.FLAT;
 		}
-		switch (interestMethod)
-		{
-			case FLAT:
-				if (this.isEqualAmortization() && this.totalInterestDue != null
-					&& this.interestMethod.isDecliningBalnce())
-				{   
-//				        OLD
-					//interestForInstallment = flatInterestPerInstallment(mc, this.totalInterestDue);
-//					Edit
-				    
-				        final Money interestForThisInstallmentBeforeGrace = calculateDecliningInterestDueForInstallmentBeforeApplyingGrace(
-	                                        calculator, mc, outstandingBalance, periodStartDate, periodEndDate);
-
-	                                final Money interestForThisInstallmentAfterGrace = calculateDecliningInterestDueForInstallmentAfterApplyingGrace(
-	                                        calculator, interestCalculationGraceOnRepaymentPeriodFraction, mc, outstandingBalance, periodNumber,
-	                                        periodStartDate, periodEndDate);
-
-	                                interestForInstallment = interestForThisInstallmentAfterGrace;
-	                                if (interestForThisInstallmentAfterGrace.isGreaterThanZero())
-	                                {
-	                                        interestForInstallment = interestBroughtForwardDueToGrace
-	                                                .plus(interestForThisInstallmentAfterGrace);
-	                                        interestBroughtForwardDueToGrace = interestBroughtForwardDueToGrace.zero();
-	                                } else if (isInterestFreeGracePeriod(periodNumber))
-	                                {
-	                                        interestForInstallment = interestForInstallment.zero();
-	                                } else if (isInterestFreeGracePeriodFromDate(interestCalculationGraceOnRepaymentPeriodFraction))
-	                                {
-	                                        interestForInstallment = interestForThisInstallmentAfterGrace;
-	                                } else
-	                                {
-	                                        interestBroughtForwardDueToGrace = interestBroughtForwardDueToGrace
-	                                                .plus(interestForThisInstallmentBeforeGrace);
-	                                }
-					
-				} else
-				{
-					switch (this.amortizationMethod)
-					{
-						case EQUAL_INSTALLMENTS:
-							// average out outstanding interest over remaining
-							// instalments where interest is applicable
-							interestForInstallment = calculateTotalFlatInterestForInstallmentAveragingOutGracePeriods(
-								calculator,
-								periodNumber, 
-								mc);
-							break;
-						case EQUAL_PRINCIPAL:
-							// interest follows time-value of money and is
-							// brought
-							// forward to next applicable interest payment
-							// period
-							final PrincipalInterest result = calculateTotalFlatInterestForPeriod(calculator,
-								periodNumber, mc,
-								interestBroughtForwardDueToGrace);
-							interestForInstallment = result.interest();
-							interestBroughtForwardDueToGrace = result.interestPaymentDueToGrace();
-							break;
-						case INVALID:
-							break;
-					}
-				}
-				break;
-			case DECLINING_BALANCE:
+		switch (interestMethod) {
+		case FLAT:
+			if (this.isEqualAmortization() && this.totalInterestDue != null
+					&& this.interestMethod.isDecliningBalnce()) {
+				// OLD
+				// interestForInstallment = flatInterestPerInstallment(mc,
+				// this.totalInterestDue);
+				// Edit
 
 				final Money interestForThisInstallmentBeforeGrace = calculateDecliningInterestDueForInstallmentBeforeApplyingGrace(
-					calculator, mc, outstandingBalance, periodStartDate, periodEndDate);
+						calculator, mc, outstandingBalance, periodStartDate, periodEndDate);
 
 				final Money interestForThisInstallmentAfterGrace = calculateDecliningInterestDueForInstallmentAfterApplyingGrace(
+						calculator, interestCalculationGraceOnRepaymentPeriodFraction, mc, outstandingBalance,
+						periodNumber, periodStartDate, periodEndDate);
+
+				interestForInstallment = interestForThisInstallmentAfterGrace;
+				if (interestForThisInstallmentAfterGrace.isGreaterThanZero()) {
+					interestForInstallment = interestBroughtForwardDueToGrace
+							.plus(interestForThisInstallmentAfterGrace);
+					interestBroughtForwardDueToGrace = interestBroughtForwardDueToGrace.zero();
+				} else if (isInterestFreeGracePeriod(periodNumber)) {
+					interestForInstallment = interestForInstallment.zero();
+				} else if (isInterestFreeGracePeriodFromDate(interestCalculationGraceOnRepaymentPeriodFraction)) {
+					interestForInstallment = interestForThisInstallmentAfterGrace;
+				} else {
+					interestBroughtForwardDueToGrace = interestBroughtForwardDueToGrace
+							.plus(interestForThisInstallmentBeforeGrace);
+				}
+
+			} else {
+				switch (this.amortizationMethod) {
+				case EQUAL_INSTALLMENTS:
+					// average out outstanding interest over remaining
+					// instalments where interest is applicable
+					interestForInstallment = calculateTotalFlatInterestForInstallmentAveragingOutGracePeriods(
+							calculator, periodNumber, mc);
+					break;
+				case EQUAL_PRINCIPAL:
+					// interest follows time-value of money and is
+					// brought
+					// forward to next applicable interest payment
+					// period
+					final PrincipalInterest result = calculateTotalFlatInterestForPeriod(calculator, periodNumber, mc,
+							interestBroughtForwardDueToGrace);
+					interestForInstallment = result.interest();
+					interestBroughtForwardDueToGrace = result.interestPaymentDueToGrace();
+					break;
+				case INVALID:
+					break;
+				}
+			}
+			break;
+		case DECLINING_BALANCE:
+
+			final Money interestForThisInstallmentBeforeGrace = calculateDecliningInterestDueForInstallmentBeforeApplyingGrace(
+					calculator, mc, outstandingBalance, periodStartDate, periodEndDate);
+
+			final Money interestForThisInstallmentAfterGrace = calculateDecliningInterestDueForInstallmentAfterApplyingGrace(
 					calculator, interestCalculationGraceOnRepaymentPeriodFraction, mc, outstandingBalance, periodNumber,
 					periodStartDate, periodEndDate);
 
+			interestForInstallment = interestForThisInstallmentAfterGrace;
+			if (interestForThisInstallmentAfterGrace.isGreaterThanZero()) {
+				interestForInstallment = interestBroughtForwardDueToGrace.plus(interestForThisInstallmentAfterGrace);
+				interestBroughtForwardDueToGrace = interestBroughtForwardDueToGrace.zero();
+			} else if (isInterestFreeGracePeriod(periodNumber)) {
+				interestForInstallment = interestForInstallment.zero();
+			} else if (isInterestFreeGracePeriodFromDate(interestCalculationGraceOnRepaymentPeriodFraction)) {
 				interestForInstallment = interestForThisInstallmentAfterGrace;
-				if (interestForThisInstallmentAfterGrace.isGreaterThanZero())
-				{
-					interestForInstallment = interestBroughtForwardDueToGrace
-						.plus(interestForThisInstallmentAfterGrace);
-					interestBroughtForwardDueToGrace = interestBroughtForwardDueToGrace.zero();
-				} else if (isInterestFreeGracePeriod(periodNumber))
-				{
-					interestForInstallment = interestForInstallment.zero();
-				} else if (isInterestFreeGracePeriodFromDate(interestCalculationGraceOnRepaymentPeriodFraction))
-				{
-					interestForInstallment = interestForThisInstallmentAfterGrace;
-				} else
-				{
-					interestBroughtForwardDueToGrace = interestBroughtForwardDueToGrace
+			} else {
+				interestBroughtForwardDueToGrace = interestBroughtForwardDueToGrace
 						.plus(interestForThisInstallmentBeforeGrace);
-				}
-				break;
-			case INVALID:
-				break;
+			}
+			break;
+		case INVALID:
+			break;
 		}
 
-		return new PrincipalInterest(null,null, interestForInstallment, interestBroughtForwardDueToGrace);
+		return new PrincipalInterest(null, null, interestForInstallment, interestBroughtForwardDueToGrace);
 	}
 
-	private final boolean isLastRepaymentPeriod(final int numberOfRepayments, final int periodNumber)
-	{
+	private final boolean isLastRepaymentPeriod(final int numberOfRepayments, final int periodNumber) {
 		return periodNumber == numberOfRepayments;
 	}
 
 	/**
 	 * general method to calculate totalInterestDue discounting any grace settings
 	 */
-	private Money calculateTotalFlatInterestDueWithoutGrace(
-		final PaymentPeriodsInOneYearCalculator calculator,
-		final MathContext mc)
-	{
+	private Money calculateTotalFlatInterestDueWithoutGrace(final PaymentPeriodsInOneYearCalculator calculator,
+			final MathContext mc) {
 
 		Money totalInterestDue = this.principal.zero();
 
-		switch (this.interestMethod)
-		{
-			case FLAT:
-				final BigDecimal interestRateForLoanTerm = calculateFlatInterestRateForLoanTerm(calculator, mc);
-				totalInterestDue = this.principal.minus(totalPrincipalAccountedForInterestCalcualtion)
-					.multiplyRetainScale(interestRateForLoanTerm,
-						mc.getRoundingMode());
+		switch (this.interestMethod) {
+		case FLAT:
+			final BigDecimal interestRateForLoanTerm = calculateFlatInterestRateForLoanTerm(calculator, mc);
+			totalInterestDue = this.principal.minus(totalPrincipalAccountedForInterestCalcualtion)
+					.multiplyRetainScale(interestRateForLoanTerm, mc.getRoundingMode());
 
-				break;
-			case DECLINING_BALANCE:
-				break;
-			case INVALID:
-				break;
+			break;
+		case DECLINING_BALANCE:
+			break;
+		case INVALID:
+			break;
 		}
 
 		return totalInterestDue;
 	}
 
-	private BigDecimal calculateFlatInterestRateForLoanTerm(
-		final PaymentPeriodsInOneYearCalculator calculator,
-		final MathContext mc)
-	{
+	private BigDecimal calculateFlatInterestRateForLoanTerm(final PaymentPeriodsInOneYearCalculator calculator,
+			final MathContext mc) {
 
 		final BigDecimal divisor = BigDecimal.valueOf(Double.valueOf("100.0"));
 
@@ -1042,186 +850,159 @@ public final class LoanApplicationTerms
 		final BigDecimal loanTermFrequencyBigDecimal = calculatePeriodsInLoanTerm();
 
 		return this.annualNominalInterestRate.divide(loanTermPeriodsInYearBigDecimal, mc).divide(divisor, mc)
-			.multiply(loanTermFrequencyBigDecimal);
+				.multiply(loanTermFrequencyBigDecimal);
 	}
 
-	private BigDecimal calculatePeriodsInLoanTerm()
-	{
+	private BigDecimal calculatePeriodsInLoanTerm() {
 
 		BigDecimal periodsInLoanTerm = BigDecimal.valueOf(this.loanTermFrequency);
-		switch (this.interestCalculationPeriodMethod)
-		{
-			case DAILY:
-				// number of days from 'ideal disbursement' to final date
+		switch (this.interestCalculationPeriodMethod) {
+		case DAILY:
+			// number of days from 'ideal disbursement' to final date
 
-				LocalDate loanStartDate = getExpectedDisbursementDate();
-				if (getInterestChargedFromDate() != null && loanStartDate.isBefore(getInterestChargedFromLocalDate()))
-				{
-					loanStartDate = getInterestChargedFromLocalDate();
-				}
+			LocalDate loanStartDate = getExpectedDisbursementDate();
+			if (getInterestChargedFromDate() != null && loanStartDate.isBefore(getInterestChargedFromLocalDate())) {
+				loanStartDate = getInterestChargedFromLocalDate();
+			}
 
-				final int periodsInLoanTermInteger = Days.daysBetween(loanStartDate, this.loanEndDate).getDays();
-				periodsInLoanTerm = BigDecimal.valueOf(periodsInLoanTermInteger);
-				break;
-			case INVALID:
-				break;
-			case SAME_AS_REPAYMENT_PERIOD:
-				if (this.allowPartialPeriodInterestCalcualtion)
-				{
-					LocalDate startDate = getExpectedDisbursementDate();
-					if (getInterestChargedFromDate() != null)
-					{
-						startDate = getInterestChargedFromLocalDate();
-					}
-					periodsInLoanTerm = calculatePeriodsBetweenDates(startDate, this.loanEndDate);
+			final int periodsInLoanTermInteger = Days.daysBetween(loanStartDate, this.loanEndDate).getDays();
+			periodsInLoanTerm = BigDecimal.valueOf(periodsInLoanTermInteger);
+			break;
+		case INVALID:
+			break;
+		case SAME_AS_REPAYMENT_PERIOD:
+			if (this.allowPartialPeriodInterestCalcualtion) {
+				LocalDate startDate = getExpectedDisbursementDate();
+				if (getInterestChargedFromDate() != null) {
+					startDate = getInterestChargedFromLocalDate();
 				}
-				break;
+				periodsInLoanTerm = calculatePeriodsBetweenDates(startDate, this.loanEndDate);
+			}
+			break;
 		}
 
 		return periodsInLoanTerm;
 	}
 
-	public BigDecimal calculatePeriodsBetweenDates(final LocalDate startDate, final LocalDate endDate)
-	{
+	public BigDecimal calculatePeriodsBetweenDates(final LocalDate startDate, final LocalDate endDate) {
 		BigDecimal numberOfPeriods = BigDecimal.ZERO;
-		switch (this.repaymentPeriodFrequencyType)
-		{
-			case DAYS:
-				int numOfDays = Days.daysBetween(startDate, endDate).getDays();
-				numberOfPeriods = BigDecimal.valueOf((double) numOfDays);
-				break;
-			case WEEKS:
-				int numberOfWeeks = Weeks.weeksBetween(startDate, endDate).getWeeks();
-				int daysLeftAfterWeeks = Days.daysBetween(startDate.plusWeeks(numberOfWeeks), endDate).getDays();
-				numberOfPeriods = numberOfPeriods.add(BigDecimal.valueOf(numberOfWeeks)).add(
-					BigDecimal.valueOf((double) daysLeftAfterWeeks / 7));
-				break;
-			case MONTHS:
-				int numberOfMonths = Months.monthsBetween(startDate, endDate).getMonths();
-				LocalDate startDateAfterConsideringMonths = null;
-				LocalDate endDateAfterConsideringMonths = null;
-				int diffDays = 0;
-				if (this.loanCalendar == null)
-				{
-					startDateAfterConsideringMonths = startDate.plusMonths(numberOfMonths);
-					startDateAfterConsideringMonths = CalendarUtils.adjustDate(startDateAfterConsideringMonths,
-						getSeedDate(),
+		switch (this.repaymentPeriodFrequencyType) {
+		case DAYS:
+			int numOfDays = Days.daysBetween(startDate, endDate).getDays();
+			numberOfPeriods = BigDecimal.valueOf((double) numOfDays);
+			break;
+		case WEEKS:
+			int numberOfWeeks = Weeks.weeksBetween(startDate, endDate).getWeeks();
+			int daysLeftAfterWeeks = Days.daysBetween(startDate.plusWeeks(numberOfWeeks), endDate).getDays();
+			numberOfPeriods = numberOfPeriods.add(BigDecimal.valueOf(numberOfWeeks))
+					.add(BigDecimal.valueOf((double) daysLeftAfterWeeks / 7));
+			break;
+		case MONTHS:
+			int numberOfMonths = Months.monthsBetween(startDate, endDate).getMonths();
+			LocalDate startDateAfterConsideringMonths = null;
+			LocalDate endDateAfterConsideringMonths = null;
+			int diffDays = 0;
+			if (this.loanCalendar == null) {
+				startDateAfterConsideringMonths = startDate.plusMonths(numberOfMonths);
+				startDateAfterConsideringMonths = CalendarUtils.adjustDate(startDateAfterConsideringMonths,
+						getSeedDate(), this.repaymentPeriodFrequencyType);
+				endDateAfterConsideringMonths = startDate.plusMonths(numberOfMonths + 1);
+				endDateAfterConsideringMonths = CalendarUtils.adjustDate(endDateAfterConsideringMonths, getSeedDate(),
 						this.repaymentPeriodFrequencyType);
-					endDateAfterConsideringMonths = startDate.plusMonths(numberOfMonths + 1);
-					endDateAfterConsideringMonths = CalendarUtils.adjustDate(endDateAfterConsideringMonths,
-						getSeedDate(),
-						this.repaymentPeriodFrequencyType);
-				} else
-				{
-					LocalDate expectedStartDate = startDate;
-					if (!CalendarUtils.isValidRedurringDate(loanCalendar.getRecurrence(),
-						loanCalendar.getStartDateLocalDate().minusMonths(getRepaymentEvery()), startDate))
-					{
-						expectedStartDate = CalendarUtils.getNewRepaymentMeetingDate(loanCalendar.getRecurrence(),
+			} else {
+				LocalDate expectedStartDate = startDate;
+				if (!CalendarUtils.isValidRedurringDate(loanCalendar.getRecurrence(),
+						loanCalendar.getStartDateLocalDate().minusMonths(getRepaymentEvery()), startDate)) {
+					expectedStartDate = CalendarUtils.getNewRepaymentMeetingDate(loanCalendar.getRecurrence(),
 							startDate.minusMonths(getRepaymentEvery()), startDate.minusMonths(getRepaymentEvery()),
 							getRepaymentEvery(),
 							CalendarUtils.getMeetingFrequencyFromPeriodFrequencyType(getLoanTermPeriodFrequencyType()),
 							this.holidayDetailDTO.getWorkingDays(), isSkipRepaymentOnFirstDayOfMonth, numberOfDays);
-					}
-					if (!expectedStartDate.isEqual(startDate))
-					{
-						diffDays = Days.daysBetween(startDate, expectedStartDate).getDays();
-					}
-					if (numberOfMonths == 0)
-					{
-						startDateAfterConsideringMonths = expectedStartDate;
-					} else
-					{
-						startDateAfterConsideringMonths = CalendarUtils.getNewRepaymentMeetingDate(
-							loanCalendar.getRecurrence(),
-							expectedStartDate, expectedStartDate.plusMonths(numberOfMonths), getRepaymentEvery(),
+				}
+				if (!expectedStartDate.isEqual(startDate)) {
+					diffDays = Days.daysBetween(startDate, expectedStartDate).getDays();
+				}
+				if (numberOfMonths == 0) {
+					startDateAfterConsideringMonths = expectedStartDate;
+				} else {
+					startDateAfterConsideringMonths = CalendarUtils.getNewRepaymentMeetingDate(
+							loanCalendar.getRecurrence(), expectedStartDate,
+							expectedStartDate.plusMonths(numberOfMonths), getRepaymentEvery(),
 							CalendarUtils.getMeetingFrequencyFromPeriodFrequencyType(getLoanTermPeriodFrequencyType()),
 							this.holidayDetailDTO.getWorkingDays(), isSkipRepaymentOnFirstDayOfMonth, numberOfDays);
-					}
-					endDateAfterConsideringMonths = CalendarUtils.getNewRepaymentMeetingDate(
-						loanCalendar.getRecurrence(),
+				}
+				endDateAfterConsideringMonths = CalendarUtils.getNewRepaymentMeetingDate(loanCalendar.getRecurrence(),
 						startDateAfterConsideringMonths, startDateAfterConsideringMonths.plusDays(1),
 						getRepaymentEvery(),
 						CalendarUtils.getMeetingFrequencyFromPeriodFrequencyType(getLoanTermPeriodFrequencyType()),
 						this.holidayDetailDTO.getWorkingDays(), isSkipRepaymentOnFirstDayOfMonth, numberOfDays);
-				}
-				int daysLeftAfterMonths = Days.daysBetween(startDateAfterConsideringMonths, endDate).getDays()
-					+ diffDays;
-				int daysInPeriodAfterMonths = Days
+			}
+			int daysLeftAfterMonths = Days.daysBetween(startDateAfterConsideringMonths, endDate).getDays() + diffDays;
+			int daysInPeriodAfterMonths = Days
 					.daysBetween(startDateAfterConsideringMonths, endDateAfterConsideringMonths).getDays();
-				numberOfPeriods = numberOfPeriods.add(BigDecimal.valueOf(numberOfMonths)).add(
-					BigDecimal.valueOf((double) daysLeftAfterMonths / daysInPeriodAfterMonths));
-				break;
-			case YEARS:
-				int numberOfYears = Years.yearsBetween(startDate, endDate).getYears();
-				LocalDate startDateAfterConsideringYears = startDate.plusYears(numberOfYears);
-				LocalDate endDateAfterConsideringYears = startDate.plusYears(numberOfYears + 1);
-				int daysLeftAfterYears = Days.daysBetween(startDateAfterConsideringYears, endDate).getDays();
-				int daysInPeriodAfterYears = Days
-					.daysBetween(startDateAfterConsideringYears, endDateAfterConsideringYears).getDays();
-				numberOfPeriods = numberOfPeriods.add(BigDecimal.valueOf(numberOfYears)).add(
-					BigDecimal.valueOf((double) daysLeftAfterYears / daysInPeriodAfterYears));
-				break;
-			default:
-				break;
+			numberOfPeriods = numberOfPeriods.add(BigDecimal.valueOf(numberOfMonths))
+					.add(BigDecimal.valueOf((double) daysLeftAfterMonths / daysInPeriodAfterMonths));
+			break;
+		case YEARS:
+			int numberOfYears = Years.yearsBetween(startDate, endDate).getYears();
+			LocalDate startDateAfterConsideringYears = startDate.plusYears(numberOfYears);
+			LocalDate endDateAfterConsideringYears = startDate.plusYears(numberOfYears + 1);
+			int daysLeftAfterYears = Days.daysBetween(startDateAfterConsideringYears, endDate).getDays();
+			int daysInPeriodAfterYears = Days.daysBetween(startDateAfterConsideringYears, endDateAfterConsideringYears)
+					.getDays();
+			numberOfPeriods = numberOfPeriods.add(BigDecimal.valueOf(numberOfYears))
+					.add(BigDecimal.valueOf((double) daysLeftAfterYears / daysInPeriodAfterYears));
+			break;
+		default:
+			break;
 		}
 		return numberOfPeriods;
 	}
 
-	public void updateLoanEndDate(final LocalDate loanEndDate)
-	{
+	public void updateLoanEndDate(final LocalDate loanEndDate) {
 		this.loanEndDate = loanEndDate;
 	}
 
-	private Money calculateTotalInterestPerInstallmentWithoutGrace(
-		final PaymentPeriodsInOneYearCalculator calculator,
-		final MathContext mc)
-	{
+	private Money calculateTotalInterestPerInstallmentWithoutGrace(final PaymentPeriodsInOneYearCalculator calculator,
+			final MathContext mc) {
 
 		final Money totalInterestForLoanTerm = calculateTotalFlatInterestDueWithoutGrace(calculator, mc);
 		return flatInterestPerInstallment(mc, totalInterestForLoanTerm);
 	}
 
-	private Money flatInterestPerInstallment(final MathContext mc, final Money totalInterestForLoanTerm)
-	{
-		Money interestPerInstallment = totalInterestForLoanTerm.dividedBy(Long.valueOf(this.actualNumberOfRepayments)
-			- defaultToZeroIfNull(this.excludePeriodsForCalculation), mc.getRoundingMode());
-		if (this.excludePeriodsForCalculation < this.periodsCompleted)
-		{
+	private Money flatInterestPerInstallment(final MathContext mc, final Money totalInterestForLoanTerm) {
+		Money interestPerInstallment = totalInterestForLoanTerm.dividedBy(
+				Long.valueOf(this.actualNumberOfRepayments) - defaultToZeroIfNull(this.excludePeriodsForCalculation),
+				mc.getRoundingMode());
+		if (this.excludePeriodsForCalculation < this.periodsCompleted) {
 			Money interestLeft = this.totalInterestDue.minus(this.totalInterestAccounted);
-			interestPerInstallment = interestLeft.dividedBy(Long.valueOf(this.actualNumberOfRepayments)
-				- defaultToZeroIfNull(this.periodsCompleted), mc.getRoundingMode());
+			interestPerInstallment = interestLeft.dividedBy(
+					Long.valueOf(this.actualNumberOfRepayments) - defaultToZeroIfNull(this.periodsCompleted),
+					mc.getRoundingMode());
 		}
 
 		return interestPerInstallment;
 	}
 
-	private Money calculateTotalPrincipalPerPeriodWithoutGrace(
-		final MathContext mc,
-		final int periodNumber,
-		Money interestForThisInstallment)
-	{
+	private Money calculateTotalPrincipalPerPeriodWithoutGrace(final MathContext mc, final int periodNumber,
+			Money interestForThisInstallment) {
 		final int totalRepaymentsWithCapitalPayment = calculateNumberOfRepaymentsWithPrincipalPayment();
 		Money principalPerPeriod = null;
-		if (getFixedEmiAmount() == null)
-		{
+		if (getFixedEmiAmount() == null) {
 			principalPerPeriod = this.principal.minus(totalPrincipalAccounted)
-				.dividedBy(totalRepaymentsWithCapitalPayment, mc.getRoundingMode()).plus(
-					this.adjustPrincipalForFlatLoans);
-			if (isPrincipalGraceApplicableForThisPeriod(periodNumber))
-			{
+					.dividedBy(totalRepaymentsWithCapitalPayment, mc.getRoundingMode())
+					.plus(this.adjustPrincipalForFlatLoans);
+			if (isPrincipalGraceApplicableForThisPeriod(periodNumber)) {
 				principalPerPeriod = principalPerPeriod.zero();
 			}
-			if (!isPrincipalGraceApplicableForThisPeriod(periodNumber) && currentPeriodFixedPrincipalAmount != null)
-			{
-				this.adjustPrincipalForFlatLoans = this.adjustPrincipalForFlatLoans.plus(principalPerPeriod.minus(
-					currentPeriodFixedPrincipalAmount)
-					.dividedBy(this.actualNumberOfRepayments - periodNumber, mc.getRoundingMode()));
+			if (!isPrincipalGraceApplicableForThisPeriod(periodNumber) && currentPeriodFixedPrincipalAmount != null) {
+				this.adjustPrincipalForFlatLoans = this.adjustPrincipalForFlatLoans
+						.plus(principalPerPeriod.minus(currentPeriodFixedPrincipalAmount)
+								.dividedBy(this.actualNumberOfRepayments - periodNumber, mc.getRoundingMode()));
 				principalPerPeriod = this.principal.zero().plus(currentPeriodFixedPrincipalAmount);
 
 			}
-		} else
-		{
+		} else {
 			principalPerPeriod = Money.of(this.getCurrency(), getFixedEmiAmount()).minus(interestForThisInstallment);
 			return principalPerPeriod;
 		}
@@ -1229,25 +1010,18 @@ public final class LoanApplicationTerms
 		return principalPerPeriod;
 	}
 
-	private PrincipalInterest calculateTotalFlatInterestForPeriod(
-		final PaymentPeriodsInOneYearCalculator calculator,
-		final int periodNumber,
-		final MathContext mc,
-		final Money cumulatingInterestPaymentDueToGrace)
-	{
+	private PrincipalInterest calculateTotalFlatInterestForPeriod(final PaymentPeriodsInOneYearCalculator calculator,
+			final int periodNumber, final MathContext mc, final Money cumulatingInterestPaymentDueToGrace) {
 
 		Money interestBroughtForwardDueToGrace = cumulatingInterestPaymentDueToGrace.copy();
 
 		Money interestForInstallment = calculateTotalInterestPerInstallmentWithoutGrace(calculator, mc);
-		if (isInterestPaymentGraceApplicableForThisPeriod(periodNumber))
-		{
+		if (isInterestPaymentGraceApplicableForThisPeriod(periodNumber)) {
 			interestBroughtForwardDueToGrace = interestBroughtForwardDueToGrace.plus(interestForInstallment);
 			interestForInstallment = interestForInstallment.zero();
-		} else if (isInterestFreeGracePeriod(periodNumber))
-		{
+		} else if (isInterestFreeGracePeriod(periodNumber)) {
 			interestForInstallment = interestForInstallment.zero();
-		} else if (isFirstPeriodAfterInterestPaymentGracePeriod(periodNumber))
-		{
+		} else if (isFirstPeriodAfterInterestPaymentGracePeriod(periodNumber)) {
 			interestForInstallment = cumulatingInterestPaymentDueToGrace.plus(interestForInstallment);
 			interestBroughtForwardDueToGrace = interestBroughtForwardDueToGrace.zero();
 		}
@@ -1263,20 +1037,14 @@ public final class LoanApplicationTerms
 	 * without grace.
 	 */
 	private Money calculateTotalFlatInterestForInstallmentAveragingOutGracePeriods(
-		final PaymentPeriodsInOneYearCalculator calculator,
-		final int periodNumber,
-		final MathContext mc)
-	{
+			final PaymentPeriodsInOneYearCalculator calculator, final int periodNumber, final MathContext mc) {
 
 		Money interestForInstallment = calculateTotalInterestPerInstallmentWithoutGrace(calculator, mc);
-		if (isInterestPaymentGraceApplicableForThisPeriod(periodNumber))
-		{
+		if (isInterestPaymentGraceApplicableForThisPeriod(periodNumber)) {
 			interestForInstallment = interestForInstallment.zero();
-		} else if (isInterestFreeGracePeriod(periodNumber))
-		{
+		} else if (isInterestFreeGracePeriod(periodNumber)) {
 			interestForInstallment = interestForInstallment.zero();
-		} else
-		{
+		} else {
 
 			final Money totalInterestForLoanTerm = calculateTotalFlatInterestDueWithoutGrace(calculator, mc);
 
@@ -1286,29 +1054,23 @@ public final class LoanApplicationTerms
 			final Money realTotalInterestForLoan = totalInterestForLoanTerm.minus(totalInterestFree);
 
 			Integer interestPaymentDuePeriods = calculateNumberOfRemainingInterestPaymentPeriods(
-				this.actualNumberOfRepayments,
-				this.excludePeriodsForCalculation);
-			interestForInstallment = realTotalInterestForLoan
-				.dividedBy(BigDecimal.valueOf(interestPaymentDuePeriods), mc.getRoundingMode());
-			if (this.excludePeriodsForCalculation < this.periodsCompleted)
-			{
+					this.actualNumberOfRepayments, this.excludePeriodsForCalculation);
+			interestForInstallment = realTotalInterestForLoan.dividedBy(BigDecimal.valueOf(interestPaymentDuePeriods),
+					mc.getRoundingMode());
+			if (this.excludePeriodsForCalculation < this.periodsCompleted) {
 				Money interestLeft = this.totalInterestDue.minus(this.totalInterestAccounted);
 				Integer interestDuePeriods = calculateNumberOfRemainingInterestPaymentPeriods(
-					this.actualNumberOfRepayments,
-					this.periodsCompleted);
+						this.actualNumberOfRepayments, this.periodsCompleted);
 				interestForInstallment = interestLeft.dividedBy(Long.valueOf(interestDuePeriods), mc.getRoundingMode());
 			}
-			if (!this.periodNumbersApplicableForInterestGrace.isEmpty())
-			{
+			if (!this.periodNumbersApplicableForInterestGrace.isEmpty()) {
 				int periodsElapsed = calculateLastInterestGracePeriod(periodNumber);
-				if (periodsElapsed > this.excludePeriodsForCalculation && periodsElapsed > this.periodsCompleted)
-				{
+				if (periodsElapsed > this.excludePeriodsForCalculation && periodsElapsed > this.periodsCompleted) {
 					Money interestLeft = this.totalInterestDue.minus(this.totalInterestAccounted);
 					Integer interestDuePeriods = calculateNumberOfRemainingInterestPaymentPeriods(
-						this.actualNumberOfRepayments,
-						periodsElapsed);
+							this.actualNumberOfRepayments, periodsElapsed);
 					interestForInstallment = interestLeft.dividedBy(Long.valueOf(interestDuePeriods),
-						mc.getRoundingMode());
+							mc.getRoundingMode());
 				}
 			}
 
@@ -1317,27 +1079,16 @@ public final class LoanApplicationTerms
 		return interestForInstallment;
 	}
 
-	private BigDecimal periodicInterestRate(
-		final PaymentPeriodsInOneYearCalculator calculator,
-		final MathContext mc,
-		final DaysInMonthType daysInMonthType,
-		final DaysInYearType daysInYearType,
-		LocalDate periodStartDate,
-		LocalDate periodEndDate)
-	{
+	private BigDecimal periodicInterestRate(final PaymentPeriodsInOneYearCalculator calculator, final MathContext mc,
+			final DaysInMonthType daysInMonthType, final DaysInYearType daysInYearType, LocalDate periodStartDate,
+			LocalDate periodEndDate) {
 		return periodicInterestRate(calculator, mc, daysInMonthType, daysInYearType, periodStartDate, periodEndDate,
-			false);
+				false);
 	}
 
-	private BigDecimal periodicInterestRate(
-		final PaymentPeriodsInOneYearCalculator calculator,
-		final MathContext mc,
-		final DaysInMonthType daysInMonthType,
-		final DaysInYearType daysInYearType,
-		LocalDate periodStartDate,
-		LocalDate periodEndDate,
-		boolean isForPMT)
-	{
+	private BigDecimal periodicInterestRate(final PaymentPeriodsInOneYearCalculator calculator, final MathContext mc,
+			final DaysInMonthType daysInMonthType, final DaysInYearType daysInYearType, LocalDate periodStartDate,
+			LocalDate periodEndDate, boolean isForPMT) {
 
 		final long loanTermPeriodsInOneYear = calculatePeriodsInOneYear(calculator);
 
@@ -1346,94 +1097,78 @@ public final class LoanApplicationTerms
 
 		BigDecimal periodicInterestRate = BigDecimal.ZERO;
 		BigDecimal loanTermFrequencyBigDecimal = BigDecimal.ONE;
-		if (isForPMT)
-		{
+		if (isForPMT) {
 			loanTermFrequencyBigDecimal = BigDecimal.valueOf(this.repaymentEvery);
-		} else
-		{
+		} else {
 			loanTermFrequencyBigDecimal = calculateLoanTermFrequency(periodStartDate, periodEndDate);
 		}
-		switch (this.interestCalculationPeriodMethod)
-		{
+		switch (this.interestCalculationPeriodMethod) {
+		case INVALID:
+			break;
+		case DAILY:
+			// For daily work out number of days in the period
+			BigDecimal numberOfDaysInPeriod = BigDecimal
+					.valueOf(Days.daysBetween(periodStartDate, periodEndDate).getDays());
+
+			final BigDecimal oneDayOfYearInterestRate = this.annualNominalInterestRate
+					.divide(loanTermPeriodsInYearBigDecimal, mc).divide(divisor, mc);
+
+			switch (this.repaymentPeriodFrequencyType) {
 			case INVALID:
 				break;
-			case DAILY:
-				// For daily work out number of days in the period
-				BigDecimal numberOfDaysInPeriod = BigDecimal.valueOf(Days.daysBetween(periodStartDate, periodEndDate).getDays());
-
-				final BigDecimal oneDayOfYearInterestRate = this.annualNominalInterestRate.divide(loanTermPeriodsInYearBigDecimal, mc).divide(divisor, mc);
-
-				switch (this.repaymentPeriodFrequencyType)
-				{
-					case INVALID:
-						break;
-					case DAYS:
-						periodicInterestRate = oneDayOfYearInterestRate.multiply(numberOfDaysInPeriod, mc);
-						break;
-					case WEEKS:
-						periodicInterestRate = oneDayOfYearInterestRate.multiply(numberOfDaysInPeriod, mc);
-						break;
-					case MONTHS:
-						if (daysInMonthType.isDaysInMonth_30())
-						{
-							numberOfDaysInPeriod = loanTermFrequencyBigDecimal.multiply(BigDecimal.valueOf(30), mc);
-						}
-						periodicInterestRate = oneDayOfYearInterestRate.multiply(numberOfDaysInPeriod, mc);
-						break;
-					case YEARS:
-						switch (daysInYearType)
-						{
-							case DAYS_360:
-								numberOfDaysInPeriod = loanTermFrequencyBigDecimal.multiply(BigDecimal.valueOf(360),
-									mc);
-								break;
-							case DAYS_364:
-								numberOfDaysInPeriod = loanTermFrequencyBigDecimal.multiply(BigDecimal.valueOf(364),
-									mc);
-								break;
-							case DAYS_365:
-								numberOfDaysInPeriod = loanTermFrequencyBigDecimal.multiply(BigDecimal.valueOf(365),
-									mc);
-								break;
-							default:
-								break;
-						}
-						periodicInterestRate = oneDayOfYearInterestRate.multiply(numberOfDaysInPeriod, mc);
-						break;
+			case DAYS:
+				periodicInterestRate = oneDayOfYearInterestRate.multiply(numberOfDaysInPeriod, mc);
+				break;
+			case WEEKS:
+				periodicInterestRate = oneDayOfYearInterestRate.multiply(numberOfDaysInPeriod, mc);
+				break;
+			case MONTHS:
+				if (daysInMonthType.isDaysInMonth_30()) {
+					numberOfDaysInPeriod = loanTermFrequencyBigDecimal.multiply(BigDecimal.valueOf(30), mc);
 				}
+				periodicInterestRate = oneDayOfYearInterestRate.multiply(numberOfDaysInPeriod, mc);
 				break;
-			case SAME_AS_REPAYMENT_PERIOD:
-				periodicInterestRate = this.annualNominalInterestRate.divide(loanTermPeriodsInYearBigDecimal, mc)
-					.divide(divisor, mc)
-					.multiply(loanTermFrequencyBigDecimal);
+			case YEARS:
+				switch (daysInYearType) {
+				case DAYS_360:
+					numberOfDaysInPeriod = loanTermFrequencyBigDecimal.multiply(BigDecimal.valueOf(360), mc);
+					break;
+				case DAYS_364:
+					numberOfDaysInPeriod = loanTermFrequencyBigDecimal.multiply(BigDecimal.valueOf(364), mc);
+					break;
+				case DAYS_365:
+					numberOfDaysInPeriod = loanTermFrequencyBigDecimal.multiply(BigDecimal.valueOf(365), mc);
+					break;
+				default:
+					break;
+				}
+				periodicInterestRate = oneDayOfYearInterestRate.multiply(numberOfDaysInPeriod, mc);
 				break;
+			}
+			break;
+		case SAME_AS_REPAYMENT_PERIOD:
+			periodicInterestRate = this.annualNominalInterestRate.divide(loanTermPeriodsInYearBigDecimal, mc)
+					.divide(divisor, mc).multiply(loanTermFrequencyBigDecimal);
+			break;
 		}
 
 		return periodicInterestRate;
 	}
 
-	private BigDecimal calculateLoanTermFrequency(final LocalDate periodStartDate, final LocalDate periodEndDate)
-	{
+	private BigDecimal calculateLoanTermFrequency(final LocalDate periodStartDate, final LocalDate periodEndDate) {
 		BigDecimal loanTermFrequencyBigDecimal = BigDecimal.valueOf(this.repaymentEvery);
-		if (this.interestCalculationPeriodMethod.isDaily() || this.allowPartialPeriodInterestCalcualtion)
-		{
+		if (this.interestCalculationPeriodMethod.isDaily() || this.allowPartialPeriodInterestCalcualtion) {
 			loanTermFrequencyBigDecimal = calculatePeriodsBetweenDates(periodStartDate, periodEndDate);
 		}
 		return loanTermFrequencyBigDecimal;
 	}
 
-	public BigDecimal interestRateFor(
-		final PaymentPeriodsInOneYearCalculator calculator,
-		final MathContext mc,
-		final Money outstandingBalance,
-		final LocalDate fromDate,
-		final LocalDate toDate)
-	{
+	public BigDecimal interestRateFor(final PaymentPeriodsInOneYearCalculator calculator, final MathContext mc,
+			final Money outstandingBalance, final LocalDate fromDate, final LocalDate toDate) {
 
 		long loanTermPeriodsInOneYear = calculator.calculate(PeriodFrequencyType.DAYS).longValue();
 		int repaymentEvery = Days.daysBetween(fromDate, toDate).getDays();
-		if (isFallingInRepaymentPeriod(fromDate, toDate))
-		{
+		if (isFallingInRepaymentPeriod(fromDate, toDate)) {
 			loanTermPeriodsInOneYear = calculatePeriodsInOneYear(calculator);
 			repaymentEvery = getPeriodsBetween(fromDate, toDate);
 		}
@@ -1441,63 +1176,51 @@ public final class LoanApplicationTerms
 		final BigDecimal divisor = BigDecimal.valueOf(Double.valueOf("100.0"));
 		final BigDecimal loanTermPeriodsInYearBigDecimal = BigDecimal.valueOf(loanTermPeriodsInOneYear);
 		final BigDecimal oneDayOfYearInterestRate = this.annualNominalInterestRate
-			.divide(loanTermPeriodsInYearBigDecimal, mc).divide(
-				divisor, mc);
+				.divide(loanTermPeriodsInYearBigDecimal, mc).divide(divisor, mc);
 		BigDecimal interestRate = oneDayOfYearInterestRate.multiply(BigDecimal.valueOf(repaymentEvery), mc);
 		return outstandingBalance.getAmount().multiply(interestRate, mc);
 	}
 
-	private long calculatePeriodsInOneYear(final PaymentPeriodsInOneYearCalculator calculator)
-	{
+	private long calculatePeriodsInOneYear(final PaymentPeriodsInOneYearCalculator calculator) {
 
 		// check if daysInYears is set if so change periodsInOneYear to days set
 		// in db
 		long periodsInOneYear;
 		boolean daysInYearToUse = (this.repaymentPeriodFrequencyType.getCode()
-			.equalsIgnoreCase("periodFrequencyType.days")
-			&& !this.daysInYearType
-				.getCode().equalsIgnoreCase("DaysInYearType.actual"));
-		if (daysInYearToUse)
-		{
+				.equalsIgnoreCase("periodFrequencyType.days")
+				&& !this.daysInYearType.getCode().equalsIgnoreCase("DaysInYearType.actual"));
+		if (daysInYearToUse) {
 			periodsInOneYear = this.daysInYearType.getValue().longValue();
-		} else
-		{
+		} else {
 			periodsInOneYear = calculator.calculate(this.repaymentPeriodFrequencyType).longValue();
 		}
-		switch (this.interestCalculationPeriodMethod)
-		{
-			case DAILY:
-				periodsInOneYear = (!this.daysInYearType.getCode().equalsIgnoreCase("DaysInYearType.actual"))
-					? this.daysInYearType
-						.getValue().longValue()
+		switch (this.interestCalculationPeriodMethod) {
+		case DAILY:
+			periodsInOneYear = (!this.daysInYearType.getCode().equalsIgnoreCase("DaysInYearType.actual"))
+					? this.daysInYearType.getValue().longValue()
 					: calculator.calculate(PeriodFrequencyType.DAYS).longValue();
-				break;
-			case INVALID:
-				break;
-			case SAME_AS_REPAYMENT_PERIOD:
-				break;
+			break;
+		case INVALID:
+			break;
+		case SAME_AS_REPAYMENT_PERIOD:
+			break;
 		}
 
 		return periodsInOneYear;
 	}
 
-	private int calculateNumberOfRepaymentsWithPrincipalPayment()
-	{
+	private int calculateNumberOfRepaymentsWithPrincipalPayment() {
 		int numPeriods = calculateNumberOfRemainingPrincipalPaymentPeriods(this.actualNumberOfRepayments,
-			this.periodsCompleted);
-//        numPeriods = numPeriods - this.periodsCompleted;
+				this.periodsCompleted);
+		// numPeriods = numPeriods - this.periodsCompleted;
 		return numPeriods;
 	}
 
-	private Integer calculateNumberOfRemainingInterestPaymentPeriods(
-		final Integer totalNumberOfRepaymentPeriods,
-		int periodsElapsed)
-	{
+	private Integer calculateNumberOfRemainingInterestPaymentPeriods(final Integer totalNumberOfRepaymentPeriods,
+			int periodsElapsed) {
 		int principalFeePeriods = 0;
-		for (Integer intNumber : this.periodNumbersApplicableForInterestGrace)
-		{
-			if (intNumber > periodsElapsed)
-			{
+		for (Integer intNumber : this.periodNumbersApplicableForInterestGrace) {
+			if (intNumber > periodsElapsed) {
 				principalFeePeriods++;
 			}
 		}
@@ -1505,181 +1228,142 @@ public final class LoanApplicationTerms
 		/**
 		 * if grace period available then need to be subtracted
 		 */
-		if (this.interestChargingGrace != null)
-		{
+		if (this.interestChargingGrace != null) {
 			periodsRemaining = periodsRemaining - this.interestChargingGrace;
 		}
 		return periodsRemaining;
 	}
 
-	private Integer calculateLastInterestGracePeriod(int periodNumber)
-	{
+	private Integer calculateLastInterestGracePeriod(int periodNumber) {
 		int lastGracePeriod = 0;
-		for (Integer grace : this.periodNumbersApplicableForInterestGrace)
-		{
-			if (grace < periodNumber && lastGracePeriod < grace)
-			{
+		for (Integer grace : this.periodNumbersApplicableForInterestGrace) {
+			if (grace < periodNumber && lastGracePeriod < grace) {
 				lastGracePeriod = grace;
 			}
 		}
 		return lastGracePeriod;
 	}
 
-	public boolean isPrincipalGraceApplicableForThisPeriod(final int periodNumber)
-	{
+	public boolean isPrincipalGraceApplicableForThisPeriod(final int periodNumber) {
 		boolean isPrincipalGraceApplicableForThisPeriod = false;
-		if (this.periodNumbersApplicableForPrincipalGrace.contains(periodNumber))
-		{
+		if (this.periodNumbersApplicableForPrincipalGrace.contains(periodNumber)) {
 			isPrincipalGraceApplicableForThisPeriod = true;
 		}
 		return isPrincipalGraceApplicableForThisPeriod;
 	}
 
-	public boolean isInterestPaymentGraceApplicableForThisPeriod(final int periodNumber)
-	{
+	public boolean isInterestPaymentGraceApplicableForThisPeriod(final int periodNumber) {
 		boolean isInterestPaymentGraceApplicableForThisPeriod = false;
-		if (this.periodNumbersApplicableForInterestGrace.contains(periodNumber))
-		{
+		if (this.periodNumbersApplicableForInterestGrace.contains(periodNumber)) {
 			isInterestPaymentGraceApplicableForThisPeriod = true;
 		}
 		return isInterestPaymentGraceApplicableForThisPeriod;
 	}
 
-	private boolean isFirstPeriodAfterInterestPaymentGracePeriod(final int periodNumber)
-	{
+	private boolean isFirstPeriodAfterInterestPaymentGracePeriod(final int periodNumber) {
 		return periodNumber > 0 && periodNumber == getInterestPaymentGrace() + 1;
 	}
 
-	private boolean isInterestFreeGracePeriod(final int periodNumber)
-	{
+	private boolean isInterestFreeGracePeriod(final int periodNumber) {
 		return periodNumber > 0 && periodNumber <= getInterestChargingGrace();
 	}
 
-	public Integer getPrincipalGrace()
-	{
+	public Integer getPrincipalGrace() {
 		Integer graceOnPrincipalPayments = Integer.valueOf(0);
-		if (this.principalGrace != null)
-		{
+		if (this.principalGrace != null) {
 			graceOnPrincipalPayments = this.principalGrace;
 		}
 		return graceOnPrincipalPayments;
 	}
 
-	public Integer getRecurringMoratoriumOnPrincipalPeriods()
-	{
+	public Integer getRecurringMoratoriumOnPrincipalPeriods() {
 		Integer recurringMoratoriumOnPrincipalPeriods = Integer.valueOf(0);
-		if (this.recurringMoratoriumOnPrincipalPeriods != null)
-		{
+		if (this.recurringMoratoriumOnPrincipalPeriods != null) {
 			recurringMoratoriumOnPrincipalPeriods = this.recurringMoratoriumOnPrincipalPeriods;
 		}
 		return recurringMoratoriumOnPrincipalPeriods;
 	}
 
-	public Integer getInterestPaymentGrace()
-	{
+	public Integer getInterestPaymentGrace() {
 		Integer graceOnInterestPayments = Integer.valueOf(0);
-		if (this.interestPaymentGrace != null)
-		{
+		if (this.interestPaymentGrace != null) {
 			graceOnInterestPayments = this.interestPaymentGrace;
 		}
 		return graceOnInterestPayments;
 	}
 
-	public Integer getInterestChargingGrace()
-	{
+	public Integer getInterestChargingGrace() {
 		Integer graceOnInterestCharged = Integer.valueOf(0);
-		if (this.interestChargingGrace != null)
-		{
+		if (this.interestChargingGrace != null) {
 			graceOnInterestCharged = this.interestChargingGrace;
 		}
 		return graceOnInterestCharged;
 	}
 
-	private double paymentPerPeriod(
-		final BigDecimal periodicInterestRate,
-		final Money balance,
-		final int periodsElapsed)
-	{
+	private double paymentPerPeriod(final BigDecimal periodicInterestRate, final Money balance,
+			final int periodsElapsed) {
 
-		if (getFixedEmiAmount() == null)
-		{
+		if (getFixedEmiAmount() == null) {
 			final double futureValue = 0;
 			final double principalDouble = balance.getAmount().multiply(BigDecimal.valueOf(-1)).doubleValue();
 
 			final Integer periodsRemaining = calculateNumberOfRemainingPrincipalPaymentPeriods(
-				this.actualNumberOfRepayments,
-				periodsElapsed);
+					this.actualNumberOfRepayments, periodsElapsed);
 
 			double installmentAmount = FinanicalFunctions.pmt(periodicInterestRate.doubleValue(),
-				periodsRemaining.doubleValue(),
-				principalDouble, futureValue, false);
+					periodsRemaining.doubleValue(), principalDouble, futureValue, false);
 
-			if (this.installmentAmountInMultiplesOf != null)
-			{
-				//installmentAmount = Money.roundToMultiplesOf(installmentAmount, this.installmentAmountInMultiplesOf);
+			if (this.installmentAmountInMultiplesOf != null) {
+				// installmentAmount = Money.roundToMultiplesOf(installmentAmount,
+				// this.installmentAmountInMultiplesOf);
 			}
-			
+
 			setFixedEmiAmount(BigDecimal.valueOf(installmentAmount));
 		}
 		return getFixedEmiAmount().doubleValue();
 	}
 
 	private Money calculateDecliningInterestDueForInstallmentBeforeApplyingGrace(
-		final PaymentPeriodsInOneYearCalculator calculator,
-		final MathContext mc,
-		final Money outstandingBalance,
-		LocalDate periodStartDate,
-		LocalDate periodEndDate)
-	{
+			final PaymentPeriodsInOneYearCalculator calculator, final MathContext mc, final Money outstandingBalance,
+			LocalDate periodStartDate, LocalDate periodEndDate) {
 
 		Money interestDue = Money.zero(outstandingBalance.getCurrency());
 
 		final BigDecimal periodicInterestRate = periodicInterestRate(calculator, mc, this.daysInMonthType,
-			this.daysInYearType,
-			periodStartDate, periodEndDate);
+				this.daysInYearType, periodStartDate, periodEndDate);
 		interestDue = outstandingBalance.multiplyRetainScale(periodicInterestRate, mc.getRoundingMode());
 
 		return interestDue;
 	}
 
 	private Money calculateDecliningInterestDueForInstallmentAfterApplyingGrace(
-		final PaymentPeriodsInOneYearCalculator calculator,
-		final double interestCalculationGraceOnRepaymentPeriodFraction,
-		final MathContext mc,
-		final Money outstandingBalance,
-		final int periodNumber,
-		LocalDate periodStartDate,
-		LocalDate periodEndDate)
-	{
+			final PaymentPeriodsInOneYearCalculator calculator,
+			final double interestCalculationGraceOnRepaymentPeriodFraction, final MathContext mc,
+			final Money outstandingBalance, final int periodNumber, LocalDate periodStartDate,
+			LocalDate periodEndDate) {
 
 		Money interest = calculateDecliningInterestDueForInstallmentBeforeApplyingGrace(calculator, mc,
-			outstandingBalance,
-			periodStartDate, periodEndDate);
+				outstandingBalance, periodStartDate, periodEndDate);
 
-		if (isInterestPaymentGraceApplicableForThisPeriod(periodNumber))
-		{
+		if (isInterestPaymentGraceApplicableForThisPeriod(periodNumber)) {
 			interest = interest.zero();
 		}
 
 		Double fraction = interestCalculationGraceOnRepaymentPeriodFraction;
 
-		if (isInterestFreeGracePeriod(periodNumber))
-		{
+		if (isInterestFreeGracePeriod(periodNumber)) {
 			interest = interest.zero();
-		} else if (isInterestFreeGracePeriodFromDate(interestCalculationGraceOnRepaymentPeriodFraction))
-		{
+		} else if (isInterestFreeGracePeriodFromDate(interestCalculationGraceOnRepaymentPeriodFraction)) {
 
-			if (interestCalculationGraceOnRepaymentPeriodFraction >= Integer.valueOf(1).doubleValue())
-			{
+			if (interestCalculationGraceOnRepaymentPeriodFraction >= Integer.valueOf(1).doubleValue()) {
 				interest = interest.zero();
 				fraction = fraction - Integer.valueOf(1).doubleValue();
 
 			} else if (interestCalculationGraceOnRepaymentPeriodFraction > Double.valueOf("0.25")
-				&& interestCalculationGraceOnRepaymentPeriodFraction < Integer.valueOf(1).doubleValue())
-			{
+					&& interestCalculationGraceOnRepaymentPeriodFraction < Integer.valueOf(1).doubleValue()) {
 
 				final Money graceOnInterestForRepaymentPeriod = interest
-					.multipliedBy(interestCalculationGraceOnRepaymentPeriodFraction);
+						.multipliedBy(interestCalculationGraceOnRepaymentPeriodFraction);
 				interest = interest.minus(graceOnInterestForRepaymentPeriod);
 				fraction = Double.valueOf("0");
 			}
@@ -1688,49 +1372,40 @@ public final class LoanApplicationTerms
 		return interest;
 	}
 
-	private boolean isInterestFreeGracePeriodFromDate(final double interestCalculationGraceOnRepaymentPeriodFraction)
-	{
+	private boolean isInterestFreeGracePeriodFromDate(final double interestCalculationGraceOnRepaymentPeriodFraction) {
 		return this.interestChargedFromDate != null
-			&& interestCalculationGraceOnRepaymentPeriodFraction > Double.valueOf("0.0");
+				&& interestCalculationGraceOnRepaymentPeriodFraction > Double.valueOf("0.0");
 	}
 
-	private Money calculateEqualPrincipalDueForInstallment(final MathContext mc, final int periodNumber)
-	{
+	private Money calculateEqualPrincipalDueForInstallment(final MathContext mc, final int periodNumber) {
 		Money principal = this.principal;
-		if (this.fixedPrincipalAmount == null)
-		{
+		if (this.fixedPrincipalAmount == null) {
 			final Integer numberOfPrincipalPaymentPeriods = calculateNumberOfRemainingPrincipalPaymentPeriods(
-				this.actualNumberOfRepayments, periodNumber);
+					this.actualNumberOfRepayments, periodNumber);
 			principal = this.principal.dividedBy(numberOfPrincipalPaymentPeriods, mc.getRoundingMode());
 			this.fixedPrincipalAmount = principal.getAmount();
 		}
 		principal = Money.of(getCurrency(), getFixedPrincipalAmount());
 
-		if (isPrincipalGraceApplicableForThisPeriod(periodNumber))
-		{
+		if (isPrincipalGraceApplicableForThisPeriod(periodNumber)) {
 			principal = principal.zero();
 		}
 		return principal;
 	}
 
-	public void updateFixedPrincipalAmount(final MathContext mc, final int periodNumber, final Money outstandingAmount)
-	{
+	public void updateFixedPrincipalAmount(final MathContext mc, final int periodNumber,
+			final Money outstandingAmount) {
 		final Integer numberOfPrincipalPaymentPeriods = calculateNumberOfRemainingPrincipalPaymentPeriods(
-			this.actualNumberOfRepayments,
-			periodNumber - 1);
+				this.actualNumberOfRepayments, periodNumber - 1);
 		Money principal = outstandingAmount.dividedBy(numberOfPrincipalPaymentPeriods, mc.getRoundingMode());
 		this.fixedPrincipalAmount = principal.getAmount();
 	}
 
-	private Integer calculateNumberOfRemainingPrincipalPaymentPeriods(
-		final Integer totalNumberOfRepaymentPeriods,
-		int periodsElapsed)
-	{
+	private Integer calculateNumberOfRemainingPrincipalPaymentPeriods(final Integer totalNumberOfRepaymentPeriods,
+			int periodsElapsed) {
 		int principalFeePeriods = 0;
-		for (Integer intNumber : this.periodNumbersApplicableForPrincipalGrace)
-		{
-			if (intNumber > periodsElapsed)
-			{
+		for (Integer intNumber : this.periodNumbersApplicableForPrincipalGrace) {
+			if (intNumber > periodsElapsed) {
 				principalFeePeriods++;
 			}
 		}
@@ -1738,509 +1413,397 @@ public final class LoanApplicationTerms
 		return periodsRemaining;
 	}
 
-	public void setFixedPrincipalAmount(BigDecimal fixedPrincipalAmount)
-	{
+	public void setFixedPrincipalAmount(BigDecimal fixedPrincipalAmount) {
 		this.fixedPrincipalAmount = fixedPrincipalAmount;
 	}
 
-	private Money calculatePrincipalDueForInstallment(
-		final int periodNumber,
-		final Money totalDuePerInstallment,
-		final Money periodInterest)
-	{
+	private Money calculatePrincipalDueForInstallment(final int periodNumber, final Money totalDuePerInstallment,
+			final Money periodInterest) {
 
 		Money principal = totalDuePerInstallment.minus(periodInterest);
-		if (isPrincipalGraceApplicableForThisPeriod(periodNumber))
-		{
+		if (isPrincipalGraceApplicableForThisPeriod(periodNumber)) {
 			principal = principal.zero();
 		}
 		return principal;
 	}
 
-	private Money calculateTotalDueForEqualInstallmentRepaymentPeriod(
-		final BigDecimal periodicInterestRate,
-		final Money balance,
-		final int periodsElapsed)
-	{
+	private Money calculateTotalDueForEqualInstallmentRepaymentPeriod(final BigDecimal periodicInterestRate,
+			final Money balance, final int periodsElapsed) {
 
 		final double paymentPerRepaymentPeriod = paymentPerPeriod(periodicInterestRate, balance, periodsElapsed);
 
 		return Money.of(balance.getCurrency(), BigDecimal.valueOf(paymentPerRepaymentPeriod));
 	}
 
-	public LoanProductRelatedDetail toLoanProductRelatedDetail()
-	{
+	public LoanProductRelatedDetail toLoanProductRelatedDetail() {
 		final MonetaryCurrency currency = new MonetaryCurrency(this.currency.getCode(),
-			this.currency.getDecimalPlaces(),
-			this.currency.getCurrencyInMultiplesOf());
+				this.currency.getDecimalPlaces(), this.currency.getCurrencyInMultiplesOf());
 
-		return LoanProductRelatedDetail.createFrom(
-		        currency, 
-		        this.principal.getAmount(), 
-		        this.interestRatePerPeriod,
-			this.interestRatePeriodFrequencyType, 
-			this.annualNominalInterestRate, 
-			this.interestMethod,
-			this.interestCalculationPeriodMethod, 
-			this.allowPartialPeriodInterestCalcualtion, 
-			this.repaymentEvery,
-			this.repaymentPeriodFrequencyType, 
-			this.numberOfRepayments, 
-			this.principalGrace,
-			this.recurringMoratoriumOnPrincipalPeriods, 
-			this.interestPaymentGrace,
-			this.interestChargingGrace, 
-			this.amortizationMethod, 
-			this.inArrearsTolerance.getAmount(),
-			this.graceOnArrearsAgeing,
-			this.daysInMonthType.getValue(), 
-			this.daysInYearType.getValue(), 
-			this.interestRecalculationEnabled,
-			this.isEqualAmortization);
+		return LoanProductRelatedDetail.createFrom(currency, this.principal.getAmount(), this.interestRatePerPeriod,
+				this.interestRatePeriodFrequencyType, this.annualNominalInterestRate, this.interestMethod,
+				this.interestCalculationPeriodMethod, this.allowPartialPeriodInterestCalcualtion, this.repaymentEvery,
+				this.repaymentPeriodFrequencyType, this.numberOfRepayments, this.principalGrace,
+				this.recurringMoratoriumOnPrincipalPeriods, this.interestPaymentGrace, this.interestChargingGrace,
+				this.amortizationMethod, this.inArrearsTolerance.getAmount(), this.graceOnArrearsAgeing,
+				this.daysInMonthType.getValue(), this.daysInYearType.getValue(), this.interestRecalculationEnabled,
+				this.isEqualAmortization);
 	}
 
-	public Integer getLoanTermFrequency()
-	{
+	public Integer getLoanTermFrequency() {
 		return this.loanTermFrequency;
 	}
 
-	public PeriodFrequencyType getLoanTermPeriodFrequencyType()
-	{
+	public PeriodFrequencyType getLoanTermPeriodFrequencyType() {
 		return this.loanTermPeriodFrequencyType;
 	}
 
-	public Integer getRepaymentEvery()
-	{
+	public Integer getRepaymentEvery() {
 		return this.repaymentEvery;
 	}
 
-	public PeriodFrequencyType getRepaymentPeriodFrequencyType()
-	{
+	public PeriodFrequencyType getRepaymentPeriodFrequencyType() {
 		return this.repaymentPeriodFrequencyType;
 	}
 
-	public Date getRepaymentStartFromDate()
-	{
+	public Date getRepaymentStartFromDate() {
 		Date dateValue = null;
-		if (this.repaymentsStartingFromDate != null)
-		{
+		if (this.repaymentsStartingFromDate != null) {
 			dateValue = this.repaymentsStartingFromDate.toDate();
 		}
 		return dateValue;
 	}
 
-	public Date getInterestChargedFromDate()
-	{
+	public Date getInterestChargedFromDate() {
 		Date dateValue = null;
-		if (this.interestChargedFromDate != null)
-		{
+		if (this.interestChargedFromDate != null) {
 			dateValue = this.interestChargedFromDate.toDate();
 		}
 		return dateValue;
 	}
 
-	public void setPrincipal(Money principal)
-	{
+	public void setPrincipal(Money principal) {
 		this.principal = principal;
 	}
 
-	public LocalDate getInterestChargedFromLocalDate()
-	{
+	public LocalDate getInterestChargedFromLocalDate() {
 		return this.interestChargedFromDate;
 	}
 
-	public InterestMethod getInterestMethod()
-	{
+	public InterestMethod getInterestMethod() {
 		return this.interestMethod;
 	}
 
-	public AmortizationMethod getAmortizationMethod()
-	{
+	public AmortizationMethod getAmortizationMethod() {
 		return this.amortizationMethod;
 	}
 
-	public MonetaryCurrency getCurrency()
-	{
+	public MonetaryCurrency getCurrency() {
 		return this.principal.getCurrency();
 	}
 
-	public Integer getNumberOfRepayments()
-	{
+	public Integer getNumberOfRepayments() {
 		return this.numberOfRepayments;
 	}
 
-	public LocalDate getExpectedDisbursementDate()
-	{
+	public LocalDate getExpectedDisbursementDate() {
 		return this.expectedDisbursementDate;
 	}
 
-	public LocalDate getRepaymentsStartingFromLocalDate()
-	{
+	public LocalDate getRepaymentsStartingFromLocalDate() {
 		return this.repaymentsStartingFromDate;
 	}
 
-	public LocalDate getCalculatedRepaymentsStartingFromLocalDate()
-	{
+	public LocalDate getCalculatedRepaymentsStartingFromLocalDate() {
 		return this.calculatedRepaymentsStartingFromDate;
 	}
 
-	public Money getPrincipal()
-	{
+	public Money getPrincipal() {
 		return this.principal;
 	}
 
-	public Money getApprovedPrincipal()
-	{
+	public Money getApprovedPrincipal() {
 		return this.approvedPrincipal;
 	}
 
-	public List<DisbursementData> getDisbursementDatas()
-	{
+	public List<DisbursementData> getDisbursementDatas() {
 		return this.disbursementDatas;
 	}
 
-	public boolean isMultiDisburseLoan()
-	{
+	public boolean isMultiDisburseLoan() {
 		return this.multiDisburseLoan;
 	}
 
-	public Money getMaxOutstandingBalance()
-	{
+	public Money getMaxOutstandingBalance() {
 		return Money.of(getCurrency(), this.maxOutstandingBalance);
 	}
 
-	public BigDecimal getFixedEmiAmount()
-	{
+	public BigDecimal getFixedEmiAmount() {
 		BigDecimal fixedEmiAmount = this.fixedEmiAmount;
-		if (getCurrentPeriodFixedEmiAmount() != null)
-		{
+		if (getCurrentPeriodFixedEmiAmount() != null) {
 			fixedEmiAmount = getCurrentPeriodFixedEmiAmount();
 		}
 		return fixedEmiAmount;
 	}
 
-	public Integer getNthDay()
-	{
+	public Integer getNthDay() {
 		return this.nthDay;
 	}
 
-	public DayOfWeekType getWeekDayType()
-	{
+	public DayOfWeekType getWeekDayType() {
 		return this.weekDayType;
 	}
 
-	public void setFixedEmiAmount(BigDecimal fixedEmiAmount)
-	{
+	public void setFixedEmiAmount(BigDecimal fixedEmiAmount) {
 		this.fixedEmiAmount = fixedEmiAmount;
 	}
 
-	public void resetFixedEmiAmount()
-	{
+	public void resetFixedEmiAmount() {
 		this.fixedEmiAmount = this.actualFixedEmiAmount;
 	}
 
-	public LoanRescheduleStrategyMethod getLoanRescheduleStrategyMethod()
-	{
+	public LoanRescheduleStrategyMethod getLoanRescheduleStrategyMethod() {
 		return LoanRescheduleStrategyMethod.REDUCE_EMI_AMOUNT;
 	}
 
-	public boolean isInterestRecalculationEnabled()
-	{
+	public boolean isInterestRecalculationEnabled() {
 		return this.interestRecalculationEnabled;
 	}
 
-	public LoanRescheduleStrategyMethod getRescheduleStrategyMethod()
-	{
+	public LoanRescheduleStrategyMethod getRescheduleStrategyMethod() {
 		return this.rescheduleStrategyMethod;
 	}
 
-	public InterestRecalculationCompoundingMethod getInterestRecalculationCompoundingMethod()
-	{
+	public InterestRecalculationCompoundingMethod getInterestRecalculationCompoundingMethod() {
 		return this.interestRecalculationCompoundingMethod;
 	}
 
-	public CalendarInstance getRestCalendarInstance()
-	{
+	public CalendarInstance getRestCalendarInstance() {
 		return this.restCalendarInstance;
 	}
 
-	private boolean isFallingInRepaymentPeriod(LocalDate fromDate, LocalDate toDate)
-	{
+	private boolean isFallingInRepaymentPeriod(LocalDate fromDate, LocalDate toDate) {
 		boolean isSameAsRepaymentPeriod = false;
 		if (this.interestCalculationPeriodMethod.getValue()
-			.equals(InterestCalculationPeriodMethod.SAME_AS_REPAYMENT_PERIOD.getValue()))
-		{
-			switch (this.repaymentPeriodFrequencyType)
-			{
-				case WEEKS:
-					int days = Days.daysBetween(fromDate, toDate).getDays();
-					isSameAsRepaymentPeriod = (days % 7) == 0;
-					break;
-				case MONTHS:
-					boolean isFromDateOnEndDate = false;
-					if (fromDate.getDayOfMonth() > fromDate.plusDays(1).getDayOfMonth())
-					{
-						isFromDateOnEndDate = true;
-					}
-					boolean isToDateOnEndDate = false;
-					if (toDate.getDayOfMonth() > toDate.plusDays(1).getDayOfMonth())
-					{
-						isToDateOnEndDate = true;
-					}
+				.equals(InterestCalculationPeriodMethod.SAME_AS_REPAYMENT_PERIOD.getValue())) {
+			switch (this.repaymentPeriodFrequencyType) {
+			case WEEKS:
+				int days = Days.daysBetween(fromDate, toDate).getDays();
+				isSameAsRepaymentPeriod = (days % 7) == 0;
+				break;
+			case MONTHS:
+				boolean isFromDateOnEndDate = false;
+				if (fromDate.getDayOfMonth() > fromDate.plusDays(1).getDayOfMonth()) {
+					isFromDateOnEndDate = true;
+				}
+				boolean isToDateOnEndDate = false;
+				if (toDate.getDayOfMonth() > toDate.plusDays(1).getDayOfMonth()) {
+					isToDateOnEndDate = true;
+				}
 
-					if (isFromDateOnEndDate && isToDateOnEndDate)
-					{
-						isSameAsRepaymentPeriod = true;
-					} else
-					{
+				if (isFromDateOnEndDate && isToDateOnEndDate) {
+					isSameAsRepaymentPeriod = true;
+				} else {
 
-						int months = getPeriodsBetween(fromDate, toDate);
-						fromDate = fromDate.plusMonths(months);
-						isSameAsRepaymentPeriod = fromDate.isEqual(toDate);
-					}
+					int months = getPeriodsBetween(fromDate, toDate);
+					fromDate = fromDate.plusMonths(months);
+					isSameAsRepaymentPeriod = fromDate.isEqual(toDate);
+				}
 
-					break;
-				default:
-					break;
+				break;
+			default:
+				break;
 			}
 		}
 		return isSameAsRepaymentPeriod;
 	}
 
-	private Integer getPeriodsBetween(LocalDate fromDate, LocalDate toDate)
-	{
+	private Integer getPeriodsBetween(LocalDate fromDate, LocalDate toDate) {
 		Integer numberOfPeriods = 0;
 		PeriodType periodType = PeriodType.yearMonthDay();
 		Period difference = new Period(fromDate, toDate, periodType);
-		switch (this.repaymentPeriodFrequencyType)
-		{
-			case DAYS:
-				numberOfPeriods = difference.getDays();
-				break;
-			case WEEKS:
-				periodType = PeriodType.weeks();
-				difference = new Period(fromDate, toDate, periodType);
-				numberOfPeriods = difference.getWeeks();
-				break;
-			case MONTHS:
-				numberOfPeriods = difference.getMonths();
-				break;
-			case YEARS:
-				numberOfPeriods = difference.getYears();
-				break;
-			default:
-				break;
+		switch (this.repaymentPeriodFrequencyType) {
+		case DAYS:
+			numberOfPeriods = difference.getDays();
+			break;
+		case WEEKS:
+			periodType = PeriodType.weeks();
+			difference = new Period(fromDate, toDate, periodType);
+			numberOfPeriods = difference.getWeeks();
+			break;
+		case MONTHS:
+			numberOfPeriods = difference.getMonths();
+			break;
+		case YEARS:
+			numberOfPeriods = difference.getYears();
+			break;
+		default:
+			break;
 		}
 		return numberOfPeriods;
 	}
 
-	public RecalculationFrequencyType getRecalculationFrequencyType()
-	{
+	public RecalculationFrequencyType getRecalculationFrequencyType() {
 		return this.recalculationFrequencyType;
 	}
 
-	public void updateNumberOfRepayments(final Integer numberOfRepayments)
-	{
+	public void updateNumberOfRepayments(final Integer numberOfRepayments) {
 		this.numberOfRepayments = numberOfRepayments;
 		this.actualNumberOfRepayments = numberOfRepayments + getLoanTermVariations().adjustNumberOfRepayments();
 
 	}
 
-	public void updatePrincipalGrace(final Integer principalGrace)
-	{
+	public void updatePrincipalGrace(final Integer principalGrace) {
 		this.principalGrace = principalGrace;
 	}
 
-	public void updateInterestPaymentGrace(final Integer interestPaymentGrace)
-	{
+	public void updateInterestPaymentGrace(final Integer interestPaymentGrace) {
 		this.interestPaymentGrace = interestPaymentGrace;
 	}
 
-	public void updateInterestRatePerPeriod(BigDecimal interestRatePerPeriod)
-	{
-		if (interestRatePerPeriod != null)
-		{
+	public void updateInterestRatePerPeriod(BigDecimal interestRatePerPeriod) {
+		if (interestRatePerPeriod != null) {
 			this.interestRatePerPeriod = interestRatePerPeriod;
 		}
 	}
 
-	public void updateAnnualNominalInterestRate(BigDecimal annualNominalInterestRate)
-	{
-		if (annualNominalInterestRate != null)
-		{
+	public void updateAnnualNominalInterestRate(BigDecimal annualNominalInterestRate) {
+		if (annualNominalInterestRate != null) {
 			this.annualNominalInterestRate = annualNominalInterestRate;
 		}
 	}
 
-	public BigDecimal getAnnualNominalInterestRate()
-	{
+	public BigDecimal getAnnualNominalInterestRate() {
 		return this.annualNominalInterestRate;
 	}
 
-	public void updateInterestChargedFromDate(LocalDate interestChargedFromDate)
-	{
-		if (interestChargedFromDate != null)
-		{
+	public void updateInterestChargedFromDate(LocalDate interestChargedFromDate) {
+		if (interestChargedFromDate != null) {
 			this.interestChargedFromDate = interestChargedFromDate;
 		}
 	}
 
-	public void updateLoanTermFrequency(Integer loanTermFrequency)
-	{
-		if (loanTermFrequency != null)
-		{
+	public void updateLoanTermFrequency(Integer loanTermFrequency) {
+		if (loanTermFrequency != null) {
 			this.loanTermFrequency = loanTermFrequency;
 		}
 	}
 
-	public void updateTotalInterestDue(Money totalInterestDue)
-	{
+	public void updateTotalInterestDue(Money totalInterestDue) {
 		this.totalInterestDue = totalInterestDue;
 	}
 
-	public ApplicationCurrency getApplicationCurrency()
-	{
+	public ApplicationCurrency getApplicationCurrency() {
 		return this.currency;
 	}
 
-	public InterestCalculationPeriodMethod getInterestCalculationPeriodMethod()
-	{
+	public InterestCalculationPeriodMethod getInterestCalculationPeriodMethod() {
 		return this.interestCalculationPeriodMethod;
 	}
 
-	public LoanPreClosureInterestCalculationStrategy getPreClosureInterestCalculationStrategy()
-	{
+	public LoanPreClosureInterestCalculationStrategy getPreClosureInterestCalculationStrategy() {
 		return this.preClosureInterestCalculationStrategy;
 	}
 
-	public CalendarInstance getCompoundingCalendarInstance()
-	{
+	public CalendarInstance getCompoundingCalendarInstance() {
 		return this.compoundingCalendarInstance;
 	}
 
-	public RecalculationFrequencyType getCompoundingFrequencyType()
-	{
+	public RecalculationFrequencyType getCompoundingFrequencyType() {
 		return this.compoundingFrequencyType;
 	}
 
-	public BigDecimal getActualFixedEmiAmount()
-	{
+	public BigDecimal getActualFixedEmiAmount() {
 		return this.actualFixedEmiAmount;
 	}
 
-	public Calendar getLoanCalendar()
-	{
+	public Calendar getLoanCalendar() {
 		return loanCalendar;
 	}
 
-	public BigDecimal getFixedPrincipalAmount()
-	{
+	public BigDecimal getFixedPrincipalAmount() {
 		BigDecimal fixedPrincipalAmount = this.fixedPrincipalAmount;
-		if (getCurrentPeriodFixedPrincipalAmount() != null)
-		{
+		if (getCurrentPeriodFixedPrincipalAmount() != null) {
 			fixedPrincipalAmount = getCurrentPeriodFixedPrincipalAmount();
 		}
 		return fixedPrincipalAmount;
 	}
 
-	public LoanTermVariationsDataWrapper getLoanTermVariations()
-	{
+	public LoanTermVariationsDataWrapper getLoanTermVariations() {
 		return this.variationsDataWrapper;
 	}
 
-	public BigDecimal getCurrentPeriodFixedEmiAmount()
-	{
+	public BigDecimal getCurrentPeriodFixedEmiAmount() {
 		return this.currentPeriodFixedEmiAmount;
 	}
 
-	public void setCurrentPeriodFixedEmiAmount(BigDecimal currentPeriodFixedEmiAmount)
-	{
+	public void setCurrentPeriodFixedEmiAmount(BigDecimal currentPeriodFixedEmiAmount) {
 		this.currentPeriodFixedEmiAmount = currentPeriodFixedEmiAmount;
 	}
 
-	public BigDecimal getCurrentPeriodFixedPrincipalAmount()
-	{
+	public BigDecimal getCurrentPeriodFixedPrincipalAmount() {
 		return this.currentPeriodFixedPrincipalAmount;
 	}
 
-	public void setCurrentPeriodFixedPrincipalAmount(BigDecimal currentPeriodFixedPrincipalAmount)
-	{
+	public void setCurrentPeriodFixedPrincipalAmount(BigDecimal currentPeriodFixedPrincipalAmount) {
 		this.currentPeriodFixedPrincipalAmount = currentPeriodFixedPrincipalAmount;
 	}
 
-	public Integer fetchNumberOfRepaymentsAfterExceptions()
-	{
+	public Integer fetchNumberOfRepaymentsAfterExceptions() {
 		return this.actualNumberOfRepayments;
 	}
 
-	public LocalDate getSeedDate()
-	{
+	public LocalDate getSeedDate() {
 		return this.seedDate;
 	}
 
-	public CalendarHistoryDataWrapper getCalendarHistoryDataWrapper()
-	{
+	public CalendarHistoryDataWrapper getCalendarHistoryDataWrapper() {
 		return this.calendarHistoryDataWrapper;
 	}
 
-	public Boolean isInterestChargedFromDateSameAsDisbursalDateEnabled()
-	{
+	public Boolean isInterestChargedFromDateSameAsDisbursalDateEnabled() {
 		return this.isInterestChargedFromDateSameAsDisbursalDateEnabled;
 	}
 
-	public Integer getNumberOfdays()
-	{
+	public Integer getNumberOfdays() {
 		return numberOfDays;
 	}
 
-	public boolean isSkipRepaymentOnFirstDayofMonth()
-	{
+	public boolean isSkipRepaymentOnFirstDayofMonth() {
 		return isSkipRepaymentOnFirstDayOfMonth;
 	}
 
-	public HolidayDetailDTO getHolidayDetailDTO()
-	{
+	public HolidayDetailDTO getHolidayDetailDTO() {
 		return this.holidayDetailDTO;
 	}
 
-	public boolean allowCompoundingOnEod()
-	{
+	public boolean allowCompoundingOnEod() {
 		return this.allowCompoundingOnEod;
 	}
 
-	public Money getTotalDisbursedAmount()
-	{
+	public Money getTotalDisbursedAmount() {
 		Money disbursedAmount = Money.zero(getCurrency());
-		if (isMultiDisburseLoan())
-		{
-			for (DisbursementData disbursement : getDisbursementDatas())
-			{
-				if (disbursement.isDisbursed())
-				{
+		if (isMultiDisburseLoan()) {
+			for (DisbursementData disbursement : getDisbursementDatas()) {
+				if (disbursement.isDisbursed()) {
 					disbursedAmount = disbursedAmount.plus(disbursement.amount());
 				}
 			}
-		} else
-		{
+		} else {
 			disbursedAmount = getPrincipal();
 		}
 		return disbursedAmount;
 	}
 
-	public void updatePeriodNumberApplicableForPrincipalOrInterestGrace(final Integer periodsApplicationForGrace)
-	{
+	public void updatePeriodNumberApplicableForPrincipalOrInterestGrace(final Integer periodsApplicationForGrace) {
 		int applicablePeriodNumber = periodsApplicationForGrace;
 		int graceOnPrincipal = defaultToZeroIfNull(this.principalGrace);
 		int graceOnInterest = defaultToZeroIfNull(this.interestPaymentGrace);
 
-		while (graceOnPrincipal > 0 || graceOnInterest > 0)
-		{
-			if (graceOnPrincipal > 0)
-			{
+		while (graceOnPrincipal > 0 || graceOnInterest > 0) {
+			if (graceOnPrincipal > 0) {
 				this.periodNumbersApplicableForPrincipalGrace.add(applicablePeriodNumber);
 			}
-			if (graceOnInterest > 0)
-			{
+			if (graceOnInterest > 0) {
 				this.periodNumbersApplicableForInterestGrace.add(applicablePeriodNumber);
 			}
 			applicablePeriodNumber++;
@@ -2254,41 +1817,33 @@ public final class LoanApplicationTerms
 	 * 
 	 * @return integer value equal/greater than 0
 	 **/
-	private Integer defaultToZeroIfNull(Integer value)
-	{
+	private Integer defaultToZeroIfNull(Integer value) {
 
 		return (value != null) ? value : 0;
 	}
 
-	public void updateExcludePeriodsForCalculation(Integer excludePeriodsForCalculation)
-	{
+	public void updateExcludePeriodsForCalculation(Integer excludePeriodsForCalculation) {
 		this.excludePeriodsForCalculation = excludePeriodsForCalculation;
 		this.extraPeriods = 0;
 	}
 
-	public Integer getActualNoOfRepaymnets()
-	{
+	public Integer getActualNoOfRepaymnets() {
 		return this.actualNumberOfRepayments;
 	}
 
-	public Money getTotalInterestDue()
-	{
+	public Money getTotalInterestDue() {
 		return this.totalInterestDue;
 	}
 
-	private void updateRecurringMoratoriumOnPrincipalPeriods(Integer periodNumber)
-	{
+	private void updateRecurringMoratoriumOnPrincipalPeriods(Integer periodNumber) {
 		Boolean isPrincipalGraceApplicableForThisPeriod = false;
 		Integer numberOfRepayments = this.actualNumberOfRepayments;
-		if (this.getRecurringMoratoriumOnPrincipalPeriods() > 0)
-		{
-			while (numberOfRepayments > 0)
-			{
+		if (this.getRecurringMoratoriumOnPrincipalPeriods() > 0) {
+			while (numberOfRepayments > 0) {
 				isPrincipalGraceApplicableForThisPeriod = ((periodNumber > 0 && periodNumber <= getPrincipalGrace())
-					|| (periodNumber > 0 && (((periodNumber - getPrincipalGrace()) % (this
-						.getRecurringMoratoriumOnPrincipalPeriods() + 1)) != 1)));
-				if (isPrincipalGraceApplicableForThisPeriod)
-				{
+						|| (periodNumber > 0 && (((periodNumber - getPrincipalGrace())
+								% (this.getRecurringMoratoriumOnPrincipalPeriods() + 1)) != 1)));
+				if (isPrincipalGraceApplicableForThisPeriod) {
 					this.periodNumbersApplicableForPrincipalGrace.add(periodNumber);
 				}
 				numberOfRepayments--;
@@ -2298,41 +1853,32 @@ public final class LoanApplicationTerms
 
 	}
 
-	public void setTotalPrincipalAccounted(Money totalPrincipalAccounted)
-	{
+	public void setTotalPrincipalAccounted(Money totalPrincipalAccounted) {
 		this.totalPrincipalAccountedForInterestCalcualtion = totalPrincipalAccounted;
 	}
 
 	// Used for FLAT loans to calculate principal and interest per installment
-	public void updateAccountedTillPeriod(
-		int periodNumber,
-		Money totalPrincipalAccounted,
-		Money totalInterestAccounted,
-		int extendPeriods)
-	{
+	public void updateAccountedTillPeriod(int periodNumber, Money totalPrincipalAccounted, Money totalInterestAccounted,
+			int extendPeriods) {
 		this.periodsCompleted = periodNumber;
 		this.totalPrincipalAccounted = totalPrincipalAccounted;
 		this.totalInterestAccounted = totalInterestAccounted;
 		this.extraPeriods = this.extraPeriods + extendPeriods;
 	}
 
-	public void updateTotalInterestAccounted(Money totalInterestAccounted)
-	{
+	public void updateTotalInterestAccounted(Money totalInterestAccounted) {
 		this.totalInterestAccounted = totalInterestAccounted;
 	}
 
-	public void setSeedDate(LocalDate seedDate)
-	{
+	public void setSeedDate(LocalDate seedDate) {
 		this.seedDate = seedDate;
 	}
 
-	public boolean isEqualAmortization()
-	{
+	public boolean isEqualAmortization() {
 		return isEqualAmortization;
 	}
 
-	public void setEqualAmortization(boolean isEqualAmortization)
-	{
+	public void setEqualAmortization(boolean isEqualAmortization) {
 		this.isEqualAmortization = isEqualAmortization;
 	}
 
