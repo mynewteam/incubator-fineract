@@ -42,7 +42,7 @@ public class Document extends AbstractPersistableCustom<Long> {
     @Column(name = "file_name", length = 250)
     private String fileName;
 
-    @Column(name = "size")
+    @Column(name = "sizes")
     private Long size;
 
     @Column(name = "type", length = 50)
@@ -57,15 +57,19 @@ public class Document extends AbstractPersistableCustom<Long> {
     @Column(name = "storage_type_enum")
     private Integer storageType;
 
-    public Document() {}
-
-    public static Document createNew(final String parentEntityType, final Long parentEntityId, final String name, final String fileName,
-            final Long size, final String type, final String description, final String location, final StorageType storageType) {
-        return new Document(parentEntityType, parentEntityId, name, fileName, size, type, description, location, storageType);
+    public Document() {
     }
 
-    private Document(final String parentEntityType, final Long parentEntityId, final String name, final String fileName, final Long size,
-            final String type, final String description, final String location, final StorageType storageType) {
+    public static Document createNew(final String parentEntityType, final Long parentEntityId, final String name,
+            final String fileName, final Long size, final String type, final String description, final String location,
+            final StorageType storageType) {
+        return new Document(parentEntityType, parentEntityId, name, fileName, size, type, description, location,
+                storageType);
+    }
+
+    private Document(final String parentEntityType, final Long parentEntityId, final String name, final String fileName,
+            final Long size, final String type, final String description, final String location,
+            final StorageType storageType) {
         this.parentEntityType = StringUtils.defaultIfEmpty(parentEntityType, null);
         this.parentEntityId = parentEntityId;
         this.name = StringUtils.defaultIfEmpty(name, null);

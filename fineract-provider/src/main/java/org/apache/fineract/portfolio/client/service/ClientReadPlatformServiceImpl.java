@@ -201,7 +201,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 		// }
 		List<Object> paramList = new ArrayList<>(Arrays.asList(underHierarchySearchString, underHierarchySearchString));
 		final StringBuilder sqlBuilder = new StringBuilder(200);
-		sqlBuilder.append("select SQL_CALC_FOUND_ROWS ");
+		sqlBuilder.append("select ");
 		sqlBuilder.append(this.clientMapper.schema());
 		sqlBuilder.append(" where (o.hierarchy like ? or transferToOffice.hierarchy like ?) ");
 
@@ -233,11 +233,15 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 				// if (searchParameters.isOffset()) {
 				// sqlBuilder.append(" offset ").append(searchParameters.getOffset());
 				// }
+
+				if (searchParameters.isOffset()) {
+					sqlBuilder.append(" offset ").append(searchParameters.getOffset()).append(" rows ");
+				}
+				sqlBuilder.append(" fetch next ").append(searchParameters.getLimit()).append(" rows only");
 			}
 		}
-		final String sqlCountRows = "SELECT FOUND_ROWS()";
-		return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlCountRows, sqlBuilder.toString(),
-				paramList.toArray(), this.clientMapper);
+		return this.paginationHelper.fetchPage(this.jdbcTemplate, "", sqlBuilder.toString(), paramList.toArray(),
+				this.clientMapper);
 	}
 
 	private String buildSqlStringFromClientCriteria(String schemaSql, final SearchParameters searchParameters,

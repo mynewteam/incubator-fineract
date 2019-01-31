@@ -156,7 +156,7 @@ public class ClientChargeReadPlatformServiceImpl implements ClientChargeReadPlat
 	{
 		final ClientChargeMapper rm = new ClientChargeMapper();
 		final StringBuilder sqlBuilder = new StringBuilder();
-		sqlBuilder.append("select SQL_CALC_FOUND_ROWS ").append(rm.schema()).append(" where cc.client_id=? ");
+		sqlBuilder.append("select ").append(rm.schema()).append(" where cc.client_id=? ");
 
 		// filter for active charges
 		if (status.equalsIgnoreCase(ClientApiConstants.CLIENT_CHARGE_QUERY_PARAM_STATUS_VALUE_ACTIVE))
@@ -181,11 +181,16 @@ public class ClientChargeReadPlatformServiceImpl implements ClientChargeReadPlat
 		// apply limit and offsets
 		if (searchParameters.isLimited())
 		{
-			sqlBuilder.append(" limit ").append(searchParameters.getLimit());
-			if (searchParameters.isOffset())
-			{
-				sqlBuilder.append(" offset ").append(searchParameters.getOffset());
+			if (searchParameters.isOffset()) {
+				sqlBuilder.append(" offset ").append(searchParameters.getOffset()).append(" rows ");
 			}
+			sqlBuilder.append(" fetch next ").append(searchParameters.getLimit()).append(" rows only");
+			
+			// sqlBuilder.append(" limit ").append(searchParameters.getLimit());
+			// if (searchParameters.isOffset())
+			// {
+			// 	sqlBuilder.append(" offset ").append(searchParameters.getOffset());
+			// }
 		}
 
 		final String sqlCountRows = "SELECT FOUND_ROWS()";

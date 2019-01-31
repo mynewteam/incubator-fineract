@@ -58,7 +58,7 @@ public class DepositAccountOnHoldTransactionReadPlatformServiceImpl implements D
     public Page<DepositAccountOnHoldTransactionData> retriveAll(Long savingsId, Long guarantorFundingId, SearchParameters searchParameters) {
         final StringBuilder sqlBuilder = new StringBuilder(200);
         List<Long> paramObj = new ArrayList<>(2);
-        sqlBuilder.append("select SQL_CALC_FOUND_ROWS ");
+        sqlBuilder.append("select  ");
         sqlBuilder.append(this.mapper.schema());
 
         sqlBuilder.append(" where tr.savings_account_id = ? ");
@@ -79,10 +79,15 @@ public class DepositAccountOnHoldTransactionReadPlatformServiceImpl implements D
         }
 
         if (searchParameters.isLimited()) {
-            sqlBuilder.append(" limit ").append(searchParameters.getLimit());
             if (searchParameters.isOffset()) {
-                sqlBuilder.append(" offset ").append(searchParameters.getOffset());
+                sqlBuilder.append(" offset ").append(searchParameters.getOffset()).append(" rows ");
             }
+            sqlBuilder.append(" fetch next ").append(searchParameters.getLimit()).append(" rows only");
+            
+            // sqlBuilder.append(" limit ").append(searchParameters.getLimit());
+            // if (searchParameters.isOffset()) {
+            //     sqlBuilder.append(" offset ").append(searchParameters.getOffset());
+            // }
         }
 
         final String sqlCountRows = "SELECT FOUND_ROWS()";

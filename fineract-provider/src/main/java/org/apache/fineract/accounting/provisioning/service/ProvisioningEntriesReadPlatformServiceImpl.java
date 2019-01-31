@@ -63,15 +63,15 @@ public class ProvisioningEntriesReadPlatformServiceImpl implements ProvisioningE
         return this.jdbcTemplate.query(sql, mapper, new Object[] {});
     }
 
-    private static final class LoanProductProvisioningEntryMapper implements RowMapper<LoanProductProvisioningEntryData> {
+    private static final class LoanProductProvisioningEntryMapper
+            implements RowMapper<LoanProductProvisioningEntryData> {
 
         private final StringBuilder sqlQuery;
 
         protected LoanProductProvisioningEntryMapper(String formattedDate) {
-            sqlQuery = new StringBuilder()
-                    .append("select if(loan.loan_type_enum=1, mclient.office_id, mgroup.office_id) as office_id, loan.loan_type_enum, pcd.criteria_id as criteriaid, loan.product_id,loan.currency_code,")
-                    .append("GREATEST(datediff(")
-                    .append(formattedDate)
+            sqlQuery = new StringBuilder().append(
+                    "select if(loan.loan_type_enum=1, mclient.office_id, mgroup.office_id) as office_id, loan.loan_type_enum, pcd.criteria_id as criteriaid, loan.product_id,loan.currency_code,")
+                    .append("GREATEST(datediff(").append(formattedDate)
                     .append(",sch.duedate),0) as numberofdaysoverdue,sch.duedate, pcd.category_id, pcd.provision_percentage,")
                     .append("loan.total_outstanding_derived as outstandingbalance, pcd.liability_account, pcd.expense_account from m_loan_repayment_schedule sch")
                     .append(" LEFT JOIN m_loan loan on sch.loan_id = loan.id")
@@ -79,7 +79,8 @@ public class ProvisioningEntriesReadPlatformServiceImpl implements ProvisioningE
                     .append(" JOIN m_provisioning_criteria_definition pcd on pcd.criteria_id = lpm.criteria_id and ")
                     .append("(pcd.min_age <= GREATEST(datediff(").append(formattedDate).append(",sch.duedate),0) and ")
                     .append("GREATEST(datediff(").append(formattedDate).append(",sch.duedate),0) <= pcd.max_age) and ")
-                    .append("pcd.criteria_id is not null ").append("LEFT JOIN m_client mclient ON mclient.id = loan.client_id ")
+                    .append("pcd.criteria_id is not null ")
+                    .append("LEFT JOIN m_client mclient ON mclient.id = loan.client_id ")
                     .append("LEFT JOIN m_group mgroup ON mgroup.id = loan.group_id ")
                     .append("where loan.loan_status_id=300 and sch.duedate = ")
                     .append("(select MIN(sch1.duedate) from m_loan_repayment_schedule sch1 where sch1.loan_id=loan.id and sch1.completed_derived=false)");
@@ -100,8 +101,8 @@ public class ProvisioningEntriesReadPlatformServiceImpl implements ProvisioningE
             Long criteriaId = rs.getLong("criteriaid");
             Long historyId = null;
 
-            return new LoanProductProvisioningEntryData(historyId, officeId, currentcyCode, productId, categoryId, overdueDays, percentage,
-                    outstandingBalance, liabilityAccountCode, expenseAccountCode, criteriaId);
+            return new LoanProductProvisioningEntryData(historyId, officeId, currentcyCode, productId, categoryId,
+                    overdueDays, percentage, outstandingBalance, liabilityAccountCode, expenseAccountCode, criteriaId);
         }
 
         public String schema() {
@@ -119,10 +120,11 @@ public class ProvisioningEntriesReadPlatformServiceImpl implements ProvisioningE
 
     private static final class ProvisioningEntryDataMapper implements RowMapper<ProvisioningEntryData> {
 
-        private final StringBuilder sqlQuery = new StringBuilder()
-                .append(" entry.id, entry.journal_entry_created, entry.createdby_id, entry.created_date, created.username as createduser,")
+        private final StringBuilder sqlQuery = new StringBuilder().append(
+                " entry.id, entry.journal_entry_created, entry.createdby_id, entry.created_date, created.username as createduser,")
                 .append("entry.lastmodifiedby_id, modified.username as modifieduser, entry.lastmodified_date ")
-                .append("from m_provisioning_history entry ").append("left JOIN m_appuser created ON created.id = entry.createdby_id ")
+                .append("from m_provisioning_history entry ")
+                .append("left JOIN m_appuser created ON created.id = entry.createdby_id ")
                 .append("left JOIN m_appuser modified ON modified.id = entry.lastmodifiedby_id ");
 
         @Override
@@ -136,8 +138,8 @@ public class ProvisioningEntriesReadPlatformServiceImpl implements ProvisioningE
             Long modifiedById = rs.getLong("lastmodifiedby_id");
             String modifieUser = rs.getString("modifieduser");
             BigDecimal totalReservedAmount = null;
-            return new ProvisioningEntryData(id, journalEntry, createdById, createdUser, createdDate, modifiedById, modifieUser,
-                    totalReservedAmount);
+            return new ProvisioningEntryData(id, journalEntry, createdById, createdUser, createdDate, modifiedById,
+                    modifieUser, totalReservedAmount);
         }
 
         public String getSchema() {
@@ -146,10 +148,11 @@ public class ProvisioningEntriesReadPlatformServiceImpl implements ProvisioningE
 
     }
 
-    private static final class LoanProductProvisioningEntryRowMapper implements RowMapper<LoanProductProvisioningEntryData> {
+    private static final class LoanProductProvisioningEntryRowMapper
+            implements RowMapper<LoanProductProvisioningEntryData> {
 
-        private final StringBuilder sqlQuery = new StringBuilder()
-                .append(" entry.id, entry.history_id as historyId, office_id, entry.criteria_id as criteriaid, office.name as officename, product.name as productname, entry.product_id, ")
+        private final StringBuilder sqlQuery = new StringBuilder().append(
+                " entry.id, entry.history_id as historyId, office_id, entry.criteria_id as criteriaid, office.name as officename, product.name as productname, entry.product_id, ")
                 .append("category_id, category.category_name, liability.id as liabilityid, liability.gl_code as liabilitycode, liability.name as liabilityname, ")
                 .append("expense.id as expenseid, expense.gl_code as expensecode, expense.name as expensename, entry.currency_code, entry.overdue_in_days, entry.reseve_amount from m_loanproduct_provisioning_entry entry ")
                 .append("left join m_office office ON office.id = entry.office_id ")
@@ -178,9 +181,10 @@ public class ProvisioningEntriesReadPlatformServiceImpl implements ProvisioningE
             Long criteriaId = rs.getLong("criteriaid");
             String liabilityAccountName = rs.getString("liabilityname");
             String expenseAccountName = rs.getString("expensename");
-            return new LoanProductProvisioningEntryData(historyId, officeId, officeName, currentcyCode, productId, productName, categoryId,
-                    categoryName, overdueDays, amountreserved, liabilityAccountCode, liabilityAccountglCode, liabilityAccountName,
-                    expenseAccountCode, expenseAccountglCode, expenseAccountName, criteriaId);
+            return new LoanProductProvisioningEntryData(historyId, officeId, officeName, currentcyCode, productId,
+                    productName, categoryId, categoryName, overdueDays, amountreserved, liabilityAccountCode,
+                    liabilityAccountglCode, liabilityAccountName, expenseAccountCode, expenseAccountglCode,
+                    expenseAccountName, criteriaId);
         }
 
         public String getSchema() {
@@ -190,8 +194,8 @@ public class ProvisioningEntriesReadPlatformServiceImpl implements ProvisioningE
 
     private static final class ProvisioningEntryDataMapperWithSumReserved implements RowMapper<ProvisioningEntryData> {
 
-        private final StringBuilder sqlQuery = new StringBuilder()
-                .append(" entry.id, journal_entry_created, createdby_id, created_date, created.username as createduser,")
+        private final StringBuilder sqlQuery = new StringBuilder().append(
+                " entry.id, journal_entry_created, createdby_id, created_date, created.username as createduser,")
                 .append("lastmodifiedby_id, modified.username as modifieduser, lastmodified_date, SUM(reserved.reseve_amount) as totalreserved ")
                 .append("from m_provisioning_history entry ")
                 .append("JOIN m_loanproduct_provisioning_entry reserved on entry.id = reserved.history_id ")
@@ -209,8 +213,8 @@ public class ProvisioningEntriesReadPlatformServiceImpl implements ProvisioningE
             Long modifiedById = rs.getLong("lastmodifiedby_id");
             String modifieUser = rs.getString("modifieduser");
             BigDecimal totalReservedAmount = rs.getBigDecimal("totalreserved");
-            return new ProvisioningEntryData(id, journalEntry, createdById, createdUser, createdDate, modifiedById, modifieUser,
-                    totalReservedAmount);
+            return new ProvisioningEntryData(id, journalEntry, createdById, createdUser, createdDate, modifiedById,
+                    modifieUser, totalReservedAmount);
         }
 
         public String getSchema() {
@@ -223,30 +227,30 @@ public class ProvisioningEntriesReadPlatformServiceImpl implements ProvisioningE
     public Page<ProvisioningEntryData> retrieveAllProvisioningEntries(Integer offset, Integer limit) {
         ProvisioningEntryDataMapper mapper = new ProvisioningEntryDataMapper();
         StringBuilder sqlBuilder = new StringBuilder();
-        sqlBuilder.append("select SQL_CALC_FOUND_ROWS ");
+        sqlBuilder.append("select ");
         sqlBuilder.append(mapper.getSchema());
         sqlBuilder.append(" order by entry.created_date");
-        if(limit != null ) {
-            sqlBuilder.append(" limit ").append(limit);    
+        if (offset != null) {
+            sqlBuilder.append(" offset ").append(offset).append(" rows ");
         }
-        if(offset != null) {
-            sqlBuilder.append(" offset ").append(offset);    
+        if (limit != null) {
+            sqlBuilder.append(" fetch next ").append(limit).append(" rows only");
         }
-        
+
         final String sqlCountRows = "SELECT FOUND_ROWS()";
         Object[] whereClauseItemsitems = new Object[] {};
-        return this.provisioningEntryDataPaginationHelper.fetchPage(this.jdbcTemplate, sqlCountRows, sqlBuilder.toString(),
-                whereClauseItemsitems, mapper);
+        return this.provisioningEntryDataPaginationHelper.fetchPage(this.jdbcTemplate, sqlCountRows,
+                sqlBuilder.toString(), whereClauseItemsitems, mapper);
     }
 
     @Override
     public ProvisioningEntryData retrieveProvisioningEntryData(String date) {
         ProvisioningEntryDataMapper mapper1 = new ProvisioningEntryDataMapper();
-        date = date+"%";
+        date = date + "%";
         final String sql1 = "select " + mapper1.getSchema() + " where entry.created_date like ? ";
         ProvisioningEntryData data = null;
         try {
-            data = this.jdbcTemplate.queryForObject(sql1, mapper1, new Object[] {date});
+            data = this.jdbcTemplate.queryForObject(sql1, mapper1, new Object[] { date });
         } catch (EmptyResultDataAccessException e) {
 
         }
@@ -259,7 +263,8 @@ public class ProvisioningEntriesReadPlatformServiceImpl implements ProvisioningE
         ProvisioningEntryData data = null;
         LoanProductProvisioningEntryRowMapper mapper = new LoanProductProvisioningEntryRowMapper();
         final String sql = "select " + mapper.getSchema() + " where entry.criteria_id = ?";
-        Collection<LoanProductProvisioningEntryData> entries = this.jdbcTemplate.query(sql, mapper, new Object[] { criteriaId });
+        Collection<LoanProductProvisioningEntryData> entries = this.jdbcTemplate.query(sql, mapper,
+                new Object[] { criteriaId });
         if (entries != null && entries.size() > 0) {
             Long entryId = ((LoanProductProvisioningEntryData) entries.toArray()[0]).getHistoryId();
             ProvisioningEntryDataMapper mapper1 = new ProvisioningEntryDataMapper();
@@ -284,7 +289,8 @@ public class ProvisioningEntriesReadPlatformServiceImpl implements ProvisioningE
 
     private static final class ProvisioningEntryIdDateRowMapper implements RowMapper<ProvisioningEntryData> {
 
-        StringBuffer buff = new StringBuffer().append("select history1.id, history1.created_date from m_provisioning_history history1 ")
+        StringBuffer buff = new StringBuffer()
+                .append("select history1.id, history1.created_date from m_provisioning_history history1 ")
                 .append("where history1.created_date = (select max(history2.created_date) from m_provisioning_history history2 ")
                 .append("where history2.journal_entry_created='1')");
 
@@ -299,8 +305,8 @@ public class ProvisioningEntriesReadPlatformServiceImpl implements ProvisioningE
             Long modifiedBy = null;
             String modifiedName = null;
             BigDecimal totalReservedAmount = null;
-            return new ProvisioningEntryData(id, Boolean.TRUE, createdBy, createdName, createdDate, modifiedBy, modifiedName,
-                    totalReservedAmount);
+            return new ProvisioningEntryData(id, Boolean.TRUE, createdBy, createdName, createdDate, modifiedBy,
+                    modifiedName, totalReservedAmount);
         }
 
         public String schema() {
@@ -312,7 +318,7 @@ public class ProvisioningEntriesReadPlatformServiceImpl implements ProvisioningE
     public Page<LoanProductProvisioningEntryData> retrieveProvisioningEntries(SearchParameters searchParams) {
         LoanProductProvisioningEntryRowMapper mapper = new LoanProductProvisioningEntryRowMapper();
         final StringBuilder sqlBuilder = new StringBuilder(200);
-        sqlBuilder.append("select SQL_CALC_FOUND_ROWS ");
+        sqlBuilder.append("select ");
         sqlBuilder.append(mapper.getSchema());
         String whereClose = " where ";
         List<Object> items = new ArrayList<>();
@@ -342,15 +348,20 @@ public class ProvisioningEntriesReadPlatformServiceImpl implements ProvisioningE
         sqlBuilder.append(" order by entry.id");
 
         if (searchParams.isLimited()) {
-            sqlBuilder.append(" limit ").append(searchParams.getLimit());
             if (searchParams.isOffset()) {
-                sqlBuilder.append(" offset ").append(searchParams.getOffset());
+                sqlBuilder.append(" offset ").append(searchParams.getOffset()).append(" rows ");
             }
+            sqlBuilder.append(" fetch next ").append(searchParams.getLimit()).append(" rows only");
+
+            // sqlBuilder.append(" limit ").append(searchParams.getLimit());
+            // if (searchParams.isOffset()) {
+            // sqlBuilder.append(" offset ").append(searchParams.getOffset());
+            // }
         }
         Object[] whereClauseItemsitems = items.toArray();
         final String sqlCountRows = "SELECT FOUND_ROWS()";
-        return this.loanProductProvisioningEntryDataPaginationHelper.fetchPage(this.jdbcTemplate, sqlCountRows, sqlBuilder.toString(),
-                whereClauseItemsitems, mapper);
+        return this.loanProductProvisioningEntryDataPaginationHelper.fetchPage(this.jdbcTemplate, sqlCountRows,
+                sqlBuilder.toString(), whereClauseItemsitems, mapper);
     }
 
 }

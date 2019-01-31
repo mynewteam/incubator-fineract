@@ -69,7 +69,8 @@ public class DocumentReadPlatformServiceImpl implements DocumentReadPlatformServ
         try {
             final DocumentMapper mapper = new DocumentMapper(false, false);
             final DocumentData documentData = fetchDocumentDetails(entityType, entityId, documentId, mapper);
-            final ContentRepository contentRepository = this.contentRepositoryFactory.getRepository(documentData.storageType());
+            final ContentRepository contentRepository = this.contentRepositoryFactory
+                    .getRepository(documentData.storageType());
             return contentRepository.fetchFile(documentData);
         } catch (final EmptyResultDataAccessException e) {
             throw new DocumentNotFoundException(entityType, entityId, documentId);
@@ -111,13 +112,14 @@ public class DocumentReadPlatformServiceImpl implements DocumentReadPlatformServ
 
         public String schema() {
             return "d.id as id, d.parent_entity_type as parentEntityType, d.parent_entity_id as parentEntityId, d.name as name, "
-                    + " d.file_name as fileName, d.size as fileSize, d.type as fileType, "
+                    + " d.file_name as fileName, d.sizes as fileSize, d.type as fileType, "
                     + " d.description as description, d.location as location," + " d.storage_type_enum as storageType"
                     + " from m_document d where d.parent_entity_type=? and d.parent_entity_id=?";
         }
 
         @Override
-        public DocumentData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+        public DocumentData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum)
+                throws SQLException {
 
             final Long id = JdbcSupport.getLong(rs, "id");
             final Long parentEntityId = JdbcSupport.getLong(rs, "parentEntityId");
@@ -135,8 +137,8 @@ public class DocumentReadPlatformServiceImpl implements DocumentReadPlatformServ
             if (!this.hideStorageType) {
                 storageType = rs.getInt("storageType");
             }
-            return new DocumentData(id, parentEntityType, parentEntityId, name, fileName, fileSize, fileType, description, location,
-                    storageType);
+            return new DocumentData(id, parentEntityType, parentEntityId, name, fileName, fileSize, fileType,
+                    description, location, storageType);
         }
     }
 

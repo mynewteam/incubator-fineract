@@ -42,15 +42,14 @@ public class AdHocWritePlatformServiceJpaRepositoryImpl implements AdHocWritePla
     private final PlatformSecurityContext context;
     private final AdHocRepository adHocRepository;
     private final AdHocDataValidator adHocCommandFromApiJsonDeserializer;
-   
 
     @Autowired
-    public AdHocWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context, final AdHocRepository adHocRepository,
-             final AdHocDataValidator adHocCommandFromApiJsonDeserializer) {
+    public AdHocWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context,
+            final AdHocRepository adHocRepository, final AdHocDataValidator adHocCommandFromApiJsonDeserializer) {
         this.context = context;
         this.adHocRepository = adHocRepository;
         this.adHocCommandFromApiJsonDeserializer = adHocCommandFromApiJsonDeserializer;
-       
+
     }
 
     @Transactional
@@ -65,7 +64,8 @@ public class AdHocWritePlatformServiceJpaRepositoryImpl implements AdHocWritePla
             final AdHoc entity = AdHoc.fromJson(command);
             this.adHocRepository.save(entity);
 
-            return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(entity.getId()).build();
+            return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(entity.getId())
+                    .build();
         } catch (final DataIntegrityViolationException dve) {
             handleDataIntegrityIssues(command, dve);
             return new CommandProcessingResultBuilder() //
@@ -75,8 +75,7 @@ public class AdHocWritePlatformServiceJpaRepositoryImpl implements AdHocWritePla
     }
 
     /*
-     * Guaranteed to throw an exception no matter what the data integrity issue
-     * is.
+     * Guaranteed to throw an exception no matter what the data integrity issue is.
      */
     private void handleDataIntegrityIssues(final JsonCommand command, final DataIntegrityViolationException dve) {
 
@@ -84,8 +83,8 @@ public class AdHocWritePlatformServiceJpaRepositoryImpl implements AdHocWritePla
         if (realCause.getMessage().contains("unq_name")) {
 
             final String name = command.stringValueOfParameterNamed("name");
-            throw new PlatformDataIntegrityException("error.msg.adhocquery.duplicate.name", "AdHocQuery with name `" + name + "` already exists",
-                    "name", name);
+            throw new PlatformDataIntegrityException("error.msg.adhocquery.duplicate.name",
+                    "AdHocQuery with name " + name + " already exists", "name", name);
         }
 
         logAsErrorUnexpectedDataIntegrityException(dve);
@@ -106,7 +105,9 @@ public class AdHocWritePlatformServiceJpaRepositoryImpl implements AdHocWritePla
             this.adHocCommandFromApiJsonDeserializer.validateForUpdate(command.json());
 
             final AdHoc adHoc = this.adHocRepository.findOne(adHocId);
-            if (adHoc == null) { throw new AdHocNotFoundException(adHocId); }
+            if (adHoc == null) {
+                throw new AdHocNotFoundException(adHocId);
+            }
 
             final Map<String, Object> changes = adHoc.update(command);
             if (!changes.isEmpty()) {
@@ -125,6 +126,7 @@ public class AdHocWritePlatformServiceJpaRepositoryImpl implements AdHocWritePla
                     .build();
         }
     }
+
     /**
      * Method for Delete adhoc
      */
@@ -137,8 +139,10 @@ public class AdHocWritePlatformServiceJpaRepositoryImpl implements AdHocWritePla
              * Checking the adhocQuery present in DB or not using adHocId
              */
             final AdHoc adHoc = this.adHocRepository.findOne(adHocId);
-            if (adHoc == null) { throw new AdHocNotFoundException(adHocId); }
-            
+            if (adHoc == null) {
+                throw new AdHocNotFoundException(adHocId);
+            }
+
             this.adHocRepository.delete(adHoc);
             return new CommandProcessingResultBuilder().withEntityId(adHocId).build();
         } catch (final DataIntegrityViolationException e) {
@@ -158,7 +162,9 @@ public class AdHocWritePlatformServiceJpaRepositoryImpl implements AdHocWritePla
              * Checking the adhocquery present in DB or not using adHocId
              */
             final AdHoc adHoc = this.adHocRepository.findOne(adHocId);
-            if (adHoc == null) { throw new AdHocNotFoundException(adHocId); }
+            if (adHoc == null) {
+                throw new AdHocNotFoundException(adHocId);
+            }
             adHoc.disableActive();
             this.adHocRepository.save(adHoc);
             return new CommandProcessingResultBuilder().withEntityId(adHocId).build();
@@ -180,7 +186,9 @@ public class AdHocWritePlatformServiceJpaRepositoryImpl implements AdHocWritePla
              * Checking the adHoc present in DB or not using id
              */
             final AdHoc adHoc = this.adHocRepository.findOne(adHocId);
-            if (adHoc == null) { throw new AdHocNotFoundException(adHocId); }
+            if (adHoc == null) {
+                throw new AdHocNotFoundException(adHocId);
+            }
             adHoc.enableActive();
             this.adHocRepository.save(adHoc);
             return new CommandProcessingResultBuilder().withEntityId(adHocId).build();

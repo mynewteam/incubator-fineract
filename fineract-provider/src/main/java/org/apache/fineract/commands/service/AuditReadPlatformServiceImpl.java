@@ -76,9 +76,9 @@ import com.google.gson.JsonObject;
 public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
 
     private final static Logger logger = LoggerFactory.getLogger(AuditReadPlatformServiceImpl.class);
-    private final static Set<String> supportedOrderByValues = new HashSet<>(
-            Arrays.asList("id", "actionName", "entityName", "resourceId", "subresourceId", "madeOnDate", "checkedOnDate", "officeName",
-                    "groupName", "clientName", "loanAccountNo", "savingsAccountNo", "clientId", "loanId"));
+    private final static Set<String> supportedOrderByValues = new HashSet<>(Arrays.asList("id", "actionName",
+            "entityName", "resourceId", "subresourceId", "madeOnDate", "checkedOnDate", "officeName", "groupName",
+            "clientName", "loanAccountNo", "savingsAccountNo", "clientId", "loanId"));
 
     private final JdbcTemplate jdbcTemplate;
     private final PlatformSecurityContext context;
@@ -97,8 +97,10 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
     @Autowired
     public AuditReadPlatformServiceImpl(final PlatformSecurityContext context, final RoutingDataSource dataSource,
             final FromJsonHelper fromApiJsonHelper, final AppUserReadPlatformService appUserReadPlatformService,
-            final OfficeReadPlatformService officeReadPlatformService, final ClientReadPlatformService clientReadPlatformService,
-            final LoanProductReadPlatformService loanProductReadPlatformService, final StaffReadPlatformService staffReadPlatformService,
+            final OfficeReadPlatformService officeReadPlatformService,
+            final ClientReadPlatformService clientReadPlatformService,
+            final LoanProductReadPlatformService loanProductReadPlatformService,
+            final StaffReadPlatformService staffReadPlatformService,
             final PaginationParametersDataValidator paginationParametersDataValidator,
             final SavingsProductReadPlatformService savingsProductReadPlatformService,
             final DepositProductReadPlatformService depositProductReadPlatformService,
@@ -132,11 +134,13 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
                     + "ck.username as checker, aud.checked_on_date as checkedOnDate, ev.enum_message_property as processingResult "
                     + commandAsJsonString + ", "
                     + " o.name as officeName, gl.level_name as groupLevelName, g.display_name as groupName, c.display_name as clientName, "
-                    + " l.account_no as loanAccountNo, s.account_no as savingsAccountNo " + " from m_portfolio_command_source aud "
-                    + " left join m_appuser mk on mk.id = aud.maker_id" + " left join m_appuser ck on ck.id = aud.checker_id"
+                    + " l.account_no as loanAccountNo, s.account_no as savingsAccountNo "
+                    + " from m_portfolio_command_source aud " + " left join m_appuser mk on mk.id = aud.maker_id"
+                    + " left join m_appuser ck on ck.id = aud.checker_id"
                     + " left join m_office o on o.id = aud.office_id" + " left join m_group g on g.id = aud.group_id"
-                    + " left join m_group_level gl on gl.id = g.level_id" + " left join m_client c on c.id = aud.client_id"
-                    + " left join m_loan l on l.id = aud.loan_id" + " left join m_savings_account s on s.id = aud.savings_account_id"
+                    + " left join m_group_level gl on gl.id = g.level_id"
+                    + " left join m_client c on c.id = aud.client_id" + " left join m_loan l on l.id = aud.loan_id"
+                    + " left join m_savings_account s on s.id = aud.savings_account_id"
                     + " left join r_enum_value ev on ev.enum_name = 'processing_result_enum' and ev.enum_id = aud.processing_result_enum";
 
             // data scoping: head office (hierarchy = ".") can see all audit
@@ -179,9 +183,9 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
             final String loanAccountNo = rs.getString("loanAccountNo");
             final String savingsAccountNo = rs.getString("savingsAccountNo");
 
-            return new AuditData(id, actionName, entityName, resourceId, subresourceId, maker, madeOnDate, checker, checkedOnDate,
-                    processingResult, commandAsJson, officeName, groupLevelName, groupName, clientName, loanAccountNo, savingsAccountNo,
-                    clientId, loanId, resourceGetUrl);
+            return new AuditData(id, actionName, entityName, resourceId, subresourceId, maker, madeOnDate, checker,
+                    checkedOnDate, processingResult, commandAsJson, officeName, groupLevelName, groupName, clientName,
+                    loanAccountNo, savingsAccountNo, clientId, loanId, resourceGetUrl);
         }
     }
 
@@ -207,12 +211,12 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
 
         String updatedExtraCriteria = "";
         if (StringUtils.isNotBlank(extraCriteria)) {
-            updatedExtraCriteria = " where (" + extraCriteria + ")";            
+            updatedExtraCriteria = " where (" + extraCriteria + ")";
         }
 
         final AuditMapper rm = new AuditMapper();
         final StringBuilder sqlBuilder = new StringBuilder(200);
-        sqlBuilder.append("select SQL_CALC_FOUND_ROWS ");
+        sqlBuilder.append("select ");
         sqlBuilder.append(rm.schema(includeJson, hierarchy));
         sqlBuilder.append(' ').append(updatedExtraCriteria);
         this.columnValidator.validateSqlInjection(sqlBuilder.toString(), extraCriteria);
@@ -231,7 +235,8 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
         logger.info("sql: " + sqlBuilder.toString());
 
         final String sqlCountRows = "SELECT FOUND_ROWS()";
-        return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlCountRows, sqlBuilder.toString(), new Object[] {}, rm);
+        return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlCountRows, sqlBuilder.toString(), new Object[] {},
+                rm);
     }
 
     @Override
@@ -246,20 +251,24 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
 
         updatedExtraCriteria += " group by aud.id order by aud.id";
 
-        return retrieveEntries("makerchecker", updatedExtraCriteria, includeJson, StringUtils.isNotBlank(extraCriteria));
+        return retrieveEntries("makerchecker", updatedExtraCriteria, includeJson,
+                StringUtils.isNotBlank(extraCriteria));
     }
 
-    public Collection<AuditData> retrieveEntries(final String useType, final String extraCriteria, final boolean includeJson, boolean isExtraCritereaIncluded) {
+    public Collection<AuditData> retrieveEntries(final String useType, final String extraCriteria,
+            final boolean includeJson, boolean isExtraCritereaIncluded) {
 
-        if (!(useType.equals("audit") || useType.equals("makerchecker"))) { throw new PlatformDataIntegrityException(
-                "error.msg.invalid.auditSearchTemplate.useType", "Invalid Audit Search Template UseType: " + useType); }
+        if (!(useType.equals("audit") || useType.equals("makerchecker"))) {
+            throw new PlatformDataIntegrityException("error.msg.invalid.auditSearchTemplate.useType",
+                    "Invalid Audit Search Template UseType: " + useType);
+        }
 
         final AppUser currentUser = this.context.authenticatedUser();
         final String hierarchy = currentUser.getOffice().getHierarchy();
 
         final AuditMapper rm = new AuditMapper();
         String sql = "select " + rm.schema(includeJson, hierarchy);
-        
+
         Boolean isLimitedChecker = false;
         if (useType.equals("makerchecker")) {
             if (currentUser.hasNotPermissionForAnyOf("ALL_FUNCTIONS", "CHECKER_SUPER_USER")) {
@@ -273,9 +282,9 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
                     + " join m_appuser_role ur on ur.role_id = r.id and ur.appuser_id = " + currentUser.getId();
         }
         sql += extraCriteria;
-        if(isExtraCritereaIncluded){
-        	this.columnValidator.validateSqlInjection(sql, extraCriteria);
-        }        
+        if (isExtraCritereaIncluded) {
+            this.columnValidator.validateSqlInjection(sql, extraCriteria);
+        }
         logger.info("sql: " + sql);
 
         return this.jdbcTemplate.query(sql, rm, new Object[] {});
@@ -291,7 +300,7 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
 
         final String sql = "select " + rm.schema(true, hierarchy) + " where aud.id = ? ";
 
-        final AuditData auditResult = this.jdbcTemplate.queryForObject(sql, rm, new Object[] {auditId});
+        final AuditData auditResult = this.jdbcTemplate.queryForObject(sql, rm, new Object[] { auditId });
 
         return replaceIdsOnAuditData(auditResult);
     }
@@ -300,7 +309,8 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
 
         final String auditAsJson = auditResult.getCommandAsJson();
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
 
         final Map<String, Object> commandAsJsonMap = this.fromApiJsonHelper.extractObjectMap(typeOfMap, auditAsJson);
         final JsonElement auditJsonFragment = this.fromApiJsonHelper.parse(auditAsJson);
@@ -342,10 +352,12 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
             if (StringUtils.isNotBlank(productIdStr)) {
                 productId = Long.valueOf(productIdStr);
                 if (auditResult.getEntityName().equalsIgnoreCase("LOAN")) {
-                    final LoanProductData loanProduct = this.loanProductReadPlatformService.retrieveLoanProduct(productId);
+                    final LoanProductData loanProduct = this.loanProductReadPlatformService
+                            .retrieveLoanProduct(productId);
                     commandAsJsonMap.put("productName", loanProduct.getName());
                 } else if (auditResult.getEntityName().equalsIgnoreCase("SAVINGSACCOUNT")) {
-                    final SavingsProductData savingProduct = this.savingsProductReadPlatformService.retrieveOne(productId);
+                    final SavingsProductData savingProduct = this.savingsProductReadPlatformService
+                            .retrieveOne(productId);
                     commandAsJsonMap.put("productName", savingProduct.getName());
                 } else if (auditResult.getEntityName().equalsIgnoreCase("RECURRINGDEPOSITACCOUNT")) {
                     final DepositProductData depositProduct = this.depositProductReadPlatformService
@@ -398,8 +410,9 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
 
         if (entityName.equalsIgnoreCase("LOAN") || entityName.equalsIgnoreCase("LOANPRODUCT")) {
 
-            final String[] enumTypes = { "loanTermFrequencyType", "termFrequencyType", "repaymentFrequencyType", "amortizationType",
-                    "interestType", "interestCalculationPeriodType", "interestRateFrequencyType", "accountingRule" };
+            final String[] enumTypes = { "loanTermFrequencyType", "termFrequencyType", "repaymentFrequencyType",
+                    "amortizationType", "interestType", "interestCalculationPeriodType", "interestRateFrequencyType",
+                    "accountingRule" };
 
             for (final String typeName : enumTypes) {
                 if (commandAsJsonMap.containsKey(typeName)) {
@@ -414,12 +427,15 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
             }
 
         } else if (entityName.equalsIgnoreCase("SAVINGSPRODUCT") || entityName.equalsIgnoreCase("SAVINGSACCOUNT")
-                || entityName.equalsIgnoreCase("RECURRINGDEPOSITPRODUCT") || entityName.equalsIgnoreCase("RECURRINGDEPOSITACCOUNT")
-                || entityName.equalsIgnoreCase("FIXEDDEPOSITPRODUCT") || entityName.equalsIgnoreCase("FIXEDDEPOSITACCOUNT")) {
+                || entityName.equalsIgnoreCase("RECURRINGDEPOSITPRODUCT")
+                || entityName.equalsIgnoreCase("RECURRINGDEPOSITACCOUNT")
+                || entityName.equalsIgnoreCase("FIXEDDEPOSITPRODUCT")
+                || entityName.equalsIgnoreCase("FIXEDDEPOSITACCOUNT")) {
 
-            final String[] enumTypes = { "interestCompoundingPeriodType", "interestPostingPeriodType", "interestCalculationType",
-                    "lockinPeriodFrequencyType", "minDepositTermTypeId", "maxDepositTermTypeId", "inMultiplesOfDepositTermTypeId",
-                    "depositPeriodFrequencyId", "accountingRule", "interestCalculationDaysInYearType", "preClosurePenalInterestOnTypeId",
+            final String[] enumTypes = { "interestCompoundingPeriodType", "interestPostingPeriodType",
+                    "interestCalculationType", "lockinPeriodFrequencyType", "minDepositTermTypeId",
+                    "maxDepositTermTypeId", "inMultiplesOfDepositTermTypeId", "depositPeriodFrequencyId",
+                    "accountingRule", "interestCalculationDaysInYearType", "preClosurePenalInterestOnTypeId",
                     "recurringFrequencyType" };
 
             for (final String typeName : enumTypes) {
@@ -452,8 +468,10 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
     @Override
     public AuditSearchData retrieveSearchTemplate(final String useType) {
 
-        if (!(useType.equals("audit") || useType.equals("makerchecker"))) { throw new PlatformDataIntegrityException(
-                "error.msg.invalid.auditSearchTemplate.useType", "Invalid Audit Search Template UseType: " + useType); }
+        if (!(useType.equals("audit") || useType.equals("makerchecker"))) {
+            throw new PlatformDataIntegrityException("error.msg.invalid.auditSearchTemplate.useType",
+                    "Invalid Audit Search Template UseType: " + useType);
+        }
 
         final AppUser currentUser = this.context.authenticatedUser();
 
@@ -523,7 +541,8 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
     private static final class ProcessingResultsMapper implements RowMapper<ProcessingResultLookup> {
 
         @Override
-        public ProcessingResultLookup mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+        public ProcessingResultLookup mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum)
+                throws SQLException {
             final Long id = JdbcSupport.getLong(rs, "id");
             final String processingResult = rs.getString("processingResult");
 

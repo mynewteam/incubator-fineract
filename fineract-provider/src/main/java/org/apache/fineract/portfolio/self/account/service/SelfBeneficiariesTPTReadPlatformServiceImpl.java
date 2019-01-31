@@ -36,8 +36,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SelfBeneficiariesTPTReadPlatformServiceImpl implements
-		SelfBeneficiariesTPTReadPlatformService {
+public class SelfBeneficiariesTPTReadPlatformServiceImpl implements SelfBeneficiariesTPTReadPlatformService {
 
 	private final PlatformSecurityContext context;
 	private final JdbcTemplate jdbcTemplate;
@@ -45,8 +44,7 @@ public class SelfBeneficiariesTPTReadPlatformServiceImpl implements
 	private final AccountTemplateMapper accountTemplateMapper;
 
 	@Autowired
-	public SelfBeneficiariesTPTReadPlatformServiceImpl(
-			final PlatformSecurityContext context,
+	public SelfBeneficiariesTPTReadPlatformServiceImpl(final PlatformSecurityContext context,
 			final RoutingDataSource dataSource) {
 		this.context = context;
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
@@ -57,39 +55,31 @@ public class SelfBeneficiariesTPTReadPlatformServiceImpl implements
 	@Override
 	public Collection<SelfBeneficiariesTPTData> retrieveAll() {
 		AppUser user = this.context.authenticatedUser();
-		return this.jdbcTemplate.query(this.mapper.schema(), this.mapper,
-				new Object[] { user.getId(), user.getId() });
+		return this.jdbcTemplate.query(this.mapper.schema(), this.mapper, new Object[] { user.getId(), user.getId() });
 	}
 
 	@Override
-	public Collection<SelfAccountTemplateData> retrieveTPTSelfAccountTemplateData(
-			AppUser user) {
-		return this.jdbcTemplate.query(this.accountTemplateMapper.schema(),
-				this.accountTemplateMapper,
+	public Collection<SelfAccountTemplateData> retrieveTPTSelfAccountTemplateData(AppUser user) {
+		return this.jdbcTemplate.query(this.accountTemplateMapper.schema(), this.accountTemplateMapper,
 				new Object[] { user.getId(), user.getId() });
 	}
 
-	private static final class BeneficiaryMapper implements
-			RowMapper<SelfBeneficiariesTPTData> {
+	private static final class BeneficiaryMapper implements RowMapper<SelfBeneficiariesTPTData> {
 
 		private final String schemaSql;
 
 		public BeneficiaryMapper() {
-			final StringBuilder sqlBuilder = new StringBuilder(
-					"(select b.id as id, ");
+			final StringBuilder sqlBuilder = new StringBuilder("(select b.id as id, ");
 			sqlBuilder.append(" b.name as name, ");
 			sqlBuilder.append(" o.name as officeName, ");
 			sqlBuilder.append(" c.display_name as clientName, ");
 			sqlBuilder.append(" b.account_type as accountType, ");
 			sqlBuilder.append(" s.account_no as accountNumber, ");
 			sqlBuilder.append(" b.transfer_limit as transferLimit ");
-			sqlBuilder.append(" from m_selfservice_beneficiaries_tpt as b ");
-			sqlBuilder
-					.append(" inner join m_office as o on b.office_id = o.id ");
-			sqlBuilder
-					.append(" inner join m_client as c on b.client_id = c.id ");
-			sqlBuilder
-					.append(" inner join m_savings_account as s on b.account_id = s.id ");
+			sqlBuilder.append(" from m_selfservice_beneficiaries_tpt  b ");
+			sqlBuilder.append(" inner join m_office  o on b.office_id = o.id ");
+			sqlBuilder.append(" inner join m_client  c on b.client_id = c.id ");
+			sqlBuilder.append(" inner join m_savings_account  s on b.account_id = s.id ");
 			sqlBuilder.append(" where b.is_active = 1 ");
 			sqlBuilder.append(" and b.account_type = 2 ");
 			sqlBuilder.append(" and b.app_user_id = ?) ");
@@ -101,13 +91,10 @@ public class SelfBeneficiariesTPTReadPlatformServiceImpl implements
 			sqlBuilder.append(" b.account_type as accountType, ");
 			sqlBuilder.append(" l.account_no as accountNumber, ");
 			sqlBuilder.append(" b.transfer_limit as transferLimit ");
-			sqlBuilder.append(" from m_selfservice_beneficiaries_tpt as b ");
-			sqlBuilder
-					.append(" inner join m_office as o on b.office_id = o.id ");
-			sqlBuilder
-					.append(" inner join m_client as c on b.client_id = c.id ");
-			sqlBuilder
-					.append(" inner join m_loan as l on b.account_id = l.id ");
+			sqlBuilder.append(" from m_selfservice_beneficiaries_tpt  b ");
+			sqlBuilder.append(" inner join m_office  o on b.office_id = o.id ");
+			sqlBuilder.append(" inner join m_client  c on b.client_id = c.id ");
+			sqlBuilder.append(" inner join m_loan  l on b.account_id = l.id ");
 			sqlBuilder.append(" where b.is_active = 1 ");
 			sqlBuilder.append(" and b.account_type = 1 ");
 			sqlBuilder.append(" and b.app_user_id = ?) ");
@@ -120,8 +107,7 @@ public class SelfBeneficiariesTPTReadPlatformServiceImpl implements
 		}
 
 		@Override
-		public SelfBeneficiariesTPTData mapRow(final ResultSet rs,
-				@SuppressWarnings("unused") final int rowNum)
+		public SelfBeneficiariesTPTData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum)
 				throws SQLException {
 
 			final Long id = rs.getLong("id");
@@ -134,32 +120,27 @@ public class SelfBeneficiariesTPTReadPlatformServiceImpl implements
 			final String accountNumber = rs.getString("accountNumber");
 			final Long transferLimit = rs.getLong("transferLimit");
 
-			return new SelfBeneficiariesTPTData(id, name, officeName,
-					clientName, accountType, accountNumber, transferLimit);
+			return new SelfBeneficiariesTPTData(id, name, officeName, clientName, accountType, accountNumber,
+					transferLimit);
 		}
 	}
 
-	private static final class AccountTemplateMapper implements
-			RowMapper<SelfAccountTemplateData> {
+	private static final class AccountTemplateMapper implements RowMapper<SelfAccountTemplateData> {
 
 		private final String schemaSql;
 
 		public AccountTemplateMapper() {
-			final StringBuilder sqlBuilder = new StringBuilder(
-					"(select o.name as officeName, ");
+			final StringBuilder sqlBuilder = new StringBuilder("(select o.name as officeName, ");
 			sqlBuilder.append(" o.id as officeId, ");
 			sqlBuilder.append(" c.display_name as clientName, ");
 			sqlBuilder.append(" c.id as clientId, ");
 			sqlBuilder.append(" b.account_type as accountType, ");
 			sqlBuilder.append(" s.account_no as accountNumber, ");
 			sqlBuilder.append(" s.id as accountId ");
-			sqlBuilder.append(" from m_selfservice_beneficiaries_tpt as b ");
-			sqlBuilder
-					.append(" inner join m_office as o on b.office_id = o.id ");
-			sqlBuilder
-					.append(" inner join m_client as c on b.client_id = c.id ");
-			sqlBuilder
-					.append(" inner join m_savings_account as s on b.account_id = s.id ");
+			sqlBuilder.append(" from m_selfservice_beneficiaries_tpt  b ");
+			sqlBuilder.append(" inner join m_office  o on b.office_id = o.id ");
+			sqlBuilder.append(" inner join m_client  c on b.client_id = c.id ");
+			sqlBuilder.append(" inner join m_savings_account  s on b.account_id = s.id ");
 			sqlBuilder.append(" where b.is_active = 1 ");
 			sqlBuilder.append(" and b.account_type = 2 ");
 			sqlBuilder.append(" and b.app_user_id = ?) ");
@@ -171,13 +152,10 @@ public class SelfBeneficiariesTPTReadPlatformServiceImpl implements
 			sqlBuilder.append(" b.account_type as accountType, ");
 			sqlBuilder.append(" l.account_no as accountNumber, ");
 			sqlBuilder.append(" l.id as accountId ");
-			sqlBuilder.append(" from m_selfservice_beneficiaries_tpt as b ");
-			sqlBuilder
-					.append(" inner join m_office as o on b.office_id = o.id ");
-			sqlBuilder
-					.append(" inner join m_client as c on b.client_id = c.id ");
-			sqlBuilder
-					.append(" inner join m_loan as l on b.account_id = l.id ");
+			sqlBuilder.append(" from m_selfservice_beneficiaries_tpt  b ");
+			sqlBuilder.append(" inner join m_office  o on b.office_id = o.id ");
+			sqlBuilder.append(" inner join m_client  c on b.client_id = c.id ");
+			sqlBuilder.append(" inner join m_loan  l on b.account_id = l.id ");
 			sqlBuilder.append(" where b.is_active = 1 ");
 			sqlBuilder.append(" and b.account_type = 1 ");
 			sqlBuilder.append(" and b.app_user_id = ?) ");
@@ -190,8 +168,7 @@ public class SelfBeneficiariesTPTReadPlatformServiceImpl implements
 		}
 
 		@Override
-		public SelfAccountTemplateData mapRow(final ResultSet rs,
-				@SuppressWarnings("unused") final int rowNum)
+		public SelfAccountTemplateData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum)
 				throws SQLException {
 
 			final String officeName = rs.getString("officeName");
@@ -202,21 +179,21 @@ public class SelfBeneficiariesTPTReadPlatformServiceImpl implements
 			final String accountNumber = rs.getString("accountNumber");
 			final Long accountId = rs.getLong("accountId");
 
-			return new SelfAccountTemplateData(accountId, accountNumber,
-					accountTypeId, clientId, clientName, officeId, officeName);
+			return new SelfAccountTemplateData(accountId, accountNumber, accountTypeId, clientId, clientName, officeId,
+					officeName);
 		}
 	}
 
 	@Override
 	public Long getTransferLimit(Long appUserId, Long accountId, Integer accountType) {
 		final StringBuilder sqlBuilder = new StringBuilder("select b.transfer_limit ");
-		sqlBuilder.append(" from m_selfservice_beneficiaries_tpt as b ");
+		sqlBuilder.append(" from m_selfservice_beneficiaries_tpt  b ");
 		sqlBuilder.append(" where b.app_user_id = ? ");
 		sqlBuilder.append(" and b.account_id = ? ");
 		sqlBuilder.append(" and b.account_type = ? ");
 		sqlBuilder.append(" and b.is_active = 1; ");
-		
-		return this.jdbcTemplate.queryForObject(sqlBuilder.toString(), 
-				new Object[]{appUserId, accountId, accountType}, Long.class);
+
+		return this.jdbcTemplate.queryForObject(sqlBuilder.toString(),
+				new Object[] { appUserId, accountId, accountType }, Long.class);
 	}
 }

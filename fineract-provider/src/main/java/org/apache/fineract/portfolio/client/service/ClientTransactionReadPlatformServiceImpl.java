@@ -154,7 +154,7 @@ public class ClientTransactionReadPlatformServiceImpl implements ClientTransacti
 	{
 		Object[] parameters = new Object[1];
 		final StringBuilder sqlBuilder = new StringBuilder();
-		sqlBuilder.append("select SQL_CALC_FOUND_ROWS ").append(this.clientTransactionMapper.schema())
+		sqlBuilder.append("select  ").append(this.clientTransactionMapper.schema())
 			.append(" where c.id = ? ");
 		parameters[0] = clientId;
 		final String sqlCountRows = "SELECT FOUND_ROWS()";
@@ -163,11 +163,16 @@ public class ClientTransactionReadPlatformServiceImpl implements ClientTransacti
 		// apply limit and offsets
 		if (searchParameters.isLimited())
 		{
-			sqlBuilder.append(" limit ").append(searchParameters.getLimit());
-			if (searchParameters.isOffset())
-			{
-				sqlBuilder.append(" offset ").append(searchParameters.getOffset());
+			if (searchParameters.isOffset()) {
+				sqlBuilder.append(" offset ").append(searchParameters.getOffset()).append(" rows ");
 			}
+			sqlBuilder.append(" fetch next ").append(searchParameters.getLimit()).append(" rows only");
+			
+			// sqlBuilder.append(" limit ").append(searchParameters.getLimit());
+			// if (searchParameters.isOffset())
+			// {
+			// 	sqlBuilder.append(" offset ").append(searchParameters.getOffset());
+			// }
 		}
 
 		return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlCountRows, sqlBuilder.toString(), parameters,

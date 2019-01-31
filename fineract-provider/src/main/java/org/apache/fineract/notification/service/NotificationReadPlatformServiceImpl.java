@@ -116,7 +116,7 @@ public class NotificationReadPlatformServiceImpl implements NotificationReadPlat
     @Override
     public Page<NotificationData> getAllUnreadNotifications(final SearchParameters searchParameters) {
         final Long appUserId = context.authenticatedUser().getId();
-        String sql = "SELECT SQL_CALC_FOUND_ROWS ng.id as id, nm.user_id as userId, ng.object_type as objectType, "
+        String sql = "SELECT  ng.id as id, nm.user_id as userId, ng.object_type as objectType, "
                 + "ng.object_identifier as objectId, ng.actor as actor, ng.action action, ng.notification_content "
                 + "as content, ng.is_system_generated as isSystemGenerated, nm.created_at as createdAt "
                 + "FROM notification_mapper nm INNER JOIN notification_generator ng ON nm.notification_id = ng.id "
@@ -128,7 +128,7 @@ public class NotificationReadPlatformServiceImpl implements NotificationReadPlat
     @Override
     public Page<NotificationData> getAllNotifications(SearchParameters searchParameters) {
         final Long appUserId = context.authenticatedUser().getId();
-        String sql = "SELECT SQL_CALC_FOUND_ROWS ng.id as id, nm.user_id as userId, ng.object_type as objectType, "
+        String sql = "SELECT ng.id as id, nm.user_id as userId, ng.object_type as objectType, "
                 + "ng.object_identifier as objectId, ng.actor as actor, ng.action action, ng.notification_content "
                 + "as content, ng.is_system_generated as isSystemGenerated, nm.created_at as createdAt "
                 + "FROM notification_mapper nm INNER JOIN notification_generator ng ON nm.notification_id = ng.id "

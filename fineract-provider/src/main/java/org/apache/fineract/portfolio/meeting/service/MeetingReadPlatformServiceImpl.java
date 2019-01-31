@@ -82,7 +82,7 @@ public class MeetingReadPlatformServiceImpl implements MeetingReadPlatformServic
         final MeetingDataMapper rm = new MeetingDataMapper();
         String sql = rm.schema() + " where ci.entity_id = ? and ci.entity_type_enum = ? ";
         if (limit != null && limit > 0) {
-            sql = sql + " order by m.meeting_date desc " + " limit ? ";
+            sql = sql + " order by m.meeting_date desc " + " fetch next ? rows only";
             return this.jdbcTemplate.query(sql, rm, new Object[] { entityId, entityTypeId, limit });
         }
 
@@ -106,7 +106,7 @@ public class MeetingReadPlatformServiceImpl implements MeetingReadPlatformServic
         try {
             final MeetingDataMapper rm = new MeetingDataMapper();
 
-            final String sql = rm.schema() + " where ci.id = ? order by m.meeting_date desc, m.id desc limit 1";
+            final String sql = rm.schema() + " where ci.id = ? order by m.meeting_date desc, m.id desc fetch next 1 rows only";
 
             return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { calendarInstanceId });
         } catch (final EmptyResultDataAccessException e) {

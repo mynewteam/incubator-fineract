@@ -149,7 +149,7 @@ public class GroupReadPlatformServiceImpl implements GroupReadPlatformService {
         final String hierarchySearchString = hierarchy + "%";
 
         final StringBuilder sqlBuilder = new StringBuilder(200);
-        sqlBuilder.append("select SQL_CALC_FOUND_ROWS ");
+        sqlBuilder.append("select  ");
         sqlBuilder.append(this.allGroupTypesDataMapper.schema());
         sqlBuilder.append(" where o.hierarchy like ?");
         List<Object> paramList = new ArrayList<>(
@@ -167,10 +167,15 @@ public class GroupReadPlatformServiceImpl implements GroupReadPlatformService {
         }
 
         if (parameters.isLimited()) {
-            sqlBuilder.append(" limit ").append(searchParameters.getLimit());
             if (searchParameters.isOffset()) {
-                sqlBuilder.append(" offset ").append(searchParameters.getOffset());
+                sqlBuilder.append(" offset ").append(searchParameters.getOffset()).append(" rows ");
             }
+            sqlBuilder.append(" fetch next ").append(searchParameters.getLimit()).append(" rows only");
+            
+            // sqlBuilder.append(" limit ").append(searchParameters.getLimit());
+            // if (searchParameters.isOffset()) {
+            //     sqlBuilder.append(" offset ").append(searchParameters.getOffset());
+            // }
         }
 
         final String sqlCountRows = "SELECT FOUND_ROWS()";

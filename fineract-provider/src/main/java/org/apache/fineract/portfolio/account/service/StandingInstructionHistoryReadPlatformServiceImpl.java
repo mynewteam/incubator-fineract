@@ -71,7 +71,7 @@ public class StandingInstructionHistoryReadPlatformServiceImpl implements Standi
     public Page<StandingInstructionHistoryData> retrieveAll(StandingInstructionDTO standingInstructionDTO) {
 
         final StringBuilder sqlBuilder = new StringBuilder(200);
-        sqlBuilder.append("select SQL_CALC_FOUND_ROWS ");
+        sqlBuilder.append("select  ");
         sqlBuilder.append(this.standingInstructionHistoryMapper.schema());
         if (standingInstructionDTO.transferType() != null || standingInstructionDTO.clientId() != null
                 || standingInstructionDTO.clientName() != null
@@ -151,10 +151,15 @@ public class StandingInstructionHistoryReadPlatformServiceImpl implements Standi
         }
 
         if (searchParameters.isLimited()) {
-            sqlBuilder.append(" limit ").append(searchParameters.getLimit());
             if (searchParameters.isOffset()) {
-                sqlBuilder.append(" offset ").append(searchParameters.getOffset());
+                sqlBuilder.append(" offset ").append(searchParameters.getOffset()).append(" rows ");
             }
+            sqlBuilder.append(" fetch next ").append(searchParameters.getLimit()).append(" rows only");
+            
+            // sqlBuilder.append(" limit ").append(searchParameters.getLimit());
+            // if (searchParameters.isOffset()) {
+            //     sqlBuilder.append(" offset ").append(searchParameters.getOffset());
+            // }
         }
 
         final Object[] finalObjectArray = paramObj.toArray();

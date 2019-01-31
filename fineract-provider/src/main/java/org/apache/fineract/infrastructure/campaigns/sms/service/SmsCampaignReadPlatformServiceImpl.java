@@ -64,7 +64,7 @@ public class SmsCampaignReadPlatformServiceImpl implements SmsCampaignReadPlatfo
 
     @Autowired
     public SmsCampaignReadPlatformServiceImpl(final RoutingDataSource dataSource,
-            SmsCampaignDropdownReadPlatformService smsCampaignDropdownReadPlatformService, 
+            SmsCampaignDropdownReadPlatformService smsCampaignDropdownReadPlatformService,
             final CalendarDropdownReadPlatformService calendarDropdownReadPlatformService) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         businessRuleMapper = new BusinessRuleMapper();
@@ -78,7 +78,8 @@ public class SmsCampaignReadPlatformServiceImpl implements SmsCampaignReadPlatfo
         final Integer isVisible = 1;
         try {
             final String sql = "select " + this.smsCampaignMapper.schema + " where sc.id = ? and sc.is_visible = ?";
-            return this.jdbcTemplate.queryForObject(sql, this.smsCampaignMapper, new Object[] { campaignId, isVisible });
+            return this.jdbcTemplate.queryForObject(sql, this.smsCampaignMapper,
+                    new Object[] { campaignId, isVisible });
         } catch (final EmptyResultDataAccessException e) {
             throw new SmsCampaignNotFound(campaignId);
         }
@@ -88,17 +89,22 @@ public class SmsCampaignReadPlatformServiceImpl implements SmsCampaignReadPlatfo
     public Page<SmsCampaignData> retrieveAll(final SearchParameters searchParameters) {
         final Integer visible = 1;
         final StringBuilder sqlBuilder = new StringBuilder(200);
-        sqlBuilder.append("select SQL_CALC_FOUND_ROWS ");
+        sqlBuilder.append("select  ");
         sqlBuilder.append(this.smsCampaignMapper.schema() + " where sc.is_visible = ? ");
         if (searchParameters.isLimited()) {
-            sqlBuilder.append(" limit ").append(searchParameters.getLimit());
             if (searchParameters.isOffset()) {
-                sqlBuilder.append(" offset ").append(searchParameters.getOffset());
+                sqlBuilder.append(" offset ").append(searchParameters.getOffset()).append(" rows ");
             }
+            sqlBuilder.append(" fetch next ").append(searchParameters.getLimit()).append(" rows only");
+
+            // sqlBuilder.append(" limit ").append(searchParameters.getLimit());
+            // if (searchParameters.isOffset()) {
+            // sqlBuilder.append(" offset ").append(searchParameters.getOffset());
+            // }
         }
         final String sqlCountRows = "SELECT FOUND_ROWS()";
-        return this.paginationHelper.fetchPage(jdbcTemplate, sqlCountRows, sqlBuilder.toString(), new Object[] { visible },
-                this.smsCampaignMapper);
+        return this.paginationHelper.fetchPage(jdbcTemplate, sqlCountRows, sqlBuilder.toString(),
+                new Object[] { visible }, this.smsCampaignMapper);
     }
 
     @Override
@@ -107,20 +113,24 @@ public class SmsCampaignReadPlatformServiceImpl implements SmsCampaignReadPlatfo
         if (!StringUtils.isEmpty(reportType)) {
             sql = sql + " where sr.report_type = ?";
         }
-        final Collection<SmsBusinessRulesData> businessRulesOptions = this.jdbcTemplate.query(sql, this.businessRuleMapper,
-                new Object[] { reportType });
-        final Collection<SmsProviderData> smsProviderOptions = this.smsCampaignDropdownReadPlatformService.retrieveSmsProviders();
-        final Collection<EnumOptionData> campaignTypeOptions = this.smsCampaignDropdownReadPlatformService.retrieveCampaignTypes();
+        final Collection<SmsBusinessRulesData> businessRulesOptions = this.jdbcTemplate.query(sql,
+                this.businessRuleMapper, new Object[] { reportType });
+        final Collection<SmsProviderData> smsProviderOptions = this.smsCampaignDropdownReadPlatformService
+                .retrieveSmsProviders();
+        final Collection<EnumOptionData> campaignTypeOptions = this.smsCampaignDropdownReadPlatformService
+                .retrieveCampaignTypes();
         final Collection<EnumOptionData> campaignTriggerTypeOptions = this.smsCampaignDropdownReadPlatformService
                 .retrieveCampaignTriggerTypes();
         final Collection<EnumOptionData> months = this.smsCampaignDropdownReadPlatformService.retrieveMonths();
         final Collection<EnumOptionData> weekDays = this.smsCampaignDropdownReadPlatformService.retrieveWeeks();
         final Collection<EnumOptionData> frequencyTypeOptions = this.calendarDropdownReadPlatformService
                 .retrieveCalendarFrequencyTypeOptions();
-        final Collection<EnumOptionData> periodFrequencyOptions = this.smsCampaignDropdownReadPlatformService.retrivePeriodFrequencyTypes();
-        //final Collection<TriggerTypeWithSubTypesData> triggerTypeSubTypeOptions = this.smsCampaignDropdownReadPlatformService.getTriggerTypeAndSubTypes();
-        return SmsCampaignData.template(smsProviderOptions, campaignTypeOptions, businessRulesOptions, campaignTriggerTypeOptions, months,
-                weekDays, frequencyTypeOptions, periodFrequencyOptions);
+        final Collection<EnumOptionData> periodFrequencyOptions = this.smsCampaignDropdownReadPlatformService
+                .retrivePeriodFrequencyTypes();
+        // final Collection<TriggerTypeWithSubTypesData> triggerTypeSubTypeOptions =
+        // this.smsCampaignDropdownReadPlatformService.getTriggerTypeAndSubTypes();
+        return SmsCampaignData.template(smsProviderOptions, campaignTypeOptions, businessRulesOptions,
+                campaignTriggerTypeOptions, months, weekDays, frequencyTypeOptions, periodFrequencyOptions);
     }
 
     @Override
@@ -175,7 +185,8 @@ public class SmsCampaignReadPlatformServiceImpl implements SmsCampaignReadPlatfo
 
                     Map<String, Object> hashMap = new HashMap<String, Object>();
                     hashMap.put(paramLabel, paramName);
-                    smsBusinessRulesData = SmsBusinessRulesData.instance(id, reportName, reportType, reportSubType, hashMap, description);
+                    smsBusinessRulesData = SmsBusinessRulesData.instance(id, reportName, reportType, reportSubType,
+                            hashMap, description);
                     mapOfSameObjects.put(id, smsBusinessRulesData);
                     // add to the list
                     smsBusinessRulesDataList.add(smsBusinessRulesData);
@@ -193,7 +204,7 @@ public class SmsCampaignReadPlatformServiceImpl implements SmsCampaignReadPlatfo
             return smsBusinessRulesDataList;
         }
     }
-    
+
     private static final class SmsCampaignMapper implements RowMapper<SmsCampaignData> {
 
         final String schema;
@@ -262,13 +273,14 @@ public class SmsCampaignReadPlatformServiceImpl implements SmsCampaignReadPlatfo
             final String activatedByUsername = rs.getString("activatedByUsername");
             final String recurrence = rs.getString("recurrence");
             final DateTime recurrenceStartDate = JdbcSupport.getDateTime(rs, "recurrenceStartDate");
-            final SmsCampaignTimeLine smsCampaignTimeLine = new SmsCampaignTimeLine(submittedOnDate, submittedByUsername, activatedOnDate,
-                    activatedByUsername, closedOnDate, closedByUsername);
+            final SmsCampaignTimeLine smsCampaignTimeLine = new SmsCampaignTimeLine(submittedOnDate,
+                    submittedByUsername, activatedOnDate, activatedByUsername, closedOnDate, closedByUsername);
             final String reportName = rs.getString("reportName");
             final Long providerId = rs.getLong("providerId");
             final Boolean isNotification = rs.getBoolean("isNotification");
-            return SmsCampaignData.instance(id, campaignName, campaignTypeEnum, triggerTypeEnum, runReportId, reportName, paramValue, status, message, nextTriggerDate, lastTriggerDate,
-                    smsCampaignTimeLine, recurrenceStartDate, recurrence, providerId, isNotification);
+            return SmsCampaignData.instance(id, campaignName, campaignTypeEnum, triggerTypeEnum, runReportId,
+                    reportName, paramValue, status, message, nextTriggerDate, lastTriggerDate, smsCampaignTimeLine,
+                    recurrenceStartDate, recurrence, providerId, isNotification);
         }
     }
 

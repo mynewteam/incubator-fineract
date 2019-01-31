@@ -50,12 +50,11 @@ public class OfficeReadPlatformServiceImpl implements OfficeReadPlatformService 
     private final PlatformSecurityContext context;
     private final CurrencyReadPlatformService currencyReadPlatformService;
     private final ColumnValidator columnValidator;
-    private final static String nameDecoratedBaseOnHierarchy = "concat(substring('........................................', 1, ((LENGTH(o.hierarchy) - LENGTH(REPLACE(o.hierarchy, '.', '')) - 1) * 4)), o.name)";
+    private final static String nameDecoratedBaseOnHierarchy = "concat(substr('........................................', 1, ((LENGTH(o.hierarchy) - LENGTH(REPLACE(o.hierarchy, '.', '')) - 1) * 4)), o.name)";
 
     @Autowired
     public OfficeReadPlatformServiceImpl(final PlatformSecurityContext context,
-            final CurrencyReadPlatformService currencyReadPlatformService,
-            final RoutingDataSource dataSource,
+            final CurrencyReadPlatformService currencyReadPlatformService, final RoutingDataSource dataSource,
             final ColumnValidator columnValidator) {
         this.context = context;
         this.currencyReadPlatformService = currencyReadPlatformService;
@@ -66,10 +65,9 @@ public class OfficeReadPlatformServiceImpl implements OfficeReadPlatformService 
     private static final class OfficeMapper implements RowMapper<OfficeData> {
 
         public String officeSchema() {
-            return " o.id as id, o.name as name, "
-                    + nameDecoratedBaseOnHierarchy
+            return " o.id as id, o.name as name, " + nameDecoratedBaseOnHierarchy
                     + " as nameDecorated, o.external_id as externalId, o.opening_date as openingDate, o.hierarchy as hierarchy, parent.id as parentId, parent.name as parentName "
-                    + "from m_office o LEFT JOIN m_office AS parent ON parent.id = o.parent_id ";
+                    + "from m_office o LEFT JOIN m_office  parent ON parent.id = o.parent_id ";
         }
 
         @Override
@@ -84,14 +82,16 @@ public class OfficeReadPlatformServiceImpl implements OfficeReadPlatformService 
             final Long parentId = JdbcSupport.getLong(rs, "parentId");
             final String parentName = rs.getString("parentName");
 
-            return new OfficeData(id, name, nameDecorated, externalId, openingDate, hierarchy, parentId, parentName, null);
+            return new OfficeData(id, name, nameDecorated, externalId, openingDate, hierarchy, parentId, parentName,
+                    null);
         }
     }
 
     private static final class OfficeDropdownMapper implements RowMapper<OfficeData> {
 
         public String schema() {
-            return " o.id as id, " + nameDecoratedBaseOnHierarchy + " as nameDecorated, o.name as name from m_office o ";
+            return " o.id as id, " + nameDecoratedBaseOnHierarchy
+                    + " as nameDecorated, o.name as name from m_office o ";
         }
 
         @Override
@@ -114,11 +114,13 @@ public class OfficeReadPlatformServiceImpl implements OfficeReadPlatformService 
                     + " rc.name as currencyName, rc.internationalized_name_code as currencyNameCode, rc.display_symbol as currencyDisplaySymbol "
                     + " from m_office_transaction ot "
                     + " left join m_office fromoff on fromoff.id = ot.from_office_id "
-                    + " left join m_office tooff on tooff.id = ot.to_office_id " + " join m_currency rc on rc.`code` = ot.currency_code";
+                    + " left join m_office tooff on tooff.id = ot.to_office_id "
+                    + " join m_currency rc on rc.`code` = ot.currency_code";
         }
 
         @Override
-        public OfficeTransactionData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+        public OfficeTransactionData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum)
+                throws SQLException {
 
             final Long id = rs.getLong("id");
             final LocalDate transactionDate = JdbcSupport.getLocalDate(rs, "transactionDate");
@@ -134,20 +136,21 @@ public class OfficeReadPlatformServiceImpl implements OfficeReadPlatformService 
             final Integer currencyDigits = JdbcSupport.getInteger(rs, "currencyDigits");
             final Integer inMultiplesOf = JdbcSupport.getInteger(rs, "inMultiplesOf");
 
-            final CurrencyData currencyData = new CurrencyData(currencyCode, currencyName, currencyDigits, inMultiplesOf,
-                    currencyDisplaySymbol, currencyNameCode);
+            final CurrencyData currencyData = new CurrencyData(currencyCode, currencyName, currencyDigits,
+                    inMultiplesOf, currencyDisplaySymbol, currencyNameCode);
 
             final BigDecimal transactionAmount = rs.getBigDecimal("transactionAmount");
             final String description = rs.getString("description");
 
-            return OfficeTransactionData.instance(id, transactionDate, fromOfficeId, fromOfficeName, toOfficeId, toOfficeName,
-                    currencyData, transactionAmount, description);
+            return OfficeTransactionData.instance(id, transactionDate, fromOfficeId, fromOfficeName, toOfficeId,
+                    toOfficeName, currencyData, transactionAmount, description);
         }
     }
 
     @Override
     @Cacheable(value = "offices", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat(#root.target.context.authenticatedUser().getOffice().getHierarchy()+'of')")
-    public Collection<OfficeData> retrieveAllOffices(final boolean includeAllOffices, final SearchParameters searchParameters) {
+    public Collection<OfficeData> retrieveAllOffices(final boolean includeAllOffices,
+            final SearchParameters searchParameters) {
         final AppUser currentUser = this.context.authenticatedUser();
         final String hierarchy = currentUser.getOffice().getHierarchy();
         String hierarchySearchString = null;
@@ -161,7 +164,7 @@ public class OfficeReadPlatformServiceImpl implements OfficeReadPlatformService 
         sqlBuilder.append("select ");
         sqlBuilder.append(rm.officeSchema());
         sqlBuilder.append(" where o.hierarchy like ? ");
-        if(searchParameters!=null) {
+        if (searchParameters != null) {
             if (searchParameters.isOrderByRequested()) {
                 sqlBuilder.append("order by ").append(searchParameters.getOrderBy());
                 this.columnValidator.validateSqlInjection(sqlBuilder.toString(), searchParameters.getOrderBy());

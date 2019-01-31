@@ -86,10 +86,10 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
 
     @Autowired
     public StandingInstructionReadPlatformServiceImpl(final RoutingDataSource dataSource,
-            final ClientReadPlatformService clientReadPlatformService, final OfficeReadPlatformService officeReadPlatformService,
+            final ClientReadPlatformService clientReadPlatformService,
+            final OfficeReadPlatformService officeReadPlatformService,
             final PortfolioAccountReadPlatformService portfolioAccountReadPlatformService,
-            final DropdownReadPlatformService dropdownReadPlatformService,
-            final ColumnValidator columnValidator) {
+            final DropdownReadPlatformService dropdownReadPlatformService, final ColumnValidator columnValidator) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.clientReadPlatformService = clientReadPlatformService;
         this.officeReadPlatformService = officeReadPlatformService;
@@ -100,9 +100,9 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
     }
 
     @Override
-    public StandingInstructionData retrieveTemplate(final Long fromOfficeId, final Long fromClientId, final Long fromAccountId,
-            final Integer fromAccountType, final Long toOfficeId, final Long toClientId, final Long toAccountId,
-            final Integer toAccountType, Integer transferType) {
+    public StandingInstructionData retrieveTemplate(final Long fromOfficeId, final Long fromClientId,
+            final Long fromAccountId, final Integer fromAccountType, final Long toOfficeId, final Long toClientId,
+            final Long toAccountId, final Integer toAccountType, Integer transferType) {
 
         AccountTransferType accountTransferType = AccountTransferType.INVALID;
         if (transferType != null) {
@@ -170,8 +170,8 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
             if (mostRelevantFromAccountType == 1) {
                 loanStatus = new long[] { 300, 700 };
             }
-            PortfolioAccountDTO portfolioAccountDTO = new PortfolioAccountDTO(mostRelevantFromAccountType, mostRelevantFromClientId,
-                    loanStatus);
+            PortfolioAccountDTO portfolioAccountDTO = new PortfolioAccountDTO(mostRelevantFromAccountType,
+                    mostRelevantFromClientId, loanStatus);
             fromAccountOptions = this.portfolioAccountReadPlatformService.retrieveAllForLookup(portfolioAccountDTO);
         }
 
@@ -215,39 +215,44 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
             }
         }
 
-        final Collection<EnumOptionData> transferTypeOptions = Arrays.asList(transferType(AccountTransferType.ACCOUNT_TRANSFER),
-                transferType(AccountTransferType.LOAN_REPAYMENT)/*
-                                                                 * ,
-                                                                 * transferType(
-                                                                 * AccountTransferType
-                                                                 * .
-                                                                 * CHARGE_PAYMENT
-                                                                 * )
-                                                                 */);
-        final Collection<EnumOptionData> statusOptions = Arrays.asList(standingInstructionStatus(StandingInstructionStatus.ACTIVE),
+        final Collection<EnumOptionData> transferTypeOptions = Arrays
+                .asList(transferType(AccountTransferType.ACCOUNT_TRANSFER), transferType(
+                        AccountTransferType.LOAN_REPAYMENT)/*
+                                                            * , transferType( AccountTransferType . CHARGE_PAYMENT )
+                                                            */);
+        final Collection<EnumOptionData> statusOptions = Arrays.asList(
+                standingInstructionStatus(StandingInstructionStatus.ACTIVE),
                 standingInstructionStatus(StandingInstructionStatus.DISABLED));
-        final Collection<EnumOptionData> instructionTypeOptions = Arrays.asList(standingInstructionType(StandingInstructionType.FIXED),
+        final Collection<EnumOptionData> instructionTypeOptions = Arrays.asList(
+                standingInstructionType(StandingInstructionType.FIXED),
                 standingInstructionType(StandingInstructionType.DUES));
-        final Collection<EnumOptionData> priorityOptions = Arrays.asList(standingInstructionPriority(StandingInstructionPriority.URGENT),
+        final Collection<EnumOptionData> priorityOptions = Arrays.asList(
+                standingInstructionPriority(StandingInstructionPriority.URGENT),
                 standingInstructionPriority(StandingInstructionPriority.HIGH),
                 standingInstructionPriority(StandingInstructionPriority.MEDIUM),
                 standingInstructionPriority(StandingInstructionPriority.LOW));
-        final Collection<EnumOptionData> recurrenceTypeOptions = Arrays.asList(recurrenceType(AccountTransferRecurrenceType.PERIODIC),
+        final Collection<EnumOptionData> recurrenceTypeOptions = Arrays.asList(
+                recurrenceType(AccountTransferRecurrenceType.PERIODIC),
                 recurrenceType(AccountTransferRecurrenceType.AS_PER_DUES));
-        final Collection<EnumOptionData> recurrenceFrequencyOptions = this.dropdownReadPlatformService.retrievePeriodFrequencyTypeOptions();
+        final Collection<EnumOptionData> recurrenceFrequencyOptions = this.dropdownReadPlatformService
+                .retrievePeriodFrequencyTypeOptions();
 
-        return StandingInstructionData.template(fromOffice, fromClient, fromAccountTypeData, fromAccount, transferDate, toOffice, toClient,
-                toAccountTypeData, toAccount, fromOfficeOptions, fromClientOptions, fromAccountTypeOptions, fromAccountOptions,
-                toOfficeOptions, toClientOptions, toAccountTypeOptions, toAccountOptions, transferTypeOptions, statusOptions,
-                instructionTypeOptions, priorityOptions, recurrenceTypeOptions, recurrenceFrequencyOptions);
+        return StandingInstructionData.template(fromOffice, fromClient, fromAccountTypeData, fromAccount, transferDate,
+                toOffice, toClient, toAccountTypeData, toAccount, fromOfficeOptions, fromClientOptions,
+                fromAccountTypeOptions, fromAccountOptions, toOfficeOptions, toClientOptions, toAccountTypeOptions,
+                toAccountOptions, transferTypeOptions, statusOptions, instructionTypeOptions, priorityOptions,
+                recurrenceTypeOptions, recurrenceFrequencyOptions);
     }
 
-    private Collection<PortfolioAccountData> retrieveToAccounts(final PortfolioAccountData excludeThisAccountFromOptions,
-            final Integer toAccountType, final Long toClientId) {
+    private Collection<PortfolioAccountData> retrieveToAccounts(
+            final PortfolioAccountData excludeThisAccountFromOptions, final Integer toAccountType,
+            final Long toClientId) {
 
-        final String currencyCode = excludeThisAccountFromOptions != null ? excludeThisAccountFromOptions.currencyCode() : null;
+        final String currencyCode = excludeThisAccountFromOptions != null ? excludeThisAccountFromOptions.currencyCode()
+                : null;
 
-        PortfolioAccountDTO portfolioAccountDTO = new PortfolioAccountDTO(toAccountType, toClientId, currencyCode, null, null);
+        PortfolioAccountDTO portfolioAccountDTO = new PortfolioAccountDTO(toAccountType, toClientId, currencyCode, null,
+                null);
         Collection<PortfolioAccountData> accountOptions = this.portfolioAccountReadPlatformService
                 .retrieveAllForLookup(portfolioAccountDTO);
         if (!CollectionUtils.isEmpty(accountOptions)) {
@@ -263,7 +268,7 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
     public Page<StandingInstructionData> retrieveAll(final StandingInstructionDTO standingInstructionDTO) {
 
         final StringBuilder sqlBuilder = new StringBuilder(200);
-        sqlBuilder.append("select SQL_CALC_FOUND_ROWS ");
+        sqlBuilder.append("select  ");
         sqlBuilder.append(this.standingInstructionMapper.schema());
         if (standingInstructionDTO.transferType() != null || standingInstructionDTO.clientId() != null
                 || standingInstructionDTO.clientName() != null) {
@@ -321,10 +326,15 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
         }
 
         if (searchParameters.isLimited()) {
-            sqlBuilder.append(" limit ").append(searchParameters.getLimit());
             if (searchParameters.isOffset()) {
-                sqlBuilder.append(" offset ").append(searchParameters.getOffset());
+                sqlBuilder.append(" offset ").append(searchParameters.getOffset()).append(" rows ");
             }
+            sqlBuilder.append(" fetch next ").append(searchParameters.getLimit()).append(" rows only");
+
+            // sqlBuilder.append(" limit ").append(searchParameters.getLimit());
+            // if (searchParameters.isOffset()) {
+            // sqlBuilder.append(" offset ").append(searchParameters.getOffset());
+            // }
         }
 
         final Object[] finalObjectArray = paramObj.toArray();
@@ -338,9 +348,9 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
         final StringBuilder sqlBuilder = new StringBuilder(200);
         sqlBuilder.append("select ");
         sqlBuilder.append(this.standingInstructionMapper.schema());
-        sqlBuilder
-                .append(" where atsi.status=? and CURRENT_DATE() >= atsi.valid_from and (atsi.valid_till IS NULL or CURRENT_DATE() < atsi.valid_till) ")
-                .append(" and  (atsi.last_run_date <> CURRENT_DATE() or atsi.last_run_date IS NULL)")
+        sqlBuilder.append(
+                " where atsi.status=? and CURRENT_DATE >= atsi.valid_from and (atsi.valid_till IS NULL or CURRENT_DATE < atsi.valid_till) ")
+                .append(" and  (atsi.last_run_date <> CURRENT_DATE or atsi.last_run_date IS NULL)")
                 .append(" ORDER BY atsi.priority DESC");
         return this.jdbcTemplate.query(sqlBuilder.toString(), this.standingInstructionMapper, status);
     }
@@ -351,7 +361,8 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
         try {
             final String sql = "select " + this.standingInstructionMapper.schema() + " where atsi.id = ?";
 
-            return this.jdbcTemplate.queryForObject(sql, this.standingInstructionMapper, new Object[] { instructionId });
+            return this.jdbcTemplate.queryForObject(sql, this.standingInstructionMapper,
+                    new Object[] { instructionId });
         } catch (final EmptyResultDataAccessException e) {
             throw new AccountTransferNotFoundException(instructionId);
         }
@@ -360,7 +371,8 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
     @Override
     public StandingInstructionDuesData retriveLoanDuesData(final Long loanId) {
         final StandingInstructionLoanDuesMapper rm = new StandingInstructionLoanDuesMapper();
-        final String sql = "select " + rm.schema() + " where ml.id= ? and ls.duedate <= CURRENT_DATE() and ls.completed_derived <> 1";
+        final String sql = "select " + rm.schema()
+                + " where ml.id= ? and ls.duedate <= CURRENT_DATE and ls.completed_derived <> 1";
         return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { loanId });
     }
 
@@ -374,8 +386,10 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
             sqlBuilder.append("atsi.status as status, atsi.instruction_type as instructionType,");
             sqlBuilder.append("atsi.amount as amount,");
             sqlBuilder.append("atsi.valid_from as validFrom, atsi.valid_till as validTill,");
-            sqlBuilder.append("atsi.recurrence_type as recurrenceType, atsi.recurrence_frequency as recurrenceFrequency,");
-            sqlBuilder.append("atsi.recurrence_interval as recurrenceInterval, atsi.recurrence_on_day as recurrenceOnDay,");
+            sqlBuilder.append(
+                    "atsi.recurrence_type as recurrenceType, atsi.recurrence_frequency as recurrenceFrequency,");
+            sqlBuilder.append(
+                    "atsi.recurrence_interval as recurrenceInterval, atsi.recurrence_on_day as recurrenceOnDay,");
             sqlBuilder.append("atsi.recurrence_on_month as recurrenceOnMonth,");
             sqlBuilder.append("atd.id as accountDetailId,atd.transfer_type as transferType,");
             sqlBuilder.append("fromoff.id as fromOfficeId, fromoff.name as fromOfficeName,");
@@ -413,7 +427,8 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
         }
 
         @Override
-        public StandingInstructionData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+        public StandingInstructionData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum)
+                throws SQLException {
 
             final Long id = rs.getLong("id");
             final Long accountDetailId = rs.getLong("accountDetailId");
@@ -449,16 +464,14 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
             EnumOptionData transferTypeEnum = AccountTransferEnumerations.transferType(transferType);
 
             /*
-             * final String currencyCode = rs.getString("currencyCode"); final
-             * String currencyName = rs.getString("currencyName"); final String
-             * currencyNameCode = rs.getString("currencyNameCode"); final String
-             * currencyDisplaySymbol = rs.getString("currencyDisplaySymbol");
-             * final Integer currencyDigits = JdbcSupport.getInteger(rs,
-             * "currencyDigits"); final Integer inMultiplesOf =
-             * JdbcSupport.getInteger(rs, "inMultiplesOf"); final CurrencyData
-             * currency = new CurrencyData(currencyCode, currencyName,
-             * currencyDigits, inMultiplesOf, currencyDisplaySymbol,
-             * currencyNameCode);
+             * final String currencyCode = rs.getString("currencyCode"); final String
+             * currencyName = rs.getString("currencyName"); final String currencyNameCode =
+             * rs.getString("currencyNameCode"); final String currencyDisplaySymbol =
+             * rs.getString("currencyDisplaySymbol"); final Integer currencyDigits =
+             * JdbcSupport.getInteger(rs, "currencyDigits"); final Integer inMultiplesOf =
+             * JdbcSupport.getInteger(rs, "inMultiplesOf"); final CurrencyData currency =
+             * new CurrencyData(currencyCode, currencyName, currencyDigits, inMultiplesOf,
+             * currencyDisplaySymbol, currencyNameCode);
              */
             final Long fromOfficeId = JdbcSupport.getLong(rs, "fromOfficeId");
             final String fromOfficeName = rs.getString("fromOfficeName");
@@ -487,12 +500,12 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
             PortfolioAccountData fromAccount = null;
             EnumOptionData fromAccountType = null;
             if (fromSavingsAccountId != null) {
-                fromAccount = new PortfolioAccountData(fromSavingsAccountId, fromSavingsAccountNo, null, null, null, null, null,
-                        fromProductId, fromProductName, null, null, null);
+                fromAccount = new PortfolioAccountData(fromSavingsAccountId, fromSavingsAccountNo, null, null, null,
+                        null, null, fromProductId, fromProductName, null, null, null);
                 fromAccountType = accountType(PortfolioAccountType.SAVINGS);
             } else if (fromLoanAccountId != null) {
-                fromAccount = new PortfolioAccountData(fromLoanAccountId, fromLoanAccountNo, null, null, null, null, null,
-                        fromLoanProductId, fromLoanProductName, null, null, null);
+                fromAccount = new PortfolioAccountData(fromLoanAccountId, fromLoanAccountNo, null, null, null, null,
+                        null, fromLoanProductId, fromLoanProductName, null, null, null);
                 fromAccountType = accountType(PortfolioAccountType.LOAN);
             }
 
@@ -508,18 +521,19 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
             final String toLoanProductName = rs.getString("toLoanProductName");
 
             if (toSavingsAccountId != null) {
-                toAccount = new PortfolioAccountData(toSavingsAccountId, toSavingsAccountNo, null, null, null, null, null, toProductId,
-                        toProductName, null, null, null);
+                toAccount = new PortfolioAccountData(toSavingsAccountId, toSavingsAccountNo, null, null, null, null,
+                        null, toProductId, toProductName, null, null, null);
                 toAccountType = accountType(PortfolioAccountType.SAVINGS);
             } else if (toLoanAccountId != null) {
-                toAccount = new PortfolioAccountData(toLoanAccountId, toLoanAccountNo, null, null, null, null, null, toLoanProductId,
-                        toLoanProductName, null, null, null);
+                toAccount = new PortfolioAccountData(toLoanAccountId, toLoanAccountNo, null, null, null, null, null,
+                        toLoanProductId, toLoanProductName, null, null, null);
                 toAccountType = accountType(PortfolioAccountType.LOAN);
             }
 
-            return StandingInstructionData.instance(id, accountDetailId, name, fromOffice, toOffice, fromClient, toClient, fromAccountType,
-                    fromAccount, toAccountType, toAccount, transferTypeEnum, priorityEnum, instructionTypeEnum, statusEnum, transferAmount,
-                    validFrom, validTill, recurrenceTypeEnum, recurrenceFrequencyEnum, recurrenceInterval, recurrenceOnMonthDay);
+            return StandingInstructionData.instance(id, accountDetailId, name, fromOffice, toOffice, fromClient,
+                    toClient, fromAccountType, fromAccount, toAccountType, toAccount, transferTypeEnum, priorityEnum,
+                    instructionTypeEnum, statusEnum, transferAmount, validFrom, validTill, recurrenceTypeEnum,
+                    recurrenceFrequencyEnum, recurrenceInterval, recurrenceOnMonthDay);
         }
     }
 
@@ -556,34 +570,41 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
         }
 
         @Override
-        public StandingInstructionDuesData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+        public StandingInstructionDuesData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum)
+                throws SQLException {
 
             final LocalDate dueDate = JdbcSupport.getLocalDate(rs, "dueDate");
             final BigDecimal principalDue = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "principalAmount");
             final BigDecimal principalPaid = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "principalCompleted");
-            final BigDecimal principalWrittenOff = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "principalWrittenOff");
+            final BigDecimal principalWrittenOff = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs,
+                    "principalWrittenOff");
             final BigDecimal principalOutstanding = principalDue.subtract(principalPaid).subtract(principalWrittenOff);
 
             final BigDecimal interestExpectedDue = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "interestAmount");
             final BigDecimal interestPaid = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "interestCompleted");
-            final BigDecimal interestWrittenOff = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "interestWrittenOff");
+            final BigDecimal interestWrittenOff = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs,
+                    "interestWrittenOff");
             final BigDecimal interestWaived = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "interestWaived");
-            final BigDecimal interestActualDue = interestExpectedDue.subtract(interestWaived).subtract(interestWrittenOff);
+            final BigDecimal interestActualDue = interestExpectedDue.subtract(interestWaived)
+                    .subtract(interestWrittenOff);
             final BigDecimal interestOutstanding = interestActualDue.subtract(interestPaid);
 
-            final BigDecimal penaltyChargesExpectedDue = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "penalityAmount");
+            final BigDecimal penaltyChargesExpectedDue = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs,
+                    "penalityAmount");
             final BigDecimal penaltyChargesPaid = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "penalityCompleted");
-            final BigDecimal penaltyChargesWrittenOff = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "penaltyWrittenOff");
+            final BigDecimal penaltyChargesWrittenOff = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs,
+                    "penaltyWrittenOff");
             final BigDecimal penaltyChargesWaived = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "penaltyWaived");
-            final BigDecimal penaltyChargesActualDue = penaltyChargesExpectedDue.subtract(penaltyChargesWaived).subtract(
-                    penaltyChargesWrittenOff);
+            final BigDecimal penaltyChargesActualDue = penaltyChargesExpectedDue.subtract(penaltyChargesWaived)
+                    .subtract(penaltyChargesWrittenOff);
             final BigDecimal penaltyChargesOutstanding = penaltyChargesActualDue.subtract(penaltyChargesPaid);
 
             final BigDecimal feeChargesExpectedDue = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "feeAmount");
             final BigDecimal feeChargesPaid = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "feecompleted");
             final BigDecimal feeChargesWrittenOff = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "feeWrittenOff");
             final BigDecimal feeChargesWaived = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "feeWaived");
-            final BigDecimal feeChargesActualDue = feeChargesExpectedDue.subtract(feeChargesWaived).subtract(feeChargesWrittenOff);
+            final BigDecimal feeChargesActualDue = feeChargesExpectedDue.subtract(feeChargesWaived)
+                    .subtract(feeChargesWrittenOff);
             final BigDecimal feeChargesOutstanding = feeChargesActualDue.subtract(feeChargesPaid);
 
             final BigDecimal totalOutstanding = principalOutstanding.add(interestOutstanding).add(feeChargesOutstanding)

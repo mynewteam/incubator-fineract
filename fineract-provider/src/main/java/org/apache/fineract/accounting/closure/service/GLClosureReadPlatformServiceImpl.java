@@ -51,13 +51,14 @@ public class GLClosureReadPlatformServiceImpl implements GLClosureReadPlatformSe
                     + " glClosure.is_deleted as isDeleted, creatingUser.id as creatingUserId,creatingUser.username as creatingUserName,"
                     + " updatingUser.id as updatingUserId,updatingUser.username as updatingUserName, glClosure.created_date as createdDate,"
                     + " glClosure.lastmodified_date as updatedDate, glClosure.comments as comments "
-                    + " from acc_gl_closure as glClosure, m_appuser as creatingUser, m_appuser as updatingUser,m_office as office"
+                    + " from acc_gl_closure  glClosure, m_appuser  creatingUser, m_appuser  updatingUser,m_office  office"
                     + " where glClosure.createdby_id=creatingUser.id and "
                     + " glClosure.lastmodifiedby_id=updatingUser.id and glClosure.office_id=office.id";
         }
 
         @Override
-        public GLClosureData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+        public GLClosureData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum)
+                throws SQLException {
 
             final Long id = rs.getLong("id");
             final Long officeId = rs.getLong("officeId");
@@ -72,8 +73,8 @@ public class GLClosureReadPlatformServiceImpl implements GLClosureReadPlatformSe
             final String lastUpdatedByUserName = rs.getString("updatingUserName");
             final String comments = rs.getString("comments");
 
-            return new GLClosureData(id, officeId, officeName, closingDate, deleted, createdDate, lastUpdatedDate, creatingByUserId,
-                    createdByUserName, lastUpdatedByUserId, lastUpdatedByUserName, comments);
+            return new GLClosureData(id, officeId, officeName, closingDate, deleted, createdDate, lastUpdatedDate,
+                    creatingByUserId, createdByUserName, lastUpdatedByUserId, lastUpdatedByUserName, comments);
         }
     }
 

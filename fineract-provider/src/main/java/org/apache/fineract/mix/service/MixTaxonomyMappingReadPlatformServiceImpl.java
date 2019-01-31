@@ -54,6 +54,7 @@ public class MixTaxonomyMappingReadPlatformServiceImpl implements MixTaxonomyMap
 
     }
 
+
     @Override
     public MixTaxonomyMappingData retrieveTaxonomyMapping() {
         try {

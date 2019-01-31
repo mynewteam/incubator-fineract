@@ -77,10 +77,10 @@ public class EntityDatatableChecksReadPlatformServiceImpl implements EntityDatat
     }
 
     @Override
-    public Page<EntityDataTableChecksData> retrieveAll(SearchParameters searchParameters, final Long status, final String entity,
-            final Long productId) {
+    public Page<EntityDataTableChecksData> retrieveAll(SearchParameters searchParameters, final Long status,
+            final String entity, final Long productId) {
         final StringBuilder sqlBuilder = new StringBuilder(200);
-        sqlBuilder.append("select SQL_CALC_FOUND_ROWS ");
+        sqlBuilder.append("select  ");
         sqlBuilder.append(this.entityDataTableChecksMapper.schema());
 
         if (status != null || entity != null || productId != null) {
@@ -102,13 +102,18 @@ public class EntityDatatableChecksReadPlatformServiceImpl implements EntityDatat
             paramList.add(productId);
         }
         if (searchParameters.isLimited()) {
-            sqlBuilder.append(" limit ").append(searchParameters.getLimit());
             if (searchParameters.isOffset()) {
-                sqlBuilder.append(" offset ").append(searchParameters.getOffset());
+                sqlBuilder.append(" offset ").append(searchParameters.getOffset()).append(" rows ");
             }
+            sqlBuilder.append(" fetch next ").append(searchParameters.getLimit()).append(" rows only");
+
+            // sqlBuilder.append(" limit ").append(searchParameters.getLimit());
+            // if (searchParameters.isOffset()) {
+            // sqlBuilder.append(" offset ").append(searchParameters.getOffset());
+            // }
         }
         final String sqlCountRows = "SELECT FOUND_ROWS()";
-        return this.paginationHelper.fetchPage(jdbcTemplate, sqlCountRows, sqlBuilder.toString(),paramList.toArray(),
+        return this.paginationHelper.fetchPage(jdbcTemplate, sqlCountRows, sqlBuilder.toString(), paramList.toArray(),
                 entityDataTableChecksMapper);
 
     }
@@ -118,11 +123,13 @@ public class EntityDatatableChecksReadPlatformServiceImpl implements EntityDatat
 
         List<EntityDatatableChecks> tableRequiredBeforeAction = null;
         if (productId != null) {
-            tableRequiredBeforeAction = this.entityDatatableChecksRepository.findByEntityStatusAndProduct(entity, status, productId);
+            tableRequiredBeforeAction = this.entityDatatableChecksRepository.findByEntityStatusAndProduct(entity,
+                    status, productId);
         }
 
         if (tableRequiredBeforeAction == null || tableRequiredBeforeAction.size() < 1) {
-            tableRequiredBeforeAction = this.entityDatatableChecksRepository.findByEntityStatusAndNoProduct(entity, status);
+            tableRequiredBeforeAction = this.entityDatatableChecksRepository.findByEntityStatusAndNoProduct(entity,
+                    status);
         }
         if (tableRequiredBeforeAction != null && tableRequiredBeforeAction.size() > 0) {
             List<DatatableData> ret = new ArrayList<>();
@@ -144,11 +151,13 @@ public class EntityDatatableChecksReadPlatformServiceImpl implements EntityDatat
         List<DatatableCheckStatusData> statusGroup = getStatusList(EntityTables.getStatus("m_group"));
         List<DatatableCheckStatusData> statusSavings = getStatusList(EntityTables.getStatus("m_savings_account"));
 
-        Collection<LoanProductData> loanProductDatas = this.loanProductReadPlatformService.retrieveAllLoanProductsForLookup(true);
-        Collection<SavingsProductData> savingsProductDatas = this.savingsProductReadPlatformService.retrieveAllForLookup();
+        Collection<LoanProductData> loanProductDatas = this.loanProductReadPlatformService
+                .retrieveAllLoanProductsForLookup(true);
+        Collection<SavingsProductData> savingsProductDatas = this.savingsProductReadPlatformService
+                .retrieveAllForLookup();
 
-        return new EntityDataTableChecksTemplateData(entities, statusClient, statusGroup, statusSavings, statusLoan, dataTables,
-                loanProductDatas, savingsProductDatas);
+        return new EntityDataTableChecksTemplateData(entities, statusClient, statusGroup, statusSavings, statusLoan,
+                dataTables, loanProductDatas, savingsProductDatas);
 
     }
 
@@ -172,7 +181,8 @@ public class EntityDatatableChecksReadPlatformServiceImpl implements EntityDatat
     protected static final class RegisterDataTableMapper implements RowMapper<DatatableChecksData> {
 
         @Override
-        public DatatableChecksData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+        public DatatableChecksData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum)
+                throws SQLException {
 
             final String entity = rs.getString("entity");
             final String tableName = rs.getString("tableName");
@@ -181,7 +191,8 @@ public class EntityDatatableChecksReadPlatformServiceImpl implements EntityDatat
         }
 
         public String schema() {
-            return " t.application_table_name as entity, t.registered_table_name as tableName " + " from x_registered_table t "
+            return " t.application_table_name as entity, t.registered_table_name as tableName "
+                    + " from x_registered_table t "
                     + " where application_table_name IN( 'm_client','m_group','m_savings_account','m_loan')";
         }
     }
@@ -189,7 +200,8 @@ public class EntityDatatableChecksReadPlatformServiceImpl implements EntityDatat
     protected static final class EntityDataTableChecksMapper implements RowMapper<EntityDataTableChecksData> {
 
         @Override
-        public EntityDataTableChecksData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+        public EntityDataTableChecksData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum)
+                throws SQLException {
 
             final Long id = JdbcSupport.getLong(rs, "id");
             final String entity = rs.getString("entity");
@@ -203,7 +215,8 @@ public class EntityDatatableChecksReadPlatformServiceImpl implements EntityDatat
             final Long productId = JdbcSupport.getLong(rs, "productId");
             final String productName = rs.getString("productName");
 
-            return new EntityDataTableChecksData(id, entity, statusEnum, datatableName, systemDefined, productId, productName);
+            return new EntityDataTableChecksData(id, entity, statusEnum, datatableName, systemDefined, productId,
+                    productName);
         }
 
         public String schema() {
@@ -211,7 +224,7 @@ public class EntityDatatableChecksReadPlatformServiceImpl implements EntityDatat
                     + "t.system_defined as systemDefined,  " + "t.x_registered_table_name as datatableName,  "
                     + "t.product_id as productId,  " + "(CASE t.application_table_name " + "WHEN 'm_loan' THEN lp.name "
                     + "WHEN 'm_savings_account' THEN sp.name " + "ELSE NULL  " + "END) as productName "
-                    + "from m_entity_datatable_check as t  "
+                    + "from m_entity_datatable_check t  "
                     + "left join m_product_loan lp on lp.id = t.product_id and t.application_table_name = 'm_loan' "
                     + "left join m_savings_product sp on sp.id = t.product_id and t.application_table_name = 'm_savings_account' ";
         }

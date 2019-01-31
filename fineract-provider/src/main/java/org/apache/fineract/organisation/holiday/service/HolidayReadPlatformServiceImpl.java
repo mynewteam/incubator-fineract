@@ -12,7 +12,7 @@
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
+ * KIND, either express or implied. See the License for the 
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -59,8 +59,10 @@ public class HolidayReadPlatformServiceImpl implements HolidayReadPlatformServic
 
         public HolidayMapper() {
             final StringBuilder sqlBuilder = new StringBuilder(200);
-            sqlBuilder.append("h.id as id, h.name as name, h.description as description, h.from_date as fromDate, h.to_date as toDate, ");
-            sqlBuilder.append("h.repayments_rescheduled_to as repaymentsScheduleTO, h.rescheduling_type as reschedulingType, h.status_enum as statusEnum ");
+            sqlBuilder.append(
+                    "h.id as id, h.name as name, h.description as description, h.from_date as fromDate, h.to_date as toDate, ");
+            sqlBuilder.append(
+                    "h.repayments_rescheduled_to as repaymentsScheduleTO, h.rescheduling_type as reschedulingType, h.status_enum as statusEnum ");
             sqlBuilder.append("from m_holiday h ");
             this.schema = sqlBuilder.toString();
         }
@@ -70,7 +72,8 @@ public class HolidayReadPlatformServiceImpl implements HolidayReadPlatformServic
         }
 
         @Override
-        public HolidayData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+        public HolidayData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum)
+                throws SQLException {
             final Long id = rs.getLong("id");
             final String name = rs.getString("name");
             final String description = rs.getString("description");
@@ -81,13 +84,15 @@ public class HolidayReadPlatformServiceImpl implements HolidayReadPlatformServic
             final Integer reschedulingType = JdbcSupport.getInteger(rs, "reschedulingType");
             final EnumOptionData status = HolidayEnumerations.holidayStatusType(statusEnum);
 
-            return new HolidayData(id, name, description, fromDate, toDate, repaymentsScheduleTO, status, reschedulingType);
+            return new HolidayData(id, name, description, fromDate, toDate, repaymentsScheduleTO, status,
+                    reschedulingType);
         }
 
     }
 
     @Override
-    public Collection<HolidayData> retrieveAllHolidaysBySearchParamerters(final Long officeId, final Date fromDate, final Date toDate) {
+    public Collection<HolidayData> retrieveAllHolidaysBySearchParamerters(final Long officeId, final Date fromDate,
+            final Date toDate) {
         this.context.authenticatedUser();
 
         final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -96,7 +101,8 @@ public class HolidayReadPlatformServiceImpl implements HolidayReadPlatformServic
         int arrayPos = 0;
 
         final HolidayMapper rm = new HolidayMapper();
-        String sql = "select " + rm.schema() + " join m_holiday_office hf on h.id = hf.holiday_id and hf.office_id = ? ";
+        String sql = "select " + rm.schema()
+                + " join m_holiday_office hf on h.id = hf.holiday_id and hf.office_id = ? ";
 
         objectArray[arrayPos] = officeId;
         arrayPos = arrayPos + 1;
@@ -136,10 +142,10 @@ public class HolidayReadPlatformServiceImpl implements HolidayReadPlatformServic
             throw new HolidayNotFoundException(holidayId);
         }
     }
-    
+
     @Override
-    public List<EnumOptionData> retrieveRepaymentScheduleUpdationTyeOptions(){
-        
+    public List<EnumOptionData> retrieveRepaymentScheduleUpdationTyeOptions() {
+
         final List<EnumOptionData> repSchUpdationTypeOptions = Arrays.asList(
                 HolidayEnumerations.rescheduleType(RescheduleType.RESCHEDULETOSPECIFICDATE),
                 HolidayEnumerations.rescheduleType(RescheduleType.RESCHEDULETONEXTREPAYMENTDATE));

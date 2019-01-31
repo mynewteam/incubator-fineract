@@ -57,7 +57,7 @@ public class ReportMailingJobRunHistoryReadPlatformServiceImpl implements Report
         final StringBuilder sqlStringBuilder = new StringBuilder(200);
         final List<Object> queryParameters = new ArrayList<>();
         
-        sqlStringBuilder.append("select SQL_CALC_FOUND_ROWS ");
+        sqlStringBuilder.append("select  ");
         sqlStringBuilder.append(this.reportMailingJobRunHistoryMapper.ReportMailingJobRunHistorySchema());
         
         if (reportMailingJobId != null) {
@@ -75,11 +75,16 @@ public class ReportMailingJobRunHistoryReadPlatformServiceImpl implements Report
         }
 
         if (searchParameters.isLimited()) {
-            sqlStringBuilder.append(" limit ").append(searchParameters.getLimit());
-            
             if (searchParameters.isOffset()) {
-                sqlStringBuilder.append(" offset ").append(searchParameters.getOffset());
+                sqlStringBuilder.append(" offset ").append(searchParameters.getOffset()).append(" rows ");
             }
+            sqlStringBuilder.append(" fetch next ").append(searchParameters.getLimit()).append(" rows only");
+
+            // sqlStringBuilder.append(" limit ").append(searchParameters.getLimit());
+            
+            // if (searchParameters.isOffset()) {
+            //     sqlStringBuilder.append(" offset ").append(searchParameters.getOffset());
+            // }
         }
         
         return this.paginationHelper.fetchPage(this.jdbcTemplate, "SELECT FOUND_ROWS()", sqlStringBuilder.toString(), 

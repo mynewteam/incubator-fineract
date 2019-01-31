@@ -62,8 +62,8 @@ public class SavingsAccountChargeReadPlatformServiceImpl implements SavingsAccou
 
     @Autowired
     public SavingsAccountChargeReadPlatformServiceImpl(final PlatformSecurityContext context,
-            final ChargeDropdownReadPlatformService chargeDropdownReadPlatformService, final RoutingDataSource dataSource,
-            final DropdownReadPlatformService dropdownReadPlatformService) {
+            final ChargeDropdownReadPlatformService chargeDropdownReadPlatformService,
+            final RoutingDataSource dataSource, final DropdownReadPlatformService dropdownReadPlatformService) {
         this.context = context;
         this.chargeDropdownReadPlatformService = chargeDropdownReadPlatformService;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
@@ -75,16 +75,13 @@ public class SavingsAccountChargeReadPlatformServiceImpl implements SavingsAccou
 
         public String schema() {
             return "sc.id as id, c.id as chargeId, sc.savings_account_id as accountId, c.name as name, "
-                    + "sc.amount as amountDue, "
-                    + "sc.amount_paid_derived as amountPaid, "
+                    + "sc.amount as amountDue, " + "sc.amount_paid_derived as amountPaid, "
                     + "sc.amount_waived_derived as amountWaived, "
                     + "sc.amount_writtenoff_derived as amountWrittenOff, "
                     + "sc.amount_outstanding_derived as amountOutstanding, "
                     + "sc.calculation_percentage as percentageOf, sc.calculation_on_amount as amountPercentageAppliedTo, "
-                    + "sc.charge_time_enum as chargeTime, "
-                    + "sc.is_penalty as penalty, "
-                    + "sc.charge_due_date as dueAsOfDate, "
-                    + "sc.fee_on_month as feeOnMonth, "
+                    + "sc.charge_time_enum as chargeTime, " + "sc.is_penalty as penalty, "
+                    + "sc.charge_due_date as dueAsOfDate, " + "sc.fee_on_month as feeOnMonth, "
                     + "sc.fee_on_day as feeOnDay, sc.fee_interval as feeInterval, "
                     + "sc.charge_calculation_enum as chargeCalculation, "
                     + "sc.is_active as isActive, sc.inactivated_on_date as inactivationDate, "
@@ -96,7 +93,8 @@ public class SavingsAccountChargeReadPlatformServiceImpl implements SavingsAccou
         }
 
         @Override
-        public SavingsAccountChargeData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+        public SavingsAccountChargeData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum)
+                throws SQLException {
 
             final Long id = rs.getLong("id");
             final Long chargeId = rs.getLong("chargeId");
@@ -109,7 +107,8 @@ public class SavingsAccountChargeReadPlatformServiceImpl implements SavingsAccou
             final BigDecimal amountOutstanding = rs.getBigDecimal("amountOutstanding");
 
             final BigDecimal percentageOf = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "percentageOf");
-            final BigDecimal amountPercentageAppliedTo = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "amountPercentageAppliedTo");
+            final BigDecimal amountPercentageAppliedTo = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs,
+                    "amountPercentageAppliedTo");
 
             final String currencyCode = rs.getString("currencyCode");
             final String currencyName = rs.getString("currencyName");
@@ -118,8 +117,8 @@ public class SavingsAccountChargeReadPlatformServiceImpl implements SavingsAccou
             final Integer currencyDecimalPlaces = JdbcSupport.getInteger(rs, "currencyDecimalPlaces");
             final Integer inMultiplesOf = JdbcSupport.getInteger(rs, "inMultiplesOf");
 
-            final CurrencyData currency = new CurrencyData(currencyCode, currencyName, currencyDecimalPlaces, inMultiplesOf,
-                    currencyDisplaySymbol, currencyNameCode);
+            final CurrencyData currency = new CurrencyData(currencyCode, currencyName, currencyDecimalPlaces,
+                    inMultiplesOf, currencyDisplaySymbol, currencyNameCode);
 
             final int chargeTime = rs.getInt("chargeTime");
             final EnumOptionData chargeTimeType = ChargeEnumerations.chargeTimeType(chargeTime);
@@ -141,9 +140,10 @@ public class SavingsAccountChargeReadPlatformServiceImpl implements SavingsAccou
 
             final Collection<ChargeData> chargeOptions = null;
 
-            return SavingsAccountChargeData.instance(id, chargeId, accountId, name, currency, amount, amountPaid, amountWaived,
-                    amountWrittenOff, amountOutstanding, chargeTimeType, dueAsOfDate, chargeCalculationType, percentageOf,
-                    amountPercentageAppliedTo, chargeOptions, penalty, feeOnMonthDay, feeInterval, isActive, inactivationDate);
+            return SavingsAccountChargeData.instance(id, chargeId, accountId, name, currency, amount, amountPaid,
+                    amountWaived, amountWrittenOff, amountOutstanding, chargeTimeType, dueAsOfDate,
+                    chargeCalculationType, percentageOf, amountPercentageAppliedTo, chargeOptions, penalty,
+                    feeOnMonthDay, feeInterval, isActive, inactivationDate);
         }
     }
 
@@ -151,11 +151,14 @@ public class SavingsAccountChargeReadPlatformServiceImpl implements SavingsAccou
     public ChargeData retrieveSavingsAccountChargeTemplate() {
         this.context.authenticatedUser();
 
-        final List<EnumOptionData> allowedChargeCalculationTypeOptions = this.chargeDropdownReadPlatformService.retrieveCalculationTypes();
-        final List<EnumOptionData> allowedChargeTimeOptions = this.chargeDropdownReadPlatformService.retrieveCollectionTimeTypes();
+        final List<EnumOptionData> allowedChargeCalculationTypeOptions = this.chargeDropdownReadPlatformService
+                .retrieveCalculationTypes();
+        final List<EnumOptionData> allowedChargeTimeOptions = this.chargeDropdownReadPlatformService
+                .retrieveCollectionTimeTypes();
         final List<EnumOptionData> loansChargeCalculationTypeOptions = this.chargeDropdownReadPlatformService
                 .retrieveLoanCalculationTypes();
-        final List<EnumOptionData> loansChargeTimeTypeOptions = this.chargeDropdownReadPlatformService.retrieveLoanCollectionTimeTypes();
+        final List<EnumOptionData> loansChargeTimeTypeOptions = this.chargeDropdownReadPlatformService
+                .retrieveLoanCollectionTimeTypes();
         final List<EnumOptionData> savingsChargeCalculationTypeOptions = this.chargeDropdownReadPlatformService
                 .retrieveSavingsCalculationTypes();
         final List<EnumOptionData> savingsChargeTimeTypeOptions = this.chargeDropdownReadPlatformService
@@ -163,7 +166,8 @@ public class SavingsAccountChargeReadPlatformServiceImpl implements SavingsAccou
         final List<EnumOptionData> clientChargeCalculationTypeOptions = null;
         final List<EnumOptionData> clientChargeTimeTypeOptions = null;
 
-        final List<EnumOptionData> feeFrequencyOptions = this.dropdownReadPlatformService.retrievePeriodFrequencyTypeOptions();
+        final List<EnumOptionData> feeFrequencyOptions = this.dropdownReadPlatformService
+                .retrievePeriodFrequencyTypeOptions();
         // this field is applicable only for client charges
         final Map<String, List<GLAccountData>> incomeOrLiabilityAccountOptions = null;
         final List<EnumOptionData> shareChargeCalculationTypeOptions = null;
@@ -172,8 +176,9 @@ public class SavingsAccountChargeReadPlatformServiceImpl implements SavingsAccou
         // TODO AA : revisit for merge conflict - Not sure method signature
         return ChargeData.template(null, allowedChargeCalculationTypeOptions, null, allowedChargeTimeOptions, null,
                 loansChargeCalculationTypeOptions, loansChargeTimeTypeOptions, savingsChargeCalculationTypeOptions,
-                savingsChargeTimeTypeOptions, clientChargeCalculationTypeOptions, clientChargeTimeTypeOptions, feeFrequencyOptions,
-                incomeOrLiabilityAccountOptions, taxGroupOptions, shareChargeCalculationTypeOptions, shareChargeTimeTypeOptions);
+                savingsChargeTimeTypeOptions, clientChargeCalculationTypeOptions, clientChargeTimeTypeOptions,
+                feeFrequencyOptions, incomeOrLiabilityAccountOptions, taxGroupOptions,
+                shareChargeCalculationTypeOptions, shareChargeTimeTypeOptions);
     }
 
     @Override
@@ -218,7 +223,8 @@ public class SavingsAccountChargeReadPlatformServiceImpl implements SavingsAccou
             sqlBuilder.append("sa.id as accountId, ");
             sqlBuilder.append("sa.account_no as accountNo, ");
             sqlBuilder.append("sac.charge_due_date as dueDate ");
-            sqlBuilder.append("from m_savings_account_charge sac join m_savings_account sa on sac.savings_account_id = sa.id ");
+            sqlBuilder.append(
+                    "from m_savings_account_charge sac join m_savings_account sa on sac.savings_account_id = sa.id ");
 
             this.schemaSql = sqlBuilder.toString();
         }
@@ -228,7 +234,8 @@ public class SavingsAccountChargeReadPlatformServiceImpl implements SavingsAccou
         }
 
         @Override
-        public SavingsAccountAnnualFeeData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+        public SavingsAccountAnnualFeeData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum)
+                throws SQLException {
 
             final Long id = rs.getLong("id");
             final Long accountId = rs.getLong("accountId");
@@ -241,20 +248,22 @@ public class SavingsAccountChargeReadPlatformServiceImpl implements SavingsAccou
 
     @Override
     public Collection<SavingsAccountAnnualFeeData> retrieveChargesWithAnnualFeeDue() {
-        final String sql = "select " + this.chargeDueMapper.schema() + " where sac.charge_due_date is not null and sac.charge_time_enum = ? "
-                + " and sac.charge_due_date <= NOW() and sa.status_enum = ? ";
+        final String sql = "select " + this.chargeDueMapper.schema()
+                + " where sac.charge_due_date is not null and sac.charge_time_enum = ? "
+                + " and sac.charge_due_date <= sysdate and sa.status_enum = ? ";
 
-        return this.jdbcTemplate.query(sql, this.chargeDueMapper, new Object[] {ChargeTimeType.ANNUAL_FEE.getValue(), SavingsAccountStatusType.ACTIVE.getValue()});
+        return this.jdbcTemplate.query(sql, this.chargeDueMapper,
+                new Object[] { ChargeTimeType.ANNUAL_FEE.getValue(), SavingsAccountStatusType.ACTIVE.getValue() });
     }
 
     @Override
     public Collection<SavingsAccountAnnualFeeData> retrieveChargesWithDue() {
-        final String sql = "select "
-                + this.chargeDueMapper.schema()
-                + " where sac.charge_due_date is not null and sac.charge_due_date <= NOW() and sac.waived = 0 and sac.is_paid_derived=0 and sac.is_active=1 and sa.status_enum = ? "
+        final String sql = "select " + this.chargeDueMapper.schema()
+                + " where sac.charge_due_date is not null and sac.charge_due_date <= sysdate and sac.waived = 0 and sac.is_paid_derived=0 and sac.is_active=1 and sa.status_enum = ? "
                 + " order by sac.charge_due_date ";
 
-        return this.jdbcTemplate.query(sql, this.chargeDueMapper, new Object[] {SavingsAccountStatusType.ACTIVE.getValue()});
+        return this.jdbcTemplate.query(sql, this.chargeDueMapper,
+                new Object[] { SavingsAccountStatusType.ACTIVE.getValue() });
 
     }
 

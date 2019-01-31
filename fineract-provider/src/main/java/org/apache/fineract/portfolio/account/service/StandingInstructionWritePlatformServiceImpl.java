@@ -81,12 +81,14 @@ public class StandingInstructionWritePlatformServiceImpl implements StandingInst
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public StandingInstructionWritePlatformServiceImpl(final StandingInstructionDataValidator standingInstructionDataValidator,
+    public StandingInstructionWritePlatformServiceImpl(
+            final StandingInstructionDataValidator standingInstructionDataValidator,
             final StandingInstructionAssembler standingInstructionAssembler,
             final AccountTransferDetailRepository accountTransferDetailRepository,
             final StandingInstructionRepository standingInstructionRepository,
             final StandingInstructionReadPlatformService standingInstructionReadPlatformService,
-            final AccountTransfersWritePlatformService accountTransfersWritePlatformService, final RoutingDataSource dataSource) {
+            final AccountTransfersWritePlatformService accountTransfersWritePlatformService,
+            final RoutingDataSource dataSource) {
         this.standingInstructionDataValidator = standingInstructionDataValidator;
         this.standingInstructionAssembler = standingInstructionAssembler;
         this.accountTransferDetailRepository = accountTransferDetailRepository;
@@ -118,12 +120,14 @@ public class StandingInstructionWritePlatformServiceImpl implements StandingInst
                 this.accountTransferDetailRepository.save(standingInstruction);
                 standingInstructionId = standingInstruction.accountTransferStandingInstruction().getId();
             } else if (isSavingsToLoanAccountTransfer(fromAccountType, toAccountType)) {
-                final AccountTransferDetails standingInstruction = this.standingInstructionAssembler.assembleSavingsToLoanTransfer(command);
+                final AccountTransferDetails standingInstruction = this.standingInstructionAssembler
+                        .assembleSavingsToLoanTransfer(command);
                 this.accountTransferDetailRepository.save(standingInstruction);
                 standingInstructionId = standingInstruction.accountTransferStandingInstruction().getId();
             } else if (isLoanToSavingsAccountTransfer(fromAccountType, toAccountType)) {
 
-                final AccountTransferDetails standingInstruction = this.standingInstructionAssembler.assembleLoanToSavingsTransfer(command);
+                final AccountTransferDetails standingInstruction = this.standingInstructionAssembler
+                        .assembleLoanToSavingsTransfer(command);
                 this.accountTransferDetailRepository.save(standingInstruction);
                 standingInstructionId = standingInstruction.accountTransferStandingInstruction().getId();
 
@@ -132,8 +136,8 @@ public class StandingInstructionWritePlatformServiceImpl implements StandingInst
             handleDataIntegrityIssues(command, dve);
             return CommandProcessingResult.empty();
         }
-        final CommandProcessingResultBuilder builder = new CommandProcessingResultBuilder().withEntityId(standingInstructionId)
-                .withClientId(fromClientId);
+        final CommandProcessingResultBuilder builder = new CommandProcessingResultBuilder()
+                .withEntityId(standingInstructionId).withClientId(fromClientId);
         return builder.build();
     }
 
@@ -142,31 +146,37 @@ public class StandingInstructionWritePlatformServiceImpl implements StandingInst
         final Throwable realCause = dve.getMostSpecificCause();
         if (realCause.getMessage().contains("name")) {
             final String name = command.stringValueOfParameterNamed(StandingInstructionApiConstants.nameParamName);
-            throw new PlatformDataIntegrityException("error.msg.standinginstruction.duplicate.name", "Standinginstruction with name `"
-                    + name + "` already exists", "name", name);
+            throw new PlatformDataIntegrityException("error.msg.standinginstruction.duplicate.name",
+                    "Standinginstruction with name `" + name + "` already exists", "name", name);
         }
         logger.error(dve.getMessage(), dve);
         throw new PlatformDataIntegrityException("error.msg.client.unknown.data.integrity.issue",
                 "Unknown data integrity issue with resource.");
     }
 
-    private boolean isLoanToSavingsAccountTransfer(final PortfolioAccountType fromAccountType, final PortfolioAccountType toAccountType) {
+    private boolean isLoanToSavingsAccountTransfer(final PortfolioAccountType fromAccountType,
+            final PortfolioAccountType toAccountType) {
         return fromAccountType.isLoanAccount() && toAccountType.isSavingsAccount();
     }
 
-    private boolean isSavingsToLoanAccountTransfer(final PortfolioAccountType fromAccountType, final PortfolioAccountType toAccountType) {
+    private boolean isSavingsToLoanAccountTransfer(final PortfolioAccountType fromAccountType,
+            final PortfolioAccountType toAccountType) {
         return fromAccountType.isSavingsAccount() && toAccountType.isLoanAccount();
     }
 
-    private boolean isSavingsToSavingsAccountTransfer(final PortfolioAccountType fromAccountType, final PortfolioAccountType toAccountType) {
+    private boolean isSavingsToSavingsAccountTransfer(final PortfolioAccountType fromAccountType,
+            final PortfolioAccountType toAccountType) {
         return fromAccountType.isSavingsAccount() && toAccountType.isSavingsAccount();
     }
 
     @Override
     public CommandProcessingResult update(final Long id, final JsonCommand command) {
         this.standingInstructionDataValidator.validateForUpdate(command);
-        AccountTransferStandingInstruction standingInstructionsForUpdate = this.standingInstructionRepository.findOne(id);
-        if (standingInstructionsForUpdate == null) { throw new StandingInstructionNotFoundException(id); }
+        AccountTransferStandingInstruction standingInstructionsForUpdate = this.standingInstructionRepository
+                .findOne(id);
+        if (standingInstructionsForUpdate == null) {
+            throw new StandingInstructionNotFoundException(id);
+        }
         final Map<String, Object> actualChanges = standingInstructionsForUpdate.update(command);
         return new CommandProcessingResultBuilder() //
                 .withCommandId(command.commandId()) //
@@ -177,10 +187,11 @@ public class StandingInstructionWritePlatformServiceImpl implements StandingInst
 
     @Override
     public CommandProcessingResult delete(final Long id) {
-        AccountTransferStandingInstruction standingInstructionsForUpdate = this.standingInstructionRepository.findOne(id);
+        AccountTransferStandingInstruction standingInstructionsForUpdate = this.standingInstructionRepository
+                .findOne(id);
         // update the "deleted" and "name" properties of the standing instruction
         standingInstructionsForUpdate.delete();
-        
+
         final Map<String, Object> actualChanges = new HashMap<>();
         actualChanges.put(statusParamName, StandingInstructionStatus.DELETED.getValue());
         return new CommandProcessingResultBuilder() //
@@ -210,18 +221,19 @@ public class StandingInstructionWritePlatformServiceImpl implements StandingInst
                         startDate = startDate.plusMonths(1);
                     }
                 } else if (frequencyType.isYearly()) {
-                    startDate = startDate.withDayOfMonth(data.recurrenceOnDay()).withMonthOfYear(data.recurrenceOnMonth());
+                    startDate = startDate.withDayOfMonth(data.recurrenceOnDay())
+                            .withMonthOfYear(data.recurrenceOnMonth());
                     if (startDate.isBefore(data.validFrom())) {
                         startDate = startDate.plusYears(1);
                     }
                 }
-                isDueForTransfer = scheduledDateGenerator.isDateFallsInSchedule(frequencyType, data.recurrenceInterval(), startDate,
-                        transactionDate);
+                isDueForTransfer = scheduledDateGenerator.isDateFallsInSchedule(frequencyType,
+                        data.recurrenceInterval(), startDate, transactionDate);
 
             }
             BigDecimal transactionAmount = data.amount();
-            if (data.toAccountType().isLoanAccount()
-                    && (recurrenceType.isDuesRecurrence() || (isDueForTransfer && instructionType.isDuesAmoutTransfer()))) {
+            if (data.toAccountType().isLoanAccount() && (recurrenceType.isDuesRecurrence()
+                    || (isDueForTransfer && instructionType.isDuesAmoutTransfer()))) {
                 StandingInstructionDuesData standingInstructionDuesData = this.standingInstructionReadPlatformService
                         .retriveLoanDuesData(data.toAccount().accountId());
                 if (data.instructionType().isDuesAmoutTransfer()) {
@@ -236,21 +248,23 @@ public class StandingInstructionWritePlatformServiceImpl implements StandingInst
                 final SavingsAccount fromSavingsAccount = null;
                 final boolean isRegularTransaction = true;
                 final boolean isExceptionForBalanceCheck = false;
-                AccountTransferDTO accountTransferDTO = new AccountTransferDTO(transactionDate, transactionAmount, data.fromAccountType(),
-                        data.toAccountType(), data.fromAccount().accountId(), data.toAccount().accountId(), data.name()
-                                + " Standing instruction trasfer ", null, null, null, null, data.toTransferType(), null, null, data
-                                .transferType().getValue(), null, null, null, null, null, fromSavingsAccount,
-                        isRegularTransaction, isExceptionForBalanceCheck);
+                AccountTransferDTO accountTransferDTO = new AccountTransferDTO(transactionDate, transactionAmount,
+                        data.fromAccountType(), data.toAccountType(), data.fromAccount().accountId(),
+                        data.toAccount().accountId(), data.name() + " Standing instruction trasfer ", null, null, null,
+                        null, data.toTransferType(), null, null, data.transferType().getValue(), null, null, null, null,
+                        null, fromSavingsAccount, isRegularTransaction, isExceptionForBalanceCheck);
                 final boolean transferCompleted = transferAmount(sb, accountTransferDTO, data.getId());
 
-                if(transferCompleted){
+                if (transferCompleted) {
                     final String updateQuery = "UPDATE m_account_transfer_standing_instructions SET last_run_date = ? where id = ?";
                     this.jdbcTemplate.update(updateQuery, transactionDate.toDate(), data.getId());
                 }
 
             }
         }
-        if (sb.length() > 0) { throw new JobExecutionException(sb.toString()); }
+        if (sb.length() > 0) {
+            throw new JobExecutionException(sb.toString());
+        }
 
     }
 
@@ -258,7 +272,8 @@ public class StandingInstructionWritePlatformServiceImpl implements StandingInst
      * @param sb
      * @param accountTransferDTO
      */
-    private boolean transferAmount(final StringBuilder sb, final AccountTransferDTO accountTransferDTO, final Long instructionId) {
+    private boolean transferAmount(final StringBuilder sb, final AccountTransferDTO accountTransferDTO,
+            final Long instructionId) {
         boolean transferCompleted = true;
         StringBuffer errorLog = new StringBuffer();
         StringBuffer updateQuery = new StringBuffer(
@@ -266,24 +281,24 @@ public class StandingInstructionWritePlatformServiceImpl implements StandingInst
         try {
             this.accountTransfersWritePlatformService.transferFunds(accountTransferDTO);
         } catch (final PlatformApiDataValidationException e) {
-            sb.append("Validation exception while trasfering funds for standing Instruction id").append(instructionId).append(" from ")
-                    .append(accountTransferDTO.getFromAccountId()).append(" to ").append(accountTransferDTO.getToAccountId())
-                    .append("--------");
+            sb.append("Validation exception while trasfering funds for standing Instruction id").append(instructionId)
+                    .append(" from ").append(accountTransferDTO.getFromAccountId()).append(" to ")
+                    .append(accountTransferDTO.getToAccountId()).append("--------");
             errorLog.append("Validation exception while trasfering funds " + e.getDefaultUserMessage());
         } catch (final InsufficientAccountBalanceException e) {
-            sb.append("InsufficientAccountBalance Exception while trasfering funds for standing Instruction id").append(instructionId)
-                    .append(" from ").append(accountTransferDTO.getFromAccountId()).append(" to ")
+            sb.append("InsufficientAccountBalance Exception while trasfering funds for standing Instruction id")
+                    .append(instructionId).append(" from ").append(accountTransferDTO.getFromAccountId()).append(" to ")
                     .append(accountTransferDTO.getToAccountId()).append("--------");
             errorLog.append("InsufficientAccountBalance Exception ");
         } catch (final AbstractPlatformServiceUnavailableException e) {
-            sb.append("Platform exception while trasfering funds for standing Instruction id").append(instructionId).append(" from ")
-                    .append(accountTransferDTO.getFromAccountId()).append(" to ").append(accountTransferDTO.getToAccountId())
-                    .append("--------");
+            sb.append("Platform exception while trasfering funds for standing Instruction id").append(instructionId)
+                    .append(" from ").append(accountTransferDTO.getFromAccountId()).append(" to ")
+                    .append(accountTransferDTO.getToAccountId()).append("--------");
             errorLog.append("Platform exception while trasfering funds " + e.getDefaultUserMessage());
         } catch (Exception e) {
-            sb.append("Exception while trasfering funds for standing Instruction id").append(instructionId).append(" from ")
-                    .append(accountTransferDTO.getFromAccountId()).append(" to ").append(accountTransferDTO.getToAccountId())
-                    .append("--------");
+            sb.append("Exception while trasfering funds for standing Instruction id").append(instructionId)
+                    .append(" from ").append(accountTransferDTO.getFromAccountId()).append(" to ")
+                    .append(accountTransferDTO.getToAccountId()).append("--------");
             errorLog.append("Exception while trasfering funds " + e.getMessage());
 
         }
@@ -295,7 +310,7 @@ public class StandingInstructionWritePlatformServiceImpl implements StandingInst
             updateQuery.append("'success'").append(",");
         }
         updateQuery.append(accountTransferDTO.getTransactionAmount().doubleValue());
-        updateQuery.append(", now(),");
+        updateQuery.append(", sysdate ,");
         updateQuery.append("'").append(errorLog.toString()).append("')");
         this.jdbcTemplate.update(updateQuery.toString());
         return transferCompleted;

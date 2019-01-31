@@ -85,13 +85,14 @@ public class ShareProductReadPlatformServiceImpl implements ProductReadPlatformS
         final Collection<ChargeData> charges = null ;
         ShareProductRowMapper mapper = new ShareProductRowMapper(shareMarketCollection, charges);
         StringBuilder sqlBuilder = new StringBuilder();
-        sqlBuilder.append("select SQL_CALC_FOUND_ROWS ");
+        sqlBuilder.append("select  ");
         sqlBuilder.append(mapper.schema());
-        if (limit != null) {
-            sqlBuilder.append(" limit ").append(limit);
-        }
+        
         if (offSet != null) {
-            sqlBuilder.append(" offset ").append(offSet);
+            sqlBuilder.append(" offset ").append(offSet).append(" rows ");
+        }
+        if (limit != null) {
+            sqlBuilder.append(" fetch next ").append(limit).append(" rows only");
         }
 
         final String sqlCountRows = "SELECT FOUND_ROWS()";

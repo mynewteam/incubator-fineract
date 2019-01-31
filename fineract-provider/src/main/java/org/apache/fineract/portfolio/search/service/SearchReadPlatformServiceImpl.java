@@ -59,7 +59,8 @@ public class SearchReadPlatformServiceImpl implements SearchReadPlatformService 
 
     @Autowired
     public SearchReadPlatformServiceImpl(final PlatformSecurityContext context, final RoutingDataSource dataSource,
-            final LoanProductReadPlatformService loanProductReadPlatformService, final OfficeReadPlatformService officeReadPlatformService) {
+            final LoanProductReadPlatformService loanProductReadPlatformService,
+            final OfficeReadPlatformService officeReadPlatformService) {
         this.context = context;
         this.namedParameterjdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         this.loanProductReadPlatformService = loanProductReadPlatformService;
@@ -75,11 +76,11 @@ public class SearchReadPlatformServiceImpl implements SearchReadPlatformService 
 
         final MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("hierarchy", hierarchy + "%");
-        if(searchConditions.getExactMatch()){
-       	 params.addValue("search", searchConditions.getSearchQuery());
-       	}else{
-       	 params.addValue("search", "%" + searchConditions.getSearchQuery() + "%");
-       	}  
+        if (searchConditions.getExactMatch()) {
+            params.addValue("search", searchConditions.getSearchQuery());
+        } else {
+            params.addValue("search", "%" + searchConditions.getSearchQuery() + "%");
+        }
         return this.namedParameterjdbcTemplate.query(rm.searchSchema(searchConditions), params, rm);
     }
 
@@ -93,20 +94,19 @@ public class SearchReadPlatformServiceImpl implements SearchReadPlatformService 
                     + " from m_client c join m_office o on o.id = c.office_id where o.hierarchy like :hierarchy and (c.account_no like :search or c.display_name like :search or c.external_id like :search or c.mobile_no like :search)) ";
 
             final String loanMatchSql = " (select 'LOAN' as entityType, l.id as entityId, pl.name as entityName, l.external_id as entityExternalId, l.account_no as entityAccountNo "
-                    + " , IFNULL(c.id,g.id) as parentId, IFNULL(c.display_name,g.display_name) as parentName, null as entityMobileNo, l.loan_status_id as entityStatusEnum, IF(g.id is null, 'client', 'group') as parentType "
+                    + " , nvl(c.id,g.id) as parentId, nvl(c.display_name,g.display_name) as parentName, null as entityMobileNo, l.loan_status_id as entityStatusEnum, IF(g.id is null, 'client', 'group') as parentType "
                     + " from m_loan l left join m_client c on l.client_id = c.id left join m_group g ON l.group_id = g.id left join m_office o on o.id = c.office_id left join m_product_loan pl on pl.id=l.product_id where (o.hierarchy IS NULL OR o.hierarchy like :hierarchy) and (l.account_no like :search or l.external_id like :search)) ";
 
-
             final String savingMatchSql = " (select 'SAVING' as entityType, s.id as entityId, sp.name as entityName, s.external_id as entityExternalId, s.account_no as entityAccountNo "
-                    + " , IFNULL(c.id,g.id) as parentId, IFNULL(c.display_name,g.display_name) as parentName, null as entityMobileNo, s.status_enum as entityStatusEnum, IF(g.id is null, 'client', 'group') as parentType "
+                    + " , nvl(c.id,g.id) as parentId, nvl(c.display_name,g.display_name) as parentName, null as entityMobileNo, s.status_enum as entityStatusEnum, IF(g.id is null, 'client', 'group') as parentType "
                     + " from m_savings_account s left join m_client c on s.client_id = c.id left join m_group g ON s.group_id = g.id left join m_office o on o.id = c.office_id left join m_savings_product sp on sp.id=s.product_id "
                     + " where (o.hierarchy IS NULL OR o.hierarchy like :hierarchy) and (s.account_no like :search or s.external_id like :search)) ";
-					
-			final String shareMatchSql = " (select 'SHARE' as entityType, s.id as entityId, sp.name as entityName, s.external_id as entityExternalId, s.account_no as entityAccountNo "
+
+            final String shareMatchSql = " (select 'SHARE' as entityType, s.id as entityId, sp.name as entityName, s.external_id as entityExternalId, s.account_no as entityAccountNo "
                     + " , c.id as parentId, c.display_name as parentName, null as entityMobileNo, s.status_enum as entityStatusEnum, 'client' as parentType "
                     + " from m_share_account s left join m_client c on s.client_id = c.id left join m_office o on o.id = c.office_id left join m_share_product sp on sp.id=s.product_id "
                     + " where (o.hierarchy IS NULL OR o.hierarchy like :hierarchy) and (s.account_no like :search or s.external_id like :search)) ";
-            
+
             final String clientIdentifierMatchSql = " (select 'CLIENTIDENTIFIER' as entityType, ci.id as entityId, ci.document_key as entityName, "
                     + " null as entityExternalId, null as entityAccountNo, c.id as parentId, c.display_name as parentName,null as entityMobileNo, c.status_enum as entityStatusEnum, null as parentType "
                     + " from m_client_identifier ci join m_client c on ci.client_id=c.id join m_office o on o.id = c.office_id "
@@ -127,8 +127,8 @@ public class SearchReadPlatformServiceImpl implements SearchReadPlatformService 
             if (searchConditions.isSavingSeach()) {
                 sql.append(savingMatchSql).append(union);
             }
-			
-			if (searchConditions.isShareSeach()) {
+
+            if (searchConditions.isShareSeach()) {
                 sql.append(shareMatchSql).append(union);
             }
 
@@ -139,8 +139,6 @@ public class SearchReadPlatformServiceImpl implements SearchReadPlatformService 
             if (searchConditions.isGroupSearch()) {
                 sql.append(groupMatchSql).append(union);
             }
-
-            
 
             sql.replace(sql.lastIndexOf(union), sql.length(), "");
 
@@ -160,7 +158,7 @@ public class SearchReadPlatformServiceImpl implements SearchReadPlatformService 
             final String entityMobileNo = rs.getString("entityMobileNo");
             final Integer entityStatusEnum = JdbcSupport.getInteger(rs, "entityStatusEnum");
             final String parentType = rs.getString("parentType");
-            
+
             EnumOptionData entityStatus = new EnumOptionData(0L, "", "");
 
             if (entityType.equalsIgnoreCase("client") || entityType.equalsIgnoreCase("clientidentifier")) {
@@ -177,8 +175,8 @@ public class SearchReadPlatformServiceImpl implements SearchReadPlatformService 
                 entityStatus = LoanEnumerations.status(loanStatusEnumData);
             }
 
-            return new SearchData(entityId, entityAccountNo, entityExternalId, entityName, entityType, parentId, parentName, parentType, 
-                    entityMobileNo, entityStatus);
+            return new SearchData(entityId, entityAccountNo, entityExternalId, entityName, entityType, parentId,
+                    parentName, parentType, entityMobileNo, entityStatus);
         }
 
     }
@@ -188,14 +186,16 @@ public class SearchReadPlatformServiceImpl implements SearchReadPlatformService 
 
         this.context.authenticatedUser();
 
-        final Collection<LoanProductData> loanProducts = this.loanProductReadPlatformService.retrieveAllLoanProductsForLookup();
+        final Collection<LoanProductData> loanProducts = this.loanProductReadPlatformService
+                .retrieveAllLoanProductsForLookup();
         final Collection<OfficeData> offices = this.officeReadPlatformService.retrieveAllOfficesForDropdown();
 
         return AdHocSearchQueryData.template(loanProducts, offices);
     }
 
     @Override
-    public Collection<AdHocSearchQueryData> retrieveAdHocQueryMatchingData(final AdHocQuerySearchConditions searchConditions) {
+    public Collection<AdHocSearchQueryData> retrieveAdHocQueryMatchingData(
+            final AdHocQuerySearchConditions searchConditions) {
 
         this.context.authenticatedUser();
 
@@ -215,11 +215,12 @@ public class SearchReadPlatformServiceImpl implements SearchReadPlatformService 
             final StringBuffer sql = new StringBuffer();
             sql.append(
                     "Select a.name as officeName, a.Product as productName, a.cnt as 'count', a.outstandingAmt as outstanding, a.percentOut as percentOut  ")
-                    .append("from (select mo.name, mp.name Product, sum(ifnull(ml.total_expected_repayment_derived,0.0)) TotalAmt, count(*) cnt, ")
-                    .append("sum(ifnull(ml.total_outstanding_derived,0.0)) outstandingAmt,  ")
-                    .append("(sum(ifnull(ml.total_outstanding_derived,0.0)) * 100 / sum(ifnull(ml.total_expected_repayment_derived,0.0))) percentOut ")
+                    .append("from (select mo.name, mp.name Product, sum(nvl(ml.total_expected_repayment_derived,0.0)) TotalAmt, count(*) cnt, ")
+                    .append("sum(nvl(ml.total_outstanding_derived,0.0)) outstandingAmt,  ")
+                    .append("(sum(nvl(ml.total_outstanding_derived,0.0)) * 100 / sum(nvl(ml.total_expected_repayment_derived,0.0))) percentOut ")
                     .append("from m_loan ml inner join m_product_loan mp on mp.id=ml.product_id  ")
-                    .append("inner join m_client mc on mc.id=ml.client_id  ").append("inner join m_office mo on mo.id=mc.office_id  ");
+                    .append("inner join m_client mc on mc.id=ml.client_id  ")
+                    .append("inner join m_office mo on mo.id=mc.office_id  ");
 
             if (searchConditions.getLoanStatus() != null && searchConditions.getLoanStatus().size() > 0) {
                 // If user requests for all statuses no need to add loanStatus
@@ -244,17 +245,20 @@ public class SearchReadPlatformServiceImpl implements SearchReadPlatformService 
             }
 
             if (StringUtils.isNotBlank(searchConditions.getLoanDateOption())) {
-                if (searchConditions.getLoanDateOption().equals(SearchConstants.SEARCH_LOAN_DATE.APPROVAL_DATE.getValue())) {
+                if (searchConditions.getLoanDateOption()
+                        .equals(SearchConstants.SEARCH_LOAN_DATE.APPROVAL_DATE.getValue())) {
                     checkAndUpdateWhereClause(sql);
                     params.addValue("loanFromDate", searchConditions.getLoanFromDate().toDate());
                     params.addValue("loanToDate", searchConditions.getLoanToDate().toDate());
                     sql.append(" ( ml.approvedon_date between :loanFromDate and :loanToDate ) ");
-                } else if (searchConditions.getLoanDateOption().equals(SearchConstants.SEARCH_LOAN_DATE.CREATED_DATE.getValue())) {
+                } else if (searchConditions.getLoanDateOption()
+                        .equals(SearchConstants.SEARCH_LOAN_DATE.CREATED_DATE.getValue())) {
                     checkAndUpdateWhereClause(sql);
                     params.addValue("loanFromDate", searchConditions.getLoanFromDate().toDate());
                     params.addValue("loanToDate", searchConditions.getLoanToDate().toDate());
                     sql.append(" ( ml.submittedon_date between :loanFromDate and :loanToDate ) ");
-                } else if (searchConditions.getLoanDateOption().equals(SearchConstants.SEARCH_LOAN_DATE.DISBURSAL_DATE.getValue())) {
+                } else if (searchConditions.getLoanDateOption()
+                        .equals(SearchConstants.SEARCH_LOAN_DATE.DISBURSAL_DATE.getValue())) {
                     checkAndUpdateWhereClause(sql);
                     params.addValue("loanFromDate", searchConditions.getLoanFromDate().toDate());
                     params.addValue("loanToDate", searchConditions.getLoanToDate().toDate());
@@ -273,9 +277,12 @@ public class SearchReadPlatformServiceImpl implements SearchReadPlatformService 
                     checkAndUpdateWhereClause(sql);
                     // params.addValue("outStandingAmountPercentageCondition",
                     // searchConditions.getOutStandingAmountPercentageCondition());
-                    params.addValue("minOutStandingAmountPercentage", searchConditions.getMinOutStandingAmountPercentage());
-                    params.addValue("maxOutStandingAmountPercentage", searchConditions.getMaxOutStandingAmountPercentage());
-                    sql.append(" ( a.percentOut between :minOutStandingAmountPercentage and :maxOutStandingAmountPercentage ) ");
+                    params.addValue("minOutStandingAmountPercentage",
+                            searchConditions.getMinOutStandingAmountPercentage());
+                    params.addValue("maxOutStandingAmountPercentage",
+                            searchConditions.getMaxOutStandingAmountPercentage());
+                    sql.append(
+                            " ( a.percentOut between :minOutStandingAmountPercentage and :maxOutStandingAmountPercentage ) ");
                 } else {
                     checkAndUpdateWhereClause(sql);
                     // params.addValue("outStandingAmountPercentageCondition",
@@ -322,10 +329,10 @@ public class SearchReadPlatformServiceImpl implements SearchReadPlatformService 
             final String officeName = rs.getString("officeName");
             final String loanProductName = rs.getString("productName");
             final Integer count = JdbcSupport.getInteger(rs, "count");
-            final BigDecimal loanOutStanding = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "outstanding").setScale(2,
-                    RoundingMode.HALF_UP);
-            final Double percentage = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "percentOut").setScale(2, RoundingMode.HALF_UP)
-                    .doubleValue();
+            final BigDecimal loanOutStanding = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "outstanding")
+                    .setScale(2, RoundingMode.HALF_UP);
+            final Double percentage = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "percentOut")
+                    .setScale(2, RoundingMode.HALF_UP).doubleValue();
             return AdHocSearchQueryData.matchedResult(officeName, loanProductName, count, loanOutStanding, percentage);
         }
 

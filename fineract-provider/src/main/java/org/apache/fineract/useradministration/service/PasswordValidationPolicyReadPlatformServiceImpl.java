@@ -64,7 +64,8 @@ public class PasswordValidationPolicyReadPlatformServiceImpl implements Password
     protected static final class PasswordValidationPolicyMapper implements RowMapper<PasswordValidationPolicyData> {
 
         @Override
-        public PasswordValidationPolicyData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+        public PasswordValidationPolicyData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum)
+                throws SQLException {
 
             final Long id = JdbcSupport.getLong(rs, "id");
             final Boolean active = rs.getBoolean("active");
@@ -75,8 +76,8 @@ public class PasswordValidationPolicyReadPlatformServiceImpl implements Password
         }
 
         public String schema() {
-            return " pvp.id as id, pvp.active as active, pvp.description as description, pvp.`key` as `key`"
-            		+ " from m_password_validation_policy pvp";
+            return " pvp.id as id, pvp.active as active, pvp.description as description, pvp.key as key"
+                    + " from m_password_validation_policy pvp";
         }
     }
 

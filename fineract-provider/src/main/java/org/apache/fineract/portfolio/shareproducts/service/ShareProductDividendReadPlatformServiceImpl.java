@@ -61,7 +61,7 @@ public class ShareProductDividendReadPlatformServiceImpl implements ShareProduct
             final SearchParameters searchParameters) {
         ShareProductDividendMapper shareProductDividendMapper = new ShareProductDividendMapper();
         final StringBuilder sqlBuilder = new StringBuilder(200);
-        sqlBuilder.append("select SQL_CALC_FOUND_ROWS ");
+        sqlBuilder.append("select  ");
         sqlBuilder.append(shareProductDividendMapper.schema());
         sqlBuilder.append(" where sp.id = ? ");
         List<Object> params = new ArrayList<>(2);
@@ -81,10 +81,15 @@ public class ShareProductDividendReadPlatformServiceImpl implements ShareProduct
         }
 
         if (searchParameters.isLimited()) {
-            sqlBuilder.append(" limit ").append(searchParameters.getLimit());
             if (searchParameters.isOffset()) {
-                sqlBuilder.append(" offset ").append(searchParameters.getOffset());
+                sqlBuilder.append(" offset ").append(searchParameters.getOffset()).append(" rows ");
             }
+            sqlBuilder.append(" fetch next ").append(searchParameters.getLimit()).append(" rows only");
+
+            // sqlBuilder.append(" limit ").append(searchParameters.getLimit());
+            // if (searchParameters.isOffset()) {
+            //     sqlBuilder.append(" offset ").append(searchParameters.getOffset());
+            // }
         }
 
         final String sqlCountRows = "SELECT FOUND_ROWS()";

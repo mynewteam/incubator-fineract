@@ -65,7 +65,8 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public LoanArrearsAgingServiceImpl(final RoutingDataSource dataSource, final BusinessEventNotifierService businessEventNotifierService) {
+    public LoanArrearsAgingServiceImpl(final RoutingDataSource dataSource,
+            final BusinessEventNotifierService businessEventNotifierService) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.businessEventNotifierService = businessEventNotifierService;
     }
@@ -81,7 +82,8 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
         this.businessEventNotifierService.addBusinessEventPostListners(BUSINESS_EVENTS.LOAN_WAIVE_CHARGE, this);
         this.businessEventNotifierService.addBusinessEventPostListners(BUSINESS_EVENTS.LOAN_CHARGE_PAYMENT, this);
         this.businessEventNotifierService.addBusinessEventPostListners(BUSINESS_EVENTS.LOAN_APPLY_OVERDUE_CHARGE, this);
-        this.businessEventNotifierService.addBusinessEventPostListners(BUSINESS_EVENTS.LOAN_DISBURSAL, new DisbursementEventListner());
+        this.businessEventNotifierService.addBusinessEventPostListners(BUSINESS_EVENTS.LOAN_DISBURSAL,
+                new DisbursementEventListner());
         this.businessEventNotifierService.addBusinessEventPostListners(BUSINESS_EVENTS.LOAN_FORECLOSURE, this);
     }
 
@@ -93,31 +95,35 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
         this.jdbcTemplate.execute("truncate table m_loan_arrears_aging");
 
         final StringBuilder updateSqlBuilder = new StringBuilder(900);
-        final String principalOverdueCalculationSql = "SUM(ifnull(mr.principal_amount, 0) - ifnull(mr.principal_completed_derived, 0) - ifnull(mr.principal_writtenoff_derived, 0))";
-        final String interestOverdueCalculationSql = "SUM(ifnull(mr.interest_amount, 0) - ifnull(mr.interest_writtenoff_derived, 0) - ifnull(mr.interest_waived_derived, 0) - "
-                + "ifnull(mr.interest_completed_derived, 0))";
-        final String feeChargesOverdueCalculationSql = "SUM(ifnull(mr.fee_charges_amount, 0) - ifnull(mr.fee_charges_writtenoff_derived, 0) - "
-                + "ifnull(mr.fee_charges_waived_derived, 0) - ifnull(mr.fee_charges_completed_derived, 0))";
-        final String penaltyChargesOverdueCalculationSql = "SUM(ifnull(mr.penalty_charges_amount, 0) - ifnull(mr.penalty_charges_writtenoff_derived, 0) - "
-                + "ifnull(mr.penalty_charges_waived_derived, 0) - ifnull(mr.penalty_charges_completed_derived, 0))";
+        final String principalOverdueCalculationSql = "SUM(nvl(mr.principal_amount, 0) - nvl(mr.principal_completed_derived, 0) - nvl(mr.principal_writtenoff_derived, 0))";
+        final String interestOverdueCalculationSql = "SUM(nvl(mr.interest_amount, 0) - nvl(mr.interest_writtenoff_derived, 0) - nvl(mr.interest_waived_derived, 0) - "
+                + "nvl(mr.interest_completed_derived, 0))";
+        final String feeChargesOverdueCalculationSql = "SUM(nvl(mr.fee_charges_amount, 0) - nvl(mr.fee_charges_writtenoff_derived, 0) - "
+                + "nvl(mr.fee_charges_waived_derived, 0) - nvl(mr.fee_charges_completed_derived, 0))";
+        final String penaltyChargesOverdueCalculationSql = "SUM(nvl(mr.penalty_charges_amount, 0) - nvl(mr.penalty_charges_writtenoff_derived, 0) - "
+                + "nvl(mr.penalty_charges_waived_derived, 0) - nvl(mr.penalty_charges_completed_derived, 0))";
 
-        updateSqlBuilder
-                .append("INSERT INTO m_loan_arrears_aging(`loan_id`,`principal_overdue_derived`,`interest_overdue_derived`,`fee_charges_overdue_derived`,`penalty_charges_overdue_derived`,`total_overdue_derived`,`overdue_since_date_derived`)");
+        updateSqlBuilder.append(
+                "INSERT INTO m_loan_arrears_aging(loan_id,principal_overdue_derived,interest_overdue_derived,fee_charges_overdue_derived,penalty_charges_overdue_derived,total_overdue_derived,overdue_since_date_derived)");
         updateSqlBuilder.append("select ml.id as loanId,");
         updateSqlBuilder.append(principalOverdueCalculationSql + " as principal_overdue_derived,");
         updateSqlBuilder.append(interestOverdueCalculationSql + " as interest_overdue_derived,");
         updateSqlBuilder.append(feeChargesOverdueCalculationSql + " as fee_charges_overdue_derived,");
         updateSqlBuilder.append(penaltyChargesOverdueCalculationSql + " as penalty_charges_overdue_derived,");
         updateSqlBuilder.append(principalOverdueCalculationSql + "+" + interestOverdueCalculationSql + "+");
-        updateSqlBuilder.append(feeChargesOverdueCalculationSql + "+" + penaltyChargesOverdueCalculationSql + " as total_overdue_derived,");
+        updateSqlBuilder.append(feeChargesOverdueCalculationSql + "+" + penaltyChargesOverdueCalculationSql
+                + " as total_overdue_derived,");
         updateSqlBuilder.append("MIN(mr.duedate) as overdue_since_date_derived ");
         updateSqlBuilder.append(" FROM m_loan ml ");
         updateSqlBuilder.append(" INNER JOIN m_loan_repayment_schedule mr on mr.loan_id = ml.id ");
-        updateSqlBuilder.append(" left join m_product_loan_recalculation_details prd on prd.product_id = ml.product_id ");
+        updateSqlBuilder
+                .append(" left join m_product_loan_recalculation_details prd on prd.product_id = ml.product_id ");
         updateSqlBuilder.append(" WHERE ml.loan_status_id = 300 "); // active
         updateSqlBuilder.append(" and mr.completed_derived is false ");
-        updateSqlBuilder.append(" and mr.duedate < SUBDATE(CURDATE(),INTERVAL  ifnull(ml.grace_on_arrears_ageing,0) day) ");
-        updateSqlBuilder.append(" and (prd.arrears_based_on_original_schedule = 0 or prd.arrears_based_on_original_schedule is null) ");
+        updateSqlBuilder
+                .append(" and mr.duedate < SUBDATE(CURDATE(),INTERVAL  nvl(ml.grace_on_arrears_ageing,0) day) ");
+        updateSqlBuilder.append(
+                " and (prd.arrears_based_on_original_schedule = 0 or prd.arrears_based_on_original_schedule is null) ");
         updateSqlBuilder.append(" GROUP BY ml.id");
 
         List<String> insertStatements = updateLoanArrearsAgeingDetailsWithOriginalSchedule();
@@ -133,8 +139,9 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
 
     @Override
     public void updateLoanArrearsAgeingDetailsWithOriginalSchedule(final Loan loan) {
-        int count = this.jdbcTemplate.queryForObject("select count(mla.loan_id) from m_loan_arrears_aging mla where mla.loan_id =?",
-                Integer.class, loan.getId());
+        int count = this.jdbcTemplate.queryForObject(
+                "select count(mla.loan_id) from m_loan_arrears_aging mla where mla.loan_id =?", Integer.class,
+                loan.getId());
         List<String> updateStatement = new ArrayList<>();
         OriginalScheduleExtractor originalScheduleExtractor = new OriginalScheduleExtractor(loan.getId().toString());
         Map<Long, List<LoanSchedulePeriodData>> scheduleDate = this.jdbcTemplate.query(originalScheduleExtractor.schema,
@@ -146,7 +153,7 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
             if (updateStatement.size() == 1) {
                 this.jdbcTemplate.update(updateStatement.get(0));
             } else {
-                String deletestatement = "DELETE FROM `m_loan_arrears_aging` WHERE  `loan_id`=" + loan.getId();
+                String deletestatement = "DELETE FROM m_loan_arrears_aging WHERE  loan_id=" + loan.getId();
                 this.jdbcTemplate.update(deletestatement);
             }
         }
@@ -154,11 +161,12 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
 
     @Override
     public void updateLoanArrearsAgeingDetails(final Loan loan) {
-        int count = this.jdbcTemplate.queryForObject("select count(mla.loan_id) from m_loan_arrears_aging mla where mla.loan_id =?",
-                Integer.class, loan.getId());
+        int count = this.jdbcTemplate.queryForObject(
+                "select count(mla.loan_id) from m_loan_arrears_aging mla where mla.loan_id =?", Integer.class,
+                loan.getId());
         String updateStatement = constructUpdateStatement(loan, count == 0);
         if (updateStatement == null) {
-            String deletestatement = "DELETE FROM `m_loan_arrears_aging` WHERE  `loan_id`=" + loan.getId();
+            String deletestatement = "DELETE FROM m_loan_arrears_aging WHERE  loan_id=" + loan.getId();
             this.jdbcTemplate.update(deletestatement);
         } else {
             this.jdbcTemplate.update(updateStatement);
@@ -175,10 +183,13 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
         LocalDate overDueSince = LocalDate.now();
         for (LoanRepaymentScheduleInstallment installment : installments) {
             if (installment.getDueDate().isBefore(LocalDate.now())) {
-                principalOverdue = principalOverdue.add(installment.getPrincipalOutstanding(loan.getCurrency()).getAmount());
-                interestOverdue = interestOverdue.add(installment.getInterestOutstanding(loan.getCurrency()).getAmount());
+                principalOverdue = principalOverdue
+                        .add(installment.getPrincipalOutstanding(loan.getCurrency()).getAmount());
+                interestOverdue = interestOverdue
+                        .add(installment.getInterestOutstanding(loan.getCurrency()).getAmount());
                 feeOverdue = feeOverdue.add(installment.getFeeChargesOutstanding(loan.getCurrency()).getAmount());
-                penaltyOverdue = penaltyOverdue.add(installment.getPenaltyChargesOutstanding(loan.getCurrency()).getAmount());
+                penaltyOverdue = penaltyOverdue
+                        .add(installment.getPenaltyChargesOutstanding(loan.getCurrency()).getAmount());
                 if (installment.isNotFullyPaidOff() && overDueSince.isAfter(installment.getDueDate())) {
                     overDueSince = installment.getDueDate();
                 }
@@ -188,11 +199,11 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
         BigDecimal totalOverDue = principalOverdue.add(interestOverdue).add(feeOverdue).add(penaltyOverdue);
         if (totalOverDue.compareTo(BigDecimal.ZERO) == 1) {
             if (isInsertStatement) {
-                updateSql = constructInsertStatement(loan.getId(), principalOverdue, interestOverdue, feeOverdue, penaltyOverdue,
-                        overDueSince);
+                updateSql = constructInsertStatement(loan.getId(), principalOverdue, interestOverdue, feeOverdue,
+                        penaltyOverdue, overDueSince);
             } else {
-                updateSql = constructUpdateStatement(loan.getId(), principalOverdue, interestOverdue, feeOverdue, penaltyOverdue,
-                        overDueSince);
+                updateSql = constructUpdateStatement(loan.getId(), principalOverdue, interestOverdue, feeOverdue,
+                        penaltyOverdue, overDueSince);
             }
         }
         return updateSql;
@@ -204,17 +215,17 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
         final StringBuilder loanIdentifier = new StringBuilder();
         loanIdentifier.append("select ml.id as loanId FROM m_loan ml  ");
         loanIdentifier.append("INNER JOIN m_loan_repayment_schedule mr on mr.loan_id = ml.id ");
-        loanIdentifier
-                .append("inner join m_product_loan_recalculation_details prd on prd.product_id = ml.product_id and prd.arrears_based_on_original_schedule = 1  ");
-        loanIdentifier
-                .append("WHERE ml.loan_status_id = 300  and mr.completed_derived is false  and mr.duedate < SUBDATE(CURDATE(),INTERVAL  ifnull(ml.grace_on_arrears_ageing,0) day) group by ml.id");
+        loanIdentifier.append(
+                "inner join m_product_loan_recalculation_details prd on prd.product_id = ml.product_id and prd.arrears_based_on_original_schedule = 1  ");
+        loanIdentifier.append(
+                "WHERE ml.loan_status_id = 300  and mr.completed_derived is false  and mr.duedate < SUBDATE(CURDATE(),INTERVAL  nvl(ml.grace_on_arrears_ageing,0) day) group by ml.id");
         List<Long> loanIds = this.jdbcTemplate.queryForList(loanIdentifier.toString(), Long.class);
         if (!loanIds.isEmpty()) {
             String loanIdsAsString = loanIds.toString();
             loanIdsAsString = loanIdsAsString.substring(1, loanIdsAsString.length() - 1);
             OriginalScheduleExtractor originalScheduleExtractor = new OriginalScheduleExtractor(loanIdsAsString);
-            Map<Long, List<LoanSchedulePeriodData>> scheduleDate = this.jdbcTemplate.query(originalScheduleExtractor.schema,
-                    originalScheduleExtractor);
+            Map<Long, List<LoanSchedulePeriodData>> scheduleDate = this.jdbcTemplate
+                    .query(originalScheduleExtractor.schema, originalScheduleExtractor);
 
             List<Map<String, Object>> loanSummary = getLoanSummary(loanIdsAsString);
             updateSchheduleWithPaidDetail(scheduleDate, loanSummary);
@@ -228,12 +239,14 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
     private List<Map<String, Object>> getLoanSummary(final String loanIdsAsString) {
         final StringBuilder transactionsSql = new StringBuilder();
         transactionsSql.append("select ml.id as loanId, ");
+        transactionsSql.append(
+                "ml.principal_repaid_derived as principalAmtPaid, ml.principal_writtenoff_derived as  principalAmtWrittenoff, ");
+        transactionsSql.append(
+                " ml.interest_repaid_derived as interestAmtPaid, ml.interest_waived_derived as interestAmtWaived, ");
         transactionsSql
-                .append("ml.principal_repaid_derived as principalAmtPaid, ml.principal_writtenoff_derived as  principalAmtWrittenoff, ");
-        transactionsSql.append(" ml.interest_repaid_derived as interestAmtPaid, ml.interest_waived_derived as interestAmtWaived, ");
-        transactionsSql.append("ml.fee_charges_repaid_derived as feeAmtPaid, ml.fee_charges_waived_derived as feeAmtWaived, ");
-        transactionsSql
-                .append("ml.penalty_charges_repaid_derived as penaltyAmtPaid, ml.penalty_charges_waived_derived as penaltyAmtWaived ");
+                .append("ml.fee_charges_repaid_derived as feeAmtPaid, ml.fee_charges_waived_derived as feeAmtWaived, ");
+        transactionsSql.append(
+                "ml.penalty_charges_repaid_derived as penaltyAmtPaid, ml.penalty_charges_waived_derived as penaltyAmtWaived ");
         transactionsSql.append("from m_loan ml ");
         transactionsSql.append("where ml.id IN (").append(loanIdsAsString).append(") order by ml.id");
 
@@ -259,8 +272,8 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
 
     }
 
-    private void createInsertStatements(List<String> insertStatement, Map<Long, List<LoanSchedulePeriodData>> scheduleDate,
-            boolean isInsertStatement) {
+    private void createInsertStatements(List<String> insertStatement,
+            Map<Long, List<LoanSchedulePeriodData>> scheduleDate, boolean isInsertStatement) {
         for (Map.Entry<Long, List<LoanSchedulePeriodData>> entry : scheduleDate.entrySet()) {
             final Long loanId = entry.getKey();
             BigDecimal principalOverdue = BigDecimal.ZERO;
@@ -271,13 +284,14 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
 
             for (LoanSchedulePeriodData loanSchedulePeriodData : entry.getValue()) {
                 if (!loanSchedulePeriodData.getComplete()) {
-                    principalOverdue = principalOverdue.add(loanSchedulePeriodData.principalDue().subtract(
-                            loanSchedulePeriodData.principalPaid()));
-                    interestOverdue = interestOverdue.add(loanSchedulePeriodData.interestDue().subtract(
-                            loanSchedulePeriodData.interestPaid()));
-                    feeOverdue = feeOverdue.add(loanSchedulePeriodData.feeChargesDue().subtract(loanSchedulePeriodData.feeChargesPaid()));
-                    penaltyOverdue = penaltyOverdue.add(loanSchedulePeriodData.penaltyChargesDue().subtract(
-                            loanSchedulePeriodData.penaltyChargesPaid()));
+                    principalOverdue = principalOverdue.add(
+                            loanSchedulePeriodData.principalDue().subtract(loanSchedulePeriodData.principalPaid()));
+                    interestOverdue = interestOverdue
+                            .add(loanSchedulePeriodData.interestDue().subtract(loanSchedulePeriodData.interestPaid()));
+                    feeOverdue = feeOverdue.add(
+                            loanSchedulePeriodData.feeChargesDue().subtract(loanSchedulePeriodData.feeChargesPaid()));
+                    penaltyOverdue = penaltyOverdue.add(loanSchedulePeriodData.penaltyChargesDue()
+                            .subtract(loanSchedulePeriodData.penaltyChargesPaid()));
                     if (overDueSince.isAfter(loanSchedulePeriodData.periodDueDate())
                             && loanSchedulePeriodData.principalDue().subtract(loanSchedulePeriodData.principalPaid())
                                     .compareTo(BigDecimal.ZERO) == 1) {
@@ -288,11 +302,11 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
             if (principalOverdue.compareTo(BigDecimal.ZERO) == 1) {
                 String sqlStatement = null;
                 if (isInsertStatement) {
-                    sqlStatement = constructInsertStatement(loanId, principalOverdue, interestOverdue, feeOverdue, penaltyOverdue,
-                            overDueSince);
+                    sqlStatement = constructInsertStatement(loanId, principalOverdue, interestOverdue, feeOverdue,
+                            penaltyOverdue, overDueSince);
                 } else {
-                    sqlStatement = constructUpdateStatement(loanId, principalOverdue, interestOverdue, feeOverdue, penaltyOverdue,
-                            overDueSince);
+                    sqlStatement = constructUpdateStatement(loanId, principalOverdue, interestOverdue, feeOverdue,
+                            penaltyOverdue, overDueSince);
                 }
                 insertStatement.add(sqlStatement);
             }
@@ -303,9 +317,9 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
     private String constructInsertStatement(final Long loanId, BigDecimal principalOverdue, BigDecimal interestOverdue,
             BigDecimal feeOverdue, BigDecimal penaltyOverdue, LocalDate overDueSince) {
         final StringBuilder insertStatementBuilder = new StringBuilder(900);
-        insertStatementBuilder
-                .append("INSERT INTO m_loan_arrears_aging(`loan_id`,`principal_overdue_derived`,`interest_overdue_derived`,")
-                .append("`fee_charges_overdue_derived`,`penalty_charges_overdue_derived`,`total_overdue_derived`,`overdue_since_date_derived`) VALUES(");
+        insertStatementBuilder.append(
+                "INSERT INTO m_loan_arrears_aging(loan_id,principal_overdue_derived,interest_overdue_derived,")
+                .append("fee_charges_overdue_derived,penalty_charges_overdue_derived,total_overdue_derived,overdue_since_date_derived) VALUES(");
         insertStatementBuilder.append(loanId).append(",");
         insertStatementBuilder.append(principalOverdue).append(",");
         insertStatementBuilder.append(interestOverdue).append(",");
@@ -332,10 +346,13 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
         return insertStatementBuilder.toString();
     }
 
-    private void updateSchheduleWithPaidDetail(Map<Long, List<LoanSchedulePeriodData>> scheduleDate, List<Map<String, Object>> loanSummary) {
+    private void updateSchheduleWithPaidDetail(Map<Long, List<LoanSchedulePeriodData>> scheduleDate,
+            List<Map<String, Object>> loanSummary) {
         for (Map<String, Object> transactionMap : loanSummary) {
-        	String longValue = transactionMap.get("loanId").toString() ; //From JDBC Template API, we are getting BigInteger but in other call, we are getting Long
-        	Long loanId = Long.parseLong(longValue) ;
+            String longValue = transactionMap.get("loanId").toString(); // From JDBC Template API, we are getting
+                                                                        // BigInteger but in other call, we are getting
+                                                                        // Long
+            Long loanId = Long.parseLong(longValue);
             BigDecimal principalAmtPaid = (BigDecimal) transactionMap.get("principalAmtPaid");
             BigDecimal principalAmtWrittenoff = (BigDecimal) transactionMap.get("principalAmtWrittenoff");
             BigDecimal interestAmtPaid = (BigDecimal) transactionMap.get("interestAmtPaid");
@@ -393,8 +410,8 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
                         penaltyAmt = penaltyAmt.subtract(loanSchedulePeriodData.penaltyChargesDue());
                     }
 
-                    LoanSchedulePeriodData periodData = LoanSchedulePeriodData.WithPaidDetail(loanSchedulePeriodData, isComplete,
-                            principalPaid, interestPaid, feeChargesPaid, penaltyChargesPaid);
+                    LoanSchedulePeriodData periodData = LoanSchedulePeriodData.WithPaidDetail(loanSchedulePeriodData,
+                            isComplete, principalPaid, interestPaid, feeChargesPaid, penaltyChargesPaid);
                     updatedPeriodData.add(periodData);
                 }
                 loanSchedulePeriodDatas.clear();
@@ -403,25 +420,31 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
         }
     }
 
-    private static final class OriginalScheduleExtractor implements ResultSetExtractor<Map<Long, List<LoanSchedulePeriodData>>> {
+    private static final class OriginalScheduleExtractor
+            implements ResultSetExtractor<Map<Long, List<LoanSchedulePeriodData>>> {
 
         private final String schema;
 
         public OriginalScheduleExtractor(final String loanIdsAsString) {
             final StringBuilder scheduleDetail = new StringBuilder();
-            scheduleDetail.append("select ml.id as loanId, mr.duedate as dueDate, mr.principal_amount as principalAmount, ");
             scheduleDetail
-                    .append("mr.interest_amount as interestAmount, mr.fee_charges_amount as feeAmount, mr.penalty_charges_amount as penaltyAmount  ");
-            scheduleDetail.append("from m_loan ml  INNER JOIN m_loan_repayment_schedule_history mr on mr.loan_id = ml.id ");
-            scheduleDetail.append("where mr.duedate  < SUBDATE(CURDATE(),INTERVAL  ifnull(ml.grace_on_arrears_ageing,0) day) and ");
+                    .append("select ml.id as loanId, mr.duedate as dueDate, mr.principal_amount as principalAmount, ");
+            scheduleDetail.append(
+                    "mr.interest_amount as interestAmount, mr.fee_charges_amount as feeAmount, mr.penalty_charges_amount as penaltyAmount  ");
+            scheduleDetail
+                    .append("from m_loan ml  INNER JOIN m_loan_repayment_schedule_history mr on mr.loan_id = ml.id ");
+            scheduleDetail.append(
+                    "where mr.duedate  < SUBDATE(CURDATE(),INTERVAL  nvl(ml.grace_on_arrears_ageing,0) day) and ");
             scheduleDetail.append("ml.id IN(").append(loanIdsAsString).append(") and  mr.version = (");
-            scheduleDetail.append("select max(lrs.version) from m_loan_repayment_schedule_history lrs where mr.loan_id = lrs.loan_id");
+            scheduleDetail.append(
+                    "select max(lrs.version) from m_loan_repayment_schedule_history lrs where mr.loan_id = lrs.loan_id");
             scheduleDetail.append(") order by ml.id,mr.duedate");
             this.schema = scheduleDetail.toString();
         }
 
         @Override
-        public Map<Long, List<LoanSchedulePeriodData>> extractData(ResultSet rs) throws SQLException, DataAccessException {
+        public Map<Long, List<LoanSchedulePeriodData>> extractData(ResultSet rs)
+                throws SQLException, DataAccessException {
             Map<Long, List<LoanSchedulePeriodData>> scheduleDate = new HashMap<>();
 
             while (rs.next()) {
@@ -447,17 +470,19 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
         private LoanSchedulePeriodData fetchLoanSchedulePeriodData(ResultSet rs) throws SQLException {
             final LocalDate dueDate = JdbcSupport.getLocalDate(rs, "dueDate");
             final BigDecimal principalDue = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "principalAmount");
-            final BigDecimal interestDueOnPrincipalOutstanding = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "interestAmount");
+            final BigDecimal interestDueOnPrincipalOutstanding = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs,
+                    "interestAmount");
             final BigDecimal totalInstallmentAmount = principalDue.add(interestDueOnPrincipalOutstanding);
             final BigDecimal feeChargesDueForPeriod = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "feeAmount");
-            final BigDecimal penaltyChargesDueForPeriod = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "penaltyAmount");
+            final BigDecimal penaltyChargesDueForPeriod = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs,
+                    "penaltyAmount");
             final Integer periodNumber = null;
             final LocalDate fromDate = null;
             final BigDecimal principalOutstanding = null;
             final BigDecimal totalDueForPeriod = null;
-            return LoanSchedulePeriodData.repaymentOnlyPeriod(periodNumber, fromDate, dueDate, principalDue, principalOutstanding,
-                    interestDueOnPrincipalOutstanding, feeChargesDueForPeriod, penaltyChargesDueForPeriod, totalDueForPeriod,
-                    totalInstallmentAmount);
+            return LoanSchedulePeriodData.repaymentOnlyPeriod(periodNumber, fromDate, dueDate, principalDue,
+                    principalOutstanding, interestDueOnPrincipalOutstanding, feeChargesDueForPeriod,
+                    penaltyChargesDueForPeriod, totalDueForPeriod, totalInstallmentAmount);
 
         }
     }

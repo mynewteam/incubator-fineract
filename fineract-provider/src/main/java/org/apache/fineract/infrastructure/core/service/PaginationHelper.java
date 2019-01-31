@@ -32,7 +32,8 @@ public class PaginationHelper<E> {
 
         // determine how many rows are available
         @SuppressWarnings("deprecation")
-        final int totalFilteredRecords = jt.queryForInt(sqlCountRows);
+//        final int totalFilteredRecords = jt.queryForInt(sqlCountRows);
+        final int totalFilteredRecords = items.size();
 
         return new Page<>(items, totalFilteredRecords);
     }
