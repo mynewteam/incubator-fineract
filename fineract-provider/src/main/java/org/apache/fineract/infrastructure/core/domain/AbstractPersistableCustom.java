@@ -32,7 +32,8 @@ import org.springframework.data.domain.Persistable;
 public abstract class AbstractPersistableCustom<PK extends Serializable> implements Persistable<Long> {
 
         @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
+//        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @GeneratedValue(strategy = GenerationType.SEQUENCE)
         private Long id;
 
         /*
