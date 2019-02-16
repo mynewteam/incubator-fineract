@@ -23,24 +23,29 @@ import java.sql.SQLException;
 
 import org.apache.openjpa.jdbc.sql.BooleanRepresentationFactory;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
 
-public class MySQLDictionaryCustom extends MySQLDictionary {
+public class MySQLDictionaryCustom extends OracleDictionary {
 
-        public MySQLDictionaryCustom(){
-                super();
-            this.supportsSubselect = true;
-            this.booleanRepresentation = BooleanRepresentationFactory.BOOLEAN;
-            this.supportsGetGeneratedKeys = false ;
-            this.allowsAliasInBulkClause = true ;
-            this.useWildCardForCount = true ;
-        }
-        
-        @Override
-        public void connectedConfiguration(Connection conn) throws SQLException {
-                super.connectedConfiguration(conn);
-                this.supportsSubselect = true;
-                this.supportsGetGeneratedKeys = false ;
-                this.allowsAliasInBulkClause = true ;
-                this.useWildCardForCount = true ;
-        }
+	public MySQLDictionaryCustom() {
+		super();
+		this.supportsSubselect = true;
+		this.booleanRepresentation = BooleanRepresentationFactory.INT_10;
+		this.supportsGetGeneratedKeys = true;
+		this.allowsAliasInBulkClause = true;
+		this.useWildCardForCount = true;
+		this.maxColumnNameLength=128;
+		this.maxTableNameLength=128;
+	}
+
+	@Override
+	public void connectedConfiguration(Connection conn) throws SQLException {
+		super.connectedConfiguration(conn);
+		this.supportsSubselect = true;
+		this.supportsGetGeneratedKeys = true;
+		this.allowsAliasInBulkClause = true;
+		this.useWildCardForCount = true;
+		this.maxColumnNameLength = 128;
+		this.maxTableNameLength=128;
+	}
 }

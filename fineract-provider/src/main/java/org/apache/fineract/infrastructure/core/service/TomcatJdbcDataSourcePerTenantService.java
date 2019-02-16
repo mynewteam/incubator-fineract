@@ -100,7 +100,7 @@ public class TomcatJdbcDataSourcePerTenantService implements RoutingDataSourceSe
         poolConfiguration.setInitialSize(tenantConnectionObj.getInitialSize());
 
         poolConfiguration.setTestOnBorrow(tenantConnectionObj.isTestOnBorrow());
-        poolConfiguration.setValidationQuery("SELECT 1");
+        poolConfiguration.setValidationQuery("SELECT * FROM DUAL");
         poolConfiguration.setValidationInterval(tenantConnectionObj.getValidationInterval());
 
         poolConfiguration.setRemoveAbandoned(tenantConnectionObj.isRemoveAbandoned());

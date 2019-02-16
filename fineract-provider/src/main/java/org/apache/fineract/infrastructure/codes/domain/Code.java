@@ -26,7 +26,11 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -37,60 +41,71 @@ import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 
 @Entity
 @Table(name = "m_code", uniqueConstraints = { @UniqueConstraint(columnNames = { "code_name" }, name = "code_name") })
-public class Code extends AbstractPersistableCustom<Long> {
+public class Code extends AbstractPersistableCustom<Long>{
 
-    @Column(name = "code_name", length = 100)
-    private String name;
+//	@Id
+//	@SequenceGenerator(name = "SequenceGenerator", sequenceName = "m_code_id_1SEQ")
+//	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SequenceGenerator")
+//	private long Id;
 
-    @Column(name = "is_system_defined")
-    private boolean systemDefined;
+	@Column(name = "code_name", length = 100)
+	private String name;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "code", orphanRemoval = true)
-    private Set<CodeValue> values;
+	@Column(name = "is_system_defined")
+	private boolean systemDefined;
 
-    public static Code fromJson(final JsonCommand command) {
-        final String name = command.stringValueOfParameterNamed("name");
-        return new Code(name);
-    }
-    
-    public static Code createNew(final String name) {
-        return new Code(name);
-    }
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "code", orphanRemoval = true)
+	private Set<CodeValue> values;
 
-    protected Code() {
-        this.systemDefined = false;
-    }
+	public static Code fromJson(final JsonCommand command) {
+		final String name = command.stringValueOfParameterNamed("name");
+		return new Code(name);
+	}
 
-    private Code(final String name) {
-        this.name = name;
-        this.systemDefined = false;
-    }
+	public static Code createNew(final String name) {
+		return new Code(name);
+	}
 
-    public String name() {
-        return this.name;
-    }
+	protected Code() {
+		this.systemDefined = false;
+	}
 
-    public boolean isSystemDefined() {
-        return this.systemDefined;
-    }
+	private Code(final String name) {
+		this.name = name;
+		this.systemDefined = false;
+	}
 
-    public Map<String, Object> update(final JsonCommand command) {
+	public String name() {
+		return this.name;
+	}
 
-        if (this.systemDefined) { throw new SystemDefinedCodeCannotBeChangedException(); }
+//	public long getId() {
+//		return this.Id;
+//	}
 
-        final Map<String, Object> actualChanges = new LinkedHashMap<>(1);
+	public boolean isSystemDefined() {
+		return this.systemDefined;
+	}
 
-        final String firstnameParamName = "name";
-        if (command.isChangeInStringParameterNamed(firstnameParamName, this.name)) {
-            final String newValue = command.stringValueOfParameterNamed(firstnameParamName);
-            actualChanges.put(firstnameParamName, newValue);
-            this.name = StringUtils.defaultIfEmpty(newValue, null);
-        }
+	public Map<String, Object> update(final JsonCommand command) {
 
-        return actualChanges;
-    }
+		if (this.systemDefined) {
+			throw new SystemDefinedCodeCannotBeChangedException();
+		}
 
-    public boolean remove(final CodeValue codeValueToDelete) {
-        return this.values.remove(codeValueToDelete);
-    }
+		final Map<String, Object> actualChanges = new LinkedHashMap<>(1);
+
+		final String firstnameParamName = "name";
+		if (command.isChangeInStringParameterNamed(firstnameParamName, this.name)) {
+			final String newValue = command.stringValueOfParameterNamed(firstnameParamName);
+			actualChanges.put(firstnameParamName, newValue);
+			this.name = StringUtils.defaultIfEmpty(newValue, null);
+		}
+
+		return actualChanges;
+	}
+
+	public boolean remove(final CodeValue codeValueToDelete) {
+		return this.values.remove(codeValueToDelete);
+	}
 }

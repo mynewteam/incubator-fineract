@@ -69,17 +69,21 @@ public class CodeValueWritePlatformServiceJpaRepositoryImpl implements CodeValue
 
         try {
             this.context.authenticatedUser();
-
+            logger.debug("authenticatedUser Code value after save codeId : ");
             this.fromApiJsonDeserializer.validateForCreate(command.json());
-
+            logger.debug("validateForCreate Code value after save codeId : ");
             final Long codeId = command.entityId();
             final Code code = this.codeRepository.findOne(codeId);
+            logger.debug("findOne Code value after save codeId : ");
             if (code == null) {
                 throw new CodeNotFoundException(codeId);
             }
             final CodeValue codeValue = CodeValue.fromJson(code, command);
+            logger.debug("CodeValue.fromJson Code value after save codeId : ");
             this.codeValueRepository.save(codeValue);
+            
 
+            
             return new CommandProcessingResultBuilder() //
                     .withCommandId(command.commandId()) //
                     .withEntityId(code.getId()) //

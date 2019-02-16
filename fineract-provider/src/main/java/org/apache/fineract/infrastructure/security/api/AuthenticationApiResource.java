@@ -37,6 +37,8 @@ import org.apache.fineract.infrastructure.security.service.TwoFactorUtils;
 import org.apache.fineract.useradministration.data.RoleData;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.apache.fineract.useradministration.domain.Role;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
@@ -47,6 +49,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
 import com.sun.jersey.core.util.Base64;
 
 @Path("/authentication")
@@ -55,6 +58,7 @@ import com.sun.jersey.core.util.Base64;
 @Scope("singleton")
 public class AuthenticationApiResource {
 
+	 private final static Logger logger = LoggerFactory.getLogger(AuthenticationApiResource.class);
     private final DaoAuthenticationProvider customAuthenticationProvider;
     private final ToApiJsonSerializer<AuthenticatedUserData> apiJsonSerializerService;
     private final SpringSecurityPlatformSecurityContext springSecurityPlatformSecurityContext;
@@ -77,12 +81,17 @@ public class AuthenticationApiResource {
     public String authenticate(@QueryParam("username") final String username,
             @QueryParam("password") final String password) {
 
+    	logger.debug("auth_1 : "+username+password);
         final Authentication authentication = new UsernamePasswordAuthenticationToken(username, password);
+        logger.debug("auth_2 : "+new Gson().toJson(authentication));
         final Authentication authenticationCheck = this.customAuthenticationProvider.authenticate(authentication);
-
+        
+        logger.debug("auth_3 : "+new Gson().toJson(authenticationCheck));
+        
         final Collection<String> permissions = new ArrayList<>();
         AuthenticatedUserData authenticatedUserData = new AuthenticatedUserData(username, permissions);
 
+        logger.debug("auth_4 : "+new Gson().toJson(authenticationCheck.isAuthenticated()));
         if (authenticationCheck.isAuthenticated()) {
             final Collection<GrantedAuthority> authorities = new ArrayList<>(authenticationCheck.getAuthorities());
             for (final GrantedAuthority grantedAuthority : authorities) {
