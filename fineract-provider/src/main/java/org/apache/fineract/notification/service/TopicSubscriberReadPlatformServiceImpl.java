@@ -31,15 +31,15 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TopicSubscriberReadPlatformServiceImpl implements TopicSubscriberReadPlatformService{
+public class TopicSubscriberReadPlatformServiceImpl implements TopicSubscriberReadPlatformService {
 
 	private final JdbcTemplate jdbcTemplate;
-	
+
 	@Autowired
 	public TopicSubscriberReadPlatformServiceImpl(final RoutingDataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
-	
+
 	private static final class TopicSubscriberMapper implements RowMapper<TopicSubscriberData> {
 
 		private final String schema;
@@ -49,7 +49,7 @@ public class TopicSubscriberReadPlatformServiceImpl implements TopicSubscriberRe
 			sqlBuilder.append("ts.id as id, ts.topic_id as topicId, ts.user_id as userId, ");
 			sqlBuilder.append("ts.subscription_date as subscriptionDate from topic_subscriber ts ");
 			sqlBuilder.append("WHERE ts.topic_id = ( SELECT id from topic WHERE entity_id = ? ");
-			sqlBuilder.append("AND entity_type = ? AND member_type = ? )");
+			sqlBuilder.append("AND entity_type = ? AND member_type = ? AND ROWNUM = 1)");
 			this.schema = sqlBuilder.toString();
 		}
 
@@ -58,7 +58,8 @@ public class TopicSubscriberReadPlatformServiceImpl implements TopicSubscriberRe
 		}
 
 		@Override
-		public TopicSubscriberData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+		public TopicSubscriberData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum)
+				throws SQLException {
 			final Long id = rs.getLong("id");
 			final Long topicId = rs.getLong("topicId");
 			final Long userId = rs.getLong("userId");

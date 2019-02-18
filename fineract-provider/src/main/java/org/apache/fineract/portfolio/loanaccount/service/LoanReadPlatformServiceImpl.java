@@ -1623,7 +1623,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
 
         final StringBuilder sqlBuilder = new StringBuilder(400);
         sqlBuilder.append("select ").append(rm.schema())
-                .append(" where DATE_SUB(CURDATE(),INTERVAL ? DAY) > ls.duedate ")
+                .append(" where DATE_SUB(SYSDATE,INTERVAL ? DAY) > ls.duedate ")
                 .append(" and ls.completed_derived <> 1 and mc.charge_applies_to_enum =1 ")
                 .append(" and ls.recalculated_interest_component <> 1 ")
                 .append(" and mc.charge_time_enum = 9 and ml.loan_status_id = 300 ");
@@ -1633,7 +1633,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
         }
         // Only apply for duedate = yesterday (so that we don't apply
         // penalties on the duedate itself)
-        sqlBuilder.append(" and ls.duedate >= DATE_SUB(CURDATE(),INTERVAL (? + 1) DAY)");
+        sqlBuilder.append(" and ls.duedate >= DATE_SUB(SYSDATE,INTERVAL (? + 1) DAY)");
 
         return this.jdbcTemplate.query(sqlBuilder.toString(), rm,
                 new Object[] { penaltyWaitPeriod, penaltyWaitPeriod });
@@ -1738,7 +1738,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
                 .append(" and (((ls.fee_charges_amount <> if(ls.accrual_fee_charges_derived is null,0, ls.accrual_fee_charges_derived))")
                 .append(" or ( ls.penalty_charges_amount <> if(ls.accrual_penalty_charges_derived is null,0,ls.accrual_penalty_charges_derived))")
                 .append(" or ( ls.interest_amount <> if(ls.accrual_interest_derived is null,0,ls.accrual_interest_derived)))")
-                .append(" and loan.loan_status_id=:active and mpl.accounting_type=:type and loan.is_npa=0 and ls.duedate <= CURDATE()) ");
+                .append(" and loan.loan_status_id=:active and mpl.accounting_type=:type and loan.is_npa=0 and ls.duedate <= SYSDATE) ");
         if (organisationStartDate != null) {
             sqlBuilder.append(" and ls.duedate > :organisationstartdate ");
         }
@@ -2139,7 +2139,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
                     + " + SUM(nvl(mr.fee_charges_completed_derived, 0)) "
                     + " + SUM(nvl(mr.penalty_charges_completed_derived, 0))) as total_in_advance_derived "
                     + " from m_loan ml INNER JOIN m_loan_repayment_schedule mr on mr.loan_id = ml.id "
-                    + " where ml.id=? and  mr.duedate >= CURDATE() group by ml.id having "
+                    + " where ml.id=? and  mr.duedate >= SYSDATE group by ml.id having "
                     + " (SUM(nvl(mr.principal_completed_derived, 0))  "
                     + " + SUM(nvl(mr.interest_completed_derived, 0)) "
                     + " + SUM(nvl(mr.fee_charges_completed_derived, 0)) "

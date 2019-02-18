@@ -120,8 +120,7 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
                 .append(" left join m_product_loan_recalculation_details prd on prd.product_id = ml.product_id ");
         updateSqlBuilder.append(" WHERE ml.loan_status_id = 300 "); // active
         updateSqlBuilder.append(" and mr.completed_derived is false ");
-        updateSqlBuilder
-                .append(" and mr.duedate < SUBDATE(CURDATE(),INTERVAL  nvl(ml.grace_on_arrears_ageing,0) day) ");
+        updateSqlBuilder.append(" and mr.duedate < SUBDATE(SYSDATE,INTERVAL  nvl(ml.grace_on_arrears_ageing,0) day) ");
         updateSqlBuilder.append(
                 " and (prd.arrears_based_on_original_schedule = 0 or prd.arrears_based_on_original_schedule is null) ");
         updateSqlBuilder.append(" GROUP BY ml.id");
@@ -218,7 +217,7 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
         loanIdentifier.append(
                 "inner join m_product_loan_recalculation_details prd on prd.product_id = ml.product_id and prd.arrears_based_on_original_schedule = 1  ");
         loanIdentifier.append(
-                "WHERE ml.loan_status_id = 300  and mr.completed_derived is false  and mr.duedate < SUBDATE(CURDATE(),INTERVAL  nvl(ml.grace_on_arrears_ageing,0) day) group by ml.id");
+                "WHERE ml.loan_status_id = 300  and mr.completed_derived is false  and mr.duedate < SUBDATE(SYSDATE,INTERVAL  nvl(ml.grace_on_arrears_ageing,0) day) group by ml.id");
         List<Long> loanIds = this.jdbcTemplate.queryForList(loanIdentifier.toString(), Long.class);
         if (!loanIds.isEmpty()) {
             String loanIdsAsString = loanIds.toString();
@@ -317,8 +316,8 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
     private String constructInsertStatement(final Long loanId, BigDecimal principalOverdue, BigDecimal interestOverdue,
             BigDecimal feeOverdue, BigDecimal penaltyOverdue, LocalDate overDueSince) {
         final StringBuilder insertStatementBuilder = new StringBuilder(900);
-        insertStatementBuilder.append(
-                "INSERT INTO m_loan_arrears_aging(loan_id,principal_overdue_derived,interest_overdue_derived,")
+        insertStatementBuilder
+                .append("INSERT INTO m_loan_arrears_aging(loan_id,principal_overdue_derived,interest_overdue_derived,")
                 .append("fee_charges_overdue_derived,penalty_charges_overdue_derived,total_overdue_derived,overdue_since_date_derived) VALUES(");
         insertStatementBuilder.append(loanId).append(",");
         insertStatementBuilder.append(principalOverdue).append(",");
@@ -434,7 +433,7 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
             scheduleDetail
                     .append("from m_loan ml  INNER JOIN m_loan_repayment_schedule_history mr on mr.loan_id = ml.id ");
             scheduleDetail.append(
-                    "where mr.duedate  < SUBDATE(CURDATE(),INTERVAL  nvl(ml.grace_on_arrears_ageing,0) day) and ");
+                    "where mr.duedate  < SUBDATE(SYSDATE,INTERVAL  nvl(ml.grace_on_arrears_ageing,0) day) and ");
             scheduleDetail.append("ml.id IN(").append(loanIdsAsString).append(") and  mr.version = (");
             scheduleDetail.append(
                     "select max(lrs.version) from m_loan_repayment_schedule_history lrs where mr.loan_id = lrs.loan_id");

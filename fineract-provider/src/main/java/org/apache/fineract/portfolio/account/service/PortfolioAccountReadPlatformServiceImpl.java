@@ -312,7 +312,7 @@ public class PortfolioAccountReadPlatformServiceImpl implements PortfolioAccount
             amountQueryString.append(" SUM(nvl(mr.penalty_charges_completed_derived, 0))) as total_in_advance_derived");
             amountQueryString.append(" from m_loan ml INNER JOIN m_loan_repayment_schedule mr on mr.loan_id = ml.id");
             amountQueryString.append(" where ml.id=? and ml.loan_status_id = 300");
-            amountQueryString.append("  and  mr.duedate >= CURDATE() group by ml.id having");
+            amountQueryString.append("  and  mr.duedate >= SYSDATE group by ml.id having");
             amountQueryString.append(" (SUM(nvl(mr.principal_completed_derived, 0)) + ");
             amountQueryString.append(" SUM(nvl(mr.interest_completed_derived, 0)) + ");
             amountQueryString.append("SUM(nvl(mr.fee_charges_completed_derived, 0)) + ");

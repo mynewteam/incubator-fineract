@@ -202,7 +202,7 @@ public class ScheduledJobRunnerServiceImpl implements ScheduledJobRunnerService 
                 updateSqlBuilder.append(" FROM m_loan ml ");
                 updateSqlBuilder.append(" INNER JOIN m_loan_repayment_schedule mr on mr.loan_id = ml.id ");
                 updateSqlBuilder.append(" WHERE ml.loan_status_id = 300 ");
-                updateSqlBuilder.append(" and mr.duedate >= CURDATE() ");
+                updateSqlBuilder.append(" and mr.duedate >= SYSDATE ");
                 updateSqlBuilder.append(" GROUP BY ml.id");
                 updateSqlBuilder.append(
                                 " HAVING (SUM(nvl(mr.principal_completed_derived, 0)) + SUM(nvl(mr.interest_completed_derived, 0)) +");
@@ -307,7 +307,7 @@ public class ScheduledJobRunnerServiceImpl implements ScheduledJobRunnerService 
                                 " INNER JOIN m_product_loan mpl on mpl.id = loan.product_id AND mpl.overdue_days_for_npa is not null ");
                 updateSqlBuilder.append("WHERE loan.loan_status_id = 300  and ");
                 updateSqlBuilder.append(
-                                "laa.overdue_since_date_derived < SUBDATE(CURDATE(),INTERVAL  nvl(mpl.overdue_days_for_npa,0) day) ");
+                                "laa.overdue_since_date_derived < SUBDATE(SYSDATE,INTERVAL  nvl(mpl.overdue_days_for_npa,0) day) ");
                 updateSqlBuilder.append("group by loan.id) as sl ");
                 updateSqlBuilder.append("SET ml.is_npa=1 where ml.id=sl.id ");
 
