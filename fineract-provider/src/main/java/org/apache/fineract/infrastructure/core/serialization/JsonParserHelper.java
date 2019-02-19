@@ -709,4 +709,21 @@ public class JsonParserHelper {
         }
         return clientApplicationLocale;
     }
+
+	public double extractDoubleNamed(final String parameterName, final JsonElement element, final Set<String> parametersPassedInRequest)
+	{
+		double doubleValue = 0;
+        if (element.isJsonObject()) {
+            final JsonObject object = element.getAsJsonObject();
+            if (object.has(parameterName) && object.get(parameterName).isJsonPrimitive()) {
+                parametersPassedInRequest.add(parameterName);
+                final JsonPrimitive primitive = object.get(parameterName).getAsJsonPrimitive();
+                final String stringValue = primitive.getAsString();
+                if (StringUtils.isNotBlank(stringValue)) {
+                	doubleValue = Double.valueOf(stringValue);
+                }
+            }
+        }
+        return doubleValue;
+	}
 }

@@ -613,4 +613,9 @@ public final class JsonCommand {
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, requestDataParameters);
     }
 
+	public double doubleValueofParameterNamed(final String parameterName)
+	{
+		return this.fromApiJsonHelper.extractDoubleNamed(parameterName, this.parsedCommand);
+	}
+
 }
