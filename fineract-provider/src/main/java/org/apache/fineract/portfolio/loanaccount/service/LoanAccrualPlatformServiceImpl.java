@@ -90,16 +90,24 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 
     @Override
     public String addPeriodicAccruals(final LocalDate tilldate, Collection<LoanScheduleAccrualData> loanScheduleAccrualDatas) {
-        StringBuilder sb = new StringBuilder();
+        
+    	StringBuilder sb = new StringBuilder();
         Map<Long, Collection<LoanScheduleAccrualData>> loanDataMap = new HashMap<>();
+        
         for (final LoanScheduleAccrualData accrualData : loanScheduleAccrualDatas) {
-            if (loanDataMap.containsKey(accrualData.getLoanId())) {
-                loanDataMap.get(accrualData.getLoanId()).add(accrualData);
+            
+        	if (loanDataMap.containsKey(accrualData.getLoanId())) {
+               
+            	loanDataMap.get(accrualData.getLoanId()).add(accrualData);
+           
             } else {
+            	
                 Collection<LoanScheduleAccrualData> accrualDatas = new ArrayList<>();
+                
                 accrualDatas.add(accrualData);
                 loanDataMap.put(accrualData.getLoanId(), accrualDatas);
             }
+        	
         }
 
         for (Map.Entry<Long, Collection<LoanScheduleAccrualData>> mapEntry : loanDataMap.entrySet()) {
@@ -110,6 +118,7 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
                 if (e.getCause() != null) {
                     realCause = e.getCause();
                 }
+                
                 sb.append("failed to add accural transaction for loan " + mapEntry.getKey() + " with message " + realCause.getMessage());
             }
         }
@@ -125,7 +134,9 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
             StringBuilder sb = new StringBuilder();
             for (Long loanId : loanIds) {
                 try {
+                	
                     this.loanAccrualWritePlatformService.addIncomeAndAccrualTransactions(loanId);
+                    
                 } catch (Exception e) {
                     Throwable realCause = e;
                     if (e.getCause() != null) {

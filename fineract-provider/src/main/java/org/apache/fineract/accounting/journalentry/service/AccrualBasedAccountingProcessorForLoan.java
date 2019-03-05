@@ -38,11 +38,14 @@ import org.apache.fineract.organisation.office.domain.Office;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Component
 public class AccrualBasedAccountingProcessorForLoan implements AccountingProcessorForLoan {
 
     private final AccountingProcessorHelper helper;
-
+    private final static Logger logger = LoggerFactory.getLogger(AccrualBasedAccountingProcessorForLoan.class);
     @Autowired
     public AccrualBasedAccountingProcessorForLoan(final AccountingProcessorHelper accountingProcessorHelper) {
         this.helper = accountingProcessorHelper;
@@ -63,13 +66,20 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
 
             /*** Handle Accruals ***/
             if (loanTransactionDTO.getTransactionType().isAccrual()) {
+            	logger.debug("---Sothea_Check---");
+                logger.debug("createJournalEntriesForAccruals(loanDTO, loanTransactionDTO, office);");
+                logger.debug("---Sothea_Check---");
                 createJournalEntriesForAccruals(loanDTO, loanTransactionDTO, office);
+//                logger.debug("---Sothea_Check---");
+//                logger.debug("createJournalEntriesForAccruals(loanDTO, loanTransactionDTO, office);");
+//                logger.debug("---Sothea_Check---");
             }
 
             /***
              * Handle repayments, repayments at disbursement and reversal of
              * Repayments and Repayments at disbursement
              ***/
+            
             else if (loanTransactionDTO.getTransactionType().isRepayment()
                     || loanTransactionDTO.getTransactionType().isRepaymentAtDisbursement()
                     || loanTransactionDTO.getTransactionType().isChargePayment()) {
@@ -377,6 +387,7 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
         final Long paymentTypeId = loanTransactionDTO.getPaymentTypeId();
 
         // create journal entries for recognizing interest (or reversal)
+        
         if (interestAmount != null && !(interestAmount.compareTo(BigDecimal.ZERO) == 0)) {
             this.helper.createAccrualBasedJournalEntriesAndReversalsForLoan(office, currencyCode,
                     ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue(), ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue(),
