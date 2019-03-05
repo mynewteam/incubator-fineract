@@ -90,7 +90,7 @@ public class ChargeReadPlatformServiceImpl implements ChargeReadPlatformService 
     public Collection<ChargeData> retrieveAllCharges() {
         final ChargeMapper rm = new ChargeMapper();
 
-        String sql = "select " + rm.chargeSchema() + " where c.is_deleted=false ";
+        String sql = "select " + rm.chargeSchema() + " where c.is_deleted=0 ";
 
         sql += addInClauseToSQL_toLimitChargesMappedToOffice_ifOfficeSpecificProductsEnabled();
 
@@ -216,7 +216,7 @@ public class ChargeReadPlatformServiceImpl implements ChargeReadPlatformService 
         processChargeExclusionsForLoans(excludeChargeTimes, excludeClause);
         String sql = "select " + rm.chargeSchema() + " join m_loan la on la.currency_code = c.currency_code"
                 + " where la.id=:loanId"
-                + " and c.is_deleted=false and c.is_active=1 and c.charge_applies_to_enum=:chargeAppliesTo"
+                + " and c.is_deleted=0 and c.is_active=1 and c.charge_applies_to_enum=:chargeAppliesTo"
                 + excludeClause + " ";
         sql += addInClauseToSQL_toLimitChargesMappedToOffice_ifOfficeSpecificProductsEnabled();
         sql += " order by c.name ";

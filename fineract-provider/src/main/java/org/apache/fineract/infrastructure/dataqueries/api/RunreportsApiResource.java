@@ -56,121 +56,127 @@ import org.springframework.stereotype.Component;
 @Scope("singleton")
 public class RunreportsApiResource {
 
-    private final PlatformSecurityContext context;
-    private final ToApiJsonSerializer<ReportData> toApiJsonSerializer;
-    private final ReadReportingService readExtraDataAndReportingService;
-    private final GenericDataService genericDataService;
-    private final ReportingProcessServiceProvider reportingProcessServiceProvider;
+	private final PlatformSecurityContext context;
+	private final ToApiJsonSerializer<ReportData> toApiJsonSerializer;
+	private final ReadReportingService readExtraDataAndReportingService;
+	private final GenericDataService genericDataService;
+	private final ReportingProcessServiceProvider reportingProcessServiceProvider;
 
-    @Autowired
-    public RunreportsApiResource(final PlatformSecurityContext context, final ReadReportingService readExtraDataAndReportingService,
-            final GenericDataService genericDataService, final ToApiJsonSerializer<ReportData> toApiJsonSerializer,
-            final ReportingProcessServiceProvider reportingProcessServiceProvider) {
-        this.context = context;
-        this.readExtraDataAndReportingService = readExtraDataAndReportingService;
-        this.genericDataService = genericDataService;
-        this.toApiJsonSerializer = toApiJsonSerializer;
-        this.reportingProcessServiceProvider = reportingProcessServiceProvider;
-    }
+	@Autowired
+	public RunreportsApiResource(final PlatformSecurityContext context,
+			final ReadReportingService readExtraDataAndReportingService, final GenericDataService genericDataService,
+			final ToApiJsonSerializer<ReportData> toApiJsonSerializer,
+			final ReportingProcessServiceProvider reportingProcessServiceProvider) {
+		this.context = context;
+		this.readExtraDataAndReportingService = readExtraDataAndReportingService;
+		this.genericDataService = genericDataService;
+		this.toApiJsonSerializer = toApiJsonSerializer;
+		this.reportingProcessServiceProvider = reportingProcessServiceProvider;
+	}
 
-    @GET
-    @Path("{reportName}")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON, "text/csv", "application/vnd.ms-excel", "application/pdf", "text/html" })
-    public Response runReport(@PathParam("reportName") final String reportName, @Context final UriInfo uriInfo) {
+	@GET
+	@Path("{reportName}")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON, "text/csv", "application/vnd.ms-excel", "application/pdf", "text/html" })
+	public Response runReport(@PathParam("reportName") final String reportName, @Context final UriInfo uriInfo) {
 
-        final MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+		final MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 
-        final boolean prettyPrint = ApiParameterHelper.prettyPrint(uriInfo.getQueryParameters());
-        final boolean exportCsv = ApiParameterHelper.exportCsv(uriInfo.getQueryParameters());
-        final boolean parameterType = ApiParameterHelper.parameterType(uriInfo.getQueryParameters());
-        final boolean exportPdf = ApiParameterHelper.exportPdf(uriInfo.getQueryParameters());
+		final boolean prettyPrint = ApiParameterHelper.prettyPrint(uriInfo.getQueryParameters());
+		final boolean exportCsv = ApiParameterHelper.exportCsv(uriInfo.getQueryParameters());
+		final boolean parameterType = ApiParameterHelper.parameterType(uriInfo.getQueryParameters());
+		final boolean exportPdf = ApiParameterHelper.exportPdf(uriInfo.getQueryParameters());
 
-        checkUserPermissionForReport(reportName, parameterType);
+		checkUserPermissionForReport(reportName, parameterType);
 
-        String parameterTypeValue = null;
-        if (!parameterType) {
-            parameterTypeValue = "report";
-            String reportType = this.readExtraDataAndReportingService.getReportType(reportName);
-            ReportingProcessService reportingProcessService = this.reportingProcessServiceProvider.findReportingProcessService(reportType);
-            if (reportingProcessService != null) { return reportingProcessService.processRequest(reportName, queryParams); }
-        } else {
-            parameterTypeValue = "parameter";
-        }
+		String parameterTypeValue = null;
+		if (!parameterType) {
+			parameterTypeValue = "report";
+			String reportType = this.readExtraDataAndReportingService.getReportType(reportName);
+			ReportingProcessService reportingProcessService = this.reportingProcessServiceProvider
+					.findReportingProcessService(reportType);
+			if (reportingProcessService != null) {
+				return reportingProcessService.processRequest(reportName, queryParams);
+			}
+		} else {
+			parameterTypeValue = "parameter";
+		}
 
-        // PDF format
+		// PDF format
+		if (exportPdf) {
+			final Map<String, String> reportParams = getReportParams(queryParams);
+			final String pdfFileName = this.readExtraDataAndReportingService.retrieveReportPDF(reportName,
+					parameterTypeValue, reportParams);
 
-        if (exportPdf) {
-            final Map<String, String> reportParams = getReportParams(queryParams);
-            final String pdfFileName = this.readExtraDataAndReportingService
-                    .retrieveReportPDF(reportName, parameterTypeValue, reportParams);
+			final File file = new File(pdfFileName);
 
-            final File file = new File(pdfFileName);
+			final ResponseBuilder response = Response.ok(file);
+			response.header("Content-Disposition", "attachment; filename=\"" + pdfFileName + "\"");
+			response.header("content-Type", "application/pdf");
 
-            final ResponseBuilder response = Response.ok(file);
-            response.header("Content-Disposition", "attachment; filename=\"" + pdfFileName + "\"");
-            response.header("content-Type", "application/pdf");
+			return response.build();
 
-            return response.build();
+		}
 
-        }
+		if (!exportCsv) {
+			final Map<String, String> reportParams = getReportParams(queryParams);
 
-        if (!exportCsv) {
-            final Map<String, String> reportParams = getReportParams(queryParams);
+			final GenericResultsetData result = this.readExtraDataAndReportingService
+					.retrieveGenericResultset(reportName, parameterTypeValue, reportParams);
 
-            final GenericResultsetData result = this.readExtraDataAndReportingService.retrieveGenericResultset(reportName,
-                    parameterTypeValue, reportParams);
+			String json = "";
+			final boolean genericResultSetIsPassed = ApiParameterHelper
+					.genericResultSetPassed(uriInfo.getQueryParameters());
+			final boolean genericResultSet = ApiParameterHelper.genericResultSet(uriInfo.getQueryParameters());
+			if (genericResultSetIsPassed) {
+				if (genericResultSet) {
+					json = this.toApiJsonSerializer.serializePretty(prettyPrint, result);
+				} else {
+					json = this.genericDataService.generateJsonFromGenericResultsetData(result);
+				}
+			} else {
+				json = this.toApiJsonSerializer.serializePretty(prettyPrint, result);
+			}
 
-            String json = "";
-            final boolean genericResultSetIsPassed = ApiParameterHelper.genericResultSetPassed(uriInfo.getQueryParameters());
-            final boolean genericResultSet = ApiParameterHelper.genericResultSet(uriInfo.getQueryParameters());
-            if (genericResultSetIsPassed) {
-                if (genericResultSet) {
-                    json = this.toApiJsonSerializer.serializePretty(prettyPrint, result);
-                } else {
-                    json = this.genericDataService.generateJsonFromGenericResultsetData(result);
-                }
-            } else {
-                json = this.toApiJsonSerializer.serializePretty(prettyPrint, result);
-            }
+			return Response.ok().entity(json).type(MediaType.APPLICATION_JSON).build();
+		}
 
-            return Response.ok().entity(json).type(MediaType.APPLICATION_JSON).build();
-        }
+		// CSV Export
+		final Map<String, String> reportParams = getReportParams(queryParams);
+		final StreamingOutput result = this.readExtraDataAndReportingService.retrieveReportCSV(reportName,
+				parameterTypeValue, reportParams);
 
-        // CSV Export
-        final Map<String, String> reportParams = getReportParams(queryParams);
-        final StreamingOutput result = this.readExtraDataAndReportingService
-                .retrieveReportCSV(reportName, parameterTypeValue, reportParams);
+		return Response.ok().entity(result).type("text/csv")
+				.header("Content-Disposition", "attachment;filename=" + reportName.replaceAll(" ", "") + ".csv")
+				.build();
+	}
 
-        return Response.ok().entity(result).type("text/csv")
-                .header("Content-Disposition", "attachment;filename=" + reportName.replaceAll(" ", "") + ".csv").build();
-    }
+	private void checkUserPermissionForReport(final String reportName, final boolean parameterType) {
 
-    private void checkUserPermissionForReport(final String reportName, final boolean parameterType) {
+		// Anyone can run a 'report' that is simply getting possible parameter
+		// (dropdown listbox) values.
+		if (!parameterType) {
+			final AppUser currentUser = this.context.authenticatedUser();
+			if (currentUser.hasNotPermissionForReport(reportName)) {
+				throw new NoAuthorizationException("Not authorised to run report: " + reportName);
+			}
+		}
+	}
 
-        // Anyone can run a 'report' that is simply getting possible parameter
-        // (dropdown listbox) values.
-        if (!parameterType) {
-            final AppUser currentUser = this.context.authenticatedUser();
-            if (currentUser.hasNotPermissionForReport(reportName)) { throw new NoAuthorizationException("Not authorised to run report: "
-                    + reportName); }
-        }
-    }
+	private Map<String, String> getReportParams(final MultivaluedMap<String, String> queryParams) {
 
-    private Map<String, String> getReportParams(final MultivaluedMap<String, String> queryParams) {
+		final Map<String, String> reportParams = new HashMap<>();
+		final Set<String> keys = queryParams.keySet();
+		String pKey;
+		String pValue;
+		for (final String k : keys) {
 
-        final Map<String, String> reportParams = new HashMap<>();
-        final Set<String> keys = queryParams.keySet();
-        String pKey;
-        String pValue;
-        for (final String k : keys) {
-
-            if (k.startsWith("R_")) {
-                pKey = "${" + k.substring(2) + "}";
-                pValue = queryParams.get(k).get(0);
-                reportParams.put(pKey, pValue);
-            }
-        }
-        return reportParams;
-    }
+			if (k.startsWith("R_")) {
+				pKey = "${" + k.substring(2) + "}";
+				pValue = queryParams.get(k).get(0);
+				reportParams.put(pKey, pValue);
+			}
+		}
+		return reportParams;
+	}
 }

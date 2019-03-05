@@ -208,7 +208,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 		if (searchParameters != null) {
 			if (searchParameters.isSelfUser()) {
 				sqlBuilder.append(
-						" and c.id in (select umap.client_id from m_selfservice_user_client_mapping as umap where umap.appuser_id = ? ) ");
+						" and c.id in (select umap.client_id from m_selfservice_user_client_mapping  umap where umap.appuser_id = ? ) ");
 				paramList.add(appUserID);
 			}
 

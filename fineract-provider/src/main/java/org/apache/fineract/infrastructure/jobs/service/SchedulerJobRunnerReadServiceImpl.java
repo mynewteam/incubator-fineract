@@ -177,7 +177,7 @@ public class SchedulerJobRunnerReadServiceImpl implements SchedulerJobRunnerRead
     private static final class JobHistoryMapper implements RowMapper<JobDetailHistoryData> {
 
         private final StringBuilder sqlBuilder = new StringBuilder(200).append(
-                " runHistory.version,runHistory.start_time as runStartTime,runHistory.end_time as runEndTime,runHistory.`status`,runHistory.error_message as jobRunErrorMessage,runHistory.trigger_type as triggerType,runHistory.error_log as jobRunErrorLog ")
+                " runHistory.version,runHistory.start_time as runStartTime,runHistory.end_time as runEndTime,runHistory.status,runHistory.error_message as jobRunErrorMessage,runHistory.trigger_type as triggerType,runHistory.error_log as jobRunErrorLog ")
                 .append(" from job job join job_run_history runHistory ON job.id=runHistory.job_id");
 
         public String schema() {

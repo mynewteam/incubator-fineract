@@ -81,7 +81,7 @@ public class LoanChargeReadPlatformServiceImpl implements LoanChargeReadPlatform
 					+ "lc.waived as waied, " + "lc.min_cap as minCap, lc.max_cap as maxCap, "
 					+ "lc.charge_amount_or_percentage as amountOrPercentage, "
 					+ "c.currency_code as currencyCode, oc.name as currencyName, "
-					+ "date(nvl(dd.disbursedon_date,dd.expected_disburse_date)) as disbursementDate, "
+					+ "to_date(nvl(dd.disbursedon_date,dd.expected_disburse_date)) as disbursementDate, "
 					+ "oc.decimal_places as currencyDecimalPlaces, oc.currency_multiplesof as inMultiplesOf, oc.display_symbol as currencyDisplaySymbol, "
 					+ "oc.internationalized_name_code as currencyNameCode from m_charge c "
 					+ "join m_organisation_currency oc on c.currency_code = oc.code "
@@ -196,7 +196,7 @@ public class LoanChargeReadPlatformServiceImpl implements LoanChargeReadPlatform
 		final LoanChargeMapper rm = new LoanChargeMapper();
 
 		final String sql = "select " + rm.schema() + " where lc.loan_id=? AND lc.is_active = 1"
-				+ " order by nvl(lc.due_for_collection_as_of_date,date(nvl(dd.disbursedon_date,dd.expected_disburse_date))),lc.charge_time_enum ASC, lc.due_for_collection_as_of_date ASC, lc.is_penalty ASC";
+				+ " order by nvl(lc.due_for_collection_as_of_date,to_date(nvl(dd.disbursedon_date,dd.expected_disburse_date))),lc.charge_time_enum ASC, lc.due_for_collection_as_of_date ASC, lc.is_penalty ASC";
 
 		return this.jdbcTemplate.query(sql, rm, new Object[] { loanId });
 	}

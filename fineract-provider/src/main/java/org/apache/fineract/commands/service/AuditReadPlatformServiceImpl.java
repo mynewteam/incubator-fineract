@@ -197,7 +197,7 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
             updatedExtraCriteria = " where (" + extraCriteria + ")";
         }
 
-        updatedExtraCriteria += " order by aud.id DESC limit " + PaginationParameters.getCheckedLimit(null);
+        updatedExtraCriteria += " order by aud.id DESC FETCH NEXT " + PaginationParameters.getCheckedLimit(null) + " ROWS ONLY ";
         return retrieveEntries("audit", updatedExtraCriteria, includeJson, StringUtils.isNotBlank(extraCriteria));
     }
 

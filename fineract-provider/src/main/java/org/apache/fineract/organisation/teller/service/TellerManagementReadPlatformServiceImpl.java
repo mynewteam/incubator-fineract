@@ -526,26 +526,26 @@ public class TellerManagementReadPlatformServiceImpl implements TellerManagement
 
         String sql = "select * from (select " + ctm.cashierTxnSchema()
                 + " where txn.cashier_id = ? and txn.currency_code = ? and o.hierarchy like ? "
-				+ "AND ((case when c.full_day then Date(txn.created_date) between c.start_date AND c.end_date else ( Date(txn.created_date) between c.start_date AND c.end_date"
+				+ "AND ((case when c.full_day then TO_Date(txn.created_date) between c.start_date AND c.end_date else ( TO_Date(txn.created_date) between c.start_date AND c.end_date"
 				+ " ) and ( TIME(txn.created_date) between TIME(c.start_time) AND TIME(c.end_time)) end) or txn.txn_type = 101))  cashier_txns "
 				+ " union (select "
                 + ctm.savingsTxnSchema()
                 + " where sav_txn.is_reversed = 0 and c.id = ? and sav.currency_code = ? and o.hierarchy like ? and "
-                + " sav_txn.transaction_date between c.start_date and date_add(c.end_date, interval 1 day) "
+                + " sav_txn.transaction_date between c.start_date and (c.end_date + 1) "
                 + " and renum.enum_value in ('deposit','withdrawal fee', 'Pay Charge', 'withdrawal', 'Annual Fee', 'Waive Charge', 'Interest Posting', 'Overdraft Interest') "
                 + " and (sav_txn.payment_detail_id IS NULL OR payType.is_cash_payment = 1) "
                 + " AND acnttrans.id IS NULL ) "
                 + " union (select "
                 + ctm.loansTxnSchema()
                 + " where loan_txn.is_reversed = 0 and c.id = ? and loan.currency_code = ? and o.hierarchy like ? and "
-                + " loan_txn.transaction_date between c.start_date and date_add(c.end_date, interval 1 day) "
+                + " loan_txn.transaction_date between c.start_date and (c.end_date + 1 ) "
                 + " and renum.enum_value in ('REPAYMENT_AT_DISBURSEMENT','REPAYMENT', 'RECOVERY_REPAYMENT','DISBURSEMENT', 'CHARGE_PAYMENT', 'WAIVE_CHARGES', 'WAIVE_INTEREST', 'WRITEOFF') "
                 + " and (loan_txn.payment_detail_id IS NULL OR payType.is_cash_payment = 1) "
                 + " AND acnttrans.id IS NULL ) "
                 + " union (select "
                 + ctm.clientTxnSchema()
                 + " where cli_txn.is_reversed = 0 and c.id = ? and cli_txn.currency_code = ? and o.hierarchy like ? and cli_txn.transaction_date "
-                + " between c.start_date and date_add(c.end_date, interval 1 day) "
+                + " between c.start_date and (c.end_date + 1 ) "
                 + " and renum.enum_value in ('PAY_CHARGE', 'WAIVE_CHARGE') "
                 + " and (cli_txn.payment_detail_id IS NULL OR payType.is_cash_payment = 1) ) "
                 + " order by created_date ";

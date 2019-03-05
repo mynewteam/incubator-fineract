@@ -57,7 +57,7 @@ public class AddressReadPlatformServiceImpl implements AddressReadPlatformServic
 					+ "addr.address_line_3 as address_line_3,addr.town_village as town_village, addr.city as city,addr.county_district as county_district,"
 					+ "addr.state_province_id as state_province_id, addr.country_id as country_id,addr.postal_code as postal_code,addr.latitude as latitude,"
 					+ "addr.longitude as longitude,addr.created_by as created_by,addr.created_on as created_on,addr.updated_by as updated_by,"
-					+ "addr.updated_on as updated_on from m_address as addr,m_client client";
+					+ "addr.updated_on as updated_on from m_address addr,m_client client";
 		}
 
 		@Override

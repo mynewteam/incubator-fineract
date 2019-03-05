@@ -682,8 +682,8 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
                     + " left join m_code_value codev on codev.id = l.writeoff_reason_cv_id"
                     + " left join ref_loan_transaction_processing_strategy lps on lps.id = l.loan_transaction_strategy_id"
                     + " left join m_product_loan_variable_installment_config lpvi on lpvi.loan_product_id = l.product_id"
-                    + " left join m_loan_topup as topup on l.id = topup.loan_id"
-                    + " left join m_loan as topuploan on topuploan.id = topup.closure_loan_id";
+                    + " left join m_loan_topup  topup on l.id = topup.loan_id"
+                    + " left join m_loan topuploan on topuploan.id = topup.closure_loan_id";
 
         }
 
@@ -1360,7 +1360,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
 
         public String LoanPaymentsSchema() {
 
-            return " tr.id as id, tr.transaction_type_enum as transactionType, tr.transaction_date as date, tr.amount as total, "
+            return " tr.id as id, tr.transaction_type_enum as transactionType, tr.transaction_date as datetime, tr.amount as total, "
                     + " tr.principal_portion_derived as principal, tr.interest_portion_derived as interest, "
                     + " tr.fee_charges_portion_derived as fees, tr.penalty_charges_portion_derived as penalties, "
                     + " tr.overpayment_portion_derived as overpayment, tr.outstanding_loan_balance_derived as outstandingLoanBalance, "
@@ -1658,14 +1658,14 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
     public Collection<DisbursementData> retrieveLoanDisbursementDetails(final Long loanId) {
         final LoanDisbursementDetailMapper rm = new LoanDisbursementDetailMapper();
         final String sql = "select " + rm.schema()
-                + " where dd.loan_id=? group by dd.id order by dd.expected_disburse_date";
+                + " where dd.loan_id=? group by dd.id, lc.id, dd.expected_disburse_date, dd.disbursedon_date, dd.principal, lc.amount, lc.amount_waived_derived order by dd.expected_disburse_date";
         return this.jdbcTemplate.query(sql, rm, new Object[] { loanId });
     }
 
     private static final class LoanDisbursementDetailMapper implements RowMapper<DisbursementData> {
 
         public String schema() {
-            return "dd.id as id,dd.expected_disburse_date as expectedDisbursementdate, dd.disbursedon_date as actualDisbursementdate,dd.principal as principal,sum(lc.amount) chargeAmount, lc.amount_waived_derived waivedAmount,group_concat(lc.id) loanChargeId "
+            return "dd.id as id,dd.expected_disburse_date as expectedDisbursementdate, dd.disbursedon_date as actualDisbursementdate,dd.principal as principal,sum(lc.amount) chargeAmount, lc.amount_waived_derived waivedAmount,LISTAGG(lc.id, ',') WITHIN GROUP(ORDER BY lc.id) loanChargeId "
                     + "from m_loan l inner join m_loan_disbursement_detail dd on dd.loan_id = l.id left join m_loan_tranche_disbursement_charge tdc on tdc.disbursement_detail_id=dd.id "
                     + "left join m_loan_charge lc on  lc.id=tdc.loan_charge_id and lc.is_active=1";
         }
@@ -2004,7 +2004,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
 
         public String schema() {
 
-            return " tr.id as id, tr.transaction_type_enum as transactionType, tr.transaction_date as date, tr.amount as total, "
+            return " tr.id as id, tr.transaction_type_enum as transactionType, tr.transaction_date as datetime, tr.amount as total, "
                     + " tr.principal_portion_derived as principal, tr.interest_portion_derived as interest, "
                     + " tr.fee_charges_portion_derived as fees, tr.penalty_charges_portion_derived as penalties, "
                     + " tr.overpayment_portion_derived as overpayment, tr.outstanding_loan_balance_derived as outstandingLoanBalance, "

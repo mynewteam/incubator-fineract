@@ -115,7 +115,7 @@ public class OfficeReadPlatformServiceImpl implements OfficeReadPlatformService 
                     + " from m_office_transaction ot "
                     + " left join m_office fromoff on fromoff.id = ot.from_office_id "
                     + " left join m_office tooff on tooff.id = ot.to_office_id "
-                    + " join m_currency rc on rc.`code` = ot.currency_code";
+                    + " join m_currency rc on rc.code = ot.currency_code";
         }
 
         @Override

@@ -64,7 +64,7 @@ public class CalendarReadPlatformServiceImpl implements CalendarReadPlatformServ
                     + " c.recurrence as recurrence, c.remind_by_enum as remindById, c.first_reminder as firstReminder, c.second_reminder as secondReminder, "
                     + " c.created_date as createdDate, c.lastmodified_date as updatedDate, creatingUser.id as creatingUserId, creatingUser.username as creatingUserName, "
                     + " updatingUser.id as updatingUserId, updatingUser.username as updatingUserName,c.meeting_time as meetingTime "
-                    + " from m_calendar c join m_calendar_instance ci on ci.calendar_id=c.id, m_appuser as creatingUser, m_appuser as updatingUser"
+                    + " from m_calendar c join m_calendar_instance ci on ci.calendar_id=c.id, m_appuser creatingUser, m_appuser updatingUser"
                     + " where c.createdby_id=creatingUser.id and c.lastmodifiedby_id=updatingUser.id ";
         }
 

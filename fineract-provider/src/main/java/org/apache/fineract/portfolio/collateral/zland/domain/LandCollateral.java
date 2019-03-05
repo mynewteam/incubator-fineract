@@ -38,7 +38,7 @@ public class LandCollateral extends AbstractPersistableCustom<Long> {
     @Column(name = "date_issue")
     private LocalDate dateIssue;
 
-    @Column(name = "size")
+    @Column(name = "sizes")
     private String size;
 
     @Column(name = "old_price")

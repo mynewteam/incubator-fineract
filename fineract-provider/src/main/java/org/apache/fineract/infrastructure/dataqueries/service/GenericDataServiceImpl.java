@@ -118,7 +118,7 @@ public class GenericDataServiceImpl implements GenericDataService {
 
     @Override
     public String generateJsonFromGenericResultsetData(final GenericResultsetData grs) {
-
+    	logger.debug("myLoggers start : generateJsonFromGenericResultsetData");
         final StringBuffer writer = new StringBuffer();
 
         writer.append("[");
@@ -159,8 +159,8 @@ public class GenericDataServiceImpl implements GenericDataService {
                     } else {
                         if (currColType.equals("DATE")) {
                             final LocalDate localDate = new LocalDate(currVal);
-                            writer.append("[" + localDate.getYear() + ", " + localDate.getMonthOfYear() + ", " + localDate.getDayOfMonth()
-                                    + "]");
+                            writer.append("[" + localDate.getYear() + ", " + localDate.getMonthOfYear() + ", "
+                                    + localDate.getDayOfMonth() + "]");
                         } else if (currColType.equals("DATETIME")) {
                             final LocalDateTime localDateTime = new LocalDateTime(currVal);
                             writer.append("[" + localDateTime.getYear() + ", " + localDateTime.getMonthOfYear() + ", "
@@ -187,6 +187,7 @@ public class GenericDataServiceImpl implements GenericDataService {
         }
 
         writer.append("\n]");
+        logger.debug("myLogger end : "+writer.toString());
         return writer.toString();
 
     }
@@ -241,8 +242,8 @@ public class GenericDataServiceImpl implements GenericDataService {
 
             }
 
-            final ResultsetColumnHeaderData rsch = ResultsetColumnHeaderData.detailed(columnName, columnType, columnLength, columnNullable,
-                    columnIsPrimaryKey, columnValues, codeName);
+            final ResultsetColumnHeaderData rsch = ResultsetColumnHeaderData.detailed(columnName, columnType,
+                    columnLength, columnNullable, columnIsPrimaryKey, columnValues, codeName);
 
             columnHeaders.add(rsch);
         }
@@ -258,8 +259,9 @@ public class GenericDataServiceImpl implements GenericDataService {
 
         final List<ResultsetColumnValueData> columnValues = new ArrayList<>();
 
-        final String sql = "select v.id, v.code_score, v.code_value from m_code m " + " join m_code_value v on v.code_id = m.id "
-                + " where m.code_name = '" + codeName + "' order by v.order_position, v.id";
+        final String sql = "select v.id, v.code_score, v.code_value from m_code m "
+                + " join m_code_value v on v.code_id = m.id " + " where m.code_name = '" + codeName
+                + "' order by v.order_position, v.id";
 
         final SqlRowSet rsValues = this.jdbcTemplate.queryForRowSet(sql);
 
@@ -300,7 +302,9 @@ public class GenericDataServiceImpl implements GenericDataService {
                 + "'order by ORDINAL_POSITION";
 
         final SqlRowSet columnDefinitions = this.jdbcTemplate.queryForRowSet(sql);
-        if (columnDefinitions.next()) { return columnDefinitions; }
+        if (columnDefinitions.next()) {
+            return columnDefinitions;
+        }
 
         throw new DatatableNotFoundException(datatable);
     }

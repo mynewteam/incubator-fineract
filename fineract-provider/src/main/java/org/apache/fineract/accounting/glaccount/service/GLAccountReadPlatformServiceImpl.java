@@ -221,7 +221,7 @@ public class GLAccountReadPlatformServiceImpl implements GLAccountReadPlatformSe
             }
             sql.append("where gl.id = ?");
             if (associationParametersData.isRunningBalanceRequired()) {
-                sql.append("  ORDER BY gl_j.entry_date DESC,gl_j.id DESC LIMIT 1");
+                sql.append("  ORDER BY gl_j.entry_date DESC,gl_j.id DESC FETCH NEXT 2 ROWS ONLY ");
             }
             final GLAccountData glAccountData = this.jdbcTemplate.queryForObject(sql.toString(), rm,
                     new Object[] { glAccountId });

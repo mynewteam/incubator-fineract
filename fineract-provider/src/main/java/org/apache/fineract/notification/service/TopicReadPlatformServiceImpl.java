@@ -94,5 +94,5 @@ public class TopicReadPlatformServiceImpl implements TopicReadPlatformService {
         } catch (final EmptyResultDataAccessException e) {
         	throw new TopicNotFoundException(topicId);
         }
-	}	
+	}
 }

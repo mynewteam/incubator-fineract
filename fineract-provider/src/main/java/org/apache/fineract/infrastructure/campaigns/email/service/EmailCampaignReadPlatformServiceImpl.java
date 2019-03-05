@@ -178,8 +178,8 @@ public class EmailCampaignReadPlatformServiceImpl implements EmailCampaignReadPl
             sql.append("sp.parameter_label as paramLabel, ");
             sql.append("sp.parameter_name as paramName ");
             sql.append("from stretchy_report sr ");
-            sql.append("left join stretchy_report_parameter as srp on srp.report_id = sr.id ");
-            sql.append("left join stretchy_parameter as sp on sp.id = srp.parameter_id ");
+            sql.append("left join stretchy_report_parameter srp on srp.report_id = sr.id ");
+            sql.append("left join stretchy_parameter sp on sp.id = srp.parameter_id ");
 
             this.schema = sql.toString();
         }
