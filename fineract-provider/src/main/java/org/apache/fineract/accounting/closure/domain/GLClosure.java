@@ -71,9 +71,11 @@ public class GLClosure extends AbstractAuditableCustom<AppUser, Long> {
     }
 
     public static GLClosure fromJson(final Office office, final JsonCommand command) {
+    	
         final Date closingDate = command.DateValueOfParameterNamed(GLClosureJsonInputParams.CLOSING_DATE.getValue());
         final String comments = command.stringValueOfParameterNamed(GLClosureJsonInputParams.COMMENTS.getValue());
         return new GLClosure(office, closingDate, comments);
+
     }
 
     public Map<String, Object> update(final JsonCommand command) {

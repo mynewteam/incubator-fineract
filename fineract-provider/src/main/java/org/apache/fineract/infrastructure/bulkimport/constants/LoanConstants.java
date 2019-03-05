@@ -67,6 +67,7 @@ public class LoanConstants {
     public static final int LOOKUP_CLIENT_EXTERNAL_ID=44;//AS
     public static final int LOOKUP_ACTIVATION_DATE_COL = 45;//AT
     public static final int LINK_ACCOUNT_ID = 46;//AU
+    public static final int LOAN_ACCOUNT_ID = 47;//AU
 
     public static final String LOAN_TYPE_INDIVIDUAL="Individual";
     public static final String LOAN_TYPE_GROUP="Group";

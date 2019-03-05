@@ -54,13 +54,18 @@ public class AccrualAccountingWritePlatformServiceImpl implements AccrualAccount
         this.accountingDataValidator.validateLoanPeriodicAccrualData(command.json());
         LocalDate tilldate = command.localDateValueOfParameterNamed(accrueTillParamName);
         String errorlog = this.loanAccrualPlatformService.addPeriodicAccruals(tilldate);
+       
         if (errorlog.length() > 0) {
             final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
+            
             final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
                     .resource(PERIODIC_ACCRUAL_ACCOUNTING_RESOURCE_NAME);
+            
             baseDataValidator.reset().failWithCodeNoParameterAddedToErrorCode(PERIODIC_ACCRUAL_ACCOUNTING_EXECUTION_ERROR_CODE, errorlog);
+            
             throw new PlatformApiDataValidationException(dataValidationErrors);
         }
+        
         return CommandProcessingResult.empty();
     }
 

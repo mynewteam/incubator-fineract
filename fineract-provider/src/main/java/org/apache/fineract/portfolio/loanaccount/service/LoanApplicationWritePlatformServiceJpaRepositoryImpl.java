@@ -79,6 +79,7 @@ import org.apache.fineract.portfolio.group.domain.Group;
 import org.apache.fineract.portfolio.group.domain.GroupRepositoryWrapper;
 import org.apache.fineract.portfolio.group.exception.GroupNotActiveException;
 import org.apache.fineract.portfolio.loanaccount.api.LoanApiConstants;
+import org.apache.fineract.portfolio.loanaccount.api.LoansApiResource;
 import org.apache.fineract.portfolio.loanaccount.data.LoanChargeData;
 import org.apache.fineract.portfolio.loanaccount.data.ScheduleGeneratorDTO;
 import org.apache.fineract.portfolio.loanaccount.domain.*;
@@ -155,7 +156,7 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
 	private final GlobalConfigurationRepositoryWrapper globalConfigurationRepository;
 	private final FineractEntityToEntityMappingRepository repository;
 	private final FineractEntityRelationRepository fineractEntityRelationRepository;
-
+	
 	@Autowired
 	public LoanApplicationWritePlatformServiceJpaRepositoryImpl(
 		final PlatformSecurityContext context,
@@ -192,7 +193,8 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
 		final GlobalConfigurationRepositoryWrapper globalConfigurationRepository,
 		final FineractEntityToEntityMappingRepository repository,
 		final FineractEntityRelationRepository fineractEntityRelationRepository,
-		final EntityDatatableChecksWritePlatformService entityDatatableChecksWritePlatformService)
+		final EntityDatatableChecksWritePlatformService entityDatatableChecksWritePlatformService
+		)
 	{
 		this.context = context;
 		this.fromJsonHelper = fromJsonHelper;
@@ -242,7 +244,8 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
 	@Override
 	public CommandProcessingResult submitApplication(final JsonCommand command)
 	{
-
+		
+		 logger.info("Rithy test Test: this.calculationPlatformService.calculateLoanSchedule(query, true) loanSchedule: " + command.parsedJson());
 		try
 		{
 			final AppUser currentUser = getAppUserIfPresent();
@@ -367,12 +370,12 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
 					newLoanApplication.setTopupLoanDetails(topupDetails);
 				}
 			}
-
+			logger.info("Rithy Working On: Line 322 : newLoanApplication: loanaccountId=" + newLoanApplication.getLoanaccountId());
 			this.loanRepositoryWrapper.save(newLoanApplication);
 			
-			logger.info("class LoanApplicationWritePlatformServiceJpaRepositoryImpl");
+			
 //			logger.info("-----------------------------------------------------------");
-//			logger.info("Sothea Working On: Line 322 : newLoanApplication: LoanID=" + newLoanApplication.getId());
+			//logger.info("Rithy Working On: Line 322 : newLoanApplication: LoanID=" + newLoanApplication.getId());
 //			logger.info("-----------------------------------------------------------");
 			
 			

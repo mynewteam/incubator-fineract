@@ -95,7 +95,9 @@ public final class LoanApplicationCommandFromApiJsonHelper {
             LoanApiConstants.linkAccountIdParameterName, LoanApiConstants.disbursementDataParameterName,
             LoanApiConstants.emiAmountParameterName, LoanApiConstants.maxOutstandingBalanceParameterName,
             LoanProductConstants.graceOnArrearsAgeingParameterName, LoanApiConstants.createStandingInstructionAtDisbursementParameterName,
-            LoanApiConstants.isTopup, LoanApiConstants.loanIdToClose, LoanApiConstants.datatables, LoanApiConstants.isEqualAmortizationParam));
+            LoanApiConstants.isTopup, LoanApiConstants.loanIdToClose, LoanApiConstants.datatables,
+            LoanApiConstants.loanAccountIdParam,LoanApiConstants.referenceidParam,LoanApiConstants.collateralnumidParam,
+             LoanApiConstants.isEqualAmortizationParam));
 
     private final FromJsonHelper fromApiJsonHelper;
     private final CalculateLoanScheduleQueryFromApiJsonHelper apiJsonHelper;
@@ -186,6 +188,27 @@ public final class LoanApplicationCommandFromApiJsonHelper {
             final String externalId = this.fromApiJsonHelper.extractStringNamed(externalIdParameterName, element);
             baseDataValidator.reset().parameter(externalIdParameterName).value(externalId).ignoreIfNull().notExceedingLengthOf(100);
         }
+        
+        final String loanAccountIdParam = "loanaccountId";
+        if (this.fromApiJsonHelper.parameterExists(loanAccountIdParam, element)) {
+            final String loanaccountId = this.fromApiJsonHelper.extractStringNamed(loanAccountIdParam, element);
+            baseDataValidator.reset().parameter(loanAccountIdParam).value(loanaccountId).ignoreIfNull().notExceedingLengthOf(100);
+        }
+        
+        final String  referenceidParam= "referenceid";
+        if (this.fromApiJsonHelper.parameterExists(referenceidParam, element)) {
+            final String referenceid = this.fromApiJsonHelper.extractStringNamed(referenceidParam, element);
+            baseDataValidator.reset().parameter(referenceidParam).value(referenceid).ignoreIfNull().notExceedingLengthOf(100);
+        }
+        
+        
+        final String  collateralnumidParam= "collateralnumid";
+        if (this.fromApiJsonHelper.parameterExists(collateralnumidParam, element)) {
+            final String collateralnumid = this.fromApiJsonHelper.extractStringNamed(collateralnumidParam, element);
+            baseDataValidator.reset().parameter(collateralnumidParam).value(collateralnumid).ignoreIfNull().notExceedingLengthOf(100);
+        }
+
+
 
         final String fundIdParameterName = "fundId";
         if (this.fromApiJsonHelper.parameterExists(fundIdParameterName, element)) {
@@ -629,6 +652,14 @@ public final class LoanApplicationCommandFromApiJsonHelper {
             atLeastOneParameterPassedForUpdate = true;
             final String externalId = this.fromApiJsonHelper.extractStringNamed(externalIdParameterName, element);
             baseDataValidator.reset().parameter(externalIdParameterName).value(externalId).ignoreIfNull().notExceedingLengthOf(100);
+        }
+        
+        
+        final String loanAccountIdParam = "loanaccountId";
+        if (this.fromApiJsonHelper.parameterExists(loanAccountIdParam, element)) {
+            atLeastOneParameterPassedForUpdate = true;
+            final String loanaccountId = this.fromApiJsonHelper.extractStringNamed(loanAccountIdParam, element);
+            baseDataValidator.reset().parameter(loanAccountIdParam).value(loanaccountId).ignoreIfNull().notExceedingLengthOf(100);
         }
 
         final String fundIdParameterName = "fundId";

@@ -67,6 +67,7 @@ public class LoanAccountData
 	private final Long id;
 	private final String accountNo;
 	private final String externalId;
+	private final String loanaccountId;
 
 	// status
 	private final LoanStatusEnumData status;
@@ -126,6 +127,10 @@ public class LoanAccountData
 	private final LocalDate expectedFirstRepaymentOnDate;
 	private final Boolean syncDisbursementWithMeeting;
 
+	public String getLoanaccountId() {
+		return loanaccountId;
+	}
+
 	// timeline
 	private final LoanApplicationTimelineData timeline;
 
@@ -143,6 +148,7 @@ public class LoanAccountData
 	private final Collection<NoteData> notes;
 	private final Collection<DisbursementData> disbursementDetails;
 	private final LoanScheduleData originalSchedule;
+	
 	// template
 	private final Collection<LoanProductData> productOptions;
 	private final Collection<StaffData> loanOfficerOptions;
@@ -267,6 +273,7 @@ public class LoanAccountData
 		LocalDate repaymentsStartingFromDate,
 		Integer rowIndex,
 		String externalId,
+		String loanaccountId,
 		Long groupId,
 		Collection<LoanChargeData> charges,
 		String linkAccountId,
@@ -282,7 +289,7 @@ public class LoanAccountData
 			transactionProcessingStrategyId,
 			graceOnPrincipalPayment, graceOnInterestPayment, graceOnInterestCharged, interestChargedFromDate,
 			repaymentsStartingFromDate,
-			rowIndex, externalId, null, charges, linkAccountId, locale, dateFormat);
+			rowIndex, externalId,loanaccountId, null, charges, linkAccountId, locale, dateFormat);
 	}
 
 	public static LoanAccountData importInstanceGroup(
@@ -311,6 +318,7 @@ public class LoanAccountData
 		LocalDate repaymentsStartingFromDate,
 		Integer rowIndex,
 		String externalId,
+		String loanaccountId,
 		String linkAccountId,
 		String locale,
 		String dateFormat)
@@ -323,7 +331,7 @@ public class LoanAccountData
 			null,
 			amortizationEnumOption, interestMethodEnum, interestCalculationPeriodEnum, arrearsTolerance,
 			transactionProcessingStrategyId, graceOnPrincipalPayment, graceOnInterestPayment, graceOnInterestCharged,
-			interestChargedFromDate, repaymentsStartingFromDate, rowIndex, externalId, null, null, linkAccountId,
+			interestChargedFromDate, repaymentsStartingFromDate, rowIndex, externalId,loanaccountId, null, null, linkAccountId,
 			locale, dateFormat);
 	}
 
@@ -354,6 +362,7 @@ public class LoanAccountData
 		LocalDate repaymentsStartingFromDate,
 		Integer rowIndex,
 		String externalId,
+		String loanaccountId,
 		Long groupId,
 		Collection<LoanChargeData> charges,
 		String linkAccountId,
@@ -370,6 +379,7 @@ public class LoanAccountData
 		this.repaymentsStartingFromDate = repaymentsStartingFromDate;
 		this.linkAccountId = linkAccountId;
 		this.externalId = externalId;
+		this.loanaccountId =loanaccountId;
 		this.clientId = clientId;
 		this.fundId = fundId;
 		this.loanOfficerId = loanOfficerId;
@@ -571,6 +581,7 @@ public class LoanAccountData
 		final LoanStatusEnumData status = null;
 		final EnumOptionData subStatus = null;
 		final String externalId = null;
+		final String loanaccountId=null;
 		final Long clientId = null;
 		final String clientName = null;
 		final String clientAccountNo = null;
@@ -680,7 +691,7 @@ public class LoanAccountData
 		final String closureLoanAccountNo = null;
 		final BigDecimal topupAmount = null;
 		final boolean isEqualAmortization = false;
-		return new LoanAccountData(id, accountNo, status, externalId, clientId, clientAccountNo, clientName,
+		return new LoanAccountData(id, accountNo, status, externalId,loanaccountId, clientId, clientAccountNo, clientName,
 			clientOfficeId, group,
 			loanType, loanProductId, loanProductName, loanProductDescription, isLoanProductLinkedToFloatingRate, fundId,
 			fundName,
@@ -733,6 +744,7 @@ public class LoanAccountData
 		final LoanStatusEnumData status = null;
 		final EnumOptionData subStatus = null;
 		final String externalId = null;
+		final String loanaccountId=null;
 		final GroupGeneralData group = null;
 		final EnumOptionData loanType = null;
 		final String groupName = null;
@@ -847,7 +859,7 @@ public class LoanAccountData
 		final String closureLoanAccountNo = null;
 		final BigDecimal topupAmount = null;
 		final boolean isEqualAmortization = false;
-		return new LoanAccountData(id, accountNo, status, externalId, clientId, clientAccountNo, clientName,
+		return new LoanAccountData(id, accountNo, status, externalId,loanaccountId, clientId, clientAccountNo, clientName,
 			clientOfficeId, group,
 			loanType, loanProductId, loanProductName, loanProductDescription, isLoanProductLinkedToFloatingRate, fundId,
 			fundName,
@@ -886,7 +898,7 @@ public class LoanAccountData
 	public static LoanAccountData populateClientDefaults(final LoanAccountData acc, final LoanAccountData clientAcc)
 	{
 
-		return new LoanAccountData(acc.id, acc.accountNo, acc.status, acc.externalId, clientAcc.clientId,
+		return new LoanAccountData(acc.id, acc.accountNo, acc.status, acc.externalId,acc.loanaccountId, clientAcc.clientId,
 			clientAcc.clientAccountNo,
 			clientAcc.clientName, clientAcc.clientOfficeId, acc.group, acc.loanType, acc.loanProductId,
 			acc.loanProductName,
@@ -938,6 +950,7 @@ public class LoanAccountData
 		final LoanStatusEnumData status = null;
 		final EnumOptionData subStatus = null;
 		final String externalId = null;
+		final String loanaccountId=null;
 		final Long clientId = null;
 		final String clientAccountNo = null;
 		final String clientName = null;
@@ -1054,7 +1067,7 @@ public class LoanAccountData
 		final String closureLoanAccountNo = null;
 		final BigDecimal topupAmount = null;
 		final boolean isEqualAmortization = false;
-		return new LoanAccountData(id, accountNo, status, externalId, clientId, clientAccountNo, clientName,
+		return new LoanAccountData(id, accountNo, status, externalId,loanaccountId, clientId, clientAccountNo, clientName,
 			clientOfficeId, group,
 			loanType, loanProductId, loanProductName, loanProductDescription, isLoanProductLinkedToFloatingRate, fundId,
 			fundName,
@@ -1093,7 +1106,7 @@ public class LoanAccountData
 	public static LoanAccountData populateGroupDefaults(final LoanAccountData acc, final LoanAccountData groupAcc)
 	{
 
-		return new LoanAccountData(acc.id, acc.accountNo, acc.status, acc.externalId, acc.clientId, acc.clientAccountNo,
+		return new LoanAccountData(acc.id, acc.accountNo, acc.status, acc.externalId,acc.loanaccountId, acc.clientId, acc.clientAccountNo,
 			acc.clientName,
 			acc.clientOfficeId, groupAcc.group, acc.loanType, acc.loanProductId, acc.loanProductName,
 			acc.loanProductDescription,
@@ -1161,6 +1174,7 @@ public class LoanAccountData
 		final LoanStatusEnumData status = null;
 		final EnumOptionData subStatus = null;
 		final String externalId = null;
+		final String loanaccountId=null;
 		final Long clientId = null;
 		final String clientAccountNo = null;
 		final String clientName = null;
@@ -1280,7 +1294,7 @@ public class LoanAccountData
 		final Long closureLoanId = null;
 		final String closureLoanAccountNo = null;
 		final BigDecimal topupAmount = null;
-		return new LoanAccountData(id, accountNo, status, externalId, clientId, clientAccountNo, clientName,
+		return new LoanAccountData(id, accountNo, status, externalId,loanaccountId, clientId, clientAccountNo, clientName,
 			clientOfficeId, group,
 			loanType, product.getId(), product.getName(), product.getDescription(),
 			product.isLinkedToFloatingInterestRates(),
@@ -1359,7 +1373,7 @@ public class LoanAccountData
 			charges.add(charge.toLoanChargeData());
 		}
 
-		return new LoanAccountData(acc.id, acc.accountNo, acc.status, acc.externalId, acc.clientId, acc.clientAccountNo,
+		return new LoanAccountData(acc.id, acc.accountNo, acc.status, acc.externalId,acc.loanaccountId, acc.clientId, acc.clientAccountNo,
 			acc.clientName,
 			acc.clientOfficeId, acc.group, acc.loanType, product.getId(), product.getName(), product.getDescription(),
 			product.isLinkedToFloatingInterestRates(), product.getFundId(), product.getFundName(), acc.loanPurposeId,
@@ -1409,6 +1423,7 @@ public class LoanAccountData
 		final String accountNo,
 		final LoanStatusEnumData status,
 		final String externalId,
+		final String loanaccountId,
 		final Long clientId,
 		final String clientAccountNo,
 		final String clientName,
@@ -1527,7 +1542,7 @@ public class LoanAccountData
 		final Collection<InterestRatePeriodData> interestRatesPeriods = null;
 		final Collection<LoanAccountSummaryData> clientActiveLoanOptions = null;
 
-		return new LoanAccountData(id, accountNo, status, externalId, clientId, clientAccountNo, clientName,
+		return new LoanAccountData(id, accountNo, status, externalId,loanaccountId, clientId, clientAccountNo, clientName,
 			clientOfficeId, group,
 			loanType, loanProductId, loanProductName, loanProductDescription, isLoanProductLinkedToFloatingRate, fundId,
 			fundName,
@@ -1612,7 +1627,7 @@ public class LoanAccountData
 			loanProductConfigurableAttributes = acc.product.getloanProductConfigurableAttributes();
 		}
 
-		return new LoanAccountData(acc.id, acc.accountNo, acc.status, acc.externalId, acc.clientId, acc.clientAccountNo,
+		return new LoanAccountData(acc.id, acc.accountNo, acc.status, acc.externalId,acc.loanaccountId, acc.clientId, acc.clientAccountNo,
 			acc.clientName,
 			acc.clientOfficeId, acc.group, acc.loanType, acc.loanProductId, acc.loanProductName,
 			acc.loanProductDescription,
@@ -1697,7 +1712,7 @@ public class LoanAccountData
 	public static LoanAccountData associateGroup(final LoanAccountData acc, final GroupGeneralData group)
 	{
 
-		return new LoanAccountData(acc.id, acc.accountNo, acc.status, acc.externalId, acc.clientId, acc.clientAccountNo,
+		return new LoanAccountData(acc.id, acc.accountNo, acc.status, acc.externalId,acc.loanaccountId, acc.clientId, acc.clientAccountNo,
 			acc.clientName,
 			acc.clientOfficeId, group, acc.loanType, acc.loanProductId, acc.loanProductName, acc.loanProductDescription,
 			acc.isLoanProductLinkedToFloatingRate, acc.fundId, acc.fundName, acc.loanPurposeId, acc.loanPurposeName,
@@ -1784,7 +1799,7 @@ public class LoanAccountData
 			memberVariations.put(clientId, borrowerCycleData);
 		}
 
-		return new LoanAccountData(acc.id, acc.accountNo, acc.status, acc.externalId, acc.clientId, acc.clientAccountNo,
+		return new LoanAccountData(acc.id, acc.accountNo, acc.status, acc.externalId,acc.loanaccountId, acc.clientId, acc.clientAccountNo,
 			acc.clientName,
 			acc.clientOfficeId, acc.group, acc.loanType, acc.loanProductId, acc.loanProductName,
 			acc.loanProductDescription,
@@ -1832,7 +1847,7 @@ public class LoanAccountData
 		final LoanInterestRecalculationData interestRecalculationData = LoanInterestRecalculationData.withCalendarData(
 			acc.interestRecalculationData, calendarData, compoundingCalendarData);
 
-		return new LoanAccountData(acc.id, acc.accountNo, acc.status, acc.externalId, acc.clientId, acc.clientAccountNo,
+		return new LoanAccountData(acc.id, acc.accountNo, acc.status, acc.externalId,acc.loanaccountId, acc.clientId, acc.clientAccountNo,
 			acc.clientName,
 			acc.clientOfficeId, acc.group, acc.loanType, acc.loanProductId, acc.loanProductName,
 			acc.loanProductDescription,
@@ -1872,7 +1887,7 @@ public class LoanAccountData
 
 	public static LoanAccountData withLoanCalendarData(final LoanAccountData acc, final CalendarData calendarData)
 	{
-		return new LoanAccountData(acc.id, acc.accountNo, acc.status, acc.externalId, acc.clientId, acc.clientAccountNo,
+		return new LoanAccountData(acc.id, acc.accountNo, acc.status, acc.externalId,acc.loanaccountId, acc.clientId, acc.clientAccountNo,
 			acc.clientName,
 			acc.clientOfficeId, acc.group, acc.loanType, acc.loanProductId, acc.loanProductName,
 			acc.loanProductDescription,
@@ -1915,7 +1930,7 @@ public class LoanAccountData
 		final LoanScheduleData originalSchedule)
 	{
 
-		return new LoanAccountData(acc.id, acc.accountNo, acc.status, acc.externalId, acc.clientId, acc.clientAccountNo,
+		return new LoanAccountData(acc.id, acc.accountNo, acc.status, acc.externalId,acc.loanaccountId, acc.clientId, acc.clientAccountNo,
 			acc.clientName,
 			acc.clientOfficeId, acc.group, acc.loanType, acc.loanProductId, acc.loanProductName,
 			acc.loanProductDescription,
@@ -1958,6 +1973,7 @@ public class LoanAccountData
 		final String accountNo, //
 		final LoanStatusEnumData status, //
 		final String externalId, //
+		final String loanaccountId,
 		final Long clientId,
 		final String clientAccountNo,
 		final String clientName,
@@ -2080,6 +2096,7 @@ public class LoanAccountData
 		this.status = status;
 		this.subStatus = subStatus;
 		this.externalId = externalId;
+		this.loanaccountId=loanaccountId;
 		this.clientId = clientId;
 		this.clientAccountNo = clientAccountNo;
 		this.clientName = clientName;

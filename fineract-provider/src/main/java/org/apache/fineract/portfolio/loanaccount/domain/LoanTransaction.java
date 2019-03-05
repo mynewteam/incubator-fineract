@@ -113,6 +113,8 @@ public class LoanTransaction extends AbstractPersistableCustom<Long> {
 
     @Column(name = "external_id", length = 100, nullable = true, unique = true)
     private String externalId;
+    @Column(name = "loanaccount_Id", length = 100, nullable = true, unique = true)
+    private String loanaccountId;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_date", nullable = false)
@@ -607,7 +609,7 @@ public class LoanTransaction extends AbstractPersistableCustom<Long> {
         return new LoanTransactionData(getId(), this.office.getId(), this.office.getName(), transactionType, paymentDetailData,
                 currencyData, getTransactionDate(), this.amount, this.principalPortion, this.interestPortion, this.feeChargesPortion,
                 this.penaltyChargesPortion, this.overPaymentPortion, this.externalId, transfer, null, outstandingLoanBalance,
-                this.unrecognizedIncomePortion, this.manuallyAdjustedOrReversed);
+                this.unrecognizedIncomePortion, this.manuallyAdjustedOrReversed,this.loanaccountId);
     }
 
     public Map<String, Object> toMapData(final CurrencyData currencyData) {

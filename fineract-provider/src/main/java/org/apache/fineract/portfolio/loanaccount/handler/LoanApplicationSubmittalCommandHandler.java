@@ -22,7 +22,10 @@ import org.apache.fineract.commands.annotation.CommandType;
 import org.apache.fineract.commands.handler.NewCommandSourceHandler;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
+import org.apache.fineract.portfolio.loanaccount.api.LoansApiResource;
 import org.apache.fineract.portfolio.loanaccount.service.LoanApplicationWritePlatformService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class LoanApplicationSubmittalCommandHandler implements NewCommandSourceHandler {
 
     private final LoanApplicationWritePlatformService writePlatformService;
+    private final static Logger logger = LoggerFactory.getLogger(LoanApplicationSubmittalCommandHandler.class);
 
     @Autowired
     public LoanApplicationSubmittalCommandHandler(final LoanApplicationWritePlatformService writePlatformService) {
@@ -41,7 +45,9 @@ public class LoanApplicationSubmittalCommandHandler implements NewCommandSourceH
     @Transactional
     @Override
     public CommandProcessingResult processCommand(final JsonCommand command) {
-
+    	
+    	 logger.info("Rithy Test: JsonCommand " + command.json());
         return this.writePlatformService.submitApplication(command);
+        
     }
 }

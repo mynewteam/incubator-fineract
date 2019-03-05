@@ -91,12 +91,15 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
         } else {
             commandSourceResult = CommandSource.fullEntryFrom(wrapper, command, maker);
         }
+        
         commandSourceResult.updateResourceId(result.resourceId());
         commandSourceResult.updateForAudit(result.getOfficeId(), result.getGroupId(), result.getClientId(), result.getLoanId(),
                 result.getSavingsId(), result.getProductId(), result.getTransactionId());
 
         String changesOnlyJson = null;
+        
         boolean rollBack = (rollbackTransaction || result.isRollbackTransaction()) && !isApprovedByChecker ;
+        
         if (result.hasChanges() && !rollBack) {
             changesOnlyJson = this.toApiJsonSerializer.serializeResult(result.getChanges());
             commandSourceResult.updateJsonTo(changesOnlyJson);
