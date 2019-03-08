@@ -114,9 +114,14 @@ public final class ResultsetColumnHeaderData {
             case "CLOB":
             case "ENUM":
             case "SET":
+            case "VARCHAR2":
+            case "CHAR":
+            case "NCHAR":
+            case "NVARCHAR2":
                 this.columnType = "varchar";
             break;
             case "LONGLONG":
+            case "NUMBER":
                 this.columnType = "bigint";
             break;
             case "SHORT":

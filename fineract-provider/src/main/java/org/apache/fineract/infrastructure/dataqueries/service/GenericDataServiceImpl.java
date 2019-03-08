@@ -42,279 +42,282 @@ import org.springframework.stereotype.Service;
 @Service
 public class GenericDataServiceImpl implements GenericDataService {
 
-    private final JdbcTemplate jdbcTemplate;
-    private final DataSource dataSource;
-    private final static Logger logger = LoggerFactory.getLogger(GenericDataServiceImpl.class);
+	private final JdbcTemplate jdbcTemplate;
+	private final DataSource dataSource;
+	private final static Logger logger = LoggerFactory.getLogger(GenericDataServiceImpl.class);
 
-    @Autowired
-    public GenericDataServiceImpl(final RoutingDataSource dataSource) {
-        this.dataSource = dataSource;
-        this.jdbcTemplate = new JdbcTemplate(this.dataSource);
+	@Autowired
+	public GenericDataServiceImpl(final RoutingDataSource dataSource) {
+		this.dataSource = dataSource;
+		this.jdbcTemplate = new JdbcTemplate(this.dataSource);
 
-    }
+	}
 
-    @Override
-    public GenericResultsetData fillGenericResultSet(final String sql) {
+	@Override
+	public GenericResultsetData fillGenericResultSet(final String sql) {
 
-        final SqlRowSet rs = this.jdbcTemplate.queryForRowSet(sql);
+		final SqlRowSet rs = this.jdbcTemplate.queryForRowSet(sql);
 
-        final List<ResultsetColumnHeaderData> columnHeaders = new ArrayList<>();
-        final List<ResultsetRowData> resultsetDataRows = new ArrayList<>();
+		final List<ResultsetColumnHeaderData> columnHeaders = new ArrayList<>();
+		final List<ResultsetRowData> resultsetDataRows = new ArrayList<>();
 
-        final SqlRowSetMetaData rsmd = rs.getMetaData();
+		final SqlRowSetMetaData rsmd = rs.getMetaData();
+		logger.debug("SqlRowSetMetaData_rsmd " + rs.getMetaData()+"_Column_"+rsmd.getColumnCount());
 
-        for (int i = 0; i < rsmd.getColumnCount(); i++) {
+		for (int i = 0; i < rsmd.getColumnCount(); i++) {
 
-            final String columnName = rsmd.getColumnName(i + 1);
-            final String columnType = rsmd.getColumnTypeName(i + 1);
+			final String columnName = rsmd.getColumnName(i + 1);
+			final String columnType = rsmd.getColumnTypeName(i + 1);
+			
+			logger.debug("beforColumnHeader_"+columnName+"_ColumnType_"+columnType);
+			final ResultsetColumnHeaderData columnHeader = ResultsetColumnHeaderData.basic(columnName, columnType);
+			columnHeaders.add(columnHeader);
+			logger.debug("GenericResultColumn_" + columnName + "_Type_" + columnType);
+		}
+		logger.debug("SqlRowSetMetaData_rsmd_finishForLoop");
+		while (rs.next()) {
+			final List<String> columnValues = new ArrayList<>();
+			for (int i = 0; i < rsmd.getColumnCount(); i++) {
+				final String columnName = rsmd.getColumnName(i + 1);
+				final String columnValue = rs.getString(columnName);
+				columnValues.add(columnValue);
+			}
 
-            final ResultsetColumnHeaderData columnHeader = ResultsetColumnHeaderData.basic(columnName, columnType);
-            columnHeaders.add(columnHeader);
-        }
+			final ResultsetRowData resultsetDataRow = ResultsetRowData.create(columnValues);
+			resultsetDataRows.add(resultsetDataRow);
+		}
 
-        while (rs.next()) {
-            final List<String> columnValues = new ArrayList<>();
-            for (int i = 0; i < rsmd.getColumnCount(); i++) {
-                final String columnName = rsmd.getColumnName(i + 1);
-                final String columnValue = rs.getString(columnName);
-                columnValues.add(columnValue);
-            }
+		return new GenericResultsetData(columnHeaders, resultsetDataRows);
+	}
 
-            final ResultsetRowData resultsetDataRow = ResultsetRowData.create(columnValues);
-            resultsetDataRows.add(resultsetDataRow);
-        }
+	@Override
+	public String replace(final String str, final String pattern, final String replace) {
+		// JPW - this replace may / may not be any better or quicker than the
+		// apache stringutils equivalent. It works, but if someone shows the
+		// apache one to be about the same then this can be removed.
+		int s = 0;
+		int e = 0;
+		final StringBuffer result = new StringBuffer();
 
-        return new GenericResultsetData(columnHeaders, resultsetDataRows);
-    }
+		while ((e = str.indexOf(pattern, s)) >= 0) {
+			result.append(str.substring(s, e));
+			result.append(replace);
+			s = e + pattern.length();
+		}
+		result.append(str.substring(s));
+		return result.toString();
+	}
 
-    @Override
-    public String replace(final String str, final String pattern, final String replace) {
-        // JPW - this replace may / may not be any better or quicker than the
-        // apache stringutils equivalent. It works, but if someone shows the
-        // apache one to be about the same then this can be removed.
-        int s = 0;
-        int e = 0;
-        final StringBuffer result = new StringBuffer();
+	@Override
+	public String wrapSQL(final String sql) {
+		// wrap sql to prevent JDBC sql errors, prevent malicious sql and a
+		// CachedRowSetImpl bug
 
-        while ((e = str.indexOf(pattern, s)) >= 0) {
-            result.append(str.substring(s, e));
-            result.append(replace);
-            s = e + pattern.length();
-        }
-        result.append(str.substring(s));
-        return result.toString();
-    }
+		// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7046875 - prevent
+		// Invalid Column Name bug in sun's CachedRowSetImpl where it doesn't
+		// pick up on label names, only column names
+		return "select x.* from (" + sql + ") x";
+	}
 
-    @Override
-    public String wrapSQL(final String sql) {
-        // wrap sql to prevent JDBC sql errors, prevent malicious sql and a
-        // CachedRowSetImpl bug
+	@Override
+	public String generateJsonFromGenericResultsetData(final GenericResultsetData grs) {
+		// logger.debug("myLoggers start : generateJsonFromGenericResultsetData");
+		final StringBuffer writer = new StringBuffer();
 
-        // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7046875 - prevent
-        // Invalid Column Name bug in sun's CachedRowSetImpl where it doesn't
-        // pick up on label names, only column names
-        return "select x.* from (" + sql + ") x";
-    }
+		writer.append("[");
 
-    @Override
-    public String generateJsonFromGenericResultsetData(final GenericResultsetData grs) {
-    	logger.debug("myLoggers start : generateJsonFromGenericResultsetData");
-        final StringBuffer writer = new StringBuffer();
+		final List<ResultsetColumnHeaderData> columnHeaders = grs.getColumnHeaders();
 
-        writer.append("[");
+		final List<ResultsetRowData> data = grs.getData();
+		List<String> row;
+		Integer rSize;
+		final String doubleQuote = "\"";
+		final String slashDoubleQuote = "\\\"";
+		String currColType;
+		String currVal;
 
-        final List<ResultsetColumnHeaderData> columnHeaders = grs.getColumnHeaders();
+		for (int i = 0; i < data.size(); i++) {
+			writer.append("\n{");
 
-        final List<ResultsetRowData> data = grs.getData();
-        List<String> row;
-        Integer rSize;
-        final String doubleQuote = "\"";
-        final String slashDoubleQuote = "\\\"";
-        String currColType;
-        String currVal;
+			row = data.get(i).getRow();
+			rSize = row.size();
+			for (int j = 0; j < rSize; j++) {
 
-        for (int i = 0; i < data.size(); i++) {
-            writer.append("\n{");
+				writer.append(doubleQuote + columnHeaders.get(j).getColumnName() + doubleQuote + ": ");
+				currColType = columnHeaders.get(j).getColumnDisplayType();
+				final String colType = columnHeaders.get(j).getColumnType();
+				if (currColType == null && colType.equalsIgnoreCase("INT")) {
+					currColType = "INTEGER";
+				}
+				if (currColType == null && colType.equalsIgnoreCase("VARCHAR")) {
+					currColType = "VARCHAR";
+				}
+				if (currColType == null && colType.equalsIgnoreCase("DATE")) {
+					currColType = "DATE";
+				}
+				currVal = row.get(j);
+				if (currVal != null && currColType != null) {
+					if (currColType.equals("DECIMAL") || currColType.equals("INTEGER")) {
+						writer.append(currVal);
+					} else {
+						if (currColType.equals("DATE")) {
+							final LocalDate localDate = new LocalDate(currVal);
+							writer.append("[" + localDate.getYear() + ", " + localDate.getMonthOfYear() + ", "
+									+ localDate.getDayOfMonth() + "]");
+						} else if (currColType.equals("DATETIME")) {
+							final LocalDateTime localDateTime = new LocalDateTime(currVal);
+							writer.append("[" + localDateTime.getYear() + ", " + localDateTime.getMonthOfYear() + ", "
+									+ localDateTime.getDayOfMonth() + " " + localDateTime.getHourOfDay() + ", "
+									+ localDateTime.getMinuteOfHour() + ", " + localDateTime.getSecondOfMinute() + ", "
+									+ localDateTime.getMillisOfSecond() + "]");
+						} else {
+							writer.append(doubleQuote + replace(currVal, doubleQuote, slashDoubleQuote) + doubleQuote);
+						}
+					}
+				} else {
+					writer.append("null");
+				}
+				if (j < (rSize - 1)) {
+					writer.append(",\n");
+				}
+			}
 
-            row = data.get(i).getRow();
-            rSize = row.size();
-            for (int j = 0; j < rSize; j++) {
+			if (i < (data.size() - 1)) {
+				writer.append("},");
+			} else {
+				writer.append("}");
+			}
+		}
 
-                writer.append(doubleQuote + columnHeaders.get(j).getColumnName() + doubleQuote + ": ");
-                currColType = columnHeaders.get(j).getColumnDisplayType();
-                final String colType = columnHeaders.get(j).getColumnType();
-                if (currColType == null && colType.equalsIgnoreCase("INT")) {
-                    currColType = "INTEGER";
-                }
-                if (currColType == null && colType.equalsIgnoreCase("VARCHAR")) {
-                    currColType = "VARCHAR";
-                }
-                if (currColType == null && colType.equalsIgnoreCase("DATE")) {
-                    currColType = "DATE";
-                }
-                currVal = row.get(j);
-                if (currVal != null && currColType != null) {
-                    if (currColType.equals("DECIMAL") || currColType.equals("INTEGER")) {
-                        writer.append(currVal);
-                    } else {
-                        if (currColType.equals("DATE")) {
-                            final LocalDate localDate = new LocalDate(currVal);
-                            writer.append("[" + localDate.getYear() + ", " + localDate.getMonthOfYear() + ", "
-                                    + localDate.getDayOfMonth() + "]");
-                        } else if (currColType.equals("DATETIME")) {
-                            final LocalDateTime localDateTime = new LocalDateTime(currVal);
-                            writer.append("[" + localDateTime.getYear() + ", " + localDateTime.getMonthOfYear() + ", "
-                                    + localDateTime.getDayOfMonth() + " " + localDateTime.getHourOfDay() + ", "
-                                    + localDateTime.getMinuteOfHour() + ", " + localDateTime.getSecondOfMinute() + ", "
-                                    + localDateTime.getMillisOfSecond() + "]");
-                        } else {
-                            writer.append(doubleQuote + replace(currVal, doubleQuote, slashDoubleQuote) + doubleQuote);
-                        }
-                    }
-                } else {
-                    writer.append("null");
-                }
-                if (j < (rSize - 1)) {
-                    writer.append(",\n");
-                }
-            }
+		writer.append("\n]");
+		// logger.debug("myLogger end : " + writer.toString());
+		return writer.toString();
 
-            if (i < (data.size() - 1)) {
-                writer.append("},");
-            } else {
-                writer.append("}");
-            }
-        }
+	}
 
-        writer.append("\n]");
-        logger.debug("myLogger end : "+writer.toString());
-        return writer.toString();
+	@Override
+	public List<ResultsetColumnHeaderData> fillResultsetColumnHeaders(final String datatable) {
 
-    }
+		logger.debug("::3 Was inside the fill ResultSetColumnHeader");
 
-    @Override
-    public List<ResultsetColumnHeaderData> fillResultsetColumnHeaders(final String datatable) {
+		final SqlRowSet columnDefinitions = getDatatableMetaData(datatable);
 
-        logger.debug("::3 Was inside the fill ResultSetColumnHeader");
+		final List<ResultsetColumnHeaderData> columnHeaders = new ArrayList<>();
 
-        final SqlRowSet columnDefinitions = getDatatableMetaData(datatable);
+		columnDefinitions.beforeFirst();
+		while (columnDefinitions.next()) {
+			final String columnName = columnDefinitions.getString("COLUMN_NAME");
+			final String isNullable = columnDefinitions.getString("IS_NULLABLE");
+			final String isPrimaryKey = columnDefinitions.getString("COLUMN_KEY");
+			final String columnType = columnDefinitions.getString("DATA_TYPE");
+			final Long columnLength = columnDefinitions.getLong("CHARACTER_MAXIMUM_LENGTH");
 
-        final List<ResultsetColumnHeaderData> columnHeaders = new ArrayList<>();
+			final boolean columnNullable = "YES".equalsIgnoreCase(isNullable);
+			final boolean columnIsPrimaryKey = "PRI".equalsIgnoreCase(isPrimaryKey);
 
-        columnDefinitions.beforeFirst();
-        while (columnDefinitions.next()) {
-            final String columnName = columnDefinitions.getString("COLUMN_NAME");
-            final String isNullable = columnDefinitions.getString("IS_NULLABLE");
-            final String isPrimaryKey = columnDefinitions.getString("COLUMN_KEY");
-            final String columnType = columnDefinitions.getString("DATA_TYPE");
-            final Long columnLength = columnDefinitions.getLong("CHARACTER_MAXIMUM_LENGTH");
+			List<ResultsetColumnValueData> columnValues = new ArrayList<>();
+			String codeName = null;
+			if ("varchar".equalsIgnoreCase(columnType)) {
 
-            final boolean columnNullable = "YES".equalsIgnoreCase(isNullable);
-            final boolean columnIsPrimaryKey = "PRI".equalsIgnoreCase(isPrimaryKey);
+				final int codePosition = columnName.indexOf("_cv");
+				if (codePosition > 0) {
+					codeName = columnName.substring(0, codePosition);
 
-            List<ResultsetColumnValueData> columnValues = new ArrayList<>();
-            String codeName = null;
-            if ("varchar".equalsIgnoreCase(columnType)) {
+					columnValues = retreiveColumnValues(codeName);
+				}
 
-                final int codePosition = columnName.indexOf("_cv");
-                if (codePosition > 0) {
-                    codeName = columnName.substring(0, codePosition);
+			} else if ("int".equalsIgnoreCase(columnType)) {
 
-                    columnValues = retreiveColumnValues(codeName);
-                }
+				final int codePosition = columnName.indexOf("_cd");
+				if (codePosition > 0) {
+					codeName = columnName.substring(0, codePosition);
+					columnValues = retreiveColumnValues(codeName);
+				}
+			}
+			if (codeName == null) {
+				final SqlRowSet rsValues = getDatatableCodeData(datatable, columnName);
+				Integer codeId = null;
+				while (rsValues.next()) {
+					codeId = rsValues.getInt("id");
+					codeName = rsValues.getString("code_name");
+				}
+				columnValues = retreiveColumnValues(codeId);
 
-            } else if ("int".equalsIgnoreCase(columnType)) {
+			}
 
-                final int codePosition = columnName.indexOf("_cd");
-                if (codePosition > 0) {
-                    codeName = columnName.substring(0, codePosition);
-                    columnValues = retreiveColumnValues(codeName);
-                }
-            }
-            if (codeName == null) {
-                final SqlRowSet rsValues = getDatatableCodeData(datatable, columnName);
-                Integer codeId = null;
-                while (rsValues.next()) {
-                    codeId = rsValues.getInt("id");
-                    codeName = rsValues.getString("code_name");
-                }
-                columnValues = retreiveColumnValues(codeId);
+			final ResultsetColumnHeaderData rsch = ResultsetColumnHeaderData.detailed(columnName, columnType,
+					columnLength, columnNullable, columnIsPrimaryKey, columnValues, codeName);
 
-            }
+			columnHeaders.add(rsch);
+		}
 
-            final ResultsetColumnHeaderData rsch = ResultsetColumnHeaderData.detailed(columnName, columnType,
-                    columnLength, columnNullable, columnIsPrimaryKey, columnValues, codeName);
+		return columnHeaders;
+	}
 
-            columnHeaders.add(rsch);
-        }
+	/*
+	 * Candidate for using caching there to get allowed 'column values' from
+	 * code/codevalue tables
+	 */
+	private List<ResultsetColumnValueData> retreiveColumnValues(final String codeName) {
 
-        return columnHeaders;
-    }
+		final List<ResultsetColumnValueData> columnValues = new ArrayList<>();
 
-    /*
-     * Candidate for using caching there to get allowed 'column values' from
-     * code/codevalue tables
-     */
-    private List<ResultsetColumnValueData> retreiveColumnValues(final String codeName) {
+		final String sql = "select v.id, v.code_score, v.code_value from m_code m "
+				+ " join m_code_value v on v.code_id = m.id " + " where m.code_name = '" + codeName
+				+ "' order by v.order_position, v.id";
 
-        final List<ResultsetColumnValueData> columnValues = new ArrayList<>();
+		final SqlRowSet rsValues = this.jdbcTemplate.queryForRowSet(sql);
 
-        final String sql = "select v.id, v.code_score, v.code_value from m_code m "
-                + " join m_code_value v on v.code_id = m.id " + " where m.code_name = '" + codeName
-                + "' order by v.order_position, v.id";
+		rsValues.beforeFirst();
+		while (rsValues.next()) {
+			final Integer id = rsValues.getInt("id");
+			final String codeValue = rsValues.getString("code_value");
+			final Integer score = rsValues.getInt("code_score");
 
-        final SqlRowSet rsValues = this.jdbcTemplate.queryForRowSet(sql);
+			columnValues.add(new ResultsetColumnValueData(id, codeValue, score));
+		}
 
-        rsValues.beforeFirst();
-        while (rsValues.next()) {
-            final Integer id = rsValues.getInt("id");
-            final String codeValue = rsValues.getString("code_value");
-            final Integer score = rsValues.getInt("code_score");
+		return columnValues;
+	}
 
-            columnValues.add(new ResultsetColumnValueData(id, codeValue, score));
-        }
+	private List<ResultsetColumnValueData> retreiveColumnValues(final Integer codeId) {
 
-        return columnValues;
-    }
+		final List<ResultsetColumnValueData> columnValues = new ArrayList<>();
+		if (codeId != null) {
+			final String sql = "select v.id, v.code_value from m_code_value v where v.code_id =" + codeId
+					+ " order by v.order_position, v.id";
+			final SqlRowSet rsValues = this.jdbcTemplate.queryForRowSet(sql);
+			rsValues.beforeFirst();
+			while (rsValues.next()) {
+				final Integer id = rsValues.getInt("id");
+				final String codeValue = rsValues.getString("code_value");
+				columnValues.add(new ResultsetColumnValueData(id, codeValue));
+			}
+		}
 
-    private List<ResultsetColumnValueData> retreiveColumnValues(final Integer codeId) {
+		return columnValues;
+	}
 
-        final List<ResultsetColumnValueData> columnValues = new ArrayList<>();
-        if (codeId != null) {
-            final String sql = "select v.id, v.code_value from m_code_value v where v.code_id =" + codeId
-                    + " order by v.order_position, v.id";
-            final SqlRowSet rsValues = this.jdbcTemplate.queryForRowSet(sql);
-            rsValues.beforeFirst();
-            while (rsValues.next()) {
-                final Integer id = rsValues.getInt("id");
-                final String codeValue = rsValues.getString("code_value");
-                columnValues.add(new ResultsetColumnValueData(id, codeValue));
-            }
-        }
+	private SqlRowSet getDatatableMetaData(final String datatable) {
 
-        return columnValues;
-    }
+		final String sql = "select COLUMN_NAME, IS_NULLABLE, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, COLUMN_KEY"
+				+ " from INFORMATION_SCHEMA.COLUMNS " + " where TABLE_SCHEMA = schema() and TABLE_NAME = '" + datatable
+				+ "'order by ORDINAL_POSITION";
 
-    private SqlRowSet getDatatableMetaData(final String datatable) {
+		final SqlRowSet columnDefinitions = this.jdbcTemplate.queryForRowSet(sql);
+		if (columnDefinitions.next()) {
+			return columnDefinitions;
+		}
 
-        final String sql = "select COLUMN_NAME, IS_NULLABLE, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, COLUMN_KEY"
-                + " from INFORMATION_SCHEMA.COLUMNS " + " where TABLE_SCHEMA = schema() and TABLE_NAME = '" + datatable
-                + "'order by ORDINAL_POSITION";
+		throw new DatatableNotFoundException(datatable);
+	}
 
-        final SqlRowSet columnDefinitions = this.jdbcTemplate.queryForRowSet(sql);
-        if (columnDefinitions.next()) {
-            return columnDefinitions;
-        }
+	private SqlRowSet getDatatableCodeData(final String datatable, final String columnName) {
 
-        throw new DatatableNotFoundException(datatable);
-    }
+		final String sql = "select mc.id,mc.code_name from m_code mc join x_table_column_code_mappings xcc on xcc.code_id = mc.id where xcc.column_alias_name='"
+				+ datatable.toLowerCase().replaceAll("\\s", "_") + "_" + columnName + "'";
+		final SqlRowSet rsValues = this.jdbcTemplate.queryForRowSet(sql);
 
-    private SqlRowSet getDatatableCodeData(final String datatable, final String columnName) {
-
-        final String sql = "select mc.id,mc.code_name from m_code mc join x_table_column_code_mappings xcc on xcc.code_id = mc.id where xcc.column_alias_name='"
-                + datatable.toLowerCase().replaceAll("\\s", "_") + "_" + columnName + "'";
-        final SqlRowSet rsValues = this.jdbcTemplate.queryForRowSet(sql);
-
-        return rsValues;
-    }
+		return rsValues;
+	}
 }

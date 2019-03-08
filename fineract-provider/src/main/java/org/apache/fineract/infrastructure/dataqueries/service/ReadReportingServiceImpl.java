@@ -183,12 +183,11 @@ public class ReadReportingServiceImpl implements ReadReportingService {
 
 		final long startTime = System.currentTimeMillis();
 		logger.info("STARTING REPORT: " + name + "   Type: " + type);
-
+                
 		final String sql = getSQLtoRun(name, type, queryParams);
-		logger.debug("SQL_Select : "+sql);
+		logger.debug("SQL_Select : " + sql);
 
 		final GenericResultsetData result = this.genericDataService.fillGenericResultSet(sql);
-logger.debug("SQL_Select_Result : ");
 
 		final long elapsed = System.currentTimeMillis() - startTime;
 		logger.info("FINISHING Report/Request Name: " + name + " - " + type + "     Elapsed Time: " + elapsed);
