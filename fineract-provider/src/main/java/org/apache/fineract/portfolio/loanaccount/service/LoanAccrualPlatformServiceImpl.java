@@ -28,12 +28,15 @@ import org.apache.fineract.infrastructure.jobs.exception.JobExecutionException;
 import org.apache.fineract.infrastructure.jobs.service.JobName;
 import org.apache.fineract.portfolio.loanaccount.data.LoanScheduleAccrualData;
 import org.joda.time.LocalDate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformService {
-
+	 private final static Logger logger = LoggerFactory.getLogger(LoanAccrualPlatformServiceImpl.class);
+	
     private final LoanReadPlatformService loanReadPlatformService;
     private final LoanAccrualWritePlatformService loanAccrualWritePlatformService;
 
@@ -120,6 +123,7 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
     @Override
     @CronTarget(jobName = JobName.ADD_PERIODIC_ACCRUAL_ENTRIES_FOR_LOANS_WITH_INCOME_POSTED_AS_TRANSACTIONS)
     public void addPeriodicAccrualsForLoansWithIncomePostedAsTransactions() throws JobExecutionException {
+    	logger.debug("addPeriodicAccrualsForLoansWithIncomePostedAsTransactions_LOL");
         Collection<Long> loanIds = this.loanReadPlatformService.retrieveLoanIdsWithPendingIncomePostingTransactions();
         if(loanIds != null && loanIds.size() > 0){
             StringBuilder sb = new StringBuilder();

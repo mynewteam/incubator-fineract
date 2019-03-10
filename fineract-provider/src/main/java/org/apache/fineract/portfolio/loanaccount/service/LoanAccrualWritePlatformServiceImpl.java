@@ -50,14 +50,18 @@ import org.apache.fineract.portfolio.loanproduct.service.LoanEnumerations;
 import org.apache.fineract.useradministration.domain.AppUserRepositoryWrapper;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 @Service
 public class LoanAccrualWritePlatformServiceImpl implements LoanAccrualWritePlatformService {
+	private final static Logger logger = LoggerFactory.getLogger(LoanAccrualWritePlatformServiceImpl.class);
 
     private final LoanReadPlatformService loanReadPlatformService;
     private final LoanChargeReadPlatformService loanChargeReadPlatformService;
@@ -67,6 +71,7 @@ public class LoanAccrualWritePlatformServiceImpl implements LoanAccrualWritePlat
     private final AppUserRepositoryWrapper userRepository;
     private final LoanRepositoryWrapper loanRepositoryWrapper;
     private final ApplicationCurrencyRepositoryWrapper applicationCurrencyRepository;
+    
 
     @Autowired
     public LoanAccrualWritePlatformServiceImpl(final RoutingDataSource dataSource, final LoanReadPlatformService loanReadPlatformService,
@@ -497,6 +502,7 @@ public class LoanAccrualWritePlatformServiceImpl implements LoanAccrualWritePlat
             loan.processIncomeTransactions(this.userRepository.fetchSystemUser());
             this.loanRepositoryWrapper.saveAndFlush(loan);
             postJournalEntries(loan, existingTransactionIds, existingReversedTransactionIds);
+            logger.debug("addIncomeAndAccrualTransactions_LOL");
         }
     }
 
