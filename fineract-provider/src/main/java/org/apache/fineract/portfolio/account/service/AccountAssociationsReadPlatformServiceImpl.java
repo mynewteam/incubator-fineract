@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
+import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSerializer;
 import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
 import org.apache.fineract.portfolio.account.data.AccountAssociationsData;
 import org.apache.fineract.portfolio.account.data.PortfolioAccountData;
@@ -38,6 +39,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
 
 @Service
 public class AccountAssociationsReadPlatformServiceImpl implements AccountAssociationsReadPlatformService {

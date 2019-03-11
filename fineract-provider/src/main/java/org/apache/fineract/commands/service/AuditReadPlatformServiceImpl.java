@@ -197,7 +197,8 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
             updatedExtraCriteria = " where (" + extraCriteria + ")";
         }
 
-        updatedExtraCriteria += " order by aud.id DESC FETCH NEXT " + PaginationParameters.getCheckedLimit(null) + " ROWS ONLY ";
+        updatedExtraCriteria += " order by aud.id DESC FETCH NEXT " + PaginationParameters.getCheckedLimit(null)
+                + " ROWS ONLY ";
         return retrieveEntries("audit", updatedExtraCriteria, includeJson, StringUtils.isNotBlank(extraCriteria));
     }
 
@@ -249,7 +250,7 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
             updatedExtraCriteria = " where aud.processing_result_enum = 2";
         }
 
-        updatedExtraCriteria += " group by aud.id order by aud.id";
+        updatedExtraCriteria += " group by aud.id, aud.action_name, aud.entity_name, aud.resource_id,aud.subresource_id,aud.client_id,aud.client_id,aud.loan_id,mk.username,aud.made_on_date,aud.api_get_url,ck.username,aud.checked_on_date, ev.enum_message_property,o.name,gl.level_name,g.display_name,c.display_name,l.account_no,s.account_no order by aud.id";
 
         return retrieveEntries("makerchecker", updatedExtraCriteria, includeJson,
                 StringUtils.isNotBlank(extraCriteria));
@@ -479,13 +480,13 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
 
         String sql = " SELECT distinct(action_name) as actionName FROM m_permission p ";
         sql += makercheckerCapabilityOnly(useType, currentUser);
-        sql += " order by if(action_name in ('CREATE', 'DELETE', 'UPDATE'), action_name, 'ZZZ'), action_name";
+        sql += " order by case when p.action_name = 'CREATE' then 1 when p.action_name = 'DELETE' then 2 when p.action_name = 'UPDATE' then 3 end, p.action_name";
         final ActionNamesMapper mapper = new ActionNamesMapper();
         final List<String> actionNames = this.jdbcTemplate.query(sql, mapper, new Object[] {});
 
-        sql = " select distinct(entity_name) as entityName from m_permission p ";
+        sql = " select distinct(entity_name) as entityName, grouping from m_permission p ";
         sql += makercheckerCapabilityOnly(useType, currentUser);
-        sql += " order by if(grouping = 'datatable', 'ZZZ', entity_name), entity_name";
+        sql += " order by case when GROUPING = 'datatable' then 'ZZZ' else p.entity_name end,p.entity_name";
         final EntityNamesMapper mapper2 = new EntityNamesMapper();
         final List<String> entityNames = this.jdbcTemplate.query(sql, mapper2, new Object[] {});
 

@@ -115,9 +115,6 @@ public final class ResultsetColumnHeaderData {
             case "ENUM":
             case "SET":
             case "VARCHAR2":
-            case "CHAR":
-            case "NCHAR":
-            case "NVARCHAR2":
                 this.columnType = "varchar";
             break;
             case "LONGLONG":

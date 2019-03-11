@@ -81,6 +81,7 @@ public class GenericDataServiceImpl implements GenericDataService {
 				final String columnName = rsmd.getColumnName(i + 1);
 				final String columnValue = rs.getString(columnName);
 				columnValues.add(columnValue);
+				logger.debug("LoopingData : ColumnName : "+columnName+" : Column Value : "+columnValue);
 			}
 
 			final ResultsetRowData resultsetDataRow = ResultsetRowData.create(columnValues);
