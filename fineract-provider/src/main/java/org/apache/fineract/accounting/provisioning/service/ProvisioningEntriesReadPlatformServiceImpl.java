@@ -70,20 +70,20 @@ public class ProvisioningEntriesReadPlatformServiceImpl implements ProvisioningE
 
         protected LoanProductProvisioningEntryMapper(String formattedDate) {
             sqlQuery = new StringBuilder().append(
-                    "select if(loan.loan_type_enum=1, mclient.office_id, mgroup.office_id) as office_id, loan.loan_type_enum, pcd.criteria_id as criteriaid, loan.product_id,loan.currency_code,")
-                    .append("GREATEST(datediff(").append(formattedDate)
-                    .append(",sch.duedate),0) as numberofdaysoverdue,sch.duedate, pcd.category_id, pcd.provision_percentage,")
+                    "select case when loan.loan_type_enum = 1 then mclient.office_id else mgroup.office_id end AS office_id, loan.loan_type_enum, pcd.criteria_id as criteriaid, loan.product_id,loan.currency_code,")
+                    .append("GREATEST(to_date(").append(formattedDate)
+                    .append(") - to_date(sch.duedate)) as numberofdaysoverdue,sch.duedate, pcd.category_id, pcd.provision_percentage,")
                     .append("loan.total_outstanding_derived as outstandingbalance, pcd.liability_account, pcd.expense_account from m_loan_repayment_schedule sch")
                     .append(" LEFT JOIN m_loan loan on sch.loan_id = loan.id")
                     .append(" JOIN m_loanproduct_provisioning_mapping lpm on lpm.product_id = loan.product_id")
                     .append(" JOIN m_provisioning_criteria_definition pcd on pcd.criteria_id = lpm.criteria_id and ")
-                    .append("(pcd.min_age <= GREATEST(datediff(").append(formattedDate).append(",sch.duedate),0) and ")
-                    .append("GREATEST(datediff(").append(formattedDate).append(",sch.duedate),0) <= pcd.max_age) and ")
-                    .append("pcd.criteria_id is not null ")
+                    .append("(pcd.min_age <= GREATEST(to_date(").append(formattedDate)
+                    .append(") - to_date(sch.duedate)) and ").append("GREATEST(to_date(").append(formattedDate)
+                    .append(") - to_date(sch.duedate)) <= pcd.max_age) and ").append("pcd.criteria_id is not null ")
                     .append("LEFT JOIN m_client mclient ON mclient.id = loan.client_id ")
                     .append("LEFT JOIN m_group mgroup ON mgroup.id = loan.group_id ")
                     .append("where loan.loan_status_id=300 and sch.duedate = ")
-                    .append("(select MIN(sch1.duedate) from m_loan_repayment_schedule sch1 where sch1.loan_id=loan.id and sch1.completed_derived=false)");
+                    .append("(select MIN(sch1.duedate) from m_loan_repayment_schedule sch1 where sch1.loan_id=loan.id and sch1.completed_derived=0)");
         }
 
         @Override
