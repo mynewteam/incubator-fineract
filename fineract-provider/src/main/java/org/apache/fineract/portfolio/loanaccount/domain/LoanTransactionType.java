@@ -45,6 +45,7 @@ public enum LoanTransactionType {
      * transaction done by the Source branch followed by a "complete" loan
      * transaction initiated by the destination branch
      **/
+    
     INITIATE_TRANSFER(12, "loanTransactionType.initiateTransfer"), //
     APPROVE_TRANSFER(13, "loanTransactionType.approveTransfer"), //
     WITHDRAW_TRANSFER(14, "loanTransactionType.withdrawTransfer"), //

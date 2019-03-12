@@ -207,6 +207,7 @@ public class LoanTransaction extends AbstractPersistableCustom<Long> {
         boolean reversed = false;
         PaymentDetail paymentDetail = null;
         String externalId = null;
+        
         return new LoanTransaction(loan, office, LoanTransactionType.ACCRUAL.getValue(), interestAppliedDate.toDate(), interestPortion,
                 principalPortion, interestPortion, feesPortion, penaltiesPortion, overPaymentPortion, reversed, paymentDetail, externalId,
                 createdDate, appUser);
@@ -227,9 +228,11 @@ public class LoanTransaction extends AbstractPersistableCustom<Long> {
         boolean reversed = false;
         PaymentDetail paymentDetail = null;
         String externalId = null;
+        // Sothea Test
+        // interestPortion = BigDecimal.valueOf(2000.00);
         LocalDateTime createdDate = DateUtils.getLocalDateTimeOfTenant();
         return new LoanTransaction(loan, office, LoanTransactionType.ACCRUAL.getValue(), dateOf.toDate(), amount, principalPortion,
-                interestPortion, feeChargesPortion, penaltyChargesPortion, overPaymentPortion, reversed, paymentDetail, externalId,
+        BigDecimal.valueOf(2000.00), feeChargesPortion, penaltyChargesPortion, overPaymentPortion, reversed, paymentDetail, externalId,
                 createdDate, appUser);
     }
 

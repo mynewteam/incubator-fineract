@@ -6596,12 +6596,14 @@ public class Loan extends AbstractPersistableCustom<Long>
 			List<LoanInterestRecalcualtionAdditionalDetails> compoundingDetails = extractInterestRecalculationAdditionalDetails();
 			List<LoanTransaction> incomeTransactions = retreiveListOfIncomePostingTransactions();
 			List<LoanTransaction> accrualTransactions = retreiveListOfAccrualTransactions();
+			
 			for (LoanInterestRecalcualtionAdditionalDetails compoundingDetail : compoundingDetails)
 			{
 				if (!compoundingDetail.getEffectiveDate().isBefore(DateUtils.getLocalDateOfTenant()))
 				{
 					break;
 				}
+				
 				LoanTransaction incomeTransaction = getTransactionForDate(incomeTransactions,
 					compoundingDetail.getEffectiveDate());
 				LoanTransaction accrualTransaction = getTransactionForDate(accrualTransactions,
@@ -6609,9 +6611,12 @@ public class Loan extends AbstractPersistableCustom<Long>
 				addUpdateIncomeAndAccrualTransaction(compoundingDetail, lastCompoundingDate, currentUser,
 					incomeTransaction,
 					accrualTransaction);
+				
 				lastCompoundingDate = compoundingDetail.getEffectiveDate();
 			}
+			
 			List<LoanRepaymentScheduleInstallment> installments = getRepaymentScheduleInstallments();
+			
 			LoanRepaymentScheduleInstallment lastInstallment = installments.get(installments.size() - 1);
 			reverseTransactionsPostEffectiveDate(incomeTransactions, lastInstallment.getDueDate());
 			reverseTransactionsPostEffectiveDate(accrualTransactions, lastInstallment.getDueDate());
@@ -6641,7 +6646,9 @@ public class Loan extends AbstractPersistableCustom<Long>
 		BigDecimal fee = BigDecimal.ZERO;
 		BigDecimal penalties = BigDecimal.ZERO;
 		HashMap<String, Object> feeDetails = new HashMap<>();
-
+		
+		System.out.println("--- private void addUpdateIncomeAndAccrualTransaction( ---" );
+		logger.debug("--- trace: private void addUpdateIncomeAndAccrualTransaction( ---" );
 		if (this.loanInterestRecalculationDetails.getInterestRecalculationCompoundingMethod()
 			.equals(InterestRecalculationCompoundingMethod.INTEREST))
 		{

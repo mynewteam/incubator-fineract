@@ -74,10 +74,12 @@ public class SchedulerTriggerListener implements TriggerListener {
         if (context.getMergedJobDataMap().containsKey(SchedulerServiceConstants.TRIGGER_TYPE_REFERENCE)) {
             triggerType = context.getMergedJobDataMap().getString(SchedulerServiceConstants.TRIGGER_TYPE_REFERENCE);
         }
+        
         Integer maxNumberOfRetries = ThreadLocalContextUtil.getTenant().getConnection().getMaxRetriesOnDeadlock();
         Integer maxIntervalBetweenRetries = ThreadLocalContextUtil.getTenant().getConnection().getMaxIntervalBetweenRetries();
         Integer numberOfRetries = 0;
         boolean proceedJob = false;
+
         while (numberOfRetries <= maxNumberOfRetries) {
             try {
                 proceedJob = this.schedularService.processJobDetailForExecution(jobKey, triggerType);

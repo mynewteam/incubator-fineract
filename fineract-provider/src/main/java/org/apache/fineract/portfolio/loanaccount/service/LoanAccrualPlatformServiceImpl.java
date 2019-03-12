@@ -31,12 +31,17 @@ import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformService {
 
     private final LoanReadPlatformService loanReadPlatformService;
     private final LoanAccrualWritePlatformService loanAccrualWritePlatformService;
-
+    
+    private final static Logger logger = LoggerFactory.getLogger(LoanAccrualPlatformServiceImpl.class);
+    
     @Autowired
     public LoanAccrualPlatformServiceImpl(final LoanReadPlatformService loanReadPlatformService,
             final LoanAccrualWritePlatformService loanAccrualWritePlatformService) {
@@ -47,6 +52,7 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
     @Override
     @CronTarget(jobName = JobName.ADD_ACCRUAL_ENTRIES)
     public void addAccrualAccounting() throws JobExecutionException {
+    	
         Collection<LoanScheduleAccrualData> loanScheduleAccrualDatas = this.loanReadPlatformService.retriveScheduleAccrualData();
         StringBuilder sb = new StringBuilder();
         Map<Long, Collection<LoanScheduleAccrualData>> loanDataMap = new HashMap<>();
@@ -59,6 +65,7 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
                 loanDataMap.put(accrualData.getLoanId(), accrualDatas);
             }
         }
+        
 
         for (Map.Entry<Long, Collection<LoanScheduleAccrualData>> mapEntry : loanDataMap.entrySet()) {
             try {
@@ -129,19 +136,27 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
     @Override
     @CronTarget(jobName = JobName.ADD_PERIODIC_ACCRUAL_ENTRIES_FOR_LOANS_WITH_INCOME_POSTED_AS_TRANSACTIONS)
     public void addPeriodicAccrualsForLoansWithIncomePostedAsTransactions() throws JobExecutionException {
-        Collection<Long> loanIds = this.loanReadPlatformService.retrieveLoanIdsWithPendingIncomePostingTransactions();
+        
+    	Collection<Long> loanIds = this.loanReadPlatformService.retrieveLoanIdsWithPendingIncomePostingTransactions();
+        
+        logger.debug("Collection<Long> loanIds"+loanIds.toString()+" = this.loanReadPlatformService.retrieveLoanIdsWithPendingIncomePostingTransactions();");
+    	
         if(loanIds != null && loanIds.size() > 0){
             StringBuilder sb = new StringBuilder();
+
             for (Long loanId : loanIds) {
                 try {
                 	
                     this.loanAccrualWritePlatformService.addIncomeAndAccrualTransactions(loanId);
+                    
+                    logger.trace("  this.loanAccrualWritePlatformService.addIncomeAndAccrualTransactions(loanId:"+loanId+");");
                     
                 } catch (Exception e) {
                     Throwable realCause = e;
                     if (e.getCause() != null) {
                         realCause = e.getCause();
                     }
+
                     sb.append("failed to add income and accrual transaction for loan " + loanId + " with message " + realCause.getMessage());
                 }
             }
