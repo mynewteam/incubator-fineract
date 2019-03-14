@@ -113,7 +113,7 @@ public class ProvisioningEntriesReadPlatformServiceImpl implements ProvisioningE
     @Override
     public ProvisioningEntryData retrieveProvisioningEntryData(Long entryId) {
         ProvisioningEntryDataMapperWithSumReserved mapper1 = new ProvisioningEntryDataMapperWithSumReserved();
-        final String sql1 = "select" + mapper1.getSchema() + " where entry.id = ?";
+        final String sql1 = "select" + mapper1.getSchema() + " where entry.id = ? GROUP BY entry.id, journal_entry_created, createdby_id, created_date, created.username, lastmodifiedby_id, modified.username, lastmodified_date";
         ProvisioningEntryData data = this.jdbcTemplate.queryForObject(sql1, mapper1, new Object[] { entryId });
         return data;
     }

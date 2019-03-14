@@ -62,26 +62,22 @@ public class GenericDataServiceImpl implements GenericDataService {
 		final List<ResultsetRowData> resultsetDataRows = new ArrayList<>();
 
 		final SqlRowSetMetaData rsmd = rs.getMetaData();
-		logger.debug("SqlRowSetMetaData_rsmd " + rs.getMetaData()+"_Column_"+rsmd.getColumnCount());
 
 		for (int i = 0; i < rsmd.getColumnCount(); i++) {
 
 			final String columnName = rsmd.getColumnName(i + 1);
 			final String columnType = rsmd.getColumnTypeName(i + 1);
-			
-			logger.debug("beforColumnHeader_"+columnName+"_ColumnType_"+columnType);
+
 			final ResultsetColumnHeaderData columnHeader = ResultsetColumnHeaderData.basic(columnName, columnType);
 			columnHeaders.add(columnHeader);
 			logger.debug("GenericResultColumn_" + columnName + "_Type_" + columnType);
 		}
-		logger.debug("SqlRowSetMetaData_rsmd_finishForLoop");
 		while (rs.next()) {
 			final List<String> columnValues = new ArrayList<>();
 			for (int i = 0; i < rsmd.getColumnCount(); i++) {
 				final String columnName = rsmd.getColumnName(i + 1);
 				final String columnValue = rs.getString(columnName);
 				columnValues.add(columnValue);
-				logger.debug("LoopingData : ColumnName : "+columnName+" : Column Value : "+columnValue);
 			}
 
 			final ResultsetRowData resultsetDataRow = ResultsetRowData.create(columnValues);

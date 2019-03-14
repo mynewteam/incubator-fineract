@@ -57,7 +57,7 @@ public final class ResultsetColumnHeaderData {
                 columnCode);
     }
 
-    private ResultsetColumnHeaderData(final String columnName, final String columnType, final Long columnLength,
+	private ResultsetColumnHeaderData(final String columnName, final String columnType, final Long columnLength,
             final boolean columnNullable, final boolean columnIsPrimaryKey, final List<ResultsetColumnValueData> columnValues,
             final String columnCode) {
         this.columnName = columnName;
@@ -109,6 +109,7 @@ public final class ResultsetColumnHeaderData {
     private void adjustColumnTypes() {
         switch (this.columnType) {
             case "NEWDECIMAL":
+            case "NUMBER":
                 this.columnType = "DECIMAL";
             break;
             case "CLOB":
@@ -118,7 +119,6 @@ public final class ResultsetColumnHeaderData {
                 this.columnType = "varchar";
             break;
             case "LONGLONG":
-            case "NUMBER":
                 this.columnType = "bigint";
             break;
             case "SHORT":

@@ -46,6 +46,8 @@ import org.apache.fineract.portfolio.shareaccounts.data.ShareAccountApplicationT
 import org.apache.fineract.portfolio.shareaccounts.data.ShareAccountStatusEnumData;
 import org.apache.fineract.portfolio.shareaccounts.service.SharesEnumerations;
 import org.joda.time.LocalDate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -53,7 +55,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AccountDetailsReadPlatformServiceJpaRepositoryImpl implements AccountDetailsReadPlatformService {
-
+	private final static Logger logger = LoggerFactory.getLogger(AccountDetailsReadPlatformServiceJpaRepositoryImpl.class);
     private final JdbcTemplate jdbcTemplate;
     private final ClientReadPlatformService clientReadPlatformService;
     private final GroupReadPlatformService groupReadPlatformService;
@@ -124,6 +126,7 @@ public class AccountDetailsReadPlatformServiceJpaRepositoryImpl implements Accou
         final LoanAccountSummaryDataMapper rm = new LoanAccountSummaryDataMapper();
         final String sql = "select " + rm.loanAccountSummarySchema() + loanwhereClause;
         this.columnValidator.validateSqlInjection(rm.loanAccountSummarySchema(), loanwhereClause);
+        logger.debug("SQL_STATEMENT_: "+sql);
         return this.jdbcTemplate.query(sql, rm, inputs);
     }
 
