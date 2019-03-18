@@ -31,14 +31,19 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
+
 @Component
 public class ColumnValidator {
 
+	private final static Logger logger = LoggerFactory.getLogger(ColumnValidator.class);
 	private final JdbcTemplate jdbcTemplate;
 
 	@Autowired
@@ -47,90 +52,101 @@ public class ColumnValidator {
 	}
 
 	private void validateColumn(Map<String, Set<String>> tableColumnMap) {
-		Connection connection = null ;
+		Connection connection = null;
 		try {
-			connection = this.jdbcTemplate.getDataSource()
-					.getConnection() ;
+			connection = this.jdbcTemplate.getDataSource().getConnection();
 			DatabaseMetaData dbMetaData = connection.getMetaData();
 			ResultSet resultSet = null;
-			for (HashMap.Entry<String, Set<String>> entry : tableColumnMap
-					.entrySet()) {
+			for (HashMap.Entry<String, Set<String>> entry : tableColumnMap.entrySet()) {
 				Set<String> columns = entry.getValue();
-				resultSet = dbMetaData.getColumns(null, null, entry.getKey(),
-						null);
+				resultSet = dbMetaData.getColumns(null, null, entry.getKey(), null);
+				logger.debug("shit_0_"+new Gson().toJson(resultSet));
 				Set<String> tableColumns = getTableColumns(resultSet);
+				logger.debug("shit_00"+columns);
+				logger.debug("shit_1_"+new Gson().toJson(tableColumns));
 				if (columns.size() > 0 && tableColumns.size() == 0) {
+					
+					logger.debug("ColumnValidator_ValidateColumn1");
 					throw new SQLInjectionException();
 				}
 				for (String requestedColumn : columns) {
 					if (!tableColumns.contains(requestedColumn)) {
+						logger.debug("ColumnValidator_validateColumn2");
 						throw new SQLInjectionException();
 					}
 				}
 			}
 		} catch (SQLException e) {
+			logger.debug("SQL_Injection_Exception: " + e.getMessage());
 			throw new SQLInjectionException();
-		}finally {
-			if(connection != null) {
+		} finally {
+			if (connection != null) {
 				DataSourceUtils.releaseConnection(connection, jdbcTemplate.getDataSource());
 			}
-			connection = null ;
+			connection = null;
 		}
 	}
 
 	private Set<String> getTableColumns(final ResultSet rs) {
 		Set<String> columns = new HashSet<>();
+
 		try {
 			while (rs.next()) {
+				logger.debug("Shit_TableColumn_1"+new Gson().toJson(rs));
+				logger.debug("Shit_TableColumn_"+new Gson().toJson(rs.getString("column_name")));
 				columns.add(rs.getString("column_name"));
 			}
 		} catch (SQLException e) {
+			logger.debug("Shit_TableColumn_2"+e.getMessage());
 			e.printStackTrace();
 		}
+		logger.debug("Shit_TableColumn_3_"+columns);
 		return columns;
 	}
 
 	public void validateSqlInjection(String schema, String... conditions) {
-		for(String condition: conditions) {
+//		logger.debug("1_SQL_Injection_: " + schema + " :_: " + conditions);
+		for (String condition : conditions) {
 			SQLInjectionValidator.validateSQLInput(condition);
-			List<String> operator = new ArrayList<>(Arrays.asList("=", ">", "<",
-					"> =", "< =", "! =", "!=", ">=", "<="));
-			condition = condition.trim().replace("( ", "(").replace(" )", ")")
-					.toLowerCase();
+//			logger.debug("2_SQL_Injection_After_validate");
+			List<String> operator = new ArrayList<>(
+					Arrays.asList("=", ">", "<", "> =", "< =", "! =", "!=", ">=", "<="));
+			condition = condition.trim().replace("( ", "(").replace(" )", ")").toLowerCase();
 			for (String op : operator) {
 				condition = replaceAll(condition, op).replaceAll(" +", " ");
 			}
 			Set<String> operands = getOperand(condition);
+//			logger.debug("3_SQL_Injection_getOperand " + new Gson().toJson(operands));
 			schema = schema.trim().replaceAll(" +", " ").toLowerCase();
 			Map<String, Set<String>> tableColumnAliasMap = getTableColumnAliasMap(operands);
-			Map<String, Set<String>> tableColumnMap = getTableColumnMap(schema,
-					tableColumnAliasMap);
+//			logger.debug("4_SQL_Injection_TableColumnAliasMap " + new Gson().toJson(tableColumnAliasMap));
+			Map<String, Set<String>> tableColumnMap = getTableColumnMap(schema, tableColumnAliasMap);
+//			logger.debug("5_SQL_Injection_TableColumnMap " + new Gson().toJson(tableColumnMap));
 			validateColumn(tableColumnMap);
+			logger.debug("6_SQL_Injection_ValidateColumn");
 		}
 	}
 
-	private static Map<String, Set<String>> getTableColumnMap(String schema,
-			Map<String, Set<String>> tableColumnAliasMap) {
+	private static Map<String, Set<String>> getTableColumnMap(String schema,Map<String, Set<String>> tableColumnAliasMap) {
 		Map<String, Set<String>> tableColumnMap = new HashMap<>();
 		schema = schema.substring(schema.indexOf("from"));
 		for (String alias : tableColumnAliasMap.keySet()) {
 			int index = schema.indexOf(" " + alias + " ");
 			if (index > -1) {
 				int startPos = 0;
-				startPos = schema.substring(0, index - 1).lastIndexOf(' ',
-						index);
+				startPos = schema.substring(0, index - 1).lastIndexOf(' ', index);
 				Set<String> columns = tableColumnAliasMap.get(alias);
-				tableColumnMap.put(schema.substring(startPos, index).trim(),
-						columns);
+				tableColumnMap.put(schema.substring(startPos, index).trim(), columns);
 			} else {
+				logger.debug("ColumnValidator_Error_GettableColumnMap");
 				throw new SQLInjectionException();
 			}
 		}
+		logger.debug("GetTableColumnMap_"+new Gson().toJson(tableColumnMap));
 		return tableColumnMap;
 	}
 
-	private static Map<String, Set<String>> getTableColumnAliasMap(
-			Set<String> operands) {
+	private static Map<String, Set<String>> getTableColumnAliasMap(Set<String> operands) {
 		Map<String, Set<String>> tableColumnMap = new HashMap<>();
 		for (String operand : operands) {
 			String[] tableColumn = operand.split("\\.");
@@ -144,6 +160,7 @@ public class ColumnValidator {
 					tableColumnMap.put(tableColumn[0], columns);
 				}
 			} else {
+				logger.debug("ColumnValidator_");
 				throw new SQLInjectionException();
 			}
 		}
@@ -152,9 +169,8 @@ public class ColumnValidator {
 
 	private static Set<String> getOperand(String condition) {
 		Set<String> operandList = new HashSet<>();
-		List<String> operatorList = new ArrayList<>(Arrays.asList("!=", "=",
-				">", "<", " like ", " between ", " in ", " in(", " is ",
-				" is not ", " equals ", " not equals "));
+		List<String> operatorList = new ArrayList<>(Arrays.asList("!=", "=", ">", "<", " like ", " between ", " in ",
+				" in(", " is ", " is not ", " equals ", " not equals "));
 		for (String op : operatorList) {
 			int startIndex = 0;
 			do {
@@ -162,15 +178,12 @@ public class ColumnValidator {
 				if (index > -1) {
 					char currentChar = condition.charAt(index - 1);
 					if (op.equals("=")) {
-						if (!((currentChar + "").equals("!")
-								|| (currentChar + "").equals(">") || (currentChar + "")
-								.equals("<"))) {
-							operandList.add(getOperand(condition, index,
-									currentChar));
+						if (!((currentChar + "").equals("!") || (currentChar + "").equals(">")
+								|| (currentChar + "").equals("<"))) {
+							operandList.add(getOperand(condition, index, currentChar));
 						}
 					} else {
-						operandList.add(getOperand(condition, index,
-								currentChar));
+						operandList.add(getOperand(condition, index, currentChar));
 					}
 
 					startIndex = index + op.length();
@@ -181,12 +194,10 @@ public class ColumnValidator {
 		return operandList;
 	}
 
-	private static String getOperand(String condition, int index,
-			char currentChar) {
+	private static String getOperand(String condition, int index, char currentChar) {
 		int startPos = 0;
 		if ((currentChar + "").equals(" ")) {
-			startPos = condition.substring(0, index - 1)
-					.lastIndexOf(' ', index);
+			startPos = condition.substring(0, index - 1).lastIndexOf(' ', index);
 		} else {
 			startPos = condition.substring(0, index).lastIndexOf(' ', index);
 		}
@@ -201,15 +212,14 @@ public class ColumnValidator {
 			if (index > -1) {
 				if (op.equals("=")) {
 					if (!((condition.charAt(index - 1) + "").equals("!")
-							|| (condition.charAt(index - 1) + "").equals(">") || (condition
-							.charAt(index - 1) + "").equals("<"))) {
+							|| (condition.charAt(index - 1) + "").equals(">")
+							|| (condition.charAt(index - 1) + "").equals("<"))) {
 						condition = condition.replace(op, " " + op + " ");
 						return condition;
 					}
 					startIndex = index + 2 + op.length();
 
-				} else if (op.equals("< =") || op.equals("> =")
-						|| op.equals("! =")) {
+				} else if (op.equals("< =") || op.equals("> =") || op.equals("! =")) {
 					condition = condition.replace(op, op.replace(" ", ""));
 					return condition;
 				} else {

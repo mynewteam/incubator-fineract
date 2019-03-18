@@ -75,11 +75,15 @@ public class AccountDetailsReadPlatformServiceJpaRepositoryImpl implements Accou
     public AccountSummaryCollectionData retrieveClientAccountDetails(final Long clientId) {
         // Check if client exists
         this.clientReadPlatformService.retrieveOne(clientId);
+//        logger.debug("1_");
         final String loanwhereClause = " where l.client_id = ?";
         final String savingswhereClause = " where sa.client_id = ? order by sa.status_enum ASC, sa.account_no ASC";
         final List<LoanAccountSummaryData> loanAccounts = retrieveLoanAccountDetails(loanwhereClause, new Object[] { clientId });
+//        logger.debug("2_");
         final List<SavingsAccountSummaryData> savingsAccounts = retrieveAccountDetails(savingswhereClause, new Object[] { clientId });
+//        logger.debug("3_");
         final List<ShareAccountSummaryData> shareAccounts = retrieveShareAccountDetails(clientId) ;
+//        logger.debug("4_");
         return new AccountSummaryCollectionData(loanAccounts, savingsAccounts, shareAccounts);
     }
 
@@ -125,8 +129,9 @@ public class AccountDetailsReadPlatformServiceJpaRepositoryImpl implements Accou
     private List<LoanAccountSummaryData> retrieveLoanAccountDetails(final String loanwhereClause, final Object[] inputs) {
         final LoanAccountSummaryDataMapper rm = new LoanAccountSummaryDataMapper();
         final String sql = "select " + rm.loanAccountSummarySchema() + loanwhereClause;
+//        logger.debug("1_"+sql);
         this.columnValidator.validateSqlInjection(rm.loanAccountSummarySchema(), loanwhereClause);
-        logger.debug("SQL_STATEMENT_: "+sql);
+//        logger.debug("2_");
         return this.jdbcTemplate.query(sql, rm, inputs);
     }
 
