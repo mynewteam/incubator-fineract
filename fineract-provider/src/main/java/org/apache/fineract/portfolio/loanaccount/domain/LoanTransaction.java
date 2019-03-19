@@ -230,9 +230,14 @@ public class LoanTransaction extends AbstractPersistableCustom<Long> {
         String externalId = null;
         // Sothea Test
         // interestPortion = BigDecimal.valueOf(2000.00);
+//        LocalDateTime createdDate = DateUtils.getLocalDateTimeOfTenant();
+//        return new LoanTransaction(loan, office, LoanTransactionType.ACCRUAL.getValue(), dateOf.toDate(), amount, principalPortion,
+//        BigDecimal.valueOf(2000.00), feeChargesPortion, penaltyChargesPortion, overPaymentPortion, reversed, paymentDetail, externalId,
+//                createdDate, appUser);
+        
         LocalDateTime createdDate = DateUtils.getLocalDateTimeOfTenant();
         return new LoanTransaction(loan, office, LoanTransactionType.ACCRUAL.getValue(), dateOf.toDate(), amount, principalPortion,
-        BigDecimal.valueOf(2000.00), feeChargesPortion, penaltyChargesPortion, overPaymentPortion, reversed, paymentDetail, externalId,
+        		interestPortion, feeChargesPortion, penaltyChargesPortion, overPaymentPortion, reversed, paymentDetail, externalId,
                 createdDate, appUser);
     }
 
@@ -300,7 +305,7 @@ public class LoanTransaction extends AbstractPersistableCustom<Long> {
         return false;
     }
 
-    private LoanTransaction(final Loan loan, final Office office, final Integer typeOf, final Date dateOf, final BigDecimal amount,
+	private LoanTransaction(final Loan loan, final Office office, final Integer typeOf, final Date dateOf, final BigDecimal amount,
             final BigDecimal principalPortion, final BigDecimal interestPortion, final BigDecimal feeChargesPortion,
             final BigDecimal penaltyChargesPortion, final BigDecimal overPaymentPortion, final boolean reversed,
             final PaymentDetail paymentDetail, final String externalId, final LocalDateTime createdDate, final AppUser appUser) {
@@ -338,8 +343,15 @@ public class LoanTransaction extends AbstractPersistableCustom<Long> {
         return new LoanTransaction(loan, office, LoanTransactionType.WRITEOFF, null, writeOffDate, externalId, createdDate, appUser);
     }
 
-    private LoanTransaction(final Loan loan, final Office office, final LoanTransactionType type, final BigDecimal amount,
-            final LocalDate date, final String externalId, final LocalDateTime createdDate, final AppUser appUser) {
+    private LoanTransaction(
+    		final Loan loan, 
+    		final Office office, 
+    		final LoanTransactionType type, 
+    		final BigDecimal amount,
+            final LocalDate date, 
+            final String externalId, 
+            final LocalDateTime createdDate, 
+            final AppUser appUser) {
         this.loan = loan;
         this.typeOf = type.getValue();
         this.amount = amount;

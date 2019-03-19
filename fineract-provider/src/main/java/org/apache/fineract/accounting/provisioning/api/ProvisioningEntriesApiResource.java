@@ -68,11 +68,12 @@ public class ProvisioningEntriesApiResource {
     private static final Set<String> ALL_PROVISIONING_ENTRIES = new HashSet<>(Arrays.asList
             (ProvisioningEntriesApiConstants.PROVISIONINGENTRY_PARAM));
     @Autowired
-    public ProvisioningEntriesApiResource(final PlatformSecurityContext platformSecurityContext,
-            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
-            final DefaultToApiJsonSerializer<ProvisioningEntryData> toApiJsonSerializer,
-            final ProvisioningEntriesReadPlatformService provisioningEntriesReadPlatformService,
-            final ApiRequestParameterHelper apiRequestParameterHelper, final DefaultToApiJsonSerializer<Object> entriesApiJsonSerializer) {
+    public ProvisioningEntriesApiResource(
+		final PlatformSecurityContext platformSecurityContext,
+        final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
+        final DefaultToApiJsonSerializer<ProvisioningEntryData> toApiJsonSerializer,
+        final ProvisioningEntriesReadPlatformService provisioningEntriesReadPlatformService,
+        final ApiRequestParameterHelper apiRequestParameterHelper, final DefaultToApiJsonSerializer<Object> entriesApiJsonSerializer) {
         this.platformSecurityContext = platformSecurityContext;
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
         this.toApiJsonSerializer = toApiJsonSerializer;

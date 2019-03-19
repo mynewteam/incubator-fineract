@@ -2,7 +2,8 @@ package org.apache.fineract.accounting.classification.data;
 
 public class ProductClassifyMappingData {
 	private String Description;
-	private Integer Agging;
+	private Integer Min_Aging;
+	private Integer Max_Aging;
 	private Integer AccDrId;
 	private Integer AccCrId;
 	private Integer Type;
@@ -10,16 +11,28 @@ public class ProductClassifyMappingData {
 	public String getDescription() {
 		return Description;
 	}
-	
-	
-	public void setDescription(String description) {
+	public ProductClassifyMappingData(String description, Integer min_Aging, Integer max_Aging, Integer accDrId,
+			Integer accCrId, Integer type, Long productMappingId) {
+		super();
 		Description = description;
+		Min_Aging = min_Aging;
+		Max_Aging = max_Aging;
+		AccDrId = accDrId;
+		AccCrId = accCrId;
+		Type = type;
+		ProductMappingId = productMappingId;
 	}
-	public Integer getAgging() {
-		return Agging;
+	public Integer getMin_Aging() {
+		return Min_Aging;
 	}
-	public void setAgging(Integer agging) {
-		Agging = agging;
+	public void setMin_Aging(Integer min_Aging) {
+		Min_Aging = min_Aging;
+	}
+	public Integer getMax_Aging() {
+		return Max_Aging;
+	}
+	public void setMax_Aging(Integer max_Aging) {
+		Max_Aging = max_Aging;
 	}
 	public Integer getAccDrId() {
 		return AccDrId;
@@ -45,17 +58,12 @@ public class ProductClassifyMappingData {
 	public void setProductMappingId(Long productMappingId) {
 		ProductMappingId = productMappingId;
 	}
-
-
-	public ProductClassifyMappingData(String description, Integer agging, Integer accDrId, Integer accCrId,
-			Integer type, Long productMappingId) {
+	public void setDescription(String description) {
 		Description = description;
-		Agging = agging;
-		AccDrId = accDrId;
-		AccCrId = accCrId;
-		Type = type;
-		ProductMappingId = productMappingId;
 	}
+	
+	
+	
 
 	
 }

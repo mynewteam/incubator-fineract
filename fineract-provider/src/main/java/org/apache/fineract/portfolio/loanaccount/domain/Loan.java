@@ -6636,6 +6636,7 @@ public class Loan extends AbstractPersistableCustom<Long>
 	}
 
 	private void addUpdateIncomeAndAccrualTransaction(
+			
 		LoanInterestRecalcualtionAdditionalDetails compoundingDetail,
 		LocalDate lastCompoundingDate,
 		AppUser currentUser,
@@ -6649,10 +6650,12 @@ public class Loan extends AbstractPersistableCustom<Long>
 		
 		System.out.println("--- private void addUpdateIncomeAndAccrualTransaction( ---" );
 		logger.debug("--- trace: private void addUpdateIncomeAndAccrualTransaction( ---" );
+		
 		if (this.loanInterestRecalculationDetails.getInterestRecalculationCompoundingMethod()
 			.equals(InterestRecalculationCompoundingMethod.INTEREST))
 		{
 			interest = compoundingDetail.getAmount();
+			
 		} else if (this.loanInterestRecalculationDetails.getInterestRecalculationCompoundingMethod()
 			.equals(InterestRecalculationCompoundingMethod.FEE))
 		{

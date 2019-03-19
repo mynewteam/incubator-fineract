@@ -1571,7 +1571,8 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
 
         @Override
         public DisbursementData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
-            final Long id = rs.getLong("id");
+            
+        	final Long id = rs.getLong("id");
             final LocalDate expectedDisbursementdate = JdbcSupport.getLocalDate(rs, "expectedDisbursementdate");
             final LocalDate actualDisbursementdate = JdbcSupport.getLocalDate(rs, "actualDisbursementdate");
             final BigDecimal principal = rs.getBigDecimal("principal");

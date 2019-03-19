@@ -110,6 +110,7 @@ public class GLAccount extends AbstractPersistableCustom<Long> {
 
     public Map<String, Object> update(final JsonCommand command) {
         final Map<String, Object> actualChanges = new LinkedHashMap<>(15);
+        
         handlePropertyUpdate(command, actualChanges, GLAccountJsonInputParams.DESCRIPTION.getValue(), this.description);
         handlePropertyUpdate(command, actualChanges, GLAccountJsonInputParams.DISABLED.getValue(), this.disabled);
         handlePropertyUpdate(command, actualChanges, GLAccountJsonInputParams.GL_CODE.getValue(), this.glCode);
@@ -118,8 +119,7 @@ public class GLAccount extends AbstractPersistableCustom<Long> {
         handlePropertyUpdate(command, actualChanges, GLAccountJsonInputParams.PARENT_ID.getValue(), 0L);
         handlePropertyUpdate(command, actualChanges, GLAccountJsonInputParams.TYPE.getValue(), this.type, true);
         handlePropertyUpdate(command, actualChanges, GLAccountJsonInputParams.USAGE.getValue(), this.usage, true);
-        handlePropertyUpdate(command, actualChanges, GLAccountJsonInputParams.TAGID.getValue(),
-                this.tagId == null ? 0L : this.tagId.getId());
+        handlePropertyUpdate(command, actualChanges, GLAccountJsonInputParams.TAGID.getValue(),this.tagId == null ? 0L : this.tagId.getId());
         return actualChanges;
     }
 

@@ -396,13 +396,14 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
         // create journal entries for recognizing interest (or reversal)
         
         if (interestAmount != null && !(interestAmount.compareTo(BigDecimal.ZERO) == 0)) {
-        	
-        	logger.debug(" trace: this.helper.createAccrualBasedJournalEntriesAndReversalsForLoan(office, currencyCode,\n" + 
-        			"                    ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue():"+ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue()+", ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue():"+ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue()+",\n" + 
-        			"                    loanProductId:"+loanProductId+", paymentTypeId, loanId:"+loanId+", transactionId, transactionDate:"+transactionDate+", interestAmount:"+interestAmount+", isReversed);");
-        	
+//        	
+//        	logger.debug(" trace: this.helper.createAccrualBasedJournalEntriesAndReversalsForLoan(office, currencyCode,\n" + 
+//        			"                    ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue():"+ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue()+", ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue():"+ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue()+",\n" + 
+//        			"                    loanProductId:"+loanProductId+", paymentTypeId, loanId:"+loanId+", transactionId, transactionDate:"+transactionDate+", interestAmount:"+interestAmount+", isReversed);");
+//        	
             this.helper.createAccrualBasedJournalEntriesAndReversalsForLoan(
-            		office, currencyCode,
+            		office, 
+            		currencyCode,
                     ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue(), //7
                     ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue(), //3
                     loanProductId, 
@@ -412,14 +413,19 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
                     transactionDate, 
                     interestAmount, 
                     isReversed);
-            
         }
         
         // create journal entries for the fees application (or reversal)
         if (feesAmount != null && !(feesAmount.compareTo(BigDecimal.ZERO) == 0)) {
-            this.helper.createAccrualBasedJournalEntriesAndReversalsForLoanCharges(office, currencyCode,
-                    ACCRUAL_ACCOUNTS_FOR_LOAN.FEES_RECEIVABLE.getValue(), ACCRUAL_ACCOUNTS_FOR_LOAN.INCOME_FROM_FEES.getValue(),
-                    loanProductId, loanId, transactionId, transactionDate, feesAmount, isReversed, loanTransactionDTO.getFeePayments());
+        	
+            this.helper.createAccrualBasedJournalEntriesAndReversalsForLoanCharges(
+            		office, currencyCode,
+                    ACCRUAL_ACCOUNTS_FOR_LOAN.FEES_RECEIVABLE.getValue(), 
+                    ACCRUAL_ACCOUNTS_FOR_LOAN.INCOME_FROM_FEES.getValue(),
+                    loanProductId, loanId, transactionId, transactionDate, 
+                    feesAmount, 
+                    isReversed, 
+                    loanTransactionDTO.getFeePayments());
         }
         // create journal entries for the penalties application (or reversal)
         if (penaltiesAmount != null && !(penaltiesAmount.compareTo(BigDecimal.ZERO) == 0)) {
