@@ -73,6 +73,8 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -83,6 +85,7 @@ import org.springframework.util.CollectionUtils;
 @Service
 public class CenterReadPlatformServiceImpl implements CenterReadPlatformService {
 
+	 private final static Logger logger = LoggerFactory.getLogger(CenterReadPlatformServiceImpl.class);
     private final JdbcTemplate jdbcTemplate;
     private final PlatformSecurityContext context;
     private final ClientReadPlatformService clientReadPlatformService;
@@ -457,12 +460,19 @@ public class CenterReadPlatformServiceImpl implements CenterReadPlatformService 
             }
 
             if (searchParameters.isLimited()) {
-                sqlBuilder.append(" limit ").append(searchParameters.getLimit());
+
                 if (searchParameters.isOffset()) {
-                    sqlBuilder.append(" offset ").append(searchParameters.getOffset());
+                    sqlBuilder.append(" offset ").append(searchParameters.getOffset()).append(" rows ");
                 }
+                sqlBuilder.append(" fetch ").append(searchParameters.getLimit()).append(" rows only ");
+
+                // sqlBuilder.append(" limit ").append(searchParameters.getLimit());
+                // if (searchParameters.isOffset()) {
+                // sqlBuilder.append(" offset ").append(searchParameters.getOffset());
+                // }
             }
         }
+        logger.debug("Sql_Statement: "+sqlBuilder.toString()+paramList.toString());
         return this.jdbcTemplate.query(sqlBuilder.toString(), this.centerMapper, paramList.toArray());
     }
 

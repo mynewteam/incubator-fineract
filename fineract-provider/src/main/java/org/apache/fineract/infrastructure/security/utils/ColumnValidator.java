@@ -43,7 +43,6 @@ import com.google.gson.Gson;
 @Component
 public class ColumnValidator {
 
-	private final static Logger logger = LoggerFactory.getLogger(ColumnValidator.class);
 	private final JdbcTemplate jdbcTemplate;
 
 	@Autowired
@@ -60,24 +59,18 @@ public class ColumnValidator {
 			for (HashMap.Entry<String, Set<String>> entry : tableColumnMap.entrySet()) {
 				Set<String> columns = entry.getValue();
 				resultSet = dbMetaData.getColumns(null, null, entry.getKey(), null);
-				logger.debug("shit_0_"+new Gson().toJson(resultSet));
 				Set<String> tableColumns = getTableColumns(resultSet);
-				logger.debug("shit_00"+columns);
-				logger.debug("shit_1_"+new Gson().toJson(tableColumns));
 				if (columns.size() > 0 && tableColumns.size() == 0) {
 					
-					logger.debug("ColumnValidator_ValidateColumn1");
 					throw new SQLInjectionException();
 				}
 				for (String requestedColumn : columns) {
 					if (!tableColumns.contains(requestedColumn)) {
-						logger.debug("ColumnValidator_validateColumn2");
 						throw new SQLInjectionException();
 					}
 				}
 			}
 		} catch (SQLException e) {
-			logger.debug("SQL_Injection_Exception: " + e.getMessage());
 			throw new SQLInjectionException();
 		} finally {
 			if (connection != null) {
@@ -92,23 +85,17 @@ public class ColumnValidator {
 
 		try {
 			while (rs.next()) {
-				logger.debug("Shit_TableColumn_1"+new Gson().toJson(rs));
-				logger.debug("Shit_TableColumn_"+new Gson().toJson(rs.getString("column_name")));
 				columns.add(rs.getString("column_name"));
 			}
 		} catch (SQLException e) {
-			logger.debug("Shit_TableColumn_2"+e.getMessage());
 			e.printStackTrace();
 		}
-		logger.debug("Shit_TableColumn_3_"+columns);
 		return columns;
 	}
 
 	public void validateSqlInjection(String schema, String... conditions) {
-//		logger.debug("1_SQL_Injection_: " + schema + " :_: " + conditions);
 		for (String condition : conditions) {
 			SQLInjectionValidator.validateSQLInput(condition);
-//			logger.debug("2_SQL_Injection_After_validate");
 			List<String> operator = new ArrayList<>(
 					Arrays.asList("=", ">", "<", "> =", "< =", "! =", "!=", ">=", "<="));
 			condition = condition.trim().replace("( ", "(").replace(" )", ")").toLowerCase();
@@ -116,14 +103,10 @@ public class ColumnValidator {
 				condition = replaceAll(condition, op).replaceAll(" +", " ");
 			}
 			Set<String> operands = getOperand(condition);
-//			logger.debug("3_SQL_Injection_getOperand " + new Gson().toJson(operands));
 			schema = schema.trim().replaceAll(" +", " ").toLowerCase();
 			Map<String, Set<String>> tableColumnAliasMap = getTableColumnAliasMap(operands);
-//			logger.debug("4_SQL_Injection_TableColumnAliasMap " + new Gson().toJson(tableColumnAliasMap));
 			Map<String, Set<String>> tableColumnMap = getTableColumnMap(schema, tableColumnAliasMap);
-//			logger.debug("5_SQL_Injection_TableColumnMap " + new Gson().toJson(tableColumnMap));
 			validateColumn(tableColumnMap);
-			logger.debug("6_SQL_Injection_ValidateColumn");
 		}
 	}
 
@@ -138,11 +121,10 @@ public class ColumnValidator {
 				Set<String> columns = tableColumnAliasMap.get(alias);
 				tableColumnMap.put(schema.substring(startPos, index).trim(), columns);
 			} else {
-				logger.debug("ColumnValidator_Error_GettableColumnMap");
 				throw new SQLInjectionException();
 			}
 		}
-		logger.debug("GetTableColumnMap_"+new Gson().toJson(tableColumnMap));
+//		logger.debug("GetTableColumnMap_"+new Gson().toJson(tableColumnMap));
 		return tableColumnMap;
 	}
 
@@ -160,7 +142,6 @@ public class ColumnValidator {
 					tableColumnMap.put(tableColumn[0], columns);
 				}
 			} else {
-				logger.debug("ColumnValidator_");
 				throw new SQLInjectionException();
 			}
 		}

@@ -328,18 +328,20 @@ public class ClientsApiResource {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public String retrieveAssociatedAccounts(@PathParam("clientId") final Long clientId,
 			@Context final UriInfo uriInfo) {
-//		logger.debug("damn_1");
+		// logger.debug("damn_1");
 		this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
-//		logger.debug("damn_2");
+		// logger.debug("damn_2");
 		final AccountSummaryCollectionData clientAccount = this.accountDetailsReadPlatformService
 				.retrieveClientAccountDetails(clientId);
-//		logger.debug("damn_3");
+		// logger.debug("damn_3");
 		final Set<String> CLIENT_ACCOUNTS_DATA_PARAMETERS = new HashSet<>(
 				Arrays.asList("loanAccounts", "savingsAccounts", "shareAccounts"));
-//		logger.debug("damn_4");
+		// logger.debug("damn_4");
 		final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper
 				.process(uriInfo.getQueryParameters());
-//		logger.debug("damn_ " + this.clientAccountSummaryToApiJsonSerializer.serialize(settings, clientAccount,CLIENT_ACCOUNTS_DATA_PARAMETERS));
+		// logger.debug("damn_ " +
+		// this.clientAccountSummaryToApiJsonSerializer.serialize(settings,
+		// clientAccount,CLIENT_ACCOUNTS_DATA_PARAMETERS));
 		return this.clientAccountSummaryToApiJsonSerializer.serialize(settings, clientAccount,
 				CLIENT_ACCOUNTS_DATA_PARAMETERS);
 	}

@@ -400,7 +400,7 @@ configurations {
 }
 dependencies {
     // driver 'mysql:mysql-connector-java:5.1.16'
-    driver 'com.oracle:ojdbc6:11.2.0.3'
+    driver 'com.github.noraui:ojdbc8:12.2.0.1'
    // classpath 'com.oracle:ucp:12.2.0.1'
 }
 

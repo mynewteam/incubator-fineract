@@ -83,6 +83,8 @@ import org.apache.fineract.portfolio.group.service.GroupRolesReadPlatformService
 import org.apache.fineract.portfolio.meeting.data.MeetingData;
 import org.apache.fineract.portfolio.meeting.service.MeetingReadPlatformService;
 import org.joda.time.LocalDate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -95,6 +97,8 @@ import com.google.gson.JsonElement;
 @Scope("singleton")
 public class GroupsApiResource {
 
+
+	 private final static Logger logger = LoggerFactory.getLogger(GroupsApiResource.class);
     private final PlatformSecurityContext context;
     private final GroupReadPlatformService groupReadPlatformService;
     private final CenterReadPlatformService centerReadPlatformService;
@@ -200,6 +204,7 @@ public class GroupsApiResource {
             @QueryParam("orphansOnly") final Boolean orphansOnly) {
 
         this.context.authenticatedUser().validateHasReadPermission(GroupingTypesApiConstants.GROUP_RESOURCE_NAME);
+        
         final PaginationParameters parameters = PaginationParameters.instance(paged, offset, limit, orderBy, sortOrder);
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
 
