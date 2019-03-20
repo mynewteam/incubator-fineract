@@ -114,7 +114,8 @@ public class JournalEntry extends AbstractAuditableCustom<AppUser, Long> {
             final JournalEntryType journalEntryType, final BigDecimal amount, final String description, final Integer entityType,
             final Long entityId, final String referenceNumber, final LoanTransaction loanTransaction,
             final SavingsAccountTransaction savingsTransaction, final ClientTransaction clientTransaction, Long shareTransactionId) {
-        return new JournalEntry(office, paymentDetail, glAccount, currencyCode, transactionId, manualEntry, transactionDate,
+       
+    	return new JournalEntry(office, paymentDetail, glAccount, currencyCode, transactionId, manualEntry, transactionDate,
                 journalEntryType.getValue(), amount, description, entityType, entityId, referenceNumber, loanTransaction,
                 savingsTransaction, clientTransaction, shareTransactionId);
     }

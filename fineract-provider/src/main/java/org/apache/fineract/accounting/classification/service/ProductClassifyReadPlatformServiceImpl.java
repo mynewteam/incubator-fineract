@@ -29,7 +29,7 @@ public class ProductClassifyReadPlatformServiceImpl implements ProductClassifyRe
 	@Override
 	public List<ProductClassifyMappingData> retrieveProductClassifyList(Long ProductId, Integer Agging) {
 		ProductClassifyDataMapper mapper = new ProductClassifyDataMapper();
-		final String sql = "SELECT id, description, min_aging,max_aging, acc_dr_id, acc_cr_id, acc_product_mapping_id, type FROM acc_product_classify_mapping  WHERE acc_product_mapping_id = ? AND  and (? between min_aging and max_aging)";
+		final String sql = "SELECT id, description, min_aging,max_aging, acc_dr_id, acc_cr_id, acc_product_mapping_id, type FROM acc_product_classify_mapping  WHERE acc_product_mapping_id = ? AND (? between min_aging and max_aging)";
 		return this.jdbctemplate.query(sql, mapper, new Object[] {ProductId, Agging} );
 	}
 	
@@ -75,7 +75,7 @@ public class ProductClassifyReadPlatformServiceImpl implements ProductClassifyRe
 //			Integer type = rs.getInt("type");
 //			Long productMappingId = rs.getLong("acc_product_mapping_id");
 			
-			Integer client_account_no=rs.getInt("client_account_no");
+			String client_account_no=rs.getString("client_account_no");
 			Integer account_number=rs.getInt("account_number");
 			double loan_outstanding = rs.getDouble("loan_outstanding");
 			Date overdue_since_date_derived = rs.getDate("overdue_since_date_derived");
@@ -91,7 +91,7 @@ public class ProductClassifyReadPlatformServiceImpl implements ProductClassifyRe
 		public LoanLastValueAccForMoveData mapRow(ResultSet rs, int rowNum) throws SQLException {
 			 Long loan_id=rs.getLong("loan_id");
 			 Long account_id=rs.getLong("account_id");
-			 double last_running_balance=rs.getDouble("client_account_no");
+			 double last_running_balance=rs.getDouble("last_running_balance");
 			return new LoanLastValueAccForMoveData(loan_id, account_id, last_running_balance);
 		}
 	}

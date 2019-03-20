@@ -643,20 +643,44 @@ public class AccountingProcessorHelper {
 		
 		List<ProductClassifyMappingData> productClassify = null;
 		List<LoanLastValueAccForMoveData> loanLastValueAccForMoveData = null;
+		List<LoanArriaClassifyData> loanArriaClassifyData = null;
 		
 		int dayArria = 0;
 		
-		final List<LoanArriaClassifyData> loanArriaClassifyData = this.productClassifyReadPlatformServiceImpl.retrieveLoanArriaClassifyDataByLoanId(loanId);
 		logger.debug("final List<LoanArriaClassifyData> loanArriaClassifyData = this.productClassifyReadPlatformServiceImpl.retrieveLoanArriaClassifyDataByLoanId(loanId"+loanId+");");
+		try {
+			
+			loanArriaClassifyData = this.productClassifyReadPlatformServiceImpl.retrieveLoanArriaClassifyDataByLoanId(loanId);
+			
+		}catch(Exception ex) {
+			logger.debug("trac:  = loanArriaClassifyData" +ex.toString());
+		}
+		
+		
+		//.debug("final List<LoanArriaClassifyData> loanArriaClassifyData = this.productClassifyReadPlatformServiceImpl.retrieveLoanArriaClassifyDataByLoanId(loanId"+loanId+");");
+		
 		for (LoanArriaClassifyData row : loanArriaClassifyData) {
-			logger.debug("trac: getAccCrId:" + row.getDays_in_arrears());
-			amountOutString = BigDecimal.valueOf(row.getLoan_outstanding());
-			dayArria = row.getDays_in_arrears();
+			try {
+				logger.debug("trac: getAccCrId:" + row.getDays_in_arrears());
+				amountOutString = BigDecimal.valueOf(row.getLoan_outstanding());
+				dayArria = row.getDays_in_arrears();
+			}catch(Exception ex)
+			{
+				logger.debug("trac:  = for (LoanArriaClassifyData row : loanArriaClassifyData) {" +ex.toString());
+			}
+			
 		}
 
 		if (dayArria > 0) {
-			productClassify = this.productClassifyReadPlatformServiceImpl.retrieveProductClassifyList(loanProductId, dayArria);
+			
 			logger.debug("productClassify = this.productClassifyReadPlatformServiceImpl.retrieveProductClassifyList(loanProductId:"+loanProductId+", dayArria:"+dayArria+");");
+			try {
+				productClassify = this.productClassifyReadPlatformServiceImpl.retrieveProductClassifyList(loanProductId, dayArria);
+				
+			}catch(Exception ex) {
+				logger.debug("trac:  = if (dayArria > 0) {: " +ex.toString());
+			}
+			
 		}
 
 //		System.out.println(productClassify.toString());
@@ -669,6 +693,7 @@ public class AccountingProcessorHelper {
 //		}
 		
 		if(productClassify != null) {
+			
 			for (ProductClassifyMappingData productClassifyMappingData : productClassify) {
 				
 				logger.debug("trac: getAccCrId:" + productClassifyMappingData.getAccCrId());
@@ -693,13 +718,19 @@ public class AccountingProcessorHelper {
 					
 					final GLAccount debitAccount = getGLAccountById((Long.valueOf(productClassifyMappingData.getAccDrId())));
 					final GLAccount creditAccount = getGLAccountById((Long.valueOf(productClassifyMappingData.getAccCrId())));
-					loanLastValueAccForMoveData=this.productClassifyReadPlatformServiceImpl.retrieveLoanLastValueAccForMoveDataByLoanIdAndAccId(loanId, creditAccount.getId());
 					
+					loanLastValueAccForMoveData=this.productClassifyReadPlatformServiceImpl.retrieveLoanLastValueAccForMoveDataByLoanIdAndAccId(loanId, creditAccount.getId());
+			
 					
 					for (LoanLastValueAccForMoveData row : loanLastValueAccForMoveData) {
 						
-						BigDecimal LastValueAccForMove = BigDecimal.valueOf(row.getLast_running_balance());
-						logger.debug("BigDecimal LastValueAccForMove = BigDecimal.valueOf(row.getLast_running_balance():"+row.getLast_running_balance()+");");
+						BigDecimal LastValueAccForMove = BigDecimal.ZERO;
+						try {
+							 LastValueAccForMove = BigDecimal.valueOf(row.getLast_running_balance());
+						}catch(Exception ex) {
+							
+						}
+						logger.debug("BigDecimal LastValueAccForMove = BigDecimal.valueOf(row.getLast_running_balance():"+LastValueAccForMove+");");
 						createDebitJournalEntryForLoan(office, currencyCode, debitAccount, loanId, transactionId, transactionDate, LastValueAccForMove);
 						createCreditJournalEntryForLoan(office, currencyCode, creditAccount, loanId, transactionId, transactionDate, LastValueAccForMove);
 					}
@@ -708,7 +739,7 @@ public class AccountingProcessorHelper {
 				
 			}
 
-		}else {
+		} else {
 
 			final GLAccount debitAccount = getLinkedGLAccountForLoanProduct(loanProductId, accountTypeToDebitId,
 					paymentTypeId);

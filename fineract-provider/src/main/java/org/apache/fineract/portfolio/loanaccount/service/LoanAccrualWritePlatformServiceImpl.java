@@ -130,27 +130,30 @@ public class LoanAccrualWritePlatformServiceImpl implements LoanAccrualWritePlat
         for (final LoanScheduleAccrualData accrualData : loanScheduleAccrualDatas) {
             if (accrualData.getWaivedInterestIncome() != null && loanWaiverScheduleData.isEmpty()) {
             	
+            	logger.debug("---  if (accrualData.getWaivedInterestIncome() != null && loanWaiverScheduleData.isEmpty()) {" );
+                
+            	
                 loanWaiverScheduleData = this.loanReadPlatformService.fetchWaiverInterestRepaymentData(accrualData.getLoanId());
                 loanWaiverTansactionData = this.loanReadPlatformService.retrieveWaiverLoanTransactions(accrualData.getLoanId());
                 
             }
 
             if (accrualData.getDueDateAsLocaldate().isAfter(tilldate)) {
-            	
+            	logger.debug("---   if (accrualData.getDueDateAsLocaldate().isAfter(tilldate)) {" );
                 if (accruredTill == null || firstTime) {
                     accruredTill = accrualData.getAccruedTill();
                     firstTime = false;
                 }
                 
                 if (accruredTill == null || accruredTill.isBefore(tilldate)) {
-                	
+                	logger.debug("--- if (accruredTill == null || accruredTill.isBefore(tilldate)) {" );
                     updateCharges(chargeData, accrualData, accrualData.getFromDateAsLocaldate(), tilldate);
                     updateInterestIncome(accrualData, loanWaiverTansactionData, loanWaiverScheduleData, tilldate);
                     addAccrualTillSpecificDate(tilldate, accrualData);
                 }
                 
             } else {
-            	
+            	logger.debug("} else {" );
                 updateCharges(chargeData, accrualData, accrualData.getFromDateAsLocaldate(), accrualData.getDueDateAsLocaldate());
                 updateInterestIncome(accrualData, loanWaiverTansactionData, loanWaiverScheduleData, tilldate);
                 addAccrualAccounting(accrualData);
@@ -247,9 +250,10 @@ public class LoanAccrualWritePlatformServiceImpl implements LoanAccrualWritePlat
 
     	 logger.debug("--- public void addAccrualAccounting(LoanScheduleAccrualData scheduleAccrualData)  scheduleAccrualData.getAccruableIncome():" + scheduleAccrualData.getAccruableIncome().toString());
         
-    	 BigDecimal amount = BigDecimal.ZERO;
+    	BigDecimal amount = BigDecimal.ZERO;
         BigDecimal interestportion = null;
         BigDecimal totalAccInterest = null;
+
         if (scheduleAccrualData.getAccruableIncome() != null) {
             interestportion = scheduleAccrualData.getAccruableIncome();
             totalAccInterest = interestportion;
@@ -308,7 +312,8 @@ public class LoanAccrualWritePlatformServiceImpl implements LoanAccrualWritePlat
         String transactionSql = "INSERT INTO m_loan_transaction  (loan_id,office_id,is_reversed,transaction_type_enum,transaction_date,amount,interest_portion_derived,"
                 + "fee_charges_portion_derived,penalty_charges_portion_derived, submitted_on_date) VALUES (?, ?, 0, ?, ?, ?, ?, ?, ?, ?)";
         
-        BigDecimal amount1=BigDecimal.valueOf(20000);
+        BigDecimal amount1 = BigDecimal.valueOf(20000);
+
         this.jdbcTemplate.update(transactionSql, scheduleAccrualData.getLoanId(), scheduleAccrualData.getOfficeId(),
                 LoanTransactionType.ACCRUAL.getValue(), accruedTill.toDate(), amount1, interestportion, feeportion, penaltyportion,
                 DateUtils.getDateOfTenant());
@@ -318,6 +323,7 @@ public class LoanAccrualWritePlatformServiceImpl implements LoanAccrualWritePlat
 
         Map<LoanChargeData, BigDecimal> applicableCharges = scheduleAccrualData.getApplicableCharges();
         String chargespaidSql = "INSERT INTO m_loan_charge_paid_by (loan_transaction_id, loan_charge_id, amount,installment_number) VALUES (?,?,?,?)";
+       
         for (Map.Entry<LoanChargeData, BigDecimal> entry : applicableCharges.entrySet()) {
             LoanChargeData chargeData = entry.getKey();
             this.jdbcTemplate.update(chargespaidSql, transactonId, chargeData.getId(), entry.getValue(),
@@ -471,14 +477,17 @@ public class LoanAccrualWritePlatformServiceImpl implements LoanAccrualWritePlat
     }
 
     private void updateInterestIncome(final LoanScheduleAccrualData accrualData,
-            final Collection<LoanTransactionData> loanWaiverTansactions, final Collection<LoanSchedulePeriodData> loanSchedulePeriodDatas,
+            final Collection<LoanTransactionData> loanWaiverTansactions, 
+            final Collection<LoanSchedulePeriodData> loanSchedulePeriodDatas,
             final LocalDate tilldate) {
 
         BigDecimal interestIncome = accrualData.getInterestIncome();
         if (accrualData.getWaivedInterestIncome() != null) {
-            BigDecimal recognized = BigDecimal.ZERO;
+            
+        	BigDecimal recognized = BigDecimal.ZERO;
             BigDecimal unrecognized = BigDecimal.ZERO;
             BigDecimal remainingAmt = BigDecimal.ZERO;
+            
             Collection<LoanTransactionData> loanTransactionDatas = new ArrayList<>();
 
             for (LoanTransactionData loanTransactionData : loanWaiverTansactions) {
@@ -493,12 +502,16 @@ public class LoanAccrualWritePlatformServiceImpl implements LoanAccrualWritePlat
             Iterator<LoanTransactionData> iterator = loanTransactionDatas.iterator();
             for (LoanSchedulePeriodData loanSchedulePeriodData : loanSchedulePeriodDatas) {
                 if (recognized.compareTo(BigDecimal.ZERO) != 1 && unrecognized.compareTo(BigDecimal.ZERO) != 1 && iterator.hasNext()) {
+                	
                     LoanTransactionData loanTransactionData = iterator.next();
                     recognized = recognized.add(loanTransactionData.getInterestPortion());
                     unrecognized = unrecognized.add(loanTransactionData.getUnrecognizedIncomePortion());
                 }
+                
                 if (loanSchedulePeriodData.periodDueDate().isBefore(accrualData.getDueDateAsLocaldate())) {
-                    remainingAmt = remainingAmt.add(loanSchedulePeriodData.interestWaived());
+                    
+                	remainingAmt = remainingAmt.add(loanSchedulePeriodData.interestWaived());
+                	
                     if (recognized.compareTo(remainingAmt) == 1) {
                         recognized = recognized.subtract(remainingAmt);
                         remainingAmt = BigDecimal.ZERO;
