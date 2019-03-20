@@ -71,8 +71,8 @@ import com.lowagie.text.pdf.PdfWriter;
 @Service
 public class ReadReportingServiceImpl implements ReadReportingService {
 
-	private final static Logger logger = LoggerFactory.getLogger(ReadReportingServiceImpl.class);
-
+	
+	 private final static Logger logger = LoggerFactory.getLogger(ReadReportingServiceImpl.class);
 	private final JdbcTemplate jdbcTemplate;
 	private final DataSource dataSource;
 	private final PlatformSecurityContext context;
@@ -131,7 +131,6 @@ public class ReadReportingServiceImpl implements ReadReportingService {
 		final StringBuffer writer = new StringBuffer();
 
 		final List<ResultsetColumnHeaderData> columnHeaders = result.getColumnHeaders();
-		logger.info("NO. of Columns: " + columnHeaders.size());
 		final Integer chSize = columnHeaders.size();
 		for (int i = 0; i < chSize; i++) {
 			writer.append('"' + columnHeaders.get(i).getColumnName() + '"');
@@ -149,7 +148,6 @@ public class ReadReportingServiceImpl implements ReadReportingService {
 		String currVal;
 		final String doubleQuote = "\"";
 		final String twoDoubleQuotes = doubleQuote + doubleQuote;
-		logger.info("NO. of Rows: " + data.size());
 		for (int i = 0; i < data.size(); i++) {
 			row = data.get(i).getRow();
 			rSize = row.size();
@@ -182,10 +180,8 @@ public class ReadReportingServiceImpl implements ReadReportingService {
 			final Map<String, String> queryParams) {
 
 		final long startTime = System.currentTimeMillis();
-		logger.info("STARTING REPORT: " + name + "   Type: " + type);
-                
+
 		final String sql = getSQLtoRun(name, type, queryParams);
-		logger.debug("SQL_Select : " + sql);
 
 		final GenericResultsetData result = this.genericDataService.fillGenericResultSet(sql);
 
@@ -201,12 +197,10 @@ public class ReadReportingServiceImpl implements ReadReportingService {
 		final Set<String> keys = queryParams.keySet();
 		for (final String key : keys) {
 			final String pValue = queryParams.get(key);
-			// logger.info("(" + key + " : " + pValue + ")");
 			sql = this.genericDataService.replace(sql, key, pValue);
 		}
 
 		final AppUser currentUser = this.context.authenticatedUser();
-		// Allows sql query to restrict data by office hierarchy if required
 		sql = this.genericDataService.replace(sql, "${currentUserHierarchy}", currentUser.getOffice().getHierarchy());
 		// Allows sql query to restrict data by current user Id if required
 		// (typically used to return report lists containing only reports
@@ -248,15 +242,15 @@ public class ReadReportingServiceImpl implements ReadReportingService {
 
 		final String inputSqlWrapped = this.genericDataService.wrapSQL(inputSql);
 
-//		final SqlRowSet rs = this.jdbcTemplate.queryForRowSet(inputSqlWrapped);
+		// final SqlRowSet rs = this.jdbcTemplate.queryForRowSet(inputSqlWrapped);
 
-//		try {
-//			if(rs.next() && rs.getClob("the_sql") != null) {
-//				logger.debug("hello_world : "+rs.getClob("the_sql").toString());
-//				return rs.getClob("the_sql").toString();
-//			}
-//		} catch (SQLException e) {
-//		}
+		// try {
+		// if(rs.next() && rs.getClob("the_sql") != null) {
+		// logger.debug("hello_world : "+rs.getClob("the_sql").toString());
+		// return rs.getClob("the_sql").toString();
+		// }
+		// } catch (SQLException e) {
+		// }
 		Clob clob = this.jdbcTemplate.queryForObject(inputSqlWrapped, new Mapper1());
 		try {
 			return clobStringConversion(clob);

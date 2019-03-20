@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 public class SQLInjectionValidator {
 
-	private final static Logger logger = LoggerFactory.getLogger(SQLInjectionValidator.class);
 
 	private final static String[] DDL_COMMANDS = { "create", "drop", "alter", "truncate", "comment", "sleep" };
 
@@ -41,21 +40,18 @@ public class SQLInjectionValidator {
 		String lowerCaseSQL = sqlSearch.toLowerCase();
 		for (String ddl : DDL_COMMANDS) {
 			if (lowerCaseSQL.contains(ddl)) {
-				logger.debug("2_shit_ddl");
 				throw new SQLInjectionException();
 			}
 		}
 
 		for (String dml : DML_COMMANDS) {
 			if (lowerCaseSQL.contains(dml)) {
-				logger.debug("3_shit_dml");
 				throw new SQLInjectionException();
 			}
 		}
 
 		for (String comments : COMMENTS) {
 			if (lowerCaseSQL.contains(comments)) {
-				logger.debug("4_shit_comment");
 				throw new SQLInjectionException();
 			}
 		}
@@ -79,13 +75,11 @@ public class SQLInjectionValidator {
 				if (tokenizer.hasMoreElements()) {
 					String nextToken = tokenizer.nextToken().trim();
 					if (!nextToken.equals("'")) {
-						logger.debug("5_shit");
 						injectionFound = true;
 						break;
 					}
 				} else {
 					injectionFound = true;
-					logger.debug("6_shit");
 					break;
 				}
 			}
@@ -94,12 +88,10 @@ public class SQLInjectionValidator {
 					String nextToken = tokenizer.nextToken().trim();
 					if (!nextToken.equals("\"")) {
 						injectionFound = true;
-						logger.debug("7_shit");
 						break;
 					}
 				} else {
 					injectionFound = true;
-					logger.debug("8_shit");
 					break;
 				}
 			} else if (token.indexOf('=') > 0) {
@@ -107,26 +99,22 @@ public class SQLInjectionValidator {
 				String operand = operatorToken.nextToken().trim();
 				if (!operatorToken.hasMoreTokens()) {
 					injectionFound = true;
-					logger.debug("9_shit");
 					break;
 				}
 				String value = operatorToken.nextToken().trim();
 				if (operand.equals(value)) {
 					injectionFound = true;
-					logger.debug("10_shit");
 					break;
 				}
 			}
 		}
 		if (injectionFound) {
-			logger.debug("11_shit");
 			throw new SQLInjectionException();
 		}
 
 		Pattern pattern = Pattern.compile(SQL_PATTERN);
 		Matcher matcher = pattern.matcher(sqlSearch);
 		if (!matcher.matches()) {
-			logger.debug("12_shit");
 			throw new SQLInjectionException();
 		}
 	}

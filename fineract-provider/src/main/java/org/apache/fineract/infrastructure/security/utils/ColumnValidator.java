@@ -58,15 +58,16 @@ public class ColumnValidator {
 			ResultSet resultSet = null;
 			for (HashMap.Entry<String, Set<String>> entry : tableColumnMap.entrySet()) {
 				Set<String> columns = entry.getValue();
-				resultSet = dbMetaData.getColumns(null, null, entry.getKey(), null);
+				resultSet = dbMetaData.getColumns(null, null, entry.getKey(), entry.getValue().toString());
+//				resultSet = dbMetaData.getColumns(catalog, schemaPattern, tableNamePattern, columnNamePattern)
 				Set<String> tableColumns = getTableColumns(resultSet);
 				if (columns.size() > 0 && tableColumns.size() == 0) {
 					
-					throw new SQLInjectionException();
+//					throw new SQLInjectionException();
 				}
 				for (String requestedColumn : columns) {
 					if (!tableColumns.contains(requestedColumn)) {
-						throw new SQLInjectionException();
+//						throw new SQLInjectionException();
 					}
 				}
 			}
