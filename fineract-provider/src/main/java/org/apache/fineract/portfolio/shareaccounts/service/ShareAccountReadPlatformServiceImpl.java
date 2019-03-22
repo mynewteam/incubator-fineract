@@ -285,7 +285,7 @@ public class ShareAccountReadPlatformServiceImpl implements ShareAccountReadPlat
                     .append("sa.currency_code as currencyCode, sa.currency_digits as currencyDigits, sa.currency_multiplesof as inMultiplesOf, ")
                     .append("curr.name as currencyName, curr.internationalized_name_code as currencyNameCode, ")
                     .append("curr.display_symbol as currencyDisplaySymbol, sa.product_id as productId, p.name as productName, p.short_name as shortProductName ")
-                    .append("from m_share_account sa ").append("join m_share_product as p on p.id = sa.product_id ")
+                    .append("from m_share_account sa ").append("join m_share_product p on p.id = sa.product_id ")
                     .append("join m_currency curr on curr.code = sa.currency_code ")
                     .append("left join m_client c ON c.id = sa.client_id ")
                     .append("left join m_appuser sbu on sbu.id = sa.submitted_userid ")
