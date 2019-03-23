@@ -271,7 +271,7 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
         sqlBuilder.append("select  ");
         sqlBuilder.append(this.standingInstructionMapper.schema());
         if (standingInstructionDTO.transferType() != null || standingInstructionDTO.clientId() != null
-                || standingInstructionDTO.clientName() != null) {
+                || standingInstructionDTO.clientName() != null || standingInstructionDTO.fromAccountType() != null) {
             sqlBuilder.append(" where ");
         }
         boolean addAndCaluse = false;

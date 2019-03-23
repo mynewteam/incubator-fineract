@@ -118,10 +118,12 @@ public class PaginationParameters {
     public String limitSql() {
         final StringBuffer sql = new StringBuffer();
         if (this.isLimited()) {
-            sql.append(" limit ").append(this.getLimit());
+            
             if (this.isOffset()) {
-                sql.append(" offset ").append(this.getOffset());
+                sql.append(" offset ").append(this.getOffset()).append(" rows ");
             }
+            
+            sql.append(" fetch next ").append(this.getLimit()).append(" rows only ");
         }
         return sql.toString();
     }
