@@ -67,15 +67,15 @@ public class JournalEntry extends AbstractAuditableCustom<AppUser, Long> {
     private String transactionId;
 
     @ManyToOne
-    @JoinColumn(name = "loan_transaction_id", nullable = false)
+    @JoinColumn(name = "loan_transaction_id", nullable = true)
     private LoanTransaction loanTransaction;
 
     @ManyToOne
-    @JoinColumn(name = "savings_transaction_id", nullable = false)
+    @JoinColumn(name = "savings_transaction_id", nullable = true)
     private SavingsAccountTransaction savingsTransaction;
 
     @ManyToOne
-    @JoinColumn(name = "client_transaction_id", nullable = false)
+    @JoinColumn(name = "client_transaction_id", nullable = true)
     private ClientTransaction clientTransaction;
 
     @Column(name = "share_transaction_id", nullable = true)
