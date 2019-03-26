@@ -132,6 +132,7 @@ public class CashBasedAccountingProcessorForLoan implements AccountingProcessorF
         final BigDecimal disbursalAmount = loanTransactionDTO.getAmount();
         final boolean isReversal = loanTransactionDTO.isReversed();
         final Long paymentTypeId = loanTransactionDTO.getPaymentTypeId();
+        
         if(loanTransactionDTO.isLoanToLoanTransfer()){
             this.helper.createCashBasedJournalEntriesAndReversalsForLoan(office, currencyCode,
                     CASH_ACCOUNTS_FOR_LOAN.LOAN_PORTFOLIO.getValue(), FINANCIAL_ACTIVITY.ASSET_TRANSFER.getValue(), loanProductId,

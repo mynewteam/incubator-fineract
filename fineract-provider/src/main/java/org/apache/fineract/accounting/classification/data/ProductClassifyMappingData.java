@@ -7,12 +7,13 @@ public class ProductClassifyMappingData {
 	private Integer AccDrId;
 	private Integer AccCrId;
 	private Integer Type;
+	private Integer ClassAcc;
 	private Long ProductMappingId;
-	public String getDescription() {
-		return Description;
+	public ProductClassifyMappingData() {
+		super();
 	}
 	public ProductClassifyMappingData(String description, Integer min_Aging, Integer max_Aging, Integer accDrId,
-			Integer accCrId, Integer type, Long productMappingId) {
+			Integer accCrId, Integer type, Integer classAcc, Long productMappingId) {
 		super();
 		Description = description;
 		Min_Aging = min_Aging;
@@ -20,7 +21,14 @@ public class ProductClassifyMappingData {
 		AccDrId = accDrId;
 		AccCrId = accCrId;
 		Type = type;
+		ClassAcc = classAcc;
 		ProductMappingId = productMappingId;
+	}
+	public String getDescription() {
+		return Description;
+	}
+	public void setDescription(String description) {
+		Description = description;
 	}
 	public Integer getMin_Aging() {
 		return Min_Aging;
@@ -52,18 +60,17 @@ public class ProductClassifyMappingData {
 	public void setType(Integer type) {
 		Type = type;
 	}
+	public Integer getClassAcc() {
+		return ClassAcc;
+	}
+	public void setClassAcc(Integer classAcc) {
+		ClassAcc = classAcc;
+	}
 	public Long getProductMappingId() {
 		return ProductMappingId;
 	}
 	public void setProductMappingId(Long productMappingId) {
 		ProductMappingId = productMappingId;
 	}
-	public void setDescription(String description) {
-		Description = description;
-	}
-	
-	
-	
-
 	
 }
