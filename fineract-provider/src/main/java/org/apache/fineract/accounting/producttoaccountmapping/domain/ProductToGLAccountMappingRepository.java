@@ -25,11 +25,9 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface ProductToGLAccountMappingRepository extends JpaRepository<ProductToGLAccountMapping, Long>,
-        JpaSpecificationExecutor<ProductToGLAccountMapping> {
+public interface ProductToGLAccountMappingRepository extends JpaRepository<ProductToGLAccountMapping, Long>, JpaSpecificationExecutor<ProductToGLAccountMapping> {
 
-    ProductToGLAccountMapping findByProductIdAndProductTypeAndFinancialAccountTypeAndPaymentTypeId(Long productId, int productType,
-            int financialAccountType, Long paymentType);
+    ProductToGLAccountMapping findByProductIdAndProductTypeAndFinancialAccountTypeAndPaymentTypeId(Long productId, int productType,int financialAccountType, Long paymentType);
 
     ProductToGLAccountMapping findByProductIdAndProductTypeAndFinancialAccountTypeAndChargeId(Long productId, int productType,
             int financialAccountType, Long chargeId);

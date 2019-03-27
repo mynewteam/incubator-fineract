@@ -56,6 +56,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 @Service
 public class LoanAccrualWritePlatformServiceImpl implements LoanAccrualWritePlatformService {
 
@@ -67,6 +71,7 @@ public class LoanAccrualWritePlatformServiceImpl implements LoanAccrualWritePlat
     private final AppUserRepositoryWrapper userRepository;
     private final LoanRepositoryWrapper loanRepositoryWrapper;
     private final ApplicationCurrencyRepositoryWrapper applicationCurrencyRepository;
+    private final static Logger logger = LoggerFactory.getLogger(LoanAccrualWritePlatformServiceImpl.class);
 
     @Autowired
     public LoanAccrualWritePlatformServiceImpl(final RoutingDataSource dataSource, final LoanReadPlatformService loanReadPlatformService,
@@ -488,14 +493,24 @@ public class LoanAccrualWritePlatformServiceImpl implements LoanAccrualWritePlat
     @Transactional
     public void addIncomeAndAccrualTransactions(Long loanId) throws LoanNotFoundException {
         if (loanId != null) {
+        	
             Loan loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanId, true);
+            
             if (loan == null) { throw new LoanNotFoundException(loanId); }
+            
             final List<Long> existingTransactionIds = new ArrayList<>();
             final List<Long> existingReversedTransactionIds = new ArrayList<>();
+            
             existingTransactionIds.addAll(loan.findExistingTransactionIds());
             existingReversedTransactionIds.addAll(loan.findExistingReversedTransactionIds());
+            
             loan.processIncomeTransactions(this.userRepository.fetchSystemUser());
+            
+            logger.debug("-- loan.processIncomeTransactions(this.userRepository.fetchSystemUser());");
+            System.out.println("-- loan.processIncomeTransactions(this.userRepository.fetchSystemUser());");
+            
             this.loanRepositoryWrapper.saveAndFlush(loan);
+            
             postJournalEntries(loan, existingTransactionIds, existingReversedTransactionIds);
         }
     }
