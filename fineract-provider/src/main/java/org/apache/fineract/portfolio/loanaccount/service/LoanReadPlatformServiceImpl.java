@@ -823,6 +823,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
 
             final Integer loanSubStatusId = JdbcSupport.getInteger(rs, "loanSubStatusId");
             EnumOptionData loanSubStatus = null;
+            
             if (loanSubStatusId != null) {
                 loanSubStatus = LoanSubStatus.loanSubStatus(loanSubStatusId);
             }

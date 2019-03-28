@@ -71,9 +71,9 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
             /*** Handle Accruals ***/
             if (loanTransactionDTO.getTransactionType().isAccrual()) {
                 
-                logger.debug("---Sothea_Check---");
-                logger.debug("createJournalEntriesForAccruals(loanDTO, loanTransactionDTO, office);");
-                logger.debug("---Sothea_Check---");
+                // logger.debug("---Sothea_Check---");
+                // logger.debug("createJournalEntriesForAccruals(loanDTO, loanTransactionDTO, office);");
+                // logger.debug("---Sothea_Check---");
                 
                 createJournalEntriesForAccruals(loanDTO, loanTransactionDTO, office);
                 
@@ -392,14 +392,15 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
         final BigDecimal penaltiesAmount = loanTransactionDTO.getPenalties();
         final boolean isReversed = loanTransactionDTO.isReversed();
         final Long paymentTypeId = loanTransactionDTO.getPaymentTypeId();
+//        final Date  accruedTill = loanTransactionDTO();
 
         // create journal entries for recognizing interest (or reversal)
         
         if (interestAmount != null && !(interestAmount.compareTo(BigDecimal.ZERO) == 0)) {
         	
-        	logger.debug(" trace: this.helper.createAccrualBasedJournalEntriesAndReversalsForLoan(office, currencyCode,\n" + 
-        			"                    ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue():"+ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue()+", ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue():"+ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue()+",\n" + 
-        			"                    loanProductId:"+loanProductId+", paymentTypeId, loanId:"+loanId+", transactionId, transactionDate:"+transactionDate+", interestAmount:"+interestAmount+", isReversed);");
+        	// logger.debug(" trace: this.helper.createAccrualBasedJournalEntriesAndReversalsForLoan(office, currencyCode,\n" + 
+        	// 		"                    ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue():"+ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue()+", ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue():"+ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue()+",\n" + 
+        	// 		"                    loanProductId:"+loanProductId+", paymentTypeId, loanId:"+loanId+", transactionId, transactionDate:"+transactionDate+", interestAmount:"+interestAmount+", isReversed);");
         	
             this.helper.createAccrualBasedJournalEntriesAndReversalsForLoan(
             		office, 
@@ -419,10 +420,14 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
         if (feesAmount != null && !(feesAmount.compareTo(BigDecimal.ZERO) == 0)) {
         	
             this.helper.createAccrualBasedJournalEntriesAndReversalsForLoanCharges(
-            		office, currencyCode,
+            		office, 
+            		currencyCode,
                     ACCRUAL_ACCOUNTS_FOR_LOAN.FEES_RECEIVABLE.getValue(), 
                     ACCRUAL_ACCOUNTS_FOR_LOAN.INCOME_FROM_FEES.getValue(),
-                    loanProductId, loanId, transactionId, transactionDate, 
+                    loanProductId, 
+                    loanId, 
+                    transactionId, 
+                    transactionDate, 
                     feesAmount, 
                     isReversed, 
                     loanTransactionDTO.getFeePayments());
@@ -430,9 +435,17 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
         // create journal entries for the penalties application (or reversal)
         if (penaltiesAmount != null && !(penaltiesAmount.compareTo(BigDecimal.ZERO) == 0)) {
 
-            this.helper.createAccrualBasedJournalEntriesAndReversalsForLoanCharges(office, currencyCode,
-                    ACCRUAL_ACCOUNTS_FOR_LOAN.PENALTIES_RECEIVABLE.getValue(), ACCRUAL_ACCOUNTS_FOR_LOAN.INCOME_FROM_PENALTIES.getValue(),
-                    loanProductId, loanId, transactionId, transactionDate, penaltiesAmount, isReversed,
+            this.helper.createAccrualBasedJournalEntriesAndReversalsForLoanCharges(
+            		office, 
+            		currencyCode,
+                    ACCRUAL_ACCOUNTS_FOR_LOAN.PENALTIES_RECEIVABLE.getValue(), 
+                    ACCRUAL_ACCOUNTS_FOR_LOAN.INCOME_FROM_PENALTIES.getValue(),
+                    loanProductId, 
+                    loanId, 
+                    transactionId, 
+                    transactionDate, 
+                    penaltiesAmount, 
+                    isReversed,
                     loanTransactionDTO.getPenaltyPayments());
         }
     }

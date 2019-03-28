@@ -103,7 +103,7 @@ public class ProductClassifyReadPlatformServiceImpl implements ProductClassifyRe
 			double loan_outstanding = rs.getDouble("loan_outstanding");
 			Date overdue_since_date_derived = rs.getDate("overdue_since_date_derived");
 			Integer days_in_arrears = rs.getInt("days_in_arrear");
-			logger.debug("public LoanArriaClassifyData mapRow(ResultSet rs, int rowNum) throws SQLException {");
+//			logger.debug("public LoanArriaClassifyData mapRow(ResultSet rs, int rowNum) throws SQLException {");
 			return new LoanArriaClassifyData(client_account_no, account_number, loan_outstanding, overdue_since_date_derived, days_in_arrears);
 		}
 	}

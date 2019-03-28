@@ -131,8 +131,6 @@ public class LoanAccrualWritePlatformServiceImpl implements LoanAccrualWritePlat
             if (accrualData.getWaivedInterestIncome() != null && loanWaiverScheduleData.isEmpty()) {
             	
             	logger.debug("---  if (accrualData.getWaivedInterestIncome() != null && loanWaiverScheduleData.isEmpty()) {" );
-                
-            	
                 loanWaiverScheduleData = this.loanReadPlatformService.fetchWaiverInterestRepaymentData(accrualData.getLoanId());
                 loanWaiverTansactionData = this.loanReadPlatformService.retrieveWaiverLoanTransactions(accrualData.getLoanId());
                 
@@ -312,10 +310,10 @@ public class LoanAccrualWritePlatformServiceImpl implements LoanAccrualWritePlat
         String transactionSql = "INSERT INTO m_loan_transaction  (loan_id,office_id,is_reversed,transaction_type_enum,transaction_date,amount,interest_portion_derived,"
                 + "fee_charges_portion_derived,penalty_charges_portion_derived, submitted_on_date) VALUES (?, ?, 0, ?, ?, ?, ?, ?, ?, ?)";
         
-        BigDecimal amount1 = BigDecimal.valueOf(20000);
+//        BigDecimal amount1 = BigDecimal.valueOf(20000);
 
         this.jdbcTemplate.update(transactionSql, scheduleAccrualData.getLoanId(), scheduleAccrualData.getOfficeId(),
-                LoanTransactionType.ACCRUAL.getValue(), accruedTill.toDate(), amount1, interestportion, feeportion, penaltyportion,
+                LoanTransactionType.ACCRUAL.getValue(), accruedTill.toDate(), amount, interestportion, feeportion, penaltyportion,
                 DateUtils.getDateOfTenant());
         
         @SuppressWarnings("deprecation")
@@ -342,6 +340,7 @@ public class LoanAccrualWritePlatformServiceImpl implements LoanAccrualWritePlat
         
         this.jdbcTemplate.update(updateLoan, accruedTill.toDate(), scheduleAccrualData.getLoanId());
         final Map<String, Object> accountingBridgeData = deriveAccountingBridgeData(scheduleAccrualData, transactionMap);
+        
         this.journalEntryWritePlatformService.createJournalEntriesForLoan(accountingBridgeData);
     }
 
@@ -357,6 +356,7 @@ public class LoanAccrualWritePlatformServiceImpl implements LoanAccrualWritePlat
         accountingBridgeData.put("upfrontAccrualBasedAccountingEnabled", false);
         accountingBridgeData.put("periodicAccrualBasedAccountingEnabled", true);
         accountingBridgeData.put("isAccountTransfer", false);
+        accountingBridgeData.put("accruedTill", loanScheduleAccrualData.getAccruedTill());
 
         final List<Map<String, Object>> newLoanTransactions = new ArrayList<>();
         newLoanTransactions.add(transactionMap);
