@@ -49,10 +49,10 @@ public class DataSourceProperties extends PoolProperties {
     @Value("${" + HOST + ":192.168.56.104}")
     private volatile @NotNull String hostname;
 
-    @Value("${" + DB + ":orcl}")
+    @Value("${" + DB + ":ORCL}")
     private volatile @NotNull String dbName;
 
-    @Value("${" + UID + ":C##VMICROWEB}")
+    @Value("${" + UID + ":VMICROWEB}")
     private volatile @NotNull String username;
 
     @Value("${" + PWD + ":123}")
@@ -85,7 +85,7 @@ public class DataSourceProperties extends PoolProperties {
         // setMinIdle(3); -- JavaDoc says default is initialSize.. so shouldn't
         // be needed
         if (getValidationQuery() == null)
-            setValidationQuery("SELECT 1");
+            setValidationQuery("SELECT 1 FROM DUAL");
         setTestOnBorrow(true);
         setTestOnReturn(true);
         setTestWhileIdle(true);

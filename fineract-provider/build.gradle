@@ -64,7 +64,7 @@ project.ext.springOauthVersion = '2.0.4.RELEASE'
 project.ext.jerseyVersion = '1.17'
 project.ext.springDataJpaVersion = '1.7.0.RELEASE' // also change spring-boot-gradle-plugin version above
 
-project.ext.mysqlUser='C##VMICROWEB'
+project.ext.mysqlUser='VMICROWEB'
 project.ext.mysqlPassword='123'
 
 
