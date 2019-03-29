@@ -140,7 +140,7 @@ public class GenericDataServiceImpl implements GenericDataService {
 			rSize = row.size();
 			for (int j = 0; j < rSize; j++) {
 
-				writer.append(doubleQuote + columnHeaders.get(j).getColumnName() + doubleQuote + ": ");
+				writer.append(doubleQuote + columnHeaders.get(j).getColumnName().toLowerCase() + doubleQuote + ": ");
 				currColType = columnHeaders.get(j).getColumnDisplayType();
 				final String colType = columnHeaders.get(j).getColumnType();
 				if (currColType == null && colType.equalsIgnoreCase("INT")) {
