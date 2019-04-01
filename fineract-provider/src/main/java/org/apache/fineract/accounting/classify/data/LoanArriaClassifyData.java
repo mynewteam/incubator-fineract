@@ -1,23 +1,11 @@
-package org.apache.fineract.accounting.classification.data;
+package org.apache.fineract.accounting.classify.data;
 
 import java.util.Date;
 
 import software.amazon.ion.Decimal;
 
 public class LoanArriaClassifyData {
-//client_account_no
-//client_name
-//account_number
-//loan_amount
-//original_principal
-//original_lnterest
-//principal_paid
-//interest_paid
-//principal_overdue
-//interest_overdue
-//loanoutstanding
-//overdue_since_date_derived
-//days_in_Arrears
+
 	private String client_account_no;
 	private Integer account_number;
 	private double loan_outstanding;

@@ -1,4 +1,4 @@
-package org.apache.fineract.accounting.classification.data;
+package org.apache.fineract.accounting.classify.data;
 
 public class LoanLastValueAccForMoveData {
 	private Long loan_id;
@@ -28,7 +28,4 @@ public class LoanLastValueAccForMoveData {
 	public void setLast_running_balance(double last_running_balance) {
 		this.last_running_balance = last_running_balance;
 	}
-	
-	
-
 }

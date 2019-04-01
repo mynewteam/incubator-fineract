@@ -1,3 +1,4 @@
+package org.apache.fineract.accounting.classify.domain;
 // package org.apache.fineract.accounting.classification.domain;
 
 // import javax.persistence.Column;

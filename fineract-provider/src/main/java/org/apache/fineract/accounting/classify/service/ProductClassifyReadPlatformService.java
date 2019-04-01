@@ -1,11 +1,11 @@
-package org.apache.fineract.accounting.classification.service;
+package org.apache.fineract.accounting.classify.service;
 
 import java.util.Date;
 import java.util.List;
 
-import org.apache.fineract.accounting.classification.data.LoanArriaClassifyData;
-import org.apache.fineract.accounting.classification.data.LoanLastValueAccForMoveData;
-import org.apache.fineract.accounting.classification.data.ProductClassifyMappingData;
+import org.apache.fineract.accounting.classify.data.LoanArriaClassifyData;
+import org.apache.fineract.accounting.classify.data.LoanLastValueAccForMoveData;
+import org.apache.fineract.accounting.classify.data.ProductClassifyMappingData;
 
 
 public interface ProductClassifyReadPlatformService {
