@@ -307,7 +307,7 @@ public class ScheduledJobRunnerServiceImpl implements ScheduledJobRunnerService 
                                 " INNER JOIN m_product_loan mpl on mpl.id = loan.product_id AND mpl.overdue_days_for_npa is not null ");
                 updateSqlBuilder.append("WHERE loan.loan_status_id = 300  and ");
                 updateSqlBuilder.append(
-                                "laa.overdue_since_date_derived < SUBDATE(SYSDATE,INTERVAL  nvl(mpl.overdue_days_for_npa,0) day) ");
+                                "laa.overdue_since_date_derived < (SYSDATE - nvl(mpl.overdue_days_for_npa,0)) ");
                 updateSqlBuilder.append("group by loan.id) as sl ");
                 updateSqlBuilder.append("SET ml.is_npa=1 where ml.id=sl.id ");
 

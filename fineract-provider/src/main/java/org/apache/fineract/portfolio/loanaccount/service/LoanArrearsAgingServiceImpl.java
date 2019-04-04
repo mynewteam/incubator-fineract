@@ -119,8 +119,8 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
         updateSqlBuilder
                 .append(" left join m_product_loan_recalculation_details prd on prd.product_id = ml.product_id ");
         updateSqlBuilder.append(" WHERE ml.loan_status_id = 300 "); // active
-        updateSqlBuilder.append(" and mr.completed_derived is false ");
-        updateSqlBuilder.append(" and mr.duedate < SUBDATE(SYSDATE,INTERVAL  nvl(ml.grace_on_arrears_ageing,0) day) ");
+        updateSqlBuilder.append(" and mr.completed_derived = 0 ");
+        updateSqlBuilder.append(" and mr.duedate < (SYSDATE - nvl(ml.grace_on_arrears_ageing,0)) ");
         updateSqlBuilder.append(
                 " and (prd.arrears_based_on_original_schedule = 0 or prd.arrears_based_on_original_schedule is null) ");
         updateSqlBuilder.append(" GROUP BY ml.id");
@@ -217,7 +217,7 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
         loanIdentifier.append(
                 "inner join m_product_loan_recalculation_details prd on prd.product_id = ml.product_id and prd.arrears_based_on_original_schedule = 1  ");
         loanIdentifier.append(
-                "WHERE ml.loan_status_id = 300  and mr.completed_derived is false  and mr.duedate < SUBDATE(SYSDATE,INTERVAL  nvl(ml.grace_on_arrears_ageing,0) day) group by ml.id");
+                "WHERE ml.loan_status_id = 300  and mr.completed_derived = 0  and mr.duedate < (SYSDATE - nvl(ml.grace_on_arrears_ageing,0)) group by ml.id");
         List<Long> loanIds = this.jdbcTemplate.queryForList(loanIdentifier.toString(), Long.class);
         if (!loanIds.isEmpty()) {
             String loanIdsAsString = loanIds.toString();
@@ -432,8 +432,7 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
                     "mr.interest_amount as interestAmount, mr.fee_charges_amount as feeAmount, mr.penalty_charges_amount as penaltyAmount  ");
             scheduleDetail
                     .append("from m_loan ml  INNER JOIN m_loan_repayment_schedule_history mr on mr.loan_id = ml.id ");
-            scheduleDetail.append(
-                    "where mr.duedate  < SUBDATE(SYSDATE,INTERVAL  nvl(ml.grace_on_arrears_ageing,0) day) and ");
+            scheduleDetail.append("where mr.duedate  < (SYSDATE - nvl(ml.grace_on_arrears_ageing,0) ) and ");
             scheduleDetail.append("ml.id IN(").append(loanIdsAsString).append(") and  mr.version = (");
             scheduleDetail.append(
                     "select max(lrs.version) from m_loan_repayment_schedule_history lrs where mr.loan_id = lrs.loan_id");

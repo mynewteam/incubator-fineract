@@ -1626,7 +1626,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
 		final MusoniOverdueLoanScheduleMapper rm = new MusoniOverdueLoanScheduleMapper();
 
 		final StringBuilder sqlBuilder = new StringBuilder(400);
-		sqlBuilder.append("select ").append(rm.schema()).append(" where DATE_SUB(SYSDATE,INTERVAL ? DAY) > ls.duedate ")
+		sqlBuilder.append("select ").append(rm.schema()).append(" where (SYSDATE - ? ) > ls.duedate ")
 				.append(" and ls.completed_derived <> 1 and mc.charge_applies_to_enum =1 ")
 				.append(" and ls.recalculated_interest_component <> 1 ")
 				.append(" and mc.charge_time_enum = 9 and ml.loan_status_id = 300 ");
@@ -1636,7 +1636,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
 		}
 		// Only apply for duedate = yesterday (so that we don't apply
 		// penalties on the duedate itself)
-		sqlBuilder.append(" and ls.duedate >= DATE_SUB(SYSDATE,INTERVAL (? + 1) DAY)");
+		sqlBuilder.append(" and ls.duedate >= (SYSDATE - (? + 1))");
 
 		return this.jdbcTemplate.query(sqlBuilder.toString(), rm,
 				new Object[] { penaltyWaitPeriod, penaltyWaitPeriod });
@@ -1777,7 +1777,8 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
 		paramMap.put("type", AccountingRuleType.ACCRUAL_PERIODIC.getValue());
 		paramMap.put("tilldate", formatter.print(tillDate));
 		paramMap.put("organisationstartdate", formatter.print(new LocalDate(organisationStartDate)));
-		logger.debug("LoanReadPlatformService_: " + formatter.print(new LocalDate(organisationStartDate)) + " ,_tillDAte_: "+formatter.print(tillDate));
+		logger.debug("LoanReadPlatformService_: " + formatter.print(new LocalDate(organisationStartDate))
+				+ " ,_tillDAte_: " + formatter.print(tillDate));
 
 		return this.namedParameterJdbcTemplate.query(sqlBuilder.toString(), paramMap, mapper);
 	}
@@ -1963,7 +1964,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
 		sqlBuilder.append("ml.interest_recalculation_enabled = 1 ");
 		sqlBuilder.append(" and (ml.interest_recalcualated_on is null or ml.interest_recalcualated_on <> ?)");
 		sqlBuilder.append(" and ((");
-		sqlBuilder.append(" mr.completed_derived is false ");
+		sqlBuilder.append(" mr.completed_derived = 0 ");
 		sqlBuilder.append(" and mr.duedate < ? )");
 		sqlBuilder.append(" or dd.expected_disburse_date < ? )) ");
 		sqlBuilder.append(" or (");
@@ -2230,8 +2231,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
 
 	@Override
 	public Collection<Long> retrieveLoanIdsWithPendingIncomePostingTransactions() {
-		StringBuilder sqlBuilder = new StringBuilder().append(" select distinct loan.id ")
-				.append(" from m_loan loan ")
+		StringBuilder sqlBuilder = new StringBuilder().append(" select distinct loan.id ").append(" from m_loan loan ")
 				.append(" inner join m_loan_recalculation_details  recdet on (recdet.loan_id = loan.id and recdet.is_compounding_to_be_posted_as_transaction is not null and recdet.is_compounding_to_be_posted_as_transaction = 1) ")
 				.append(" inner join m_loan_repayment_schedule  repsch on repsch.loan_id = loan.id ")
 				.append(" inner join m_loan_interest_recalculation_additional_details  adddet on adddet.loan_repayment_schedule_id = repsch.id ")

@@ -72,22 +72,22 @@ public class JournalEntryRunningBalanceUpdateServiceImpl implements JournalEntry
     private final String selectRunningBalanceSqlLimit = " OFFSET 0 ROWS FETCH NEXT 10000 ROWS ONLY";
 
     private final String officeRunningBalanceSql = "select je.office_running_balance as runningBalance,je.account_id as accountId from acc_gl_journal_entry je "
-            + "inner join (select max(id) as id from acc_gl_journal_entry where office_id=?  and entry_date < ? group by account_id,entry_date) je2 "
-            + "inner join (select max(entry_date) as datetime from acc_gl_journal_entry where office_id=? and entry_date < ? group by account_id) je3 "
-            + "where je2.id = je.id and je.entry_date = je3.date group by je.id order by je.entry_date DESC "
+            + "inner join (select max(id) as id from acc_gl_journal_entry where office_id=?  and entry_date < ? group by account_id,entry_date) je2 ON je2.id = je.id "
+            + "inner join (select max(entry_date) as datetime from acc_gl_journal_entry where office_id=? and entry_date < ? group by account_id) je3 ON je.entry_date = je3.datetime "
+            + "where and je.entry_date = je3.datetime group by  je.id, organization_running_balance, account_id, entry_date order by je.entry_date DESC "
             + selectRunningBalanceSqlLimit;
 
     private final String organizationRunningBalanceSql = "select je.organization_running_balance as runningBalance,je.account_id as accountId from acc_gl_journal_entry je "
-            + "inner join (select max(id) as id from acc_gl_journal_entry where entry_date < ? group by account_id,entry_date) je2 "
-            + "inner join (select max(entry_date) as datetime from acc_gl_journal_entry where entry_date < ? group by account_id) je3 "
-            + "where je2.id = je.id and je.entry_date = je3.date group by je.id order by je.entry_date DESC "
+            + "inner join (select max(id) as id from acc_gl_journal_entry where entry_date < ? group by account_id,entry_date) je2 ON je2.id = je.id "
+            + "inner join (select max(entry_date) as datetime from acc_gl_journal_entry where entry_date < ? group by account_id) je3 ON je.entry_date = je3.datetime"
+            + "where and je.entry_date = je3.datetime group by  je.id, organization_running_balance, account_id, entry_date order by je.entry_date DESC "
             + selectRunningBalanceSqlLimit;
 
     private final String officesRunningBalanceSql = "select je.office_running_balance as runningBalance,je.account_id as accountId,je.office_id as officeId "
             + "from acc_gl_journal_entry je "
-            + "inner join (select max(id) as id from acc_gl_journal_entry where entry_date < ? group by office_id,account_id,entry_date) je2 "
-            + "inner join (select max(entry_date) as datetime from acc_gl_journal_entry where entry_date < ? group by office_id,account_id) je3 "
-            + "where je2.id = je.id and je.entry_date = je3.date group by je.id order by je.entry_date DESC "
+            + "inner join (select max(id) as id from acc_gl_journal_entry where entry_date < ? group by office_id,account_id,entry_date) je2 ON je2.id = je.id "
+            + "inner join (select max(entry_date) as datetime from acc_gl_journal_entry where entry_date < ? group by office_id,account_id) je3 ON je.entry_date = je3.datetime "
+            + "where and je.entry_date = je3.datetime group by  je.id, organization_running_balance, account_id, entry_date order by je.entry_date DESC "
             + selectRunningBalanceSqlLimit;
 
     @Autowired

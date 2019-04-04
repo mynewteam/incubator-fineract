@@ -1255,7 +1255,7 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
                 sql.append(" inner join m_savings_product  sp on (sa.product_id = sp.id and sp.is_dormancy_tracking_active = 1) ");
                 sql.append(" where sa.status_enum = 300 ");
                 sql.append(" and sa.sub_status_enum = 0 ");
-                sql.append(" and DATEDIFF(?,(select nvl(max(sat.transaction_date),sa.activatedon_date) ");
+                sql.append(" and (to_date(?) - (select nvl(max(sat.transaction_date),sa.activatedon_date) ");
                 sql.append(" from m_savings_account_transaction  sat ");
                 sql.append(" where sat.is_reversed = 0 ");
                 sql.append(" and sat.transaction_type_enum in (1,2) ");
@@ -1281,7 +1281,7 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
                 sql.append(" inner join m_savings_product  sp on (sa.product_id = sp.id and sp.is_dormancy_tracking_active = 1) ");
                 sql.append(" where sa.status_enum = 300 ");
                 sql.append(" and sa.sub_status_enum = 100 ");
-                sql.append(" and DATEDIFF(?,(select nvl(max(sat.transaction_date),sa.activatedon_date) ");
+                sql.append(" and (to_date(?) - (select nvl(max(sat.transaction_date),sa.activatedon_date) ");
                 sql.append(" from m_savings_account_transaction  sat ");
                 sql.append(" where sat.is_reversed = 0 ");
                 sql.append(" and sat.transaction_type_enum in (1,2) ");
@@ -1307,7 +1307,7 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
                 sql.append(" inner join m_savings_product sp on (sa.product_id = sp.id and sp.is_dormancy_tracking_active = 1) ");
                 sql.append(" where sa.status_enum = 300 ");
                 sql.append(" and sa.sub_status_enum = 200 ");
-                sql.append(" and DATEDIFF(?,(select nvl(max(sat.transaction_date),sa.activatedon_date) ");
+                sql.append(" and (to_date(?) - (select nvl(max(sat.transaction_date),sa.activatedon_date) ");
                 sql.append(" from m_savings_account_transaction sat ");
                 sql.append(" where sat.is_reversed = 0 ");
                 sql.append(" and sat.transaction_type_enum in (1,2) ");
