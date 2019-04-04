@@ -2231,7 +2231,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
 	@Override
 	public Collection<Long> retrieveLoanIdsWithPendingIncomePostingTransactions() {
 		StringBuilder sqlBuilder = new StringBuilder().append(" select distinct loan.id ")
-				.append(" from m_loan as loan ")
+				.append(" from m_loan loan ")
 				.append(" inner join m_loan_recalculation_details  recdet on (recdet.loan_id = loan.id and recdet.is_compounding_to_be_posted_as_transaction is not null and recdet.is_compounding_to_be_posted_as_transaction = 1) ")
 				.append(" inner join m_loan_repayment_schedule  repsch on repsch.loan_id = loan.id ")
 				.append(" inner join m_loan_interest_recalculation_additional_details  adddet on adddet.loan_repayment_schedule_id = repsch.id ")
