@@ -285,31 +285,21 @@ public class ScheduledJobRunnerServiceImpl implements ScheduledJobRunnerService 
                                 this.dataSourceServiceFactory.determineDataSourceService().retrieveDataSource());
 
                 final StringBuilder resetNPASqlBuilder = new StringBuilder(900);
-                resetNPASqlBuilder.append("update m_loan loan ");
-                resetNPASqlBuilder.append("left join m_loan_arrears_aging laa on laa.loan_id = loan.id ");
-                resetNPASqlBuilder.append(
-                                "inner join m_product_loan mpl on mpl.id = loan.product_id and mpl.overdue_days_for_npa is not null ");
-                resetNPASqlBuilder.append("set loan.is_npa = 0 ");
-                resetNPASqlBuilder.append(
-                                "where  loan.loan_status_id = 300 and mpl.account_moves_out_of_npa_only_on_arrears_completion = 0 ");
-                resetNPASqlBuilder.append(
-                                "or (mpl.account_moves_out_of_npa_only_on_arrears_completion = 1 and laa.overdue_since_date_derived is null)");
+                resetNPASqlBuilder.append(" UPDATE m_loan SET is_npa = 0 ");
+                resetNPASqlBuilder.append(" WHERE m_loan.id IN ( ");
+                resetNPASqlBuilder.append(" SELECT loan.id FROM m_loan loan LEFT JOIN m_loan_arrears_aging   laa ON laa.loan_id = loan.id ");
+                resetNPASqlBuilder.append(" INNER JOIN m_product_loan mpl ON mpl.id = loan.product_id AND mpl.overdue_days_for_npa IS NOT NULL  AND loan.loan_status_id = 300 AND mpl.account_moves_out_of_npa_only_on_arrears_completion = 0 ");
+                resetNPASqlBuilder.append(" OR ( mpl.account_moves_out_of_npa_only_on_arrears_completion = 1 AND laa.overdue_since_date_derived IS NULL )) ");
 
                 jdbcTemplate.update(resetNPASqlBuilder.toString());
 
                 final StringBuilder updateSqlBuilder = new StringBuilder(900);
-
-                updateSqlBuilder.append("UPDATE m_loan as ml,");
-                updateSqlBuilder.append(" (select loan.id ");
-                updateSqlBuilder.append("from m_loan_arrears_aging laa");
-                updateSqlBuilder.append(" INNER JOIN  m_loan loan on laa.loan_id = loan.id ");
-                updateSqlBuilder.append(
-                                " INNER JOIN m_product_loan mpl on mpl.id = loan.product_id AND mpl.overdue_days_for_npa is not null ");
-                updateSqlBuilder.append("WHERE loan.loan_status_id = 300  and ");
-                updateSqlBuilder.append(
-                                "laa.overdue_since_date_derived < (SYSDATE - nvl(mpl.overdue_days_for_npa,0)) ");
-                updateSqlBuilder.append("group by loan.id) as sl ");
-                updateSqlBuilder.append("SET ml.is_npa=1 where ml.id=sl.id ");
+                
+                updateSqlBuilder.append(" UPDATE m_loan ml SET ml.is_npa = 1 ");
+                updateSqlBuilder.append(" WHERE ml.id IN ( ");
+                updateSqlBuilder.append(" SELECT loan.id FROM m_loan_arrears_aging laa ");
+                updateSqlBuilder.append(" INNER JOIN m_loan loan ON laa.loan_id = loan.id INNER JOIN m_product_loan mpl ON mpl.id = loan.product_id AND mpl.overdue_days_for_npa IS NOT NULL ");
+                updateSqlBuilder.append(" AND loan.loan_status_id = 300 AND laa.overdue_since_date_derived < ( SYSDATE - nvl(mpl.overdue_days_for_npa, 0))) ");
 
                 final int result = jdbcTemplate.update(updateSqlBuilder.toString());
 

@@ -289,7 +289,7 @@ public class LoanChargeReadPlatformServiceImpl implements LoanChargeReadPlatform
 
 		final LoanChargeAccrualMapper rm = new LoanChargeAccrualMapper();
 
-		final String sql = "select " + rm.schema() + " where lc.loan_id=? AND lc.is_active = 1 group by  lc.id "
+		final String sql = "select " + rm.schema() + " where lc.loan_id=? AND lc.is_active = 1 group by  lc.id,lc.charge_id, lc.amount, lc.amount_waived_derived, lc.charge_time_enum, lc.is_penalty, lc.due_for_collection_as_of_date "
 				+ " order by lc.charge_time_enum ASC, lc.due_for_collection_as_of_date ASC, lc.is_penalty ASC";
 
 		Collection<LoanChargeData> charges = this.jdbcTemplate.query(sql, rm,
@@ -369,7 +369,7 @@ public class LoanChargeReadPlatformServiceImpl implements LoanChargeReadPlatform
 
 		final LoanChargeUnRecognizedIncomeMapper rm = new LoanChargeUnRecognizedIncomeMapper(loanChargeDatas);
 
-		final String sql = "select " + rm.schema() + " where lc.loan_id=? AND lc.is_active = 1 group by  lc.id "
+		final String sql = "select " + rm.schema() + " where lc.loan_id=? AND lc.is_active = 1 group by  lc.id,lc.charge_time_enum, lc.is_penalty,lc.due_for_collection_as_of_date "
 				+ " order by lc.charge_time_enum ASC, lc.due_for_collection_as_of_date ASC, lc.is_penalty ASC";
 
 		return this.jdbcTemplate.query(sql, rm,

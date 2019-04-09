@@ -58,11 +58,14 @@ public class ProductMixReadPlatformServiceImpl implements ProductMixReadPlatform
 
             this.context.authenticatedUser();
 
-            final ProductMixDataExtractor extractor = new ProductMixDataExtractor(this.loanProductReadPlatformService, productId);
+            final ProductMixDataExtractor extractor = new ProductMixDataExtractor(this.loanProductReadPlatformService,
+                    productId);
 
-            final String sql = "Select " + extractor.schema() + " where pm.product_id=? group by pm.product_id";
+            final String sql = "Select " + extractor.schema()
+                    + " where pm.product_id=? group by pm.product_id, lp.name  ";
 
-            final Map<Long, ProductMixData> productMixData = this.jdbcTemplate.query(sql, extractor, new Object[] { productId });
+            final Map<Long, ProductMixData> productMixData = this.jdbcTemplate.query(sql, extractor,
+                    new Object[] { productId });
 
             return productMixData.get(productId);
 
@@ -76,9 +79,10 @@ public class ProductMixReadPlatformServiceImpl implements ProductMixReadPlatform
 
         this.context.authenticatedUser();
 
-        final ProductMixDataExtractor extractor = new ProductMixDataExtractor(this.loanProductReadPlatformService, null);
+        final ProductMixDataExtractor extractor = new ProductMixDataExtractor(this.loanProductReadPlatformService,
+                null);
 
-        final String sql = "Select " + extractor.schema() + " group by pm.product_id";
+        final String sql = "Select " + extractor.schema() + " group by pm.product_id, lp.name  ";
 
         final Map<Long, ProductMixData> productMixData = this.jdbcTemplate.query(sql, extractor, new Object[] {});
 
@@ -94,7 +98,8 @@ public class ProductMixReadPlatformServiceImpl implements ProductMixReadPlatform
             return "pm.product_id as productId, lp.name as name from m_product_mix pm join m_product_loan lp on lp.id=pm.product_id";
         }
 
-        public ProductMixDataExtractor(final LoanProductReadPlatformService loanProductReadPlatformService, final Long productId) {
+        public ProductMixDataExtractor(final LoanProductReadPlatformService loanProductReadPlatformService,
+                final Long productId) {
             this.loanProductReadPlatformService = loanProductReadPlatformService;
             this.productId = productId;
         }
@@ -108,7 +113,8 @@ public class ProductMixReadPlatformServiceImpl implements ProductMixReadPlatform
                         .retrieveRestrictedProductsForMix(this.productId);
                 final Collection<LoanProductData> allowedProducts = this.loanProductReadPlatformService
                         .retrieveAllowedProductsForMix(this.productId);
-                final ProductMixData productMixData = ProductMixData.withRestrictedOptions(restrictedProducts, allowedProducts);
+                final ProductMixData productMixData = ProductMixData.withRestrictedOptions(restrictedProducts,
+                        allowedProducts);
                 extractedData.put(this.productId, productMixData);
                 return extractedData;
             }
@@ -121,7 +127,8 @@ public class ProductMixReadPlatformServiceImpl implements ProductMixReadPlatform
                         .retrieveRestrictedProductsForMix(productId);
                 final Collection<LoanProductData> allowedProducts = this.loanProductReadPlatformService
                         .retrieveAllowedProductsForMix(productId);
-                final ProductMixData productMixData = ProductMixData.withDetails(productId, name, restrictedProducts, allowedProducts);
+                final ProductMixData productMixData = ProductMixData.withDetails(productId, name, restrictedProducts,
+                        allowedProducts);
                 extractedData.put(productId, productMixData);
             }
             return extractedData;
