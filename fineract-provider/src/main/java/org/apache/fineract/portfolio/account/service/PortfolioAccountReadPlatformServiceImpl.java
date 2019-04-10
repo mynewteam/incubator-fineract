@@ -239,7 +239,7 @@ public class PortfolioAccountReadPlatformServiceImpl implements PortfolioAccount
         public PortfolioLoanAccountMapper() {
 
             final StringBuilder sqlBuilder = new StringBuilder(400);
-            sqlBuilder.append("la.id as id, la.account_no as accountNo, la.external_id as externalId, ");
+            sqlBuilder.append("la.id as id, la.account_no as accountNo, la.external_id as externalId,la.loanaccount_Id as loanaccountId,la.reference_id as referenceid,collateral_numid as collateralnumid, ");
             sqlBuilder.append("c.id as clientId, c.display_name as clientName, ");
             sqlBuilder.append("g.id as groupId, g.display_name as groupName, ");
             sqlBuilder.append("lp.id as productId, lp.name as productName, ");

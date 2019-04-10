@@ -26,6 +26,8 @@ import org.apache.fineract.portfolio.accountdetails.data.LoanAccountSummaryData;
 public interface AccountDetailsReadPlatformService {
 
     public AccountSummaryCollectionData retrieveClientAccountDetails(final Long clientId);
+    
+    public AccountSummaryCollectionData retrieveClientAllloanAccountDetails();
 
     public AccountSummaryCollectionData retrieveGroupAccountDetails(final Long groupId);
 

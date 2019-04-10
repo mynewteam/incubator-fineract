@@ -126,6 +126,12 @@ public class AccountDetailsReadPlatformServiceJpaRepositoryImpl implements Accou
         this.columnValidator.validateSqlInjection(rm.loanAccountSummarySchema(), loanwhereClause);
         return this.jdbcTemplate.query(sql, rm, inputs);
     }
+    private List<LoanAccountSummaryData> retrieveLoanAllAccountDetails() {
+        final LoanAccountSummaryDataMapper rm = new LoanAccountSummaryDataMapper();
+        final String sql = "select " + rm.loanAccountSummarySchema() ;
+        this.columnValidator.validateSqlInjection(rm.loanAccountSummarySchema());
+        return this.jdbcTemplate.query(sql, rm);
+    }
 
     /**
      * @param entityId
@@ -136,6 +142,12 @@ public class AccountDetailsReadPlatformServiceJpaRepositoryImpl implements Accou
         final String savingsSql = "select " + savingsAccountSummaryDataMapper.schema() + savingswhereClause;
         this.columnValidator.validateSqlInjection(savingsAccountSummaryDataMapper.schema() , savingswhereClause);
         return this.jdbcTemplate.query(savingsSql, savingsAccountSummaryDataMapper, inputs);
+    }
+    private List<SavingsAccountSummaryData> retrieveAccountDetailsAllLoan(final String savingswhereClause) {
+        final SavingsAccountSummaryDataMapper savingsAccountSummaryDataMapper = new SavingsAccountSummaryDataMapper();
+        final String savingsSql = "select " + savingsAccountSummaryDataMapper.schema() + savingswhereClause;
+        this.columnValidator.validateSqlInjection(savingsAccountSummaryDataMapper.schema() , savingswhereClause);
+        return this.jdbcTemplate.query(savingsSql, savingsAccountSummaryDataMapper);
     }
 
     private List<ShareAccountSummaryData> retrieveShareAccountDetails(final Long clientId) {
@@ -493,6 +505,17 @@ public class AccountDetailsReadPlatformServiceJpaRepositoryImpl implements Accou
             return new LoanAccountSummaryData(id, accountNo, externalId, productId, loanProductName, shortLoanProductName, loanStatus, loanType, loanCycle,
                     timeline, inArrears,originalLoan,loanBalance,amountPaid);
         }
+    }
+    public AccountSummaryCollectionData retrieveClientAllloanAccountDetails() {
+    	this.clientReadPlatformService.retrieveOne((long) 1);
+    	final long clientId =1;
+        final String loanwhereClause = "";
+        final String savingswhereClause = "";
+        final List<LoanAccountSummaryData> loanAccounts = retrieveLoanAllAccountDetails();
+        final List<SavingsAccountSummaryData> savingsAccounts = retrieveAccountDetailsAllLoan(savingswhereClause);
+        final List<ShareAccountSummaryData> shareAccounts = retrieveShareAccountDetails(clientId) ;
+//        return new 
+        return new AccountSummaryCollectionData(loanAccounts, savingsAccounts, shareAccounts);
     }
 
 }
