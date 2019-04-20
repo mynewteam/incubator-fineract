@@ -1743,7 +1743,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
 				.append(" or ( ls.interest_amount <> case when ls.accrual_interest_derived is null then 0 else ls.accrual_interest_derived end))")
 				.append(" and loan.loan_status_id=:active and mpl.accounting_type=:type and loan.is_npa=0 and ls.duedate <= SYSDATE) ");
 		if (organisationStartDate != null) {
-			sqlBuilder.append(" and ls.duedate > to_date( :organisationstartdate,'YYYY-MM-DD') ");
+			sqlBuilder.append(" and ls.duedate > to_date( :organisationstartdate ,'yyyy/mm/dd') ");
 		}
 		sqlBuilder.append(" order by loan.id,ls.duedate ");
 		Map<String, Object> paramMap = new HashMap<>(3);
@@ -1766,8 +1766,8 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
 				.append(" and (((ls.fee_charges_amount <> case when ls.accrual_fee_charges_derived is null then 0 else ls.accrual_fee_charges_derived end)")
 				.append(" or (ls.penalty_charges_amount <> case when ls.accrual_penalty_charges_derived is null then 0 else ls.accrual_penalty_charges_derived end)")
 				.append(" or (ls.interest_amount <> case when ls.accrual_interest_derived is null then 0 else ls.accrual_interest_derived end))")
-				.append(" and loan.loan_status_id=:active and mpl.accounting_type=:type and (loan.closedon_date <= to_date( :tilldate, 'YYYY/MM/DD') or loan.closedon_date is null)")
-				.append(" and loan.is_npa=0 and (ls.duedate <= to_date( :tilldate, 'YYYY/MM/DD') or (ls.duedate > to_date( :tilldate, 'YYYY/MM/DD') and ls.fromdate < to_date( :tilldate, 'YYYY/MM/DD')))) ");
+				.append(" and loan.loan_status_id=:active and mpl.accounting_type=:type and (loan.closedon_date <= to_date( :tilldate,'yyyy/mm/dd') or loan.closedon_date is null)")
+				.append(" and loan.is_npa=0 and (ls.duedate <= to_date( :tilldate,'yyyy/mm/dd') or (ls.duedate > to_date( :tilldate,'yyyy/mm/dd') and ls.fromdate < to_date( :tilldate,'yyyy/mm/dd')))) ");
 		if (organisationStartDate != null) {
 			sqlBuilder.append(" and ls.duedate > :organisationstartdate ");
 		}
@@ -1957,19 +1957,20 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
 		// this is to identify the applicable rates when base rate is changed
 		sqlBuilder.append(" left join  m_floating_rates bfr on  bfr.is_base_lending_rate = 1");
 		sqlBuilder.append(
-				" left join  m_floating_rates_periods bfrp on  bfr.id = bfrp.floating_rates_id and bfrp.created_date >= to_date(?,'YYYY-MM-DD')");
+				" left join  m_floating_rates_periods bfrp on  bfr.id = bfrp.floating_rates_id and bfrp.created_date >= to_date(?,'yyyy/mm/dd')");
 		sqlBuilder.append(" WHERE ml.loan_status_id = ? ");
 		sqlBuilder.append(" and ml.is_npa = 0 ");
 		sqlBuilder.append(" and ((");
 		sqlBuilder.append("ml.interest_recalculation_enabled = 1 ");
-		sqlBuilder.append(" and (ml.interest_recalcualated_on is null or ml.interest_recalcualated_on <> to_date(?,'YYYY-MM-DD'))");
+		sqlBuilder.append(
+				" and (ml.interest_recalcualated_on is null or ml.interest_recalcualated_on <> to_date(?,'yyyy/mm/dd'))");
 		sqlBuilder.append(" and ((");
 		sqlBuilder.append(" mr.completed_derived = 0 ");
-		sqlBuilder.append(" and mr.duedate < to_date(?,'YYYY-MM-DD') )");
-		sqlBuilder.append(" or dd.expected_disburse_date < to_date(?,'YYYY-MM-DD') )) ");
+		sqlBuilder.append(" and mr.duedate < to_date(?,'yyyy/mm/dd') )");
+		sqlBuilder.append(" or dd.expected_disburse_date < to_date(?, 'yyyy/mm/dd') )) ");
 		sqlBuilder.append(" or (");
 		sqlBuilder.append(" fr.is_active = 1 and  frp.is_active = 1");
-		sqlBuilder.append(" and (frp.created_date >= to_date(?,'YYYY-MM-DD')  or ");
+		sqlBuilder.append(" and (frp.created_date >= to_date(?,'yyyy/mm/dd')  or ");
 		sqlBuilder.append(
 				"(bfrp.id is not null and frp.is_differential_to_base_lending_rate = 1 and frp.from_date >= bfrp.from_date)) ");
 		sqlBuilder.append("and lrr.loan_id is null");
@@ -2238,7 +2239,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
 				.append(" left join m_loan_transaction  trans on (trans.is_reversed <> 1 and trans.transaction_type_enum = 19 and trans.loan_id = loan.id and trans.transaction_date = adddet.effective_date) ")
 				.append(" where loan.loan_status_id = 300 ").append(" and loan.is_npa = 0 ")
 				.append(" and adddet.effective_date is not null ").append(" and trans.transaction_date is null ")
-				.append(" and adddet.effective_date < to_date(?,'YYYY-MM-DD') ");
+				.append(" and adddet.effective_date < to_date(?,'yyyy/mm/dd') ");
 		try {
 			String currentdate = formatter.print(DateUtils.getLocalDateOfTenant());
 			return this.jdbcTemplate.queryForList(sqlBuilder.toString(), Long.class, new Object[] { currentdate });
