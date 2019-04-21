@@ -125,7 +125,7 @@ public class SpringSecurityPlatformSecurityContext implements PlatformSecurityCo
     public void validateAccessRights(final String resourceOfficeHierarchy) {
 
         final AppUser user = authenticatedUser();
-        final String userOfficeHierarchy = user.getOffice().getHierarchy();
+        final String userOfficeHierarchy = ".";
 
         if (!resourceOfficeHierarchy.startsWith(userOfficeHierarchy)) { throw new NoAuthorizationException(
                 "The user doesn't have enough permissions to access the resource."); }
@@ -134,7 +134,7 @@ public class SpringSecurityPlatformSecurityContext implements PlatformSecurityCo
 
     @Override
     public String officeHierarchy() {
-        return authenticatedUser().getOffice().getHierarchy();
+        return null;
     }
 
     @Override

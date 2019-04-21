@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.fineract.infrastructure.bulkimport.data.GlobalEntityType;
 import org.apache.fineract.integrationtests.common.system.CodeHelper;
 
 import com.google.gson.Gson;
@@ -601,13 +600,10 @@ public class ClientHelper {
         return Utils.performServerGet(requestSpec, responseSpec, CHARGES_URL, "reversed");
     }
 
-    public Workbook getClientEntityWorkbook(GlobalEntityType clientsEntity, String dateFormat) throws IOException {
+    public Workbook getClientEntityWorkbook(  ) throws IOException {
         requestSpec.header(HttpHeaders.CONTENT_TYPE,"application/vnd.ms-excel");
-        byte [] byteArray=Utils.performGetBinaryResponse(requestSpec,responseSpec,CLIENT_URL+"/downloadtemplate"+"?"+
-                Utils.TENANT_IDENTIFIER+"&legalFormType="+clientsEntity+"&dateFormat="+dateFormat);
-        InputStream inputStream= new ByteArrayInputStream(byteArray);
-        Workbook workbook=new HSSFWorkbook(inputStream);
-        return workbook;
+        
+        return null;
     }
 
     public String getOutputTemplateLocation(final String importDocumentId){
@@ -619,7 +615,7 @@ public class ClientHelper {
     public String importClientEntityTemplate(File file){
         String locale="en";
         String dateFormat="dd MMMM yyyy";
-        String legalFormType=GlobalEntityType.CLIENTS_ENTTTY.toString();
+        String legalFormType="";
         requestSpec.header(HttpHeaders.CONTENT_TYPE, MediaType.MULTIPART_FORM_DATA);
         return Utils.performServerTemplatePost(requestSpec,responseSpec,CLIENT_URL+"/uploadtemplate"+"?"+Utils.TENANT_IDENTIFIER,
                 legalFormType,file,locale,dateFormat);

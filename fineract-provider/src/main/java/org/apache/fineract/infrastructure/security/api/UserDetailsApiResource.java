@@ -93,8 +93,8 @@ public class UserDetailsApiResource {
                 roles.add(role.toData());
             }
 
-            final Long officeId = principal.getOffice().getId();
-            final String officeName = principal.getOffice().getName();
+            final Long officeId = null;
+            final String officeName = null;
 
             final Long staffId = principal.getStaffId();
             final String staffDisplayName = principal.getStaffDisplayName();

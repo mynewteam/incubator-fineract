@@ -35,7 +35,6 @@ import org.apache.fineract.infrastructure.core.exception.UnrecognizedQueryParamE
 import org.apache.fineract.infrastructure.core.serialization.ApiRequestJsonSerializationSettings;
 import org.apache.fineract.infrastructure.core.serialization.ToApiJsonSerializer;
 import org.apache.fineract.infrastructure.jobs.data.SchedulerDetailData;
-import org.apache.fineract.infrastructure.jobs.service.JobRegisterService;
 import org.apache.fineract.infrastructure.security.exception.NoAuthorizationException;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,15 +45,13 @@ import org.springframework.stereotype.Component;
 public class SchedulerApiResource {
 
     private final PlatformSecurityContext context;
-    private final JobRegisterService jobRegisterService;
     private final ToApiJsonSerializer<SchedulerDetailData> toApiJsonSerializer;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
 
     @Autowired
-    public SchedulerApiResource(final PlatformSecurityContext context, final JobRegisterService jobRegisterService,
+    public SchedulerApiResource(final PlatformSecurityContext context  ,
             final ToApiJsonSerializer<SchedulerDetailData> toApiJsonSerializer, final ApiRequestParameterHelper apiRequestParameterHelper) {
         this.context = context;
-        this.jobRegisterService = jobRegisterService;
         this.toApiJsonSerializer = toApiJsonSerializer;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
     }
@@ -64,11 +61,12 @@ public class SchedulerApiResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public String retrieveStatus(@Context final UriInfo uriInfo) {
         this.context.authenticatedUser().validateHasReadPermission(SchedulerJobApiConstants.SCHEDULER_RESOURCE_NAME);
-        final boolean isSchedulerRunning = this.jobRegisterService.isSchedulerRunning();
+//        final boolean isSchedulerRunning = this.jobRegisterService.isSchedulerRunning();
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-        final SchedulerDetailData schedulerDetailData = new SchedulerDetailData(isSchedulerRunning);
-        return this.toApiJsonSerializer.serialize(settings, schedulerDetailData,
-                SchedulerJobApiConstants.SCHEDULER_DETAIL_RESPONSE_DATA_PARAMETERS);
+//        final SchedulerDetailData schedulerDetailData = new SchedulerDetailData(isSchedulerRunning);
+//        return this.toApiJsonSerializer.serialize(settings, schedulerDetailData,
+//                SchedulerJobApiConstants.SCHEDULER_DETAIL_RESPONSE_DATA_PARAMETERS);
+        return null;
     }
 
     @POST
@@ -83,10 +81,9 @@ public class SchedulerApiResource {
         }
         Response response = Response.status(400).build();
         if (is(commandParam, SchedulerJobApiConstants.COMMAND_START_SCHEDULER)) {
-            this.jobRegisterService.startScheduler();
+//            this.jobRegisterService.startScheduler();
             response = Response.status(202).build();
         } else if (is(commandParam, SchedulerJobApiConstants.COMMAND_STOP_SCHEDULER)) {
-            this.jobRegisterService.pauseScheduler();
             response = Response.status(202).build();
         } else {
             throw new UnrecognizedQueryParamException(SchedulerJobApiConstants.COMMAND, commandParam);

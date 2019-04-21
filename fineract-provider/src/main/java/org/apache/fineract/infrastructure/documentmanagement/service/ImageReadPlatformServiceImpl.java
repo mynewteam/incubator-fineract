@@ -27,11 +27,6 @@ import org.apache.fineract.infrastructure.documentmanagement.api.ImagesApiResour
 import org.apache.fineract.infrastructure.documentmanagement.contentrepository.ContentRepository;
 import org.apache.fineract.infrastructure.documentmanagement.contentrepository.ContentRepositoryFactory;
 import org.apache.fineract.infrastructure.documentmanagement.data.ImageData;
-import org.apache.fineract.organisation.staff.domain.Staff;
-import org.apache.fineract.organisation.staff.domain.StaffRepositoryWrapper;
-import org.apache.fineract.portfolio.client.domain.Client;
-import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
-import org.apache.fineract.portfolio.client.exception.ImageNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -43,16 +38,12 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
 
     private final JdbcTemplate jdbcTemplate;
     private final ContentRepositoryFactory contentRepositoryFactory;
-    private final ClientRepositoryWrapper clientRepositoryWrapper;
-    private final StaffRepositoryWrapper staffRepositoryWrapper;
 
     @Autowired
-    public ImageReadPlatformServiceImpl(final RoutingDataSource dataSource, final ContentRepositoryFactory documentStoreFactory,
-            final ClientRepositoryWrapper clientRepositoryWrapper, StaffRepositoryWrapper staffRepositoryWrapper) {
-        this.staffRepositoryWrapper = staffRepositoryWrapper;
+    public ImageReadPlatformServiceImpl(final RoutingDataSource dataSource, final ContentRepositoryFactory documentStoreFactory
+                ) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.contentRepositoryFactory = documentStoreFactory;
-        this.clientRepositoryWrapper = clientRepositoryWrapper;
     }
 
     private static final class ImageMapper implements RowMapper<ImageData> {
@@ -83,33 +74,11 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
         }
     }
 
-    @Override
-    public ImageData retrieveImage(String entityType, final Long entityId) {
-        try {
-            Object owner;
-            String displayName = null;
-            if (ENTITY_TYPE_FOR_IMAGES.CLIENTS.toString().equalsIgnoreCase(entityType)) {
-                owner = this.clientRepositoryWrapper.findOneWithNotFoundDetection(entityId);
-                displayName = ((Client) owner).getDisplayName();
-            } else if (ENTITY_TYPE_FOR_IMAGES.STAFF.toString().equalsIgnoreCase(entityType)) {
-                owner = this.staffRepositoryWrapper.findOneWithNotFoundDetection(entityId);
-                displayName = ((Staff) owner).displayName();
-            }
-            final ImageMapper imageMapper = new ImageMapper(displayName);
+	@Override
+	public ImageData retrieveImage(String entityType, Long entityId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-            final String sql = "select " + imageMapper.schema(entityType);
-
-            final ImageData imageData = this.jdbcTemplate.queryForObject(sql, imageMapper, new Object[] { entityId });
-            final ContentRepository contentRepository = this.contentRepositoryFactory.getRepository(imageData.storageType());
-            final ImageData result = contentRepository.fetchImage(imageData);
-
-          //Once we read content EofSensorInputStream, the wrappedStream object is becoming null. So further image source is becoming null 
-            //For Amazon S3. If file is not present, already S3ContentRepository would have thrown this exception.
-            if (!result.available()) { throw new ImageNotFoundException(entityType, entityId); }
-
-            return result;
-        } catch (final EmptyResultDataAccessException e) {
-            throw new ImageNotFoundException("clients", entityId);
-        }
-    }
+   
 }

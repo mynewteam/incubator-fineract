@@ -45,7 +45,6 @@ import org.apache.fineract.infrastructure.documentmanagement.exception.InvalidEn
 import org.apache.fineract.infrastructure.documentmanagement.service.ImageReadPlatformService;
 import org.apache.fineract.infrastructure.documentmanagement.service.ImageWritePlatformService;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
-import org.apache.fineract.portfolio.client.data.ClientData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -63,15 +62,13 @@ public class ImagesApiResource {
     private final PlatformSecurityContext context;
     private final ImageReadPlatformService imageReadPlatformService;
     private final ImageWritePlatformService imageWritePlatformService;
-    private final DefaultToApiJsonSerializer<ClientData> toApiJsonSerializer;
 
     @Autowired
     public ImagesApiResource(final PlatformSecurityContext context, final ImageReadPlatformService readPlatformService,
-            final ImageWritePlatformService imageWritePlatformService, final DefaultToApiJsonSerializer<ClientData> toApiJsonSerializer) {
+            final ImageWritePlatformService imageWritePlatformService ) {
         this.context = context;
         this.imageReadPlatformService = readPlatformService;
         this.imageWritePlatformService = imageWritePlatformService;
-        this.toApiJsonSerializer = toApiJsonSerializer;
     }
 
     /**
@@ -93,7 +90,7 @@ public class ImagesApiResource {
         final CommandProcessingResult result = this.imageWritePlatformService.saveOrUpdateImage(entityName, entityId,
                 fileDetails.getFileName(), inputStream, fileSize);
 
-        return this.toApiJsonSerializer.serialize(result);
+        return null;
     }
 
     /**
@@ -109,7 +106,7 @@ public class ImagesApiResource {
 
         final CommandProcessingResult result = this.imageWritePlatformService.saveOrUpdateImage(entityName, entityId, base64EncodedImage);
 
-        return this.toApiJsonSerializer.serialize(result);
+       return null;
     }
 
     /**
@@ -204,7 +201,7 @@ public class ImagesApiResource {
     public String deleteClientImage(@PathParam("entity") final String entityName, @PathParam("entityId") final Long entityId) {
         validateEntityTypeforImage(entityName);
         this.imageWritePlatformService.deleteImage(entityName, entityId);
-        return this.toApiJsonSerializer.serialize(new CommandProcessingResult(entityId));
+        return null;
     }
 
     /*** Entities for document Management **/

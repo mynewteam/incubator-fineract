@@ -49,9 +49,6 @@ import org.apache.fineract.infrastructure.security.domain.PlatformUser;
 import org.apache.fineract.infrastructure.security.exception.NoAuthorizationException;
 import org.apache.fineract.infrastructure.security.service.PlatformPasswordEncoder;
 import org.apache.fineract.infrastructure.security.service.RandomPasswordGenerator;
-import org.apache.fineract.organisation.office.domain.Office;
-import org.apache.fineract.organisation.staff.domain.Staff;
-import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.useradministration.service.AppUserConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,13 +96,7 @@ public class AppUser extends AbstractPersistableCustom<Long> implements Platform
     @Column(name = "is_deleted", nullable = false)
     private boolean deleted;
 
-    @ManyToOne
-    @JoinColumn(name = "office_id", nullable = false)
-    private Office office;
 
-    @ManyToOne
-    @JoinColumn(name = "staff_id", nullable = true)
-    private Staff staff;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "m_appuser_role", joinColumns = @JoinColumn(name = "appuser_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -125,8 +116,7 @@ public class AppUser extends AbstractPersistableCustom<Long> implements Platform
     @JoinColumn(name = "appuser_id", referencedColumnName= "id", nullable = false)
     private Set<AppUserClientMapping> appUserClientMappings = new HashSet<>();
 
-	public static AppUser fromJson(final Office userOffice, final Staff linkedStaff, final Set<Role> allRoles, 
-			final Collection<Client> clients, final JsonCommand command) {
+	public static AppUser fromJson(final Set<Role> allRoles, final JsonCommand command) {
 
         final String username = command.stringValueOfParameterNamed("username");
         String password = command.stringValueOfParameterNamed("password");
@@ -159,8 +149,8 @@ public class AppUser extends AbstractPersistableCustom<Long> implements Platform
         
         final boolean isSelfServiceUser = command.booleanPrimitiveValueOfParameterNamed(AppUserConstants.IS_SELF_SERVICE_USER);
 
-        return new AppUser(userOffice, user, allRoles, email, firstname, lastname, linkedStaff, passwordNeverExpire,
-        		isSelfServiceUser, clients);
+        return new AppUser( user, allRoles, email, firstname, lastname, passwordNeverExpire,
+        		isSelfServiceUser);
     }
 
     protected AppUser() {
@@ -169,10 +159,9 @@ public class AppUser extends AbstractPersistableCustom<Long> implements Platform
         this.roles = new HashSet<>();
     }
 
-    public AppUser(final Office office, final User user, final Set<Role> roles, final String email, final String firstname,
-            final String lastname, final Staff staff, final boolean passwordNeverExpire, 
-            final boolean isSelfServiceUser, final Collection<Client> clients) {
-        this.office = office;
+    public AppUser( final User user, final Set<Role> roles, final String email, final String firstname,
+            final String lastname,  final boolean passwordNeverExpire, 
+            final boolean isSelfServiceUser) {
         this.email = email.trim();
         this.username = user.getUsername().trim();
         this.firstname = firstname.trim();
@@ -185,17 +174,13 @@ public class AppUser extends AbstractPersistableCustom<Long> implements Platform
         this.roles = roles;
         this.firstTimeLoginRemaining = true;
         this.lastTimePasswordUpdated = DateUtils.getDateOfTenant();
-        this.staff = staff;
         this.passwordNeverExpires = passwordNeverExpire;
         this.isSelfServiceUser = isSelfServiceUser;
-        this.appUserClientMappings = createAppUserClientMappings(clients);
     }
 
     public EnumOptionData organisationalRoleData() {
         EnumOptionData organisationalRole = null;
-        if (this.staff != null) {
-            organisationalRole = this.staff.organisationalRoleData();
-        }
+        
         return organisationalRole;
     }
 
@@ -206,14 +191,6 @@ public class AppUser extends AbstractPersistableCustom<Long> implements Platform
 
     }
 
-    public void changeOffice(final Office differentOffice) {
-        this.office = differentOffice;
-    }
-
-    public void changeStaff(final Staff differentStaff) {
-        this.staff = differentStaff;
-    }
-
     public void updateRoles(final Set<Role> allRoles) {
         if (!allRoles.isEmpty()) {
             this.roles.clear();
@@ -221,8 +198,7 @@ public class AppUser extends AbstractPersistableCustom<Long> implements Platform
         }
     }
 
-    public Map<String, Object> update(final JsonCommand command, final PlatformPasswordEncoder platformPasswordEncoder,
-    		final Collection<Client> clients) {
+    public Map<String, Object> update(final JsonCommand command, final PlatformPasswordEncoder platformPasswordEncoder) {
 
         final Map<String, Object> actualChanges = new LinkedHashMap<>(7);
 
@@ -247,14 +223,14 @@ public class AppUser extends AbstractPersistableCustom<Long> implements Platform
         }
 
         final String officeIdParamName = "officeId";
-        if (command.isChangeInLongParameterNamed(officeIdParamName, this.office.getId())) {
+        if (command.isChangeInLongParameterNamed(officeIdParamName, null)) {
             final Long newValue = command.longValueOfParameterNamed(officeIdParamName);
             actualChanges.put(officeIdParamName, newValue);
         }
 
         final String staffIdParamName = "staffId";
         if (command.hasParameter(staffIdParamName)
-                && (this.staff == null || command.isChangeInLongParameterNamed(staffIdParamName, this.staff.getId()))) {
+                && ( command.isChangeInLongParameterNamed(staffIdParamName, null))) {
             final Long newValue = command.longValueOfParameterNamed(staffIdParamName);
             actualChanges.put(staffIdParamName, newValue);
         }
@@ -313,13 +289,10 @@ public class AppUser extends AbstractPersistableCustom<Long> implements Platform
         
         if(this.isSelfServiceUser && command.hasParameter(AppUserConstants.CLIENTS)){
         		actualChanges.put(AppUserConstants.CLIENTS, command.arrayValueOfParameterNamed(AppUserConstants.CLIENTS));
-        		Set<AppUserClientMapping> newClients = createAppUserClientMappings(clients); 
         		if(this.appUserClientMappings == null){
         			this.appUserClientMappings = new HashSet<>();
         		}else{
-            		this.appUserClientMappings.retainAll(newClients);
         		}
-        		this.appUserClientMappings.addAll(newClients);
         }else if(!this.isSelfServiceUser && actualChanges.containsKey(AppUserConstants.IS_SELF_SERVICE_USER)){
         	actualChanges.put(AppUserConstants.CLIENTS, new ArrayList<>());
         	if(this.appUserClientMappings != null){
@@ -421,13 +394,7 @@ public class AppUser extends AbstractPersistableCustom<Long> implements Platform
         return this.roles;
     }
 
-    public Office getOffice() {
-        return this.office;
-    }
-
-    public Staff getStaff() {
-        return this.staff;
-    }
+   
 
     public boolean getPasswordNeverExpires() {
         return this.passwordNeverExpires;
@@ -607,17 +574,11 @@ public class AppUser extends AbstractPersistableCustom<Long> implements Platform
 
     public Long getStaffId() {
         Long staffId = null;
-        if (this.staff != null) {
-            staffId = this.staff.getId();
-        }
         return staffId;
     }
 
     public String getStaffDisplayName() {
         String staffDisplayName = null;
-        if (this.staff != null) {
-            staffDisplayName = this.staff.displayName();
-        }
         return staffDisplayName;
     }
 
@@ -655,14 +616,9 @@ public class AppUser extends AbstractPersistableCustom<Long> implements Platform
 		return this.appUserClientMappings;
 	}
 
-	private Set<AppUserClientMapping> createAppUserClientMappings(Collection<Client> clients) {
+	private Set<AppUserClientMapping> createAppUserClientMappings() {
 		Set<AppUserClientMapping> newAppUserClientMappings = null;
-		if(clients != null && clients.size() > 0){
-			newAppUserClientMappings = new HashSet<>();
-			for(Client client : clients){
-				newAppUserClientMappings.add(new AppUserClientMapping(client));
-			}
-		}
+		
 		return newAppUserClientMappings;
 	}
 

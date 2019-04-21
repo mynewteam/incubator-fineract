@@ -28,12 +28,6 @@ import java.util.Set;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
-import org.apache.fineract.organisation.office.data.OfficeData;
-import org.apache.fineract.organisation.office.service.OfficeReadPlatformService;
-import org.apache.fineract.organisation.staff.data.StaffData;
-import org.apache.fineract.organisation.staff.service.StaffReadPlatformService;
-import org.apache.fineract.portfolio.client.data.ClientData;
-import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.useradministration.data.AppUserData;
 import org.apache.fineract.useradministration.data.RoleData;
 import org.apache.fineract.useradministration.domain.AppUser;
@@ -52,21 +46,17 @@ public class AppUserReadPlatformServiceImpl implements AppUserReadPlatformServic
 
     private final JdbcTemplate jdbcTemplate;
     private final PlatformSecurityContext context;
-    private final OfficeReadPlatformService officeReadPlatformService;
     private final RoleReadPlatformService roleReadPlatformService;
     private final AppUserRepository appUserRepository;
-    private final StaffReadPlatformService staffReadPlatformService;
 
     @Autowired
     public AppUserReadPlatformServiceImpl(final PlatformSecurityContext context, final RoutingDataSource dataSource,
-            final OfficeReadPlatformService officeReadPlatformService, final RoleReadPlatformService roleReadPlatformService,
-            final AppUserRepository appUserRepository, final StaffReadPlatformService staffReadPlatformService) {
+              final RoleReadPlatformService roleReadPlatformService,
+            final AppUserRepository appUserRepository  ) {
         this.context = context;
-        this.officeReadPlatformService = officeReadPlatformService;
         this.roleReadPlatformService = roleReadPlatformService;
         this.appUserRepository = appUserRepository;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
-        this.staffReadPlatformService = staffReadPlatformService;
     }
 
     /*
@@ -81,19 +71,16 @@ public class AppUserReadPlatformServiceImpl implements AppUserReadPlatformServic
     public Collection<AppUserData> retrieveAllUsers() {
 
         final AppUser currentUser = this.context.authenticatedUser();
-        final String hierarchy = currentUser.getOffice().getHierarchy();
+        final String hierarchy = ".";
         final String hierarchySearchString = hierarchy + "%";
 
-        final AppUserMapper mapper = new AppUserMapper(this.roleReadPlatformService, this.staffReadPlatformService);
-        final String sql = "select " + mapper.schema();
-
-        return this.jdbcTemplate.query(sql, mapper, new Object[] { hierarchySearchString });
+return null;
     }
 
     @Override
     public Collection<AppUserData> retrieveSearchTemplate() {
         final AppUser currentUser = this.context.authenticatedUser();
-        final String hierarchy = currentUser.getOffice().getHierarchy();
+        final String hierarchy = ".";
         final String hierarchySearchString = hierarchy + "%";
 
         final AppUserLookupMapper mapper = new AppUserLookupMapper();
@@ -105,10 +92,8 @@ public class AppUserReadPlatformServiceImpl implements AppUserReadPlatformServic
     @Override
     public AppUserData retrieveNewUserDetails() {
 
-        final Collection<OfficeData> offices = this.officeReadPlatformService.retrieveAllOfficesForDropdown();
-        final Collection<RoleData> availableRoles = this.roleReadPlatformService.retrieveAllActiveRoles();
-
-        return AppUserData.template(offices, availableRoles);
+        
+      return null;
     }
 
     @Override
@@ -129,25 +114,17 @@ public class AppUserReadPlatformServiceImpl implements AppUserReadPlatformServic
 
         availableRoles.removeAll(selectedUserRoles);
 
-        final StaffData linkedStaff;
-        if (user.getStaff() != null) {
-            linkedStaff = this.staffReadPlatformService.retrieveStaff(user.getStaffId());
-        } else {
-            linkedStaff = null;
-        }
+        
 
-        AppUserData retUser = AppUserData.instance(user.getId(), user.getUsername(), user.getEmail(), user.getOffice().getId(),
-                user.getOffice().getName(), user.getFirstname(), user.getLastname(), availableRoles, selectedUserRoles, linkedStaff,
+        AppUserData retUser = AppUserData.instance(user.getId(), user.getUsername(), user.getEmail()
+               , userId, user.getFirstname(), user.getLastname(), null, availableRoles, selectedUserRoles, 
                 user.getPasswordNeverExpires(), user.isSelfServiceUser());
         
         if(retUser.isSelfServiceUser()){
-        	Set<ClientData> clients = new HashSet<>();
         	for(AppUserClientMapping clientMap : user.getAppUserClientMappings()){
-        		Client client = clientMap.getClient();
-        		clients.add(ClientData.lookup(client.getId(), client.getDisplayName(), 
-        				client.getOffice().getId(), client.getOffice().getName()));
+        		
+        		
         	}
-        	retUser.setClients(clients);
         }
         
         return retUser; 
@@ -156,11 +133,9 @@ public class AppUserReadPlatformServiceImpl implements AppUserReadPlatformServic
     private static final class AppUserMapper implements RowMapper<AppUserData> {
 
         private final RoleReadPlatformService roleReadPlatformService;
-        private final StaffReadPlatformService staffReadPlatformService;
 
-        public AppUserMapper(final RoleReadPlatformService roleReadPlatformService, final StaffReadPlatformService staffReadPlatformService) {
+        public AppUserMapper(final RoleReadPlatformService roleReadPlatformService  ) {
             this.roleReadPlatformService = roleReadPlatformService;
-            this.staffReadPlatformService = staffReadPlatformService;
         }
 
         @Override
@@ -178,13 +153,8 @@ public class AppUserReadPlatformServiceImpl implements AppUserReadPlatformServic
             final Boolean isSelfServiceUser = rs.getBoolean("isSelfServiceUser");
             final Collection<RoleData> selectedRoles = this.roleReadPlatformService.retrieveAppUserRoles(id);
 
-            final StaffData linkedStaff;
-            if (staffId != null) {
-                linkedStaff = this.staffReadPlatformService.retrieveStaff(staffId);
-            } else {
-                linkedStaff = null;
-            }
-            return AppUserData.instance(id, username, email, officeId, officeName, firstname, lastname, null, selectedRoles, linkedStaff,
+           
+            return AppUserData.instance(id, username, email, officeId, officeName, firstname, lastname, null, selectedRoles,
                     passwordNeverExpire, isSelfServiceUser);
         }
 

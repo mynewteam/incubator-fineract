@@ -23,8 +23,6 @@ import com.jayway.restassured.builder.ResponseSpecBuilder;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.specification.RequestSpecification;
 import com.jayway.restassured.specification.ResponseSpecification;
-import org.apache.fineract.infrastructure.bulkimport.constants.LoanConstants;
-import org.apache.fineract.infrastructure.bulkimport.constants.TemplatePopulateImportConstants;
 import org.apache.fineract.integrationtests.common.*;
 import org.apache.fineract.integrationtests.common.funds.FundsResourceHandler;
 import org.apache.fineract.integrationtests.common.loans.LoanProductTestBuilder;
@@ -104,68 +102,7 @@ public class LoanImportHandlerTest {
         Workbook workbook=loanTransactionHelper.getLoanWorkbook("dd MMMM yyyy");
 
         //insert dummy data into loan Sheet
-        Sheet loanSheet = workbook.getSheet(TemplatePopulateImportConstants.LOANS_SHEET_NAME);
-        Row firstLoanRow=loanSheet.getRow(1);
-        Sheet officeSheet=workbook.getSheet(TemplatePopulateImportConstants.OFFICE_SHEET_NAME);
-        firstLoanRow.createCell(LoanConstants.OFFICE_NAME_COL).setCellValue(officeSheet.getRow(1).getCell(1).getStringCellValue());
-        firstLoanRow.createCell(LoanConstants.LOAN_TYPE_COL).setCellValue("Individual");
-        firstLoanRow.createCell(LoanConstants.CLIENT_NAME_COL).setCellValue(loanSheet.getRow(1).getCell(LoanConstants.LOOKUP_CLIENT_NAME_COL).getStringCellValue());
-        firstLoanRow.createCell(LoanConstants.CLIENT_EXTERNAL_ID).setCellValue(loanSheet.getRow(1).getCell(LoanConstants.LOOKUP_CLIENT_EXTERNAL_ID).getStringCellValue());
-        Sheet loanProductSheet=workbook.getSheet(TemplatePopulateImportConstants.PRODUCT_SHEET_NAME);
-        firstLoanRow.createCell(LoanConstants.PRODUCT_COL).setCellValue(loanProductSheet.getRow(1).getCell(1).getStringCellValue());
-        Sheet staffSheet=workbook.getSheet(TemplatePopulateImportConstants.STAFF_SHEET_NAME);
-        firstLoanRow.createCell(LoanConstants.LOAN_OFFICER_NAME_COL).setCellValue(staffSheet.getRow(1).getCell(1).getStringCellValue());
-        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("dd MMMM yyyy");
-        Date date=simpleDateFormat.parse("13 May 2017");
-        firstLoanRow.createCell(LoanConstants.SUBMITTED_ON_DATE_COL).setCellValue(date);
-        firstLoanRow.createCell(LoanConstants.APPROVED_DATE_COL).setCellValue(date);
-        firstLoanRow.createCell(LoanConstants.DISBURSED_DATE_COL).setCellValue(date);
-        Sheet extrasSheet=workbook.getSheet(TemplatePopulateImportConstants.EXTRAS_SHEET_NAME);
-        firstLoanRow.createCell(LoanConstants.DISBURSED_PAYMENT_TYPE_COL).setCellValue(extrasSheet.getRow(1).getCell(3).getStringCellValue());
-        firstLoanRow.createCell(LoanConstants.FUND_NAME_COL).setCellValue(extrasSheet.getRow(1).getCell(1).getStringCellValue());
-        firstLoanRow.createCell(LoanConstants.PRINCIPAL_COL).setCellValue(loanProductSheet.getRow(1).getCell(3).getNumericCellValue());
-        firstLoanRow.createCell(LoanConstants.NO_OF_REPAYMENTS_COL).setCellValue(loanProductSheet.getRow(1).getCell(6).getNumericCellValue());
-        firstLoanRow.createCell(LoanConstants.REPAID_EVERY_COL).setCellValue(loanProductSheet.getRow(1).getCell(9).getNumericCellValue());
-        firstLoanRow.createCell(LoanConstants.REPAID_EVERY_FREQUENCY_COL).setCellValue(loanProductSheet.getRow(1).getCell(10).getStringCellValue());
-        firstLoanRow.createCell(LoanConstants.LOAN_TERM_COL).setCellValue(loanProductSheet.getRow(1).getCell(8).getNumericCellValue());
-        firstLoanRow.createCell(LoanConstants.LOAN_TERM_FREQUENCY_COL).setCellValue(loanProductSheet.getRow(1).getCell(10).getStringCellValue());
-        firstLoanRow.createCell(LoanConstants.NOMINAL_INTEREST_RATE_COL).setCellValue(loanProductSheet.getRow(1).getCell(11).getNumericCellValue());
-        firstLoanRow.createCell(LoanConstants.NOMINAL_INTEREST_RATE_FREQUENCY_COL).setCellValue(loanProductSheet.getRow(1).getCell(14).getStringCellValue());
-        firstLoanRow.createCell(LoanConstants.AMORTIZATION_COL).setCellValue(loanProductSheet.getRow(1).getCell(15).getStringCellValue());
-        firstLoanRow.createCell(LoanConstants.INTEREST_METHOD_COL).setCellValue(loanProductSheet.getRow(1).getCell(16).getStringCellValue());
-        firstLoanRow.createCell(LoanConstants.INTEREST_CALCULATION_PERIOD_COL).setCellValue(loanProductSheet.getRow(1).getCell(17).getStringCellValue());
-        firstLoanRow.createCell(LoanConstants.ARREARS_TOLERANCE_COL).setCellValue(0);
-        firstLoanRow.createCell(LoanConstants.REPAYMENT_STRATEGY_COL).setCellValue(loanProductSheet.getRow(1).getCell(19).getStringCellValue());
-        firstLoanRow.createCell(LoanConstants.GRACE_ON_PRINCIPAL_PAYMENT_COL).setCellValue(0);
-        firstLoanRow.createCell(LoanConstants.GRACE_ON_INTEREST_PAYMENT_COL).setCellValue(0);
-        firstLoanRow.createCell(LoanConstants.GRACE_ON_INTEREST_CHARGED_COL).setCellValue(0);
-        firstLoanRow.createCell(LoanConstants.FIRST_REPAYMENT_COL).setCellValue(date);
-        firstLoanRow.createCell(LoanConstants.TOTAL_AMOUNT_REPAID_COL).setCellValue(6000);
-        firstLoanRow.createCell(LoanConstants.LAST_REPAYMENT_DATE_COL).setCellValue(date);
-        firstLoanRow.createCell(LoanConstants.REPAYMENT_TYPE_COL).setCellValue(extrasSheet.getRow(1).getCell(3).getStringCellValue());
-
-        File directory=new File(System.getProperty("user.home")+"\\Fineract\\bulkimport\\integration_tests\\importhandler\\loan") ;
-        if (!directory.exists())
-            directory.mkdirs();
-        File file= new File(directory+"\\Loan.xls");
-        OutputStream outputStream=new FileOutputStream(file);
-        workbook.write(outputStream);
-        outputStream.close();
-
-        String importDocumentId=loanTransactionHelper.importLoanTemplate(file);
-        file.delete();
-        Assert.assertNotNull(importDocumentId);
-
-        //Wait for the creation of output excel
-        Thread.sleep(3000);
-
-        //check status column of output excel
-        String location=loanTransactionHelper.getOutputTemplateLocation(importDocumentId);
-        FileInputStream fileInputStream = new FileInputStream(location);
-        Workbook Outputworkbook=new HSSFWorkbook(fileInputStream);
-        Sheet outputLoanSheet = Outputworkbook.getSheet(TemplatePopulateImportConstants.LOANS_SHEET_NAME);
-        Row row= outputLoanSheet.getRow(1);
-        Assert.assertEquals("Imported",row.getCell(LoanConstants.STATUS_COL).getStringCellValue());
+      
 
     }
 }

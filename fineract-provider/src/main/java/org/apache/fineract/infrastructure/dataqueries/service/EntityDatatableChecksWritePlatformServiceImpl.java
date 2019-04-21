@@ -38,8 +38,6 @@ import org.apache.fineract.infrastructure.dataqueries.domain.EntityDatatableChec
 import org.apache.fineract.infrastructure.dataqueries.domain.EntityDatatableChecksRepository;
 import org.apache.fineract.infrastructure.dataqueries.exception.*;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
-import org.apache.fineract.portfolio.loanproduct.service.LoanProductReadPlatformService;
-import org.apache.fineract.portfolio.savings.service.SavingsProductReadPlatformService;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,8 +59,6 @@ public class EntityDatatableChecksWritePlatformServiceImpl implements EntityData
     private final EntityDatatableChecksDataValidator fromApiJsonDeserializer;
     private final EntityDatatableChecksRepository entityDatatableChecksRepository;
     private final ReadWriteNonCoreDataService readWriteNonCoreDataService;
-    private final LoanProductReadPlatformService loanProductReadPlatformService;
-    private final SavingsProductReadPlatformService savingsProductReadPlatformService;
     private final FromJsonHelper fromApiJsonHelper;
     private final ConfigurationDomainService configurationDomainService;
 
@@ -70,16 +66,12 @@ public class EntityDatatableChecksWritePlatformServiceImpl implements EntityData
     public EntityDatatableChecksWritePlatformServiceImpl(final PlatformSecurityContext context,
             final EntityDatatableChecksDataValidator fromApiJsonDeserializer,
             final EntityDatatableChecksRepository entityDatatableChecksRepository,
-            final ReadWriteNonCoreDataService readWriteNonCoreDataService,
-            final LoanProductReadPlatformService loanProductReadPlatformService,
-            final SavingsProductReadPlatformService savingsProductReadPlatformService, final FromJsonHelper fromApiJsonHelper,
+            final ReadWriteNonCoreDataService readWriteNonCoreDataService,final FromJsonHelper fromApiJsonHelper,
             final ConfigurationDomainService configurationDomainService) {
         this.context = context;
         this.fromApiJsonDeserializer = fromApiJsonDeserializer;
         this.entityDatatableChecksRepository = entityDatatableChecksRepository;
         this.readWriteNonCoreDataService = readWriteNonCoreDataService;
-        this.loanProductReadPlatformService = loanProductReadPlatformService;
-        this.savingsProductReadPlatformService = savingsProductReadPlatformService;
         this.fromApiJsonHelper = fromApiJsonHelper;
         this.configurationDomainService = configurationDomainService;
     }
@@ -118,11 +110,7 @@ public class EntityDatatableChecksWritePlatformServiceImpl implements EntityData
                 if (!entityDatatableCheck.isEmpty()) { throw new EntityDatatableCheckAlreadyExistsException(entity, status, datatableName); }
             } else {
                 if (entity.equals("m_loan")) {
-                    // if invalid loan product id, throws exception
-                    this.loanProductReadPlatformService.retrieveLoanProduct(productId);
                 } else if (entity.equals("m_savings_account")) {
-                    // if invalid savings product id, throws exception
-                    this.savingsProductReadPlatformService.retrieveOne(productId);
                 } else {
                     throw new EntityDatatableCheckNotSupportedException(entity, productId);
                 }

@@ -96,19 +96,8 @@ public class FineractEntityAccessUtil {
             				FineractEntityAccessConstants.GLOBAL_CONFIG_FOR_RESTRICT_PRODUCTS_TO_USER_OFFICE);
             
             if (restrictToUserOfficeProperty.isEnabled() ) {
-            	final Long officeId = thisUser.getOffice().getId();
-            					Date startDateFormapping = null;
-            					Date endDateFormapping = null;
-            					FineractEntityRelation fineractEntityRelation = fineractEntityRelationRepositoryWrapper
-            							.findOneByCodeName(fineractEntityAccessType.toStr());
-            					Long relId = fineractEntityRelation.getId();
-            					final FineractEntityRelation mapId = this.fineractEntityRelationRepositoryWrapper
-            							.findOneWithNotFoundDetection(relId);
-            					final FineractEntityToEntityMapping newMap = FineractEntityToEntityMapping.newMap(mapId, officeId,
-            							productOrChargeId, startDateFormapping, endDateFormapping);
-            					this.fineractEntityToEntityMappingRepository.save(newMap);
-            				}
-        }
+            }
+            }
 		
 	}
 	
@@ -123,17 +112,13 @@ public class FineractEntityAccessUtil {
         if (property.isEnabled() ) {
         	// Get 'SQL In Clause' for fetching only products/charges that are relevant for current user's office
         	if (fineractEntityType.equals(FineractEntityType.SAVINGS_PRODUCT)) {
-        		inClause = fineractEntityAccessReadService.
-        				getSQLQueryInClauseIDList_ForSavingsProductsForOffice (
-        				this.context.authenticatedUser().getOffice().getId(), false);
+        		
+        				
+        				
         	} else if (fineractEntityType.equals(FineractEntityType.LOAN_PRODUCT)) {
-        		inClause = fineractEntityAccessReadService.
-        				getSQLQueryInClauseIDList_ForLoanProductsForOffice (
-        				this.context.authenticatedUser().getOffice().getId(), false);
+        		
         	} else if (fineractEntityType.equals(FineractEntityType.CHARGE)) {
-        		inClause = fineractEntityAccessReadService.
-        				getSQLQueryInClauseIDList_ForChargesForOffice(
-        				this.context.authenticatedUser().getOffice().getId(), false);
+        		
         	}
         }
 		return inClause;

@@ -201,7 +201,7 @@ public class ReadReportingServiceImpl implements ReadReportingService {
 		}
 
 		final AppUser currentUser = this.context.authenticatedUser();
-		sql = this.genericDataService.replace(sql, "${currentUserHierarchy}", currentUser.getOffice().getHierarchy());
+		sql = this.genericDataService.replace(sql, "${currentUserHierarchy}", ".");
 		// Allows sql query to restrict data by current user Id if required
 		// (typically used to return report lists containing only reports
 		// permitted to be run by the user

@@ -30,8 +30,6 @@ import org.apache.fineract.infrastructure.core.exceptionmapper.PlatformDomainRul
 import org.apache.fineract.infrastructure.core.exceptionmapper.PlatformInternalServerExceptionMapper;
 import org.apache.fineract.infrastructure.core.exceptionmapper.PlatformResourceNotFoundExceptionMapper;
 import org.apache.fineract.infrastructure.core.exceptionmapper.UnsupportedParameterExceptionMapper;
-import org.apache.fineract.portfolio.loanaccount.exception.MultiDisbursementDataRequiredException;
-import org.apache.fineract.portfolio.loanproduct.exception.LinkedAccountRequiredException;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.transaction.TransactionException;
 
@@ -104,32 +102,8 @@ public class ErrorHandler extends RuntimeException {
 
             return new ErrorInfo(403, 3001, errorBody);
 
-        } else if (exception instanceof LinkedAccountRequiredException) {
-
-            final PlatformDomainRuleExceptionMapper mapper = new PlatformDomainRuleExceptionMapper();
-            final String errorBody = jsonHelper.toJson(mapper.toResponse((LinkedAccountRequiredException) exception).getEntity());
-
-            return new ErrorInfo(403, 3002, errorBody);
+        } 
             
-        } else if (exception instanceof MultiDisbursementDataRequiredException) {
-
-            final PlatformDomainRuleExceptionMapper mapper = new PlatformDomainRuleExceptionMapper();
-            final String errorBody = jsonHelper.toJson(mapper.toResponse((MultiDisbursementDataRequiredException) exception).getEntity());
-
-            return new ErrorInfo(403, 3003, errorBody);
-            
-        } else if (exception instanceof TransactionException) {
-            return new ErrorInfo(400, 4001, "{\"Exception\": " + exception.getMessage()+"}");
-
-        } else if (exception instanceof PlatformInternalServerException) {
-
-            final PlatformInternalServerExceptionMapper mapper = new PlatformInternalServerExceptionMapper();
-            final String errorBody = jsonHelper.toJson(mapper.toResponse((PlatformInternalServerException) exception).getEntity());
-
-            return new ErrorInfo(500, 5001, errorBody);
-        }else if(exception instanceof NonTransientDataAccessException) {
-        	return new ErrorInfo(400, 4001, "{\"Exception\": " + exception.getMessage()+"}");
-        }
 
         return new ErrorInfo(500, 9999, "{\"Exception\": " + exception.toString() + "}");
     }

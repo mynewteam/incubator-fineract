@@ -119,7 +119,7 @@ public class FineractEntityAccessReadServiceImpl implements FineractEntityAccess
     		    		final Long relId, final Long fromEntityId,boolean includeAllSubOffices) {
         final AppUser currentUser = this.context.authenticatedUser();
 
-        final String hierarchy = currentUser.getOffice().getHierarchy();
+        final String hierarchy = ".";
         String hierarchySearchString = null;
         if (includeAllSubOffices) {
             hierarchySearchString = "." + "%";

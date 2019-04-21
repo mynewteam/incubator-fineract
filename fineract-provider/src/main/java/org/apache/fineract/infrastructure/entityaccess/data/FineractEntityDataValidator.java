@@ -33,14 +33,6 @@ import org.apache.fineract.infrastructure.core.exception.InvalidJsonException;
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.entityaccess.api.FineractEntityApiResourceConstants;
-import org.apache.fineract.organisation.office.domain.OfficeRepositoryWrapper;
-import org.apache.fineract.portfolio.charge.domain.ChargeRepositoryWrapper;
-import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
-import org.apache.fineract.portfolio.loanproduct.domain.LoanProductRepository;
-import org.apache.fineract.portfolio.loanproduct.exception.LoanProductNotFoundException;
-import org.apache.fineract.portfolio.savings.domain.SavingsProduct;
-import org.apache.fineract.portfolio.savings.domain.SavingsProductRepository;
-import org.apache.fineract.portfolio.savings.exception.SavingsProductNotFoundException;
 import org.apache.fineract.useradministration.domain.Role;
 import org.apache.fineract.useradministration.domain.RoleRepository;
 import org.apache.fineract.useradministration.exception.RoleNotFoundException;
@@ -58,10 +50,6 @@ import com.google.gson.reflect.TypeToken;
 public class FineractEntityDataValidator {
 
     private final FromJsonHelper fromApiJsonHelper;
-    private final OfficeRepositoryWrapper officeRepositoryWrapper;
-    private final LoanProductRepository loanProductRepository;
-    private final SavingsProductRepository savingsProductRepository;
-    private final ChargeRepositoryWrapper chargeRepositoryWrapper;
     private final RoleRepository roleRepository;
 	private static final Set<String> CREATE_ENTITY_MAPPING_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(
 			FineractEntityApiResourceConstants.fromEnityType, FineractEntityApiResourceConstants.toEntityType,
@@ -75,14 +63,10 @@ public class FineractEntityDataValidator {
 					FineractEntityApiResourceConstants.endDate));
 
     @Autowired
-    public FineractEntityDataValidator(final FromJsonHelper fromApiJsonHelper, final OfficeRepositoryWrapper officeRepositoryWrapper,
-            final LoanProductRepository loanProductRepository, final SavingsProductRepository savingsProductRepository,
-            final ChargeRepositoryWrapper chargeRepositoryWrapper, final RoleRepository roleRepository) {
+    public FineractEntityDataValidator(final FromJsonHelper fromApiJsonHelper  ,
+                
+              final RoleRepository roleRepository) {
         this.fromApiJsonHelper = fromApiJsonHelper;
-        this.officeRepositoryWrapper = officeRepositoryWrapper;
-        this.loanProductRepository = loanProductRepository;
-        this.savingsProductRepository = savingsProductRepository;
-        this.chargeRepositoryWrapper = chargeRepositoryWrapper;
         this.roleRepository = roleRepository;
     }
 
@@ -161,21 +145,19 @@ public class FineractEntityDataValidator {
     }
 
     public void checkForOffice(Long id) {
-        this.officeRepositoryWrapper.findOneWithNotFoundDetection(id);
+     
     }
 
     public void checkForLoanProducts(final Long id) {
-        final LoanProduct loanProduct = this.loanProductRepository.findOne(id);
-        if (loanProduct == null) { throw new LoanProductNotFoundException(id); }
+      
     }
 
     public void checkForSavingsProducts(final Long id) {
-        final SavingsProduct savingsProduct = this.savingsProductRepository.findOne(id);
-        if (savingsProduct == null) { throw new SavingsProductNotFoundException(id); }
+       
     }
 
     public void checkForCharges(final Long id) {
-        this.chargeRepositoryWrapper.findOneWithNotFoundDetection(id);
+      
     }
 
     public void checkForRoles(final Long id) {

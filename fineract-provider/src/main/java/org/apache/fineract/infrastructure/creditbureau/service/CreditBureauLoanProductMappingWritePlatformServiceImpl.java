@@ -27,8 +27,6 @@ import org.apache.fineract.infrastructure.creditbureau.domain.OrganisationCredit
 import org.apache.fineract.infrastructure.creditbureau.domain.OrganisationCreditBureauRepository;
 import org.apache.fineract.infrastructure.creditbureau.serialization.CreditBureauLoanProductCommandFromApiJsonDeserializer;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
-import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
-import org.apache.fineract.portfolio.loanproduct.domain.LoanProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,19 +40,17 @@ public class CreditBureauLoanProductMappingWritePlatformServiceImpl implements C
 
 	private final OrganisationCreditBureauRepository organisationCreditBureauRepository;
 
-	private final LoanProductRepository loanProductRepository;
 
 	private final CreditBureauLoanProductCommandFromApiJsonDeserializer fromApiJsonDeserializer;
 
 	@Autowired
 	public CreditBureauLoanProductMappingWritePlatformServiceImpl(final PlatformSecurityContext context,
 			final CreditBureauLoanProductMappingRepository creditbureauLoanProductMappingRepository,
-			final OrganisationCreditBureauRepository organisationCreditBureauRepository, LoanProductRepository loanProductRepository,
+			final OrganisationCreditBureauRepository organisationCreditBureauRepository ,
 			final CreditBureauLoanProductCommandFromApiJsonDeserializer fromApiJsonDeserializer) {
 		this.context = context;
 		this.creditBureauLoanProductMappingRepository = creditbureauLoanProductMappingRepository;
 		this.organisationCreditBureauRepository = organisationCreditBureauRepository;
-		this.loanProductRepository = loanProductRepository;
 		this.fromApiJsonDeserializer = fromApiJsonDeserializer;
 
 	}
@@ -70,9 +66,8 @@ public class CreditBureauLoanProductMappingWritePlatformServiceImpl implements C
 
 		final OrganisationCreditBureau orgcb = this.organisationCreditBureauRepository.getOne(creditBureau_id);
 
-		final LoanProduct lp = this.loanProductRepository.getOne(lpid);
 
-		final CreditBureauLoanProductMapping cb_lp = CreditBureauLoanProductMapping.fromJson(command, orgcb, lp);
+		final CreditBureauLoanProductMapping cb_lp = CreditBureauLoanProductMapping.fromJson(command, orgcb);
 
 		this.creditBureauLoanProductMappingRepository.save(cb_lp);
 

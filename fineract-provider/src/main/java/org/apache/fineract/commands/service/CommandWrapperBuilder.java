@@ -20,9 +20,6 @@ package org.apache.fineract.commands.service;
 
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.infrastructure.accountnumberformat.service.AccountNumberFormatConstants;
-import org.apache.fineract.portfolio.client.api.ClientApiConstants;
-import org.apache.fineract.portfolio.paymenttype.api.PaymentTypeApiResourceConstants;
-import org.apache.fineract.portfolio.savings.DepositsApiConstants;
 import org.apache.fineract.useradministration.api.PasswordPreferencesApiConstants;
 
 public class CommandWrapperBuilder {
@@ -2216,14 +2213,7 @@ public class CommandWrapperBuilder {
         return this;
     }
 
-    public CommandWrapperBuilder updateDepositAmountForRecurringDepositAccount(final Long accountId) {
-        this.actionName = DepositsApiConstants.UPDATE_DEPOSIT_AMOUNT.toUpperCase();
-        this.entityName = "RECURRINGDEPOSITACCOUNT";
-        this.entityId = accountId;
-        this.savingsId = accountId;
-        this.href = "/recurringdepositaccounts/" + accountId + "?command=" + DepositsApiConstants.UPDATE_DEPOSIT_AMOUNT;
-        return this;
-    }
+  
 
     public CommandWrapperBuilder prematureCloseRecurringDepositAccount(final Long accountId) {
         this.actionName = "PREMATURECLOSE";
@@ -2522,29 +2512,11 @@ public class CommandWrapperBuilder {
         return this;
     }
 
-    public CommandWrapperBuilder createPaymentType() {
-        this.actionName = "CREATE";
-        this.entityName = PaymentTypeApiResourceConstants.ENTITY_NAME;
-        this.entityId = null;
-        this.href = "/" + PaymentTypeApiResourceConstants.RESOURCE_NAME;
-        return this;
-    }
+  
 
-    public CommandWrapperBuilder updatePaymentType(final Long paymentTypeId) {
-        this.actionName = "UPDATE";
-        this.entityName = PaymentTypeApiResourceConstants.ENTITY_NAME;
-        this.entityId = paymentTypeId;
-        this.href = "/" + PaymentTypeApiResourceConstants.RESOURCE_NAME + paymentTypeId;
-        return this;
-    }
+   
 
-    public CommandWrapperBuilder deletePaymentType(final Long paymentTypeId) {
-        this.actionName = "DELETE";
-        this.entityName = "PAYMENTTYPE";
-        this.entityId = paymentTypeId;
-        this.href = "/" + PaymentTypeApiResourceConstants.RESOURCE_NAME + paymentTypeId;
-        return this;
-    }
+    
 
     public CommandWrapperBuilder updateExternalServiceProperties(final String externalServiceName) {
         this.actionName = "UPDATE";
@@ -2554,58 +2526,7 @@ public class CommandWrapperBuilder {
         return this;
     }
 
-    public CommandWrapperBuilder createClientCharge(final Long clientId) {
-        this.actionName = ClientApiConstants.CLIENT_CHARGE_ACTION_CREATE;
-        this.entityName = ClientApiConstants.CLIENT_CHARGES_RESOURCE_NAME;
-        this.clientId = clientId;
-        this.href = "/clients/" + clientId + "/charges";
-        return this;
-    }
 
-    public CommandWrapperBuilder deleteClientCharge(final Long clientId, final Long chargeId) {
-        this.actionName = ClientApiConstants.CLIENT_CHARGE_ACTION_DELETE;
-        this.entityName = ClientApiConstants.CLIENT_CHARGES_RESOURCE_NAME;
-        this.clientId = clientId;
-        this.entityId = chargeId;
-        this.href = "/clients/" + clientId + "/charges/" + chargeId;
-        return this;
-    }
-
-    public CommandWrapperBuilder waiveClientCharge(final Long clientId, final Long chargeId) {
-        this.actionName = ClientApiConstants.CLIENT_CHARGE_ACTION_WAIVE;
-        this.entityName = ClientApiConstants.CLIENT_CHARGES_RESOURCE_NAME;
-        this.entityId = chargeId;
-        this.clientId = clientId;
-        this.href = "/clients/" + clientId + "/charges/" + chargeId + "?command=waive";
-        return this;
-    }
-
-    public CommandWrapperBuilder payClientCharge(final Long clientId, final Long chargeId) {
-        this.actionName = ClientApiConstants.CLIENT_CHARGE_ACTION_PAY;
-        this.entityName = ClientApiConstants.CLIENT_CHARGES_RESOURCE_NAME;
-        this.entityId = chargeId;
-        this.clientId = clientId;
-        this.href = "/clients/" + clientId + "/charges/" + chargeId + "?command=paycharge";
-        return this;
-    }
-
-    public CommandWrapperBuilder inactivateClientCharge(final Long clientId, final Long chargeId) {
-        this.actionName = "INACTIVATE";
-        this.entityName = ClientApiConstants.CLIENT_CHARGES_RESOURCE_NAME;
-        this.entityId = chargeId;
-        this.clientId = clientId;
-        this.href = "/clients/" + clientId + "/charges/" + chargeId + "?command=inactivate";
-        return this;
-    }
-
-    public CommandWrapperBuilder undoClientTransaction(final Long clientId, final Long transactionId) {
-        this.actionName = ClientApiConstants.CLIENT_TRANSACTION_ACTION_UNDO;
-        this.entityName = ClientApiConstants.CLIENT_RESOURCE_NAME;
-        this.entityId = transactionId;
-        this.clientId = clientId;
-        this.href = "/clients/" + clientId + "/transactions/" + transactionId + "?command=undo";
-        return this;
-    }
 
     public CommandWrapperBuilder createProvisioningCategory() {
         this.actionName = "CREATE";

@@ -42,21 +42,6 @@ import org.apache.fineract.infrastructure.core.service.PaginationHelper;
 import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.infrastructure.security.utils.ColumnValidator;
-import org.apache.fineract.organisation.office.data.OfficeData;
-import org.apache.fineract.organisation.office.service.OfficeReadPlatformService;
-import org.apache.fineract.organisation.staff.data.StaffData;
-import org.apache.fineract.organisation.staff.service.StaffReadPlatformService;
-import org.apache.fineract.portfolio.client.data.ClientData;
-import org.apache.fineract.portfolio.client.service.ClientReadPlatformService;
-import org.apache.fineract.portfolio.loanproduct.data.LoanProductData;
-import org.apache.fineract.portfolio.loanproduct.service.LoanEnumerations;
-import org.apache.fineract.portfolio.loanproduct.service.LoanProductReadPlatformService;
-import org.apache.fineract.portfolio.savings.DepositAccountType;
-import org.apache.fineract.portfolio.savings.data.DepositProductData;
-import org.apache.fineract.portfolio.savings.data.SavingsProductData;
-import org.apache.fineract.portfolio.savings.service.DepositProductReadPlatformService;
-import org.apache.fineract.portfolio.savings.service.SavingsEnumerations;
-import org.apache.fineract.portfolio.savings.service.SavingsProductReadPlatformService;
 import org.apache.fineract.useradministration.data.AppUserData;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.apache.fineract.useradministration.service.AppUserReadPlatformService;
@@ -84,38 +69,20 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
     private final PlatformSecurityContext context;
     private final FromJsonHelper fromApiJsonHelper;
     private final AppUserReadPlatformService appUserReadPlatformService;
-    private final OfficeReadPlatformService officeReadPlatformService;
-    private final ClientReadPlatformService clientReadPlatformService;
-    private final LoanProductReadPlatformService loanProductReadPlatformService;
-    private final StaffReadPlatformService staffReadPlatformService;
     private final PaginationHelper<AuditData> paginationHelper = new PaginationHelper<>();
     private final PaginationParametersDataValidator paginationParametersDataValidator;
-    private final SavingsProductReadPlatformService savingsProductReadPlatformService;
-    private final DepositProductReadPlatformService depositProductReadPlatformService;
     private final ColumnValidator columnValidator;
 
     @Autowired
     public AuditReadPlatformServiceImpl(final PlatformSecurityContext context, final RoutingDataSource dataSource,
             final FromJsonHelper fromApiJsonHelper, final AppUserReadPlatformService appUserReadPlatformService,
-            final OfficeReadPlatformService officeReadPlatformService,
-            final ClientReadPlatformService clientReadPlatformService,
-            final LoanProductReadPlatformService loanProductReadPlatformService,
-            final StaffReadPlatformService staffReadPlatformService,
             final PaginationParametersDataValidator paginationParametersDataValidator,
-            final SavingsProductReadPlatformService savingsProductReadPlatformService,
-            final DepositProductReadPlatformService depositProductReadPlatformService,
             final ColumnValidator columnValidator) {
         this.context = context;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.fromApiJsonHelper = fromApiJsonHelper;
         this.appUserReadPlatformService = appUserReadPlatformService;
-        this.officeReadPlatformService = officeReadPlatformService;
-        this.clientReadPlatformService = clientReadPlatformService;
-        this.loanProductReadPlatformService = loanProductReadPlatformService;
-        this.staffReadPlatformService = staffReadPlatformService;
         this.paginationParametersDataValidator = paginationParametersDataValidator;
-        this.savingsProductReadPlatformService = savingsProductReadPlatformService;
-        this.depositProductReadPlatformService = depositProductReadPlatformService;
         this.columnValidator = columnValidator;
     }
 
@@ -208,7 +175,7 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
 
         this.paginationParametersDataValidator.validateParameterValues(parameters, supportedOrderByValues, "audits");
         final AppUser currentUser = this.context.authenticatedUser();
-        final String hierarchy = currentUser.getOffice().getHierarchy();
+        final String hierarchy = ".";
 
         String updatedExtraCriteria = "";
         if (StringUtils.isNotBlank(extraCriteria)) {
@@ -265,7 +232,7 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
         }
 
         final AppUser currentUser = this.context.authenticatedUser();
-        final String hierarchy = currentUser.getOffice().getHierarchy();
+        final String hierarchy = ".";
 
         final AuditMapper rm = new AuditMapper();
         String sql = "select " + rm.schema(includeJson, hierarchy);
@@ -295,7 +262,7 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
     public AuditData retrieveAuditEntry(final Long auditId) {
 
         final AppUser currentUser = this.context.authenticatedUser();
-        final String hierarchy = currentUser.getOffice().getHierarchy();
+        final String hierarchy = ".";
 
         final AuditMapper rm = new AuditMapper();
 
@@ -324,8 +291,8 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
             final String officeIdStr = auditObject.get("officeId").getAsString();
             if (StringUtils.isNotBlank(officeIdStr)) {
                 officeId = Long.valueOf(officeIdStr);
-                final OfficeData office = this.officeReadPlatformService.retrieveOffice(officeId);
-                commandAsJsonMap.put("officeName", office.name());
+                
+               
             } else {
                 commandAsJsonMap.put("officeName", "");
             }
@@ -338,8 +305,8 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
             final String clientIdStr = auditObject.get("clientId").getAsString();
             if (StringUtils.isNotBlank(clientIdStr)) {
                 clientId = Long.valueOf(clientIdStr);
-                final ClientData client = this.clientReadPlatformService.retrieveOne(clientId);
-                commandAsJsonMap.put("clientName", client.displayName());
+                
+                
             } else {
                 commandAsJsonMap.put("clientName", "");
             }
@@ -352,25 +319,9 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
             final String productIdStr = auditObject.get("productId").getAsString();
             if (StringUtils.isNotBlank(productIdStr)) {
                 productId = Long.valueOf(productIdStr);
-                if (auditResult.getEntityName().equalsIgnoreCase("LOAN")) {
-                    final LoanProductData loanProduct = this.loanProductReadPlatformService
-                            .retrieveLoanProduct(productId);
-                    commandAsJsonMap.put("productName", loanProduct.getName());
-                } else if (auditResult.getEntityName().equalsIgnoreCase("SAVINGSACCOUNT")) {
-                    final SavingsProductData savingProduct = this.savingsProductReadPlatformService
-                            .retrieveOne(productId);
-                    commandAsJsonMap.put("productName", savingProduct.getName());
-                } else if (auditResult.getEntityName().equalsIgnoreCase("RECURRINGDEPOSITACCOUNT")) {
-                    final DepositProductData depositProduct = this.depositProductReadPlatformService
-                            .retrieveOne(DepositAccountType.RECURRING_DEPOSIT, productId);
-                    commandAsJsonMap.put("productName", depositProduct.getName());
-                } else if (auditResult.getEntityName().equalsIgnoreCase("FIXEDDEPOSITACCOUNT")) {
-                    final DepositProductData depositProduct = this.depositProductReadPlatformService
-                            .retrieveOne(DepositAccountType.FIXED_DEPOSIT, productId);
-                    commandAsJsonMap.put("productName", depositProduct.getName());
-                } else {
+               
                     commandAsJsonMap.put("productName", "");
-                }
+               
             } else {
                 commandAsJsonMap.put("productName", "");
             }
@@ -420,10 +371,7 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
                     commandAsJsonMap.remove(typeName);
 
                     final Integer enumTypeId = auditObject.get(typeName).getAsInt();
-                    final String code = LoanEnumerations.loanEnumueration(typeName, enumTypeId).getValue();
-                    if (code != null) {
-                        commandAsJsonMap.put(typeName, code);
-                    }
+                    
                 }
             }
 
@@ -444,10 +392,7 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
                     commandAsJsonMap.remove(typeName);
 
                     final Integer enumTypeId = auditObject.get(typeName).getAsInt();
-                    final String code = SavingsEnumerations.savingEnumueration(typeName, enumTypeId).getValue();
-                    if (code != null) {
-                        commandAsJsonMap.put(typeName, code);
-                    }
+                    
                 }
             }
         }
@@ -459,8 +404,7 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
         Long staffId = null;
         if (StringUtils.isNotBlank(staffIdStr)) {
             staffId = Long.valueOf(staffIdStr);
-            final StaffData officer = this.staffReadPlatformService.retrieveStaff(staffId);
-            commandAsJsonMap.put(staffNameParamName, officer.getDisplayName());
+           
         } else {
             commandAsJsonMap.put(staffNameParamName, "");
         }

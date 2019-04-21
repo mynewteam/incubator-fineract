@@ -46,8 +46,6 @@ import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.SearchParameters;
 import org.apache.fineract.infrastructure.jobs.data.JobDetailData;
 import org.apache.fineract.infrastructure.jobs.data.JobDetailHistoryData;
-import org.apache.fineract.infrastructure.jobs.service.JobRegisterService;
-import org.apache.fineract.infrastructure.jobs.service.SchedulerJobRunnerReadService;
 import org.apache.fineract.infrastructure.security.exception.NoAuthorizationException;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,8 +57,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class SchedulerJobApiResource {
 
-    private final SchedulerJobRunnerReadService schedulerJobRunnerReadService;
-    private final JobRegisterService jobRegisterService;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final ToApiJsonSerializer<JobDetailData> toApiJsonSerializer;
     private final ToApiJsonSerializer<JobDetailHistoryData> jobHistoryToApiJsonSerializer;
@@ -68,14 +64,12 @@ public class SchedulerJobApiResource {
     private final PlatformSecurityContext context;
 
     @Autowired
-    public SchedulerJobApiResource(final SchedulerJobRunnerReadService schedulerJobRunnerReadService,
-            final JobRegisterService jobRegisterService, final ToApiJsonSerializer<JobDetailData> toApiJsonSerializer,
+    public SchedulerJobApiResource(  
+               final ToApiJsonSerializer<JobDetailData> toApiJsonSerializer,
             final ApiRequestParameterHelper apiRequestParameterHelper,
             final ToApiJsonSerializer<JobDetailHistoryData> jobHistoryToApiJsonSerializer,
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
             final PlatformSecurityContext context) {
-        this.schedulerJobRunnerReadService = schedulerJobRunnerReadService;
-        this.jobRegisterService = jobRegisterService;
         this.toApiJsonSerializer = toApiJsonSerializer;
         this.jobHistoryToApiJsonSerializer = jobHistoryToApiJsonSerializer;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
@@ -86,18 +80,19 @@ public class SchedulerJobApiResource {
     @GET
     public String retrieveAll(@Context final UriInfo uriInfo) {
         this.context.authenticatedUser().validateHasReadPermission(SchedulerJobApiConstants.SCHEDULER_RESOURCE_NAME);
-        final List<JobDetailData> jobDetailDatas = this.schedulerJobRunnerReadService.findAllJobDeatils();
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-        return this.toApiJsonSerializer.serialize(settings, jobDetailDatas, SchedulerJobApiConstants.JOB_DETAIL_RESPONSE_DATA_PARAMETERS);
+//        return this.toApiJsonSerializer.serialize(settings, null, SchedulerJobApiConstants.JOB_DETAIL_RESPONSE_DATA_PARAMETERS);
+        return null;
     }
 
     @GET
     @Path("{" + SchedulerJobApiConstants.JOB_ID + "}")
     public String retrieveOne(@PathParam(SchedulerJobApiConstants.JOB_ID) final Long jobId, @Context final UriInfo uriInfo) {
         this.context.authenticatedUser().validateHasReadPermission(SchedulerJobApiConstants.SCHEDULER_RESOURCE_NAME);
-        final JobDetailData jobDetailData = this.schedulerJobRunnerReadService.retrieveOne(jobId);
-        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-        return this.toApiJsonSerializer.serialize(settings, jobDetailData, SchedulerJobApiConstants.JOB_DETAIL_RESPONSE_DATA_PARAMETERS);
+//        final JobDetailData jobDetailData = this.schedulerJobRunnerReadService.retrieveOne(jobId);
+//        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+//        return this.toApiJsonSerializer.serialize(settings, jobDetailData, SchedulerJobApiConstants.JOB_DETAIL_RESPONSE_DATA_PARAMETERS);
+        return null;
     }
 
     @GET
@@ -107,11 +102,12 @@ public class SchedulerJobApiResource {
             @QueryParam("orderBy") final String orderBy, @QueryParam("sortOrder") final String sortOrder) {
         this.context.authenticatedUser().validateHasReadPermission(SchedulerJobApiConstants.SCHEDULER_RESOURCE_NAME);
         final SearchParameters searchParameters = SearchParameters.forPagination(offset, limit, orderBy, sortOrder);
-        final Page<JobDetailHistoryData> jobhistoryDetailData = this.schedulerJobRunnerReadService.retrieveJobHistory(jobId,
-                searchParameters);
-        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-        return this.jobHistoryToApiJsonSerializer.serialize(settings, jobhistoryDetailData,
-                SchedulerJobApiConstants.JOB_HISTORY_RESPONSE_DATA_PARAMETERS);
+//        final Page<JobDetailHistoryData> jobhistoryDetailData = this.schedulerJobRunnerReadService.retrieveJobHistory(jobId,
+//                searchParameters);
+//        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+//        return this.jobHistoryToApiJsonSerializer.serialize(settings, null,
+//                SchedulerJobApiConstants.JOB_HISTORY_RESPONSE_DATA_PARAMETERS);
+        return null;
     }
 
     @POST
@@ -126,7 +122,7 @@ public class SchedulerJobApiResource {
         }
         Response response = Response.status(400).build();
         if (is(commandParam, SchedulerJobApiConstants.COMMAND_EXECUTE_JOB)) {
-            this.jobRegisterService.executeJob(jobId);
+//            this.jobRegisterService.executeJob(jobId);
             response = Response.status(202).build();
         } else {
             throw new UnrecognizedQueryParamException(SchedulerJobApiConstants.COMMAND, commandParam);
@@ -146,7 +142,7 @@ public class SchedulerJobApiResource {
         if (result.getChanges() != null
                 && (result.getChanges().containsKey(SchedulerJobApiConstants.jobActiveStatusParamName) || result.getChanges().containsKey(
                         SchedulerJobApiConstants.cronExpressionParamName))) {
-            this.jobRegisterService.rescheduleJob(jobId);
+//            this.jobRegisterService.rescheduleJob(jobId);
         }
         return this.toApiJsonSerializer.serialize(result);
     }

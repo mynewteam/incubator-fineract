@@ -22,9 +22,6 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.fineract.portfolio.loanproduct.data.LoanProductData;
-import org.apache.fineract.portfolio.savings.data.SavingsProductData;
-
 /**
  * Immutable data object for role data.
  */
@@ -36,13 +33,11 @@ public class EntityDataTableChecksTemplateData implements Serializable {
 	private final List<DatatableCheckStatusData> statusSavings;
 	private final List<DatatableCheckStatusData> statusLoans;
 	private final List<DatatableChecksData> datatables;
-	private final Collection<LoanProductData> loanProductDatas;
-	private final Collection<SavingsProductData> savingsProductDatas;
 
 	public EntityDataTableChecksTemplateData(final List<String> entities, List<DatatableCheckStatusData> statusClient,
 			List<DatatableCheckStatusData> statusGroup, List<DatatableCheckStatusData> statusSavings,
-			List<DatatableCheckStatusData> statusLoans, List<DatatableChecksData> datatables,
-			Collection<LoanProductData> loanProductDatas, Collection<SavingsProductData> savingsProductDatas) {
+			List<DatatableCheckStatusData> statusLoans, List<DatatableChecksData> datatables
+			 ) {
 
 		this.entities = entities;
 		this.statusClient = statusClient;
@@ -50,7 +45,5 @@ public class EntityDataTableChecksTemplateData implements Serializable {
 		this.statusSavings = statusSavings;
 		this.statusLoans = statusLoans;
 		this.datatables = datatables;
-		this.loanProductDatas = loanProductDatas;
-		this.savingsProductDatas = savingsProductDatas;
 	}
 }

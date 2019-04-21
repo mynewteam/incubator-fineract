@@ -22,9 +22,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.fineract.organisation.office.data.OfficeData;
-import org.apache.fineract.organisation.staff.data.StaffData;
-import org.apache.fineract.portfolio.client.data.ClientData;
 
 /**
  * Immutable data object for application user data.
@@ -47,14 +44,10 @@ public class AppUserData {
     private transient Integer rowIndex;
 
     @SuppressWarnings("unused")
-    private final Collection<OfficeData> allowedOffices;
     private final Collection<RoleData> availableRoles;
     private final Collection<RoleData> selectedRoles;
-    private final StaffData staff;
     private final Boolean isSelfServiceUser;
     
-	@SuppressWarnings("unused")
-    private Set<ClientData> clients;
 
 	public static AppUserData importInstance(Long officeId,Long staffId,String userName, String firstName, String lastName,
             String email,Boolean sendPasswordToEmail,Boolean passwordNeverExpires, List<Long> roleIds,
@@ -77,41 +70,38 @@ public class AppUserData {
         this.sendPasswordToEmail = sendPasswordToEmail;
         this.staffId = staffId;
         this.rowIndex = rowIndex;
-        this.allowedOffices = null;
         this.availableRoles = null;
         this.selectedRoles = null;
-        this.staff = null;
         this.isSelfServiceUser = null;
-        this.clients = null;
     }
 
     public Integer getRowIndex() {
         return rowIndex;
     }
 
-    public static AppUserData template(final AppUserData user, final Collection<OfficeData> officesForDropdown) {
+    public static AppUserData template(final AppUserData user) {
         return new AppUserData(user.id, user.username, user.email, user.officeId, user.officeName, user.firstname, user.lastname,
-                user.availableRoles, user.selectedRoles, officesForDropdown, user.staff, user.passwordNeverExpires, user.isSelfServiceUser);
+                user.availableRoles, user.selectedRoles, user.passwordNeverExpires, user.isSelfServiceUser);
     }
 
-    public static AppUserData template(final Collection<OfficeData> offices, final Collection<RoleData> availableRoles) {
-        return new AppUserData(null, null, null, null, null, null, null, availableRoles, null, offices, null, null, null);
+    public static AppUserData template( final Collection<RoleData> availableRoles) {
+        return new AppUserData(null, null, null, null, null, null, null, availableRoles, null, null, null);
     }
 
     public static AppUserData dropdown(final Long id, final String username) {
-        return new AppUserData(id, username, null, null, null, null, null, null, null, null, null, null, null);
+        return new AppUserData(id, username, null, null, null, null, null, null, null, null, null);
     }
 
     public static AppUserData instance(final Long id, final String username, final String email, final Long officeId,
             final String officeName, final String firstname, final String lastname, final Collection<RoleData> availableRoles,
-            final Collection<RoleData> selectedRoles, final StaffData staff, final Boolean passwordNeverExpire, final Boolean isSelfServiceUser) {
-        return new AppUserData(id, username, email, officeId, officeName, firstname, lastname, availableRoles, selectedRoles, null, staff,
+            final Collection<RoleData> selectedRoles, final Boolean passwordNeverExpire, final Boolean isSelfServiceUser) {
+        return new AppUserData(id, username, email, officeId, officeName, firstname, lastname, availableRoles, selectedRoles,
                 passwordNeverExpire, isSelfServiceUser);
     }
 
     private AppUserData(final Long id, final String username, final String email, final Long officeId, final String officeName,
             final String firstname, final String lastname, final Collection<RoleData> availableRoles,
-            final Collection<RoleData> selectedRoles, final Collection<OfficeData> allowedOffices, final StaffData staff,
+            final Collection<RoleData> selectedRoles,
             final Boolean passwordNeverExpire, final Boolean isSelfServiceUser) {
         this.id = id;
         this.username = username;
@@ -120,10 +110,8 @@ public class AppUserData {
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;
-        this.allowedOffices = allowedOffices;
         this.availableRoles = availableRoles;
         this.selectedRoles = selectedRoles;
-        this.staff = staff;
         this.passwordNeverExpires = passwordNeverExpire;
         this.isSelfServiceUser = isSelfServiceUser;
     }
@@ -153,9 +141,6 @@ public class AppUserData {
         return id != null ? id.hashCode() : 0;
     }
     
-    public void setClients(Set<ClientData> clients){
-    	this.clients = clients;
-    }
     
     public boolean isSelfServiceUser() {
 		return this.isSelfServiceUser==null?false:this.isSelfServiceUser;

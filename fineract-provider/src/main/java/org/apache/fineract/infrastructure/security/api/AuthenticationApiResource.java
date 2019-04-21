@@ -107,8 +107,6 @@ public class AuthenticationApiResource {
                 roles.add(role.toData());
             }
 
-            final Long officeId = principal.getOffice().getId();
-            final String officeName = principal.getOffice().getName();
 
             final Long staffId = principal.getStaffId();
             final String staffDisplayName = principal.getStaffDisplayName();
@@ -122,7 +120,7 @@ public class AuthenticationApiResource {
                         new String(base64EncodedAuthenticationKey), isTwoFactorRequired);
             } else {
 
-                authenticatedUserData = new AuthenticatedUserData(username, officeId, officeName, staffId,
+                authenticatedUserData = new AuthenticatedUserData(username, null, null, staffId,
                         staffDisplayName, organisationalRole, roles, permissions, principal.getId(),
                         new String(base64EncodedAuthenticationKey), isTwoFactorRequired);
             }

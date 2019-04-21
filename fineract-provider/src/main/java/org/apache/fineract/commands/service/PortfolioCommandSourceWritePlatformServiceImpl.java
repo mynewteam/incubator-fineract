@@ -30,7 +30,6 @@ import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil;
-import org.apache.fineract.infrastructure.jobs.service.SchedulerJobRunnerReadService;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.joda.time.DateTime;
@@ -51,19 +50,17 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
 	private final CommandSourceRepository commandSourceRepository;
 	private final FromJsonHelper fromApiJsonHelper;
 	private final CommandProcessingService processAndLogCommandService;
-	private final SchedulerJobRunnerReadService schedulerJobRunnerReadService;
 	private final static Logger logger = LoggerFactory.getLogger(PortfolioCommandSourceWritePlatformServiceImpl.class);
 
 	@Autowired
 	public PortfolioCommandSourceWritePlatformServiceImpl(final PlatformSecurityContext context,
 			final CommandSourceRepository commandSourceRepository, final FromJsonHelper fromApiJsonHelper,
-			final CommandProcessingService processAndLogCommandService,
-			final SchedulerJobRunnerReadService schedulerJobRunnerReadService) {
+			final CommandProcessingService processAndLogCommandService
+			  ) {
 		this.context = context;
 		this.commandSourceRepository = commandSourceRepository;
 		this.fromApiJsonHelper = fromApiJsonHelper;
 		this.processAndLogCommandService = processAndLogCommandService;
-		this.schedulerJobRunnerReadService = schedulerJobRunnerReadService;
 	}
 
 	@Override
@@ -198,7 +195,8 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
 	}
 
 	private boolean validateIsUpdateAllowed() {
-		return this.schedulerJobRunnerReadService.isUpdatesAllowed();
+//		return this.schedulerJobRunnerReadService.isUpdatesAllowed();
+		return true;
 
 	}
 

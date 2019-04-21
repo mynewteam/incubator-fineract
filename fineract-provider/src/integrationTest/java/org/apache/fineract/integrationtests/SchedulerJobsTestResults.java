@@ -51,8 +51,6 @@ import org.apache.fineract.integrationtests.common.loans.LoanTransactionHelper;
 import org.apache.fineract.integrationtests.common.savings.SavingsAccountHelper;
 import org.apache.fineract.integrationtests.common.savings.SavingsProductHelper;
 import org.apache.fineract.integrationtests.common.savings.SavingsStatusChecker;
-import org.apache.fineract.portfolio.account.PortfolioAccountType;
-import org.apache.fineract.portfolio.account.domain.AccountTransferType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -655,8 +653,8 @@ public class SchedulerJobsTestResults {
                 fromSavingsBalanceAfter);
         Assert.assertEquals("Verifying To Savings Balance after Successful completion of Scheduler Job", expectedToSavingsBalance,
                 toSavingsBalanceAfter);
-        Integer fromAccountType = PortfolioAccountType.SAVINGS.getValue();
-        Integer transferType = AccountTransferType.ACCOUNT_TRANSFER.getValue();
+        Integer fromAccountType =1;
+        Integer transferType = 1;
         List<HashMap> standinInstructionHistoryData = this.standingInstructionsHelper.getStandingInstructionHistory(fromSavingsId,
                 fromAccountType, clientID, transferType);
         Assert.assertEquals("Verifying the no of stainding instruction transactions logged for the client", 1,

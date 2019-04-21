@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.fineract.infrastructure.jobs.service.JobName;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -84,12 +83,12 @@ public class CronMethodParser {
                 if (metadataSet != null && metadataSet.size() > 0) {
                     for (final MethodMetadata metadata : metadataSet) {
                         final Map<String, Object> attributes = metadata.getAnnotationAttributes(annotationClass.getName());
-                        final JobName attributeValue = (JobName) attributes.get(attributeName);
+//                        final JobName attributeValue = (JobName) attributes.get(attributeName);
                         final String className = metadata.getDeclaringClassName();
                         final ClassMethodNamesPair pair = new ClassMethodNamesPair();
                         pair.className = className;
                         pair.methodName = metadata.getMethodName();
-                        targetMethosMap.put(attributeValue.toString(), pair);
+//                        targetMethosMap.put(attributeValue.toString(), pair);
                     }
                 }
             }

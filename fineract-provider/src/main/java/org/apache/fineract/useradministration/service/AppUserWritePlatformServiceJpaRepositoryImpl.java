@@ -39,13 +39,6 @@ import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityEx
 import org.apache.fineract.infrastructure.core.service.PlatformEmailSendException;
 import org.apache.fineract.infrastructure.security.service.PlatformPasswordEncoder;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
-import org.apache.fineract.notification.service.TopicDomainService;
-import org.apache.fineract.organisation.office.domain.Office;
-import org.apache.fineract.organisation.office.domain.OfficeRepositoryWrapper;
-import org.apache.fineract.organisation.staff.domain.Staff;
-import org.apache.fineract.organisation.staff.domain.StaffRepositoryWrapper;
-import org.apache.fineract.portfolio.client.domain.Client;
-import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
 import org.apache.fineract.useradministration.api.AppUserApiConstant;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.apache.fineract.useradministration.domain.AppUserPreviousPassword;
@@ -82,31 +75,23 @@ public class AppUserWritePlatformServiceJpaRepositoryImpl implements AppUserWrit
     private final UserDomainService userDomainService;
     private final PlatformPasswordEncoder platformPasswordEncoder;
     private final AppUserRepository appUserRepository;
-    private final OfficeRepositoryWrapper officeRepositoryWrapper;
     private final RoleRepository roleRepository;
     private final UserDataValidator fromApiJsonDeserializer;
     private final AppUserPreviousPasswordRepository appUserPreviewPasswordRepository;
-    private final StaffRepositoryWrapper staffRepositoryWrapper;
-    private final ClientRepositoryWrapper clientRepositoryWrapper;
-    private final TopicDomainService topicDomainService;
 
     @Autowired
     public AppUserWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context, final AppUserRepository appUserRepository,
-            final UserDomainService userDomainService, final OfficeRepositoryWrapper officeRepositoryWrapper, final RoleRepository roleRepository,
+            final UserDomainService userDomainService, final RoleRepository roleRepository,
             final PlatformPasswordEncoder platformPasswordEncoder, final UserDataValidator fromApiJsonDeserializer,
-            final AppUserPreviousPasswordRepository appUserPreviewPasswordRepository, final StaffRepositoryWrapper staffRepositoryWrapper,
-            final ClientRepositoryWrapper clientRepositoryWrapper, final TopicDomainService topicDomainService) {
+            final AppUserPreviousPasswordRepository appUserPreviewPasswordRepository  
+               ) {
         this.context = context;
         this.appUserRepository = appUserRepository;
         this.userDomainService = userDomainService;
-        this.officeRepositoryWrapper = officeRepositoryWrapper;
         this.roleRepository = roleRepository;
         this.platformPasswordEncoder = platformPasswordEncoder;
         this.fromApiJsonDeserializer = fromApiJsonDeserializer;
         this.appUserPreviewPasswordRepository = appUserPreviewPasswordRepository;
-        this.staffRepositoryWrapper = staffRepositoryWrapper;
-        this.clientRepositoryWrapper = clientRepositoryWrapper;
-        this.topicDomainService = topicDomainService;
     }
 
     @Transactional
@@ -122,7 +107,6 @@ public class AppUserWritePlatformServiceJpaRepositoryImpl implements AppUserWrit
             final String officeIdParamName = "officeId";
             final Long officeId = command.longValueOfParameterNamed(officeIdParamName);
 
-            final Office userOffice = this.officeRepositoryWrapper.findOneWithNotFoundDetection(officeId);
 
             final String[] roles = command.arrayValueOfParameterNamed("roles");
             final Set<Role> allRoles = assembleSetOfRoles(roles);
@@ -132,34 +116,19 @@ public class AppUserWritePlatformServiceJpaRepositoryImpl implements AppUserWrit
             final String staffIdParamName = "staffId";
             final Long staffId = command.longValueOfParameterNamed(staffIdParamName);
 
-            Staff linkedStaff = null;
-            if (staffId != null) {
-                linkedStaff = this.staffRepositoryWrapper.findByOfficeWithNotFoundDetection(staffId, userOffice.getId());
-            }
+           
             
-            Collection<Client> clients = null;
-            if(command.hasParameter(AppUserConstants.IS_SELF_SERVICE_USER)
-            		&& command.booleanPrimitiveValueOfParameterNamed(AppUserConstants.IS_SELF_SERVICE_USER)
-            		&& command.hasParameter(AppUserConstants.CLIENTS)){
-            	JsonArray clientsArray = command.arrayOfParameterNamed(AppUserConstants.CLIENTS);
-            	Collection<Long> clientIds = new HashSet<>();
-            	for(JsonElement clientElement : clientsArray){
-            		clientIds.add(clientElement.getAsLong());
-            	}
-            	clients = this.clientRepositoryWrapper.findAll(clientIds);
-            }
+           
 
-            appUser = AppUser.fromJson(userOffice, linkedStaff, allRoles, clients, command);
-
+          
             final Boolean sendPasswordToEmail = command.booleanObjectValueOfParameterNamed("sendPasswordToEmail");
-            this.userDomainService.create(appUser, sendPasswordToEmail);
+            this.userDomainService.create(null, sendPasswordToEmail);
             
-            this.topicDomainService.subscribeUserToTopic(appUser);
-
+           
             return new CommandProcessingResultBuilder() //
                     .withCommandId(command.commandId()) //
-                    .withEntityId(appUser.getId()) //
-                    .withOfficeId(userOffice.getId()) //
+                    .withEntityId(null) //
+                    .withOfficeId(null) //
                     .build();
         } catch (final DataIntegrityViolationException dve) {
             handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
@@ -200,7 +169,6 @@ public class AppUserWritePlatformServiceJpaRepositoryImpl implements AppUserWrit
 
             final AppUserPreviousPassword currentPasswordToSaveAsPreview = getCurrentPasswordToSaveAsPreview(userToUpdate, command);
             
-            Collection<Client> clients = null;
             boolean isSelfServiceUser = userToUpdate.isSelfServiceUser();
             if(command.hasParameter(AppUserConstants.IS_SELF_SERVICE_USER)){
             	isSelfServiceUser = command.booleanPrimitiveValueOfParameterNamed(AppUserConstants.IS_SELF_SERVICE_USER); 
@@ -213,47 +181,19 @@ public class AppUserWritePlatformServiceJpaRepositoryImpl implements AppUserWrit
             	for(JsonElement clientElement : clientsArray){
             		clientIds.add(clientElement.getAsLong());
             	}
-            	clients = this.clientRepositoryWrapper.findAll(clientIds);
             }
 
-            final Map<String, Object> changes = userToUpdate.update(command, this.platformPasswordEncoder, clients);
 
-            this.topicDomainService.updateUserSubscription(userToUpdate, changes);
-            if (changes.containsKey("officeId")) {
-                final Long officeId = (Long) changes.get("officeId");
-                final Office office = this.officeRepositoryWrapper.findOneWithNotFoundDetection(officeId);
-                userToUpdate.changeOffice(office);
-            }
+            
 
-            if (changes.containsKey("staffId")) {
-                final Long staffId = (Long) changes.get("staffId");
-                Staff linkedStaff = null;
-                if (staffId != null) {
-                    linkedStaff = this.staffRepositoryWrapper.findByOfficeWithNotFoundDetection(staffId, userToUpdate.getOffice().getId());
-                }
-                userToUpdate.changeStaff(linkedStaff);
-            }
+          
 
-            if (changes.containsKey("roles")) {
-                final String[] roleIds = (String[]) changes.get("roles");
-                final Set<Role> allRoles = assembleSetOfRoles(roleIds);
-
-                userToUpdate.updateRoles(allRoles);
-            }
-
-            if (!changes.isEmpty()) {
-                this.appUserRepository.saveAndFlush(userToUpdate);
-
-                if (currentPasswordToSaveAsPreview != null) {
-                    this.appUserPreviewPasswordRepository.save(currentPasswordToSaveAsPreview);
-                }
-
-            }
+            
 
             return new CommandProcessingResultBuilder() //
                     .withEntityId(userId) //
-                    .withOfficeId(userToUpdate.getOffice().getId()) //
-                    .with(changes) //
+                    .withOfficeId(null) //
+                    .with(null) //
                     .build();
         } catch (final DataIntegrityViolationException dve) {
             handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
@@ -330,10 +270,9 @@ public class AppUserWritePlatformServiceJpaRepositoryImpl implements AppUserWrit
         if (user == null || user.isDeleted()) { throw new UserNotFoundException(userId); }
 
         user.delete();
-        this.topicDomainService.unsubcribeUserFromTopic(user);
         this.appUserRepository.save(user);
 
-        return new CommandProcessingResultBuilder().withEntityId(userId).withOfficeId(user.getOffice().getId()).build();
+        return new CommandProcessingResultBuilder().withEntityId(userId).withOfficeId(null).build();
     }
 
     /*

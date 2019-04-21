@@ -22,7 +22,7 @@ import javax.sql.DataSource;
 
 import org.apache.fineract.infrastructure.core.boot.AbstractApplicationConfiguration;
 import org.apache.fineract.infrastructure.core.service.TenantDatabaseUpgradeService;
-import org.apache.fineract.infrastructure.jobs.service.JobRegisterService;
+//import org.apache.fineract.infrastructure.jobs.service.JobRegisterService;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 
@@ -53,11 +53,11 @@ public class TestsWithoutDatabaseAndNoJobsConfiguration extends AbstractApplicat
      * JobRegisterServiceImpl has a @PostConstruct loadAllJobs() which accesses
      * the database on start-up.
      */
-    @Bean
-    public JobRegisterService jobRegisterServiceImpl() {
-        JobRegisterService mockJobRegisterService = Mockito.mock(JobRegisterService.class);
-        return mockJobRegisterService;
-    }
+//    @Bean
+//    public JobRegisterService jobRegisterServiceImpl() {
+//        JobRegisterService mockJobRegisterService = Mockito.mock(JobRegisterService.class);
+//        return mockJobRegisterService;
+//    }
 
     /**
      * DataSource with Mockito RETURNS_MOCKS black magic.

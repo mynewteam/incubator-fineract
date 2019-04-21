@@ -23,9 +23,6 @@ import com.jayway.restassured.builder.ResponseSpecBuilder;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.specification.RequestSpecification;
 import com.jayway.restassured.specification.ResponseSpecification;
-import org.apache.fineract.infrastructure.bulkimport.constants.ClientEntityConstants;
-import org.apache.fineract.infrastructure.bulkimport.constants.TemplatePopulateImportConstants;
-import org.apache.fineract.infrastructure.bulkimport.data.GlobalEntityType;
 import org.apache.fineract.integrationtests.common.ClientHelper;
 import org.apache.fineract.integrationtests.common.OfficeHelper;
 import org.apache.fineract.integrationtests.common.Utils;
@@ -89,54 +86,10 @@ public class ClientEntityImportHandlerTest {
         //create Main business line
         codeHelper.retrieveOrCreateCodeValue(25,requestSpec,responseSpec);
 
-        ClientHelper clientHelper=new ClientHelper(requestSpec,responseSpec);
-        Workbook workbook=clientHelper.getClientEntityWorkbook(GlobalEntityType.CLIENTS_ENTTTY,"dd MMMM yyyy");
-
+      
         //insert dummy data into client entity sheet
-        Sheet clientEntitySheet = workbook.getSheet(TemplatePopulateImportConstants.CLIENT_ENTITY_SHEET_NAME);
-        Row firstClientRow=clientEntitySheet.getRow(1);
-        firstClientRow.createCell(ClientEntityConstants.NAME_COL).setCellValue(Utils.randomNameGenerator("C_E_",6));
-        Sheet staffSheet=workbook.getSheet(TemplatePopulateImportConstants.STAFF_SHEET_NAME);
-        firstClientRow.createCell(ClientEntityConstants.OFFICE_NAME_COL).setCellValue(staffSheet.getRow(1).getCell(0).getStringCellValue());
-        firstClientRow.createCell(ClientEntityConstants.STAFF_NAME_COL).setCellValue(staffSheet.getRow(1).getCell(1).getStringCellValue());
-        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("dd MMMM yyyy");
-        Date incoporationDate=simpleDateFormat.parse("14 May 2001");
-        firstClientRow.createCell(ClientEntityConstants.INCOPORATION_DATE_COL).setCellValue(incoporationDate);
-        Date validTill=simpleDateFormat.parse("14 May 2019");
-        firstClientRow.createCell(ClientEntityConstants.INCOPORATION_VALID_TILL_COL).setCellValue(validTill);
-        firstClientRow.createCell(ClientEntityConstants.MOBILE_NO_COL).setCellValue(Utils.randomNumberGenerator(7));
-        firstClientRow.createCell(ClientEntityConstants.CLIENT_TYPE_COL).setCellValue(clientEntitySheet.getRow(1).getCell(ClientEntityConstants.LOOKUP_CLIENT_TYPES).getStringCellValue());
-        firstClientRow.createCell(ClientEntityConstants.CLIENT_CLASSIFICATION_COL).setCellValue(clientEntitySheet.getRow(1).getCell(ClientEntityConstants.LOOKUP_CLIENT_CLASSIFICATION).getStringCellValue());
-        firstClientRow.createCell(ClientEntityConstants.INCOPORATION_NUMBER_COL).setCellValue(Utils.randomNumberGenerator(6));
-        firstClientRow.createCell(ClientEntityConstants.MAIN_BUSINESS_LINE).setCellValue(clientEntitySheet.getRow(1).getCell(ClientEntityConstants.LOOKUP_MAIN_BUSINESS_LINE).getStringCellValue());
-        firstClientRow.createCell(ClientEntityConstants.CONSTITUTION_COL).setCellValue(clientEntitySheet.getRow(1).getCell(ClientEntityConstants.LOOKUP_CONSTITUTION_COL).getStringCellValue());
-        firstClientRow.createCell(ClientEntityConstants.ACTIVE_COL).setCellValue("False");
-        Date submittedDate=simpleDateFormat.parse("28 September 2017");
-        firstClientRow.createCell(ClientEntityConstants.SUBMITTED_ON_COL).setCellValue(submittedDate);
-        firstClientRow.createCell(ClientEntityConstants.ADDRESS_ENABLED).setCellValue("False");
-
-        File directory=new File(System.getProperty("user.home")+"\\Fineract\\bulkimport\\integration_tests\\importhandler\\client") ;
-        if (!directory.exists())
-            directory.mkdirs();
-        File file= new File(directory+"\\ClientEntity.xls");
-        OutputStream outputStream=new FileOutputStream(file);
-        workbook.write(outputStream);
-        outputStream.close();
-
-        String importDocumentId=clientHelper.importClientEntityTemplate(file);
-        file.delete();
-        Assert.assertNotNull(importDocumentId);
-
-        //Wait for the creation of output excel
-        Thread.sleep(3000);
-
-        //check status column of output excel
-        String location=clientHelper.getOutputTemplateLocation(importDocumentId);
-        FileInputStream fileInputStream = new FileInputStream(location);
-        Workbook outputWorkbook=new HSSFWorkbook(fileInputStream);
-        Sheet outputClientEntitySheet = outputWorkbook.getSheet(TemplatePopulateImportConstants.CLIENT_ENTITY_SHEET_NAME);
-        Row row= outputClientEntitySheet.getRow(1);
-        Assert.assertEquals("Imported",row.getCell(ClientEntityConstants.STATUS_COL).getStringCellValue());
+       
+       
 
     }
 }

@@ -24,28 +24,20 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 
 @Entity
 @Table(name = "m_selfservice_user_client_mapping")
 public class AppUserClientMapping extends AbstractPersistableCustom<Long> {
 	
-    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "client_id", nullable = false)
-    private Client client;
-
+  
 	public AppUserClientMapping(){
 		
 	}
 
-	public AppUserClientMapping(Client client){
-		this.client = client;
-	}
+	
 
-	public Client getClient() {
-		return this.client;
-	}
+	
 	
 	@Override
 	public boolean equals(Object obj) {
@@ -64,7 +56,7 @@ public class AppUserClientMapping extends AbstractPersistableCustom<Long> {
 
 		AppUserClientMapping that = (AppUserClientMapping) obj;
 
-		return null == this.client.getId() ? false : this.client.getId().equals(that.client.getId());
+		return true;
 	}
 	
 	@Override
@@ -72,7 +64,7 @@ public class AppUserClientMapping extends AbstractPersistableCustom<Long> {
 
 		int hashCode = 17;
 
-		hashCode += null == this.client ? 0 : this.client.getId().hashCode() * 31;
+		
 
 		return hashCode;
 	}

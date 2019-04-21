@@ -39,10 +39,6 @@ import org.apache.fineract.infrastructure.dataqueries.data.EntityTables;
 import org.apache.fineract.infrastructure.dataqueries.data.StatusEnum;
 import org.apache.fineract.infrastructure.dataqueries.domain.EntityDatatableChecks;
 import org.apache.fineract.infrastructure.dataqueries.domain.EntityDatatableChecksRepository;
-import org.apache.fineract.portfolio.loanproduct.data.LoanProductData;
-import org.apache.fineract.portfolio.loanproduct.service.LoanProductReadPlatformService;
-import org.apache.fineract.portfolio.savings.data.SavingsProductData;
-import org.apache.fineract.portfolio.savings.service.SavingsProductReadPlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -56,22 +52,16 @@ public class EntityDatatableChecksReadPlatformServiceImpl implements EntityDatat
     private final EntityDataTableChecksMapper entityDataTableChecksMapper;
     private final EntityDatatableChecksRepository entityDatatableChecksRepository;
     private final ReadWriteNonCoreDataService readWriteNonCoreDataService;
-    private final LoanProductReadPlatformService loanProductReadPlatformService;
-    private final SavingsProductReadPlatformService savingsProductReadPlatformService;
     private final PaginationHelper<EntityDataTableChecksData> paginationHelper = new PaginationHelper<>();
 
     @Autowired
     public EntityDatatableChecksReadPlatformServiceImpl(final RoutingDataSource dataSource,
-            final LoanProductReadPlatformService loanProductReadPlatformService,
-            final SavingsProductReadPlatformService savingsProductReadPlatformService,
             final EntityDatatableChecksRepository entityDatatableChecksRepository,
             final ReadWriteNonCoreDataService readWriteNonCoreDataService) {
 
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.registerDataTableMapper = new RegisterDataTableMapper();
         this.entityDataTableChecksMapper = new EntityDataTableChecksMapper();
-        this.loanProductReadPlatformService = loanProductReadPlatformService;
-        this.savingsProductReadPlatformService = savingsProductReadPlatformService;
         this.entityDatatableChecksRepository = entityDatatableChecksRepository;
         this.readWriteNonCoreDataService = readWriteNonCoreDataService;
     }
@@ -151,13 +141,10 @@ public class EntityDatatableChecksReadPlatformServiceImpl implements EntityDatat
         List<DatatableCheckStatusData> statusGroup = getStatusList(EntityTables.getStatus("m_group"));
         List<DatatableCheckStatusData> statusSavings = getStatusList(EntityTables.getStatus("m_savings_account"));
 
-        Collection<LoanProductData> loanProductDatas = this.loanProductReadPlatformService
-                .retrieveAllLoanProductsForLookup(true);
-        Collection<SavingsProductData> savingsProductDatas = this.savingsProductReadPlatformService
-                .retrieveAllForLookup();
+     
 
         return new EntityDataTableChecksTemplateData(entities, statusClient, statusGroup, statusSavings, statusLoan,
-                dataTables, loanProductDatas, savingsProductDatas);
+                dataTables);
 
     }
 

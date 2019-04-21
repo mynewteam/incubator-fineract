@@ -191,7 +191,7 @@ public class PentahoReportingProcessServiceImpl implements ReportingProcessServi
             final FineractPlatformTenant tenant = ThreadLocalContextUtil.getTenant();
             final FineractPlatformTenantConnection tenantConnection = tenant.getConnection();
             String tenantUrl = driverConfig.constructProtocol(tenantConnection.getSchemaServer(), tenantConnection.getSchemaServerPort(), tenantConnection.getSchemaName()) ;
-            final String userhierarchy = currentUser.getOffice().getHierarchy();
+            final String userhierarchy = ".";
             logger.info("db URL:" + tenantUrl + "      userhierarchy:" + userhierarchy);
             rptParamValues.put("userhierarchy", userhierarchy);
 
