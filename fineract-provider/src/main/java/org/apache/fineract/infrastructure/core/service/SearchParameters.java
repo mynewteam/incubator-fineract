@@ -493,13 +493,6 @@ public final class SearchParameters {
      * 
      * @return SearchParameters object
      **/
-    public static SearchParameters fromReportMailingJobRunHistory(final Integer offset, final Integer limit,
-            final String orderBy, final String sortOrder) {
-        final Integer maxLimitAllowed = getCheckedLimit(limit);
-
-        return new SearchParameters(null, null, null, null, null, null, null, offset, maxLimitAllowed, orderBy,
-                sortOrder, null, null, null, null, null, false);
-    }
 
     /**
      * creates an instance of the {@link SearchParameters} from a request for the
@@ -511,11 +504,5 @@ public final class SearchParameters {
      * @param sortOrder
      * @return {@link SearchParameters} object
      */
-    public static SearchParameters fromReportMailingJob(final Integer offset, final Integer limit, final String orderBy,
-            final String sortOrder) {
-        final Integer maxLimitAllowed = getCheckedLimit(limit);
 
-        return new SearchParameters(null, null, null, null, null, null, null, offset, maxLimitAllowed, orderBy,
-                sortOrder, null, null, null, null, null, false);
-    }
 }

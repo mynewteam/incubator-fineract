@@ -49,7 +49,6 @@ import org.apache.fineract.infrastructure.dataqueries.data.ReportParameterJoinDa
 import org.apache.fineract.infrastructure.dataqueries.data.ResultsetColumnHeaderData;
 import org.apache.fineract.infrastructure.dataqueries.data.ResultsetRowData;
 import org.apache.fineract.infrastructure.dataqueries.exception.ReportNotFoundException;
-import org.apache.fineract.infrastructure.documentmanagement.contentrepository.FileSystemContentRepository;
 import org.apache.fineract.infrastructure.report.provider.ReportingProcessServiceProvider;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.infrastructure.security.utils.ColumnValidator;
@@ -279,7 +278,7 @@ public class ReadReportingServiceImpl implements ReadReportingService {
 	@Override
 	public String retrieveReportPDF(final String reportName, final String type, final Map<String, String> queryParams) {
 
-		final String fileLocation = FileSystemContentRepository.FINERACT_BASE_DIR + File.separator + "";
+		final String fileLocation = "";
 		if (!new File(fileLocation).isDirectory()) {
 			new File(fileLocation).mkdirs();
 		}
