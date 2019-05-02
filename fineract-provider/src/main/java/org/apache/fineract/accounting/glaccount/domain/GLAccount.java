@@ -82,8 +82,29 @@ public class GLAccount extends AbstractPersistableCustom<Long> {
     protected GLAccount() {
         //
     }
+    
+    
 
-    private GLAccount(final GLAccount parent, final String name, final String glCode, final boolean disabled,
+    public GLAccount(
+    		GLAccount parent, String hierarchy, List<GLAccount> children, String name, String glCode,
+			boolean disabled, boolean manualEntriesAllowed, Integer type, Integer usage, String description,
+			CodeValue tagId) {
+		this.parent = parent;
+		this.hierarchy = hierarchy;
+		this.children = children;
+		this.name = name;
+		this.glCode = glCode;
+		this.disabled = disabled;
+		this.manualEntriesAllowed = manualEntriesAllowed;
+		this.type = type;
+		this.usage = usage;
+		this.description = description;
+		this.tagId = tagId;
+	}
+
+
+
+	private GLAccount(final GLAccount parent, final String name, final String glCode, final boolean disabled,
             final boolean manualEntriesAllowed, final Integer type, final Integer usage, final String description, final CodeValue tagId) {
         this.name = StringUtils.defaultIfEmpty(name, null);
         this.glCode = StringUtils.defaultIfEmpty(glCode, null);

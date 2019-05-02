@@ -61,8 +61,4 @@ public class LoanArriaClassifyData {
 	public void setProduct_id(Long product_id) {
 		this.product_id = product_id;
 	}
-	
-	
-
-	
 }
