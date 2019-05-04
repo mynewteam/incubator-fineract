@@ -216,6 +216,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
         if (accountTypeId.isLoanAccount()) {
             acccountTransfers = this.accountTransferRepository.findByFromLoanId(accountNumber);
         }
+        
         if (acccountTransfers != null && acccountTransfers.size() > 0) {
             undoTransactions(acccountTransfers);
         }

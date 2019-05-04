@@ -57,7 +57,8 @@ public class PentahoReportingProcessServiceImpl implements ReportingProcessServi
     private final PlatformSecurityContext context;
     private boolean noPentaho = false;
 
-    @Autowired private JDBCDriverConfig driverConfig ;
+    @Autowired 
+    private JDBCDriverConfig driverConfig ;
     
     @Autowired
     public PentahoReportingProcessServiceImpl(final PlatformSecurityContext context) {

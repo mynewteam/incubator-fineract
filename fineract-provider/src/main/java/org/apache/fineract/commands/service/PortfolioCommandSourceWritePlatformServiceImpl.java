@@ -150,15 +150,18 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
 		final CommandSource commandSourceInput = validateMakerCheckerTransaction(makerCheckerId);
 		validateIsUpdateAllowed();
 
-		final CommandWrapper wrapper = CommandWrapper.fromExistingCommand(makerCheckerId,
+		final CommandWrapper wrapper = CommandWrapper.fromExistingCommand(
+				makerCheckerId,
 				commandSourceInput.getActionName(), commandSourceInput.getEntityName(), commandSourceInput.resourceId(),
 				commandSourceInput.subresourceId(), commandSourceInput.getResourceGetUrl(),
 				commandSourceInput.getProductId(), commandSourceInput.getOfficeId(), commandSourceInput.getGroupId(),
 				commandSourceInput.getClientId(), commandSourceInput.getLoanId(), commandSourceInput.getSavingsId(),
 				commandSourceInput.getTransactionId(), commandSourceInput.getCreditBureauId(),
 				commandSourceInput.getOrganisationCreditBureauId());
+		
 		final JsonElement parsedCommand = this.fromApiJsonHelper.parse(commandSourceInput.json());
-		final JsonCommand command = JsonCommand.fromExistingCommand(makerCheckerId, commandSourceInput.json(),
+		final JsonCommand command = JsonCommand.fromExistingCommand(
+				makerCheckerId, commandSourceInput.json(),				
 				parsedCommand, this.fromApiJsonHelper, commandSourceInput.getEntityName(),
 				commandSourceInput.resourceId(), commandSourceInput.subresourceId(), commandSourceInput.getGroupId(),
 				commandSourceInput.getClientId(), commandSourceInput.getLoanId(), commandSourceInput.getSavingsId(),

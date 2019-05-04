@@ -23,7 +23,8 @@ import java.util.Map;
 
 public enum JournalEntryType {
 
-    CREDIT(1, "journalEntryType.credit"), DEBIT(2, "journalEntrytType.debit");
+    CREDIT(1, "journalEntryType.credit"), 
+    DEBIT(2, "journalEntrytType.debit");
 
     private final Integer value;
     private final String code;

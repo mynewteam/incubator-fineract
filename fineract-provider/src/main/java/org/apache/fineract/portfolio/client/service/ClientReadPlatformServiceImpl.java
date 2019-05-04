@@ -635,12 +635,10 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 			builder.append("left join m_appuser clu on clu.id = c.closedon_userid ");
 			builder.append("left join m_code_value cv on cv.id = c.gender_cv_id ");
 			builder.append("left join m_code_value cvclienttype on cvclienttype.id = c.client_type_cv_id ");
-			builder.append(
-					"left join m_code_value cvclassification on cvclassification.id = c.client_classification_cv_id ");
+			builder.append("left join m_code_value cvclassification on cvclassification.id = c.client_classification_cv_id ");
 			builder.append("left join m_code_value cvSubStatus on cvSubStatus.id = c.sub_status ");
 			builder.append("left join m_code_value cvConstitution on cvConstitution.id = cnp.constitution_cv_id ");
-			builder.append(
-					"left join m_code_value cvMainBusinessLine on cvMainBusinessLine.id = cnp.main_business_line_cv_id ");
+			builder.append("left join m_code_value cvMainBusinessLine on cvMainBusinessLine.id = cnp.main_business_line_cv_id ");
 
 			this.schema = builder.toString();
 		}

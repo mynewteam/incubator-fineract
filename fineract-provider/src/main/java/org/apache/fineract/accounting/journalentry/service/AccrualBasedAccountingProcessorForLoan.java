@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 public class AccrualBasedAccountingProcessorForLoan implements AccountingProcessorForLoan {
 
     private final AccountingProcessorHelper helper;
-    private final static Logger logger = LoggerFactory.getLogger(AccrualBasedAccountingProcessorForLoan.class);
+//    private final static Logger logger = LoggerFactory.getLogger(AccrualBasedAccountingProcessorForLoan.class);
     @Autowired
     public AccrualBasedAccountingProcessorForLoan(final AccountingProcessorHelper accountingProcessorHelper) {
         this.helper = accountingProcessorHelper;

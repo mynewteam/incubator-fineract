@@ -95,15 +95,11 @@ public class LoanAccrualWritePlatformServiceImpl implements LoanAccrualWritePlat
             throws Exception {
         
     	Collection<LoanChargeData> chargeData = this.loanChargeReadPlatformService.retrieveLoanChargesForAccural(loanId);
-    	logger.debug("--- trac:  public void addAccrualAccounting(: " + chargeData.size());
-       
         Collection<LoanSchedulePeriodData> loanWaiverScheduleData = new ArrayList<>(1);
         Collection<LoanTransactionData> loanWaiverTansactionData = new ArrayList<>(1);
 
         for (final LoanScheduleAccrualData accrualData : loanScheduleAccrualDatas) {
 
-            logger.debug("--- trac:  for (final LoanScheduleAccrualData accrualData : accrualData.getWaivedInterestIncome():"+accrualData.getWaivedInterestIncome()+") {");
-            
             if ( accrualData.getWaivedInterestIncome() != null && loanWaiverScheduleData.isEmpty()) {
                 loanWaiverScheduleData = this.loanReadPlatformService.fetchWaiverInterestRepaymentData(accrualData.getLoanId());
                 loanWaiverTansactionData = this.loanReadPlatformService.retrieveWaiverLoanTransactions(accrualData.getLoanId());
@@ -123,35 +119,34 @@ public class LoanAccrualWritePlatformServiceImpl implements LoanAccrualWritePlat
         LocalDate accruredTill = null;
         
         Collection<LoanChargeData> chargeData = this.loanChargeReadPlatformService.retrieveLoanChargesForAccural(loanId);
-        logger.debug("---  public void addPeriodicAccruals(: loanId:" + loanId.toString());
-        
+         
         Collection<LoanSchedulePeriodData> loanWaiverScheduleData = new ArrayList<>(1);
         Collection<LoanTransactionData> loanWaiverTansactionData = new ArrayList<>(1);
+        
         for (final LoanScheduleAccrualData accrualData : loanScheduleAccrualDatas) {
             if (accrualData.getWaivedInterestIncome() != null && loanWaiverScheduleData.isEmpty()) {
-            	
-            	logger.debug("---  if (accrualData.getWaivedInterestIncome() != null && loanWaiverScheduleData.isEmpty()) {" );
+            		
                 loanWaiverScheduleData = this.loanReadPlatformService.fetchWaiverInterestRepaymentData(accrualData.getLoanId());
                 loanWaiverTansactionData = this.loanReadPlatformService.retrieveWaiverLoanTransactions(accrualData.getLoanId());
                 
             }
 
             if (accrualData.getDueDateAsLocaldate().isAfter(tilldate)) {
-            	logger.debug("---   if (accrualData.getDueDateAsLocaldate().isAfter(tilldate)) {" );
+            	
                 if (accruredTill == null || firstTime) {
                     accruredTill = accrualData.getAccruedTill();
                     firstTime = false;
                 }
                 
                 if (accruredTill == null || accruredTill.isBefore(tilldate)) {
-                	logger.debug("--- if (accruredTill == null || accruredTill.isBefore(tilldate)) {" );
+                	
                     updateCharges(chargeData, accrualData, accrualData.getFromDateAsLocaldate(), tilldate);
                     updateInterestIncome(accrualData, loanWaiverTansactionData, loanWaiverScheduleData, tilldate);
                     addAccrualTillSpecificDate(tilldate, accrualData);
                 }
                 
             } else {
-            	logger.debug("} else {" );
+            	
                 updateCharges(chargeData, accrualData, accrualData.getFromDateAsLocaldate(), accrualData.getDueDateAsLocaldate());
                 updateInterestIncome(accrualData, loanWaiverTansactionData, loanWaiverScheduleData, tilldate);
                 addAccrualAccounting(accrualData);
