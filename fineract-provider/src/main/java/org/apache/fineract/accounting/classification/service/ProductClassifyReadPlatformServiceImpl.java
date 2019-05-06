@@ -54,7 +54,7 @@ public class ProductClassifyReadPlatformServiceImpl implements ProductClassifyRe
 		return this.jdbctemplate.query(sql, mapper, new Object[] { loan_subtype_status_id, product_id });
 	}
 
-//	
+	//
 	@SuppressWarnings("deprecation")
 	@Override
 	public List<LoanSubTypeData> retrieveSubTypeByLoanIdAndDate(Long LoanId, Date TranDate) {
@@ -64,7 +64,7 @@ public class ProductClassifyReadPlatformServiceImpl implements ProductClassifyRe
 		return this.jdbctemplate.query(sql, mapper, new Object[] { TranDate, LoanId, TranDate });
 	}
 
-//	retrieveAccForCurrentAccStatusDataByLoanIdAndAccIdLoanSubTypeData
+	// retrieveAccForCurrentAccStatusDataByLoanIdAndAccIdLoanSubTypeData
 	private static final class LoanSubTypeDataMapping implements RowMapper<LoanSubTypeData> {
 		@Override
 		public LoanSubTypeData mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -127,7 +127,7 @@ public class ProductClassifyReadPlatformServiceImpl implements ProductClassifyRe
 	@Override
 	public int isFirstAccraul(Long LoanId) {
 		String sql = "select max(salary) from employee";
-//				this.jdbctemplate.queryForInt(query);
+		// this.jdbctemplate.queryForInt(query);
 		return this.jdbctemplate.queryForInt(sql);
 	}
 
@@ -145,7 +145,7 @@ public class ProductClassifyReadPlatformServiceImpl implements ProductClassifyRe
 		return this.jdbctemplate.query(sql, mapper, new Object[] { LoanId, ProductId, AccId });
 	}
 
-//	retrieveAccForCurrentAccStatusDataByLoanIdAndAccId
+	// retrieveAccForCurrentAccStatusDataByLoanIdAndAccId
 	private static final class ProductClassifyDataMapper implements RowMapper<ProductClassifyMappingData> {
 		@Override
 		public ProductClassifyMappingData mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -219,14 +219,13 @@ public class ProductClassifyReadPlatformServiceImpl implements ProductClassifyRe
 		return 0;
 	}
 
-
 	@Override
 	public int getLoanSubTypeStatus(Long LoanId) {
 		// check loan area aging
 		int arreaAging = jdbctemplate.queryForObject(
-				"select ( to_days(curdate()) - to_days(overdue_since_date_derived) )  from m_loan_arrears_aging where loan_id = ?",Integer.class,
-				new Object[] { LoanId });
-		
+				"select ( to_days(curdate()) - to_days(overdue_since_date_derived) )  from m_loan_arrears_aging where loan_id = ?",
+				Integer.class, new Object[] { LoanId });
+
 		int loanSubTypeStatusId = 1;
 		// if loan Area aging from 31 => 60 sub standard
 		// else if loan Area aging from 61 => 90 Doubtful
@@ -242,11 +241,11 @@ public class ProductClassifyReadPlatformServiceImpl implements ProductClassifyRe
 	}
 
 	@Override
-	public ProductSubTypeMappingData retrieveProductSubtypeMappingDataByProductId(Long productId, int loanSubTypeStatus) {
-		String sql = "SELECT id, product_id, loan_subtype_sta1tus_id,  min_age, max_age, portfolio_acc_id, int_receivable_acc_id income_acc_id FROM loan_product_subtype_mapping WHERE product_id = ? and loan_subtype_status_id = ?";
+	public ProductSubTypeMappingData retrieveProductSubtypeMappingDataByProductId(Long productId,
+			int loanSubTypeStatus) {
+		String sql = "SELECT id, product_id, loan_subtype_status_id,  min_age, max_age, portfolio_acc_id, int_receivable_acc_id income_acc_id FROM loan_product_subtype_mapping WHERE product_id = ? and loan_subtype_status_id = ?";
 		ProductSubTypeMappingDataMapper mapper = new ProductSubTypeMappingDataMapper();
 		return this.jdbctemplate.queryForObject(sql, mapper, new Object[] { productId, loanSubTypeStatus });
 	}
-	
 
 }

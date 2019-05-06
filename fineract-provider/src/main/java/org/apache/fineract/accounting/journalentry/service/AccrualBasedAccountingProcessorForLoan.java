@@ -110,7 +110,7 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
             	changeLoanSubType(loanDTO, loanTransactionDTO, office);
 //               LoanProductSubTypes
                 // End Loan Change Sub Type
-//                createJournalEntriesForAccruals(loanDTO, loanTransactionDTO, office);
+                createJournalEntriesForAccruals(loanDTO, loanTransactionDTO, office);
              
 //                logger.debug("---Sothea_Check---");
 //                logger.debug("createJournalEntriesForAccruals(loanDTO, loanTransactionDTO, office);");
