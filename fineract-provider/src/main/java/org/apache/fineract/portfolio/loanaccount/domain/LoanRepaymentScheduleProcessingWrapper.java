@@ -19,12 +19,14 @@
 package org.apache.fineract.portfolio.loanaccount.domain;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.fineract.organisation.monetary.domain.MonetaryCurrency;
 import org.apache.fineract.organisation.monetary.domain.Money;
+import org.joda.time.Days;
 import org.joda.time.LocalDate;
 
 /**
@@ -110,12 +112,22 @@ public class LoanRepaymentScheduleProcessingWrapper
 						} else if (loanCharge.getChargeCalculation().isPercentageOfInterest())
 						{
 							amount = amount.add(period.getInterestCharged(monetaryCurrency).getAmount());
-						} else
+						} else if(loanCharge.getChargeCalculation().isPercentageOfOutstandingAmount()) 
+						{
+							amount = amount.add(period.getOutstanding(monetaryCurrency).getAmount()).add(period.getPrincipalOutstanding(monetaryCurrency).getAmount());
+						}
+						else
 						{
 							amount = amount.add(period.getPrincipal(monetaryCurrency).getAmount());
 						}
 						BigDecimal loanChargeAmt = amount.multiply(loanCharge.getPercentage())
 							.divide(BigDecimal.valueOf(100));
+						if (loanCharge.getChargeCalculation().isPercentageOfOutstandingAmount()) {			    
+						    BigDecimal _loanTermInDays = BigDecimal.ZERO;
+							_loanTermInDays = BigDecimal.valueOf(Double.valueOf(Days.daysBetween(periodStart, periodEnd).getDays()));
+
+							loanChargeAmt = amount.multiply(loanCharge.getPercentage()).multiply(_loanTermInDays).divide(BigDecimal.valueOf(36500), 2, RoundingMode.HALF_UP);
+						}
 						cumulative = cumulative.plus(loanChargeAmt);
 					} else
 					{
