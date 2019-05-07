@@ -90,7 +90,7 @@ public class ChargeReadPlatformServiceImpl implements ChargeReadPlatformService 
     public Collection<ChargeData> retrieveAllCharges() {
         final ChargeMapper rm = new ChargeMapper();
 
-        String sql = "select " + rm.chargeSchema() + " where c.is_deleted=0 ";
+        String sql = "select " + rm.chargeSchema() + " where c.is_deleted = 0 ";
 
         sql += addInClauseToSQL_toLimitChargesMappedToOffice_ifOfficeSpecificProductsEnabled();
 
@@ -103,7 +103,7 @@ public class ChargeReadPlatformServiceImpl implements ChargeReadPlatformService 
     public Collection<ChargeData> retrieveAllChargesForCurrency(String currencyCode) {
         final ChargeMapper rm = new ChargeMapper();
 
-        String sql = "select " + rm.chargeSchema() + " where c.is_deleted=0 and c.currency_code= ? ";
+        String sql = "select " + rm.chargeSchema() + " where c.is_deleted = 0 and c.currency_code = ? ";
 
         sql += addInClauseToSQL_toLimitChargesMappedToOffice_ifOfficeSpecificProductsEnabled();
 
@@ -114,18 +114,23 @@ public class ChargeReadPlatformServiceImpl implements ChargeReadPlatformService 
 
     @Override
     public ChargeData retrieveCharge(final Long chargeId) {
-        try {
+
             final ChargeMapper rm = new ChargeMapper();
 
-            String sql = "select " + rm.chargeSchema() + " where c.id = ? and c.is_deleted=0 ";
+            String sql = "select " + rm.chargeSchema() + " where c.id = ? and c.is_deleted = 0 ";
 
             sql += addInClauseToSQL_toLimitChargesMappedToOffice_ifOfficeSpecificProductsEnabled();
 
             sql = sql + " ;";
-            return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { chargeId });
-        } catch (final EmptyResultDataAccessException e) {
-            throw new ChargeNotFoundException(chargeId);
-        }
+            List<ChargeData> cList = this.jdbcTemplate.query(sql, rm, new Object[] { chargeId });
+            if (cList.isEmpty()) {
+				return null;
+			}else {
+				return cList.get(0);
+			}
+//        } catch (final EmptyResultDataAccessException e) {
+//            throw new ChargeNotFoundException(chargeId);
+//        }
     }
 
     @Override
@@ -173,7 +178,7 @@ public class ChargeReadPlatformServiceImpl implements ChargeReadPlatformService 
         final ChargeMapper rm = new ChargeMapper();
 
         String sql = "select " + rm.loanProductChargeSchema()
-                + " where c.is_deleted=0 and c.is_active=1 and plc.product_loan_id=? ";
+                + " where c.is_deleted = 0 and c.is_active = 1 and plc.product_loan_id = ? ";
 
         sql += addInClauseToSQL_toLimitChargesMappedToOffice_ifOfficeSpecificProductsEnabled();
 
@@ -187,7 +192,7 @@ public class ChargeReadPlatformServiceImpl implements ChargeReadPlatformService 
         final ChargeMapper rm = new ChargeMapper();
 
         String sql = "select " + rm.loanProductChargeSchema()
-                + " where c.is_deleted=0 and c.is_active=1 and plc.product_loan_id=? and c.charge_time_enum=? ";
+                + " where c.is_deleted = 0 and c.is_active = 1 and plc.product_loan_id = ? and c.charge_time_enum = ? ";
         sql += addInClauseToSQL_toLimitChargesMappedToOffice_ifOfficeSpecificProductsEnabled();
 
         return this.jdbcTemplate.query(sql, rm, new Object[] { loanProductId, chargeTime.getValue() });
@@ -198,7 +203,7 @@ public class ChargeReadPlatformServiceImpl implements ChargeReadPlatformService 
         final ChargeMapper rm = new ChargeMapper();
         Object[] params = new Object[] { ChargeAppliesTo.LOAN.getValue() };
         String sql = "select " + rm.chargeSchema()
-                + " where c.is_deleted=0 and c.is_active=1 and c.is_penalty=0 and c.charge_applies_to_enum=? ";
+                + " where c.is_deleted = 0 and c.is_active = 1 and c.is_penalty = 0 and c.charge_applies_to_enum = ? ";
         sql += addInClauseToSQL_toLimitChargesMappedToOffice_ifOfficeSpecificProductsEnabled();
         sql += " order by c.name ";
 
@@ -216,7 +221,7 @@ public class ChargeReadPlatformServiceImpl implements ChargeReadPlatformService 
         processChargeExclusionsForLoans(excludeChargeTimes, excludeClause);
         String sql = "select " + rm.chargeSchema() + " join m_loan la on la.currency_code = c.currency_code"
                 + " where la.id=:loanId"
-                + " and c.is_deleted=0 and c.is_active=1 and c.charge_applies_to_enum=:chargeAppliesTo"
+                + " and c.is_deleted = 0 and c.is_active = 1 and c.charge_applies_to_enum = :chargeAppliesTo"
                 + excludeClause + " ";
         sql += addInClauseToSQL_toLimitChargesMappedToOffice_ifOfficeSpecificProductsEnabled();
         sql += " order by c.name ";
