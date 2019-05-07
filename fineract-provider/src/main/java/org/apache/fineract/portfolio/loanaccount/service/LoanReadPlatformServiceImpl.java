@@ -280,7 +280,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
 			 * TODO Vishwas: Remove references to "Contra" from the codebase
 			 ***/
 			final String sql = "select " + rm.LoanPaymentsSchema()
-					+ " where tr.loan_id = ? and tr.transaction_type_enum not in (0, 3) and  (tr.is_reversed=0 or tr.manually_adjusted_or_reversed = 1) order by tr.transaction_date ASC,id ";
+					+ " where tr.loan_id = ? and tr.transaction_type_enum not in (0, 3) and (tr.is_reversed=0 or tr.manually_adjusted_or_reversed = 1) order by tr.transaction_date ASC,id ";
 			return this.jdbcTemplate.query(sql, rm, new Object[] { loanId });
 		} catch (final EmptyResultDataAccessException e) {
 			return null;
@@ -1427,7 +1427,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
 							receiptNumber, bankNumber);
 				}
 			}
-			final LocalDate date = JdbcSupport.getLocalDate(rs, "date");
+			final LocalDate date = JdbcSupport.getLocalDate(rs, "datetime");
 			final LocalDate submittedOnDate = JdbcSupport.getLocalDate(rs, "submittedOnDate");
 			final BigDecimal totalAmount = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "total");
 			final BigDecimal principalPortion = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "principal");
