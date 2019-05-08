@@ -34,7 +34,7 @@ public interface ProductClassifyReadPlatformService {
 
 	List<LoanSubTypeData> retrieveSubTypeByLoanIdAndDate(Long LoanId, Date TranDate);
 
-	int getLoanSubTypeStatus(Long LoanId);
+	int getLoanSubTypeStatus(Long loanId);
 	
 	ProductSubTypeMappingData retrieveProductSubtypeMappingDataByProductId(Long productId, int loanSubTypeStatus);
 }
