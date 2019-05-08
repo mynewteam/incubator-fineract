@@ -8,6 +8,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSerializer;
+
 import org.apache.fineract.accounting.spotrate.data.SpotRateData;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
@@ -16,11 +17,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Path("/spotrate")
 @Component
 @Scope("singleton")
 public class SpotRateApiResource {
-
+	
+	private final static Logger Logger = LoggerFactory.getLogger(SpotRateApiResource.class);
     private final DefaultToApiJsonSerializer<SpotRateData> toApiJsonSerializer;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
     @Autowired
@@ -38,7 +43,7 @@ public class SpotRateApiResource {
         final CommandWrapper commandRequest = new CommandWrapperBuilder().createSpotRate().withJson(jsonRequestBody).build();
 
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
-
+        Logger.info(jsonRequestBody);
         return this.toApiJsonSerializer.serialize(result);
     }
 

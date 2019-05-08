@@ -11,10 +11,12 @@ import org.apache.fineract.infrastructure.core.serialization.AbstractFromApiJson
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 
+@Component
 public class SpotRateSerialization extends AbstractFromApiJsonDeserializer<SpotRateCommand>
 {
 	private final FromJsonHelper fromApiJsonHelper;

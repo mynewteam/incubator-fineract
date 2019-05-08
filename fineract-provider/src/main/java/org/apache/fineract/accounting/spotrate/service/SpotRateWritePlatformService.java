@@ -18,9 +18,6 @@
  */
 package org.apache.fineract.accounting.spotrate.service;
 
-//import java.util.Collection;
-//
-//import org.apache.fineract.accounting.spotrate.data.SpotRateData;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 
