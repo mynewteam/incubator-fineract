@@ -61,6 +61,7 @@ import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.specification.RequestSpecification;
 import com.jayway.restassured.specification.ResponseSpecification;
 
+
 /**
  * Client Loan Integration Test for checking Loan Application Repayments
  * Schedule, loan charges, penalties, loan repayments and verifying accounting

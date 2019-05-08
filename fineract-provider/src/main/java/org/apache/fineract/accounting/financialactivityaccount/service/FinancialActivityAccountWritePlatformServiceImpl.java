@@ -71,8 +71,9 @@ public class FinancialActivityAccountWritePlatformServiceImpl implements Financi
             final Long accountId = command.longValueOfParameterNamed(FinancialActivityAccountsJsonInputParams.GL_ACCOUNT_ID.getValue());
             final GLAccount glAccount = glAccountRepositoryWrapper.findOneWithNotFoundDetection(accountId);
             FinancialActivityAccount financialActivityAccount = FinancialActivityAccount.createNew(glAccount, financialActivityId);
-
-            validateFinancialActivityAndAccountMapping(financialActivityAccount);
+            
+            //Rithy command test
+            //validateFinancialActivityAndAccountMapping(financialActivityAccount);
             this.financialActivityAccountRepository.save(financialActivityAccount);
             return new CommandProcessingResultBuilder() //
                     .withCommandId(command.commandId()) //

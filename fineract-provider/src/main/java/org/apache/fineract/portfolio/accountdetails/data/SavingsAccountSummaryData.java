@@ -36,6 +36,9 @@ public class SavingsAccountSummaryData {
     private final Long id;
     private final String accountNo;
     private final String externalId;
+    private final String collateral;
+    private final String loanaccount;
+    private final String reference;
     private final Long productId;
     private final String productName;
     private final String shortProductName;
@@ -54,7 +57,7 @@ public class SavingsAccountSummaryData {
     public SavingsAccountSummaryData(final Long id, final String accountNo, final String externalId, final Long productId,
             final String productName, final String shortProductName, final SavingsAccountStatusEnumData status, final CurrencyData currency,
             final BigDecimal accountBalance, final EnumOptionData accountType, final SavingsAccountApplicationTimelineData timeline, final EnumOptionData depositType, 
-            final SavingsAccountSubStatusEnumData subStatus, final LocalDate lastActiveTransactionDate) {
+            final SavingsAccountSubStatusEnumData subStatus, final LocalDate lastActiveTransactionDate,final String collateral,final String loanaccount,final String reference) {
         this.id = id;
         this.accountNo = accountNo;
         this.externalId = externalId;
@@ -69,5 +72,8 @@ public class SavingsAccountSummaryData {
         this.depositType = depositType;
         this.subStatus = subStatus;
         this.lastActiveTransactionDate = lastActiveTransactionDate;
+        this.collateral=collateral;
+        this.loanaccount=loanaccount;
+        this.reference=reference;
     }
 }

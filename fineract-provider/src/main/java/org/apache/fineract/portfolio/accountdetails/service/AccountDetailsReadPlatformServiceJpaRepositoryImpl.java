@@ -292,6 +292,8 @@ public class AccountDetailsReadPlatformServiceJpaRepositoryImpl implements Accou
             accountsSummary.append("sa.closedon_date as closedOnDate,");
             accountsSummary.append("cbu.username as closedByUsername,");
             accountsSummary.append("cbu.firstname as closedByFirstname, cbu.lastname as closedByLastname,");
+            accountsSummary.append("l.collateral_numid as collateral, l.loanaccount_Id as loanaccount,l.reference_id as reference,");
+            
 
             accountsSummary
                     .append("sa.currency_code as currencyCode, sa.currency_digits as currencyDigits, sa.currency_multiplesof as inMultiplesOf, ");
@@ -301,6 +303,7 @@ public class AccountDetailsReadPlatformServiceJpaRepositoryImpl implements Accou
             accountsSummary.append("sa.deposit_type_enum as depositType ");
             accountsSummary.append("from m_savings_account sa ");
             accountsSummary.append("join m_savings_product as p on p.id = sa.product_id ");
+            accountsSummary.append("join m_loan as l on l.id = sa.client_id ");
             accountsSummary.append("join m_currency curr on curr.code = sa.currency_code ");
             accountsSummary.append("left join m_appuser sbu on sbu.id = sa.submittedon_userid ");
             accountsSummary.append("left join m_appuser rbu on rbu.id = sa.rejectedon_userid ");
@@ -322,6 +325,9 @@ public class AccountDetailsReadPlatformServiceJpaRepositoryImpl implements Accou
             final Long id = JdbcSupport.getLong(rs, "id");
             final String accountNo = rs.getString("accountNo");
             final String externalId = rs.getString("externalId");
+            final String collateral = rs.getString("collateral");
+            final String loanaccount =rs.getString("loanaccount");
+            final String reference= rs.getString("reference");
             final Long productId = JdbcSupport.getLong(rs, "productId");
             final String productName = rs.getString("productName");
             final String shortProductName = rs.getString("shortProductName");
@@ -384,7 +390,7 @@ public class AccountDetailsReadPlatformServiceJpaRepositoryImpl implements Accou
                     closedByLastname);
 
             return new SavingsAccountSummaryData(id, accountNo, externalId, productId, productName, shortProductName, status, currency, accountBalance,
-                    accountTypeData, timeline, depositTypeData, subStatus, lastActiveTransactionDate);
+                    accountTypeData, timeline, depositTypeData, subStatus, lastActiveTransactionDate,collateral,loanaccount,reference);
         }
     }
 
@@ -421,7 +427,8 @@ public class AccountDetailsReadPlatformServiceJpaRepositoryImpl implements Accou
                     .append(" l.closedon_date as closedOnDate,")
                     .append(" cbu.username as closedByUsername, cbu.firstname as closedByFirstname, cbu.lastname as closedByLastname,")
                     .append(" la.overdue_since_date_derived as overdueSinceDate,")
-                    .append(" l.writtenoffon_date as writtenOffOnDate, l.expected_maturedon_date as expectedMaturityDate")
+                    .append(" l.writtenoffon_date as writtenOffOnDate, l.expected_maturedon_date as expectedMaturityDate,")
+                    .append(" l.collateral_numid as collateral, l.loanaccount_Id as loanaccount,l.reference_id as reference")
 
                     .append(" from m_loan l ").append("LEFT JOIN m_product_loan AS lp ON lp.id = l.product_id")
                     .append(" left join m_appuser sbu on sbu.id = l.submittedon_userid")
@@ -441,6 +448,9 @@ public class AccountDetailsReadPlatformServiceJpaRepositoryImpl implements Accou
             final Long id = JdbcSupport.getLong(rs, "id");
             final String accountNo = rs.getString("accountNo");
             final String externalId = rs.getString("externalId");
+            final String collateral = rs.getString("collateral");
+            final String loanaccount=rs.getString("loanaccount");
+            final String reference=rs.getString("reference");
             final Long productId = JdbcSupport.getLong(rs, "productId");
             final String loanProductName = rs.getString("productName");
             final String shortLoanProductName = rs.getString("shortProductName");
@@ -484,6 +494,7 @@ public class AccountDetailsReadPlatformServiceJpaRepositoryImpl implements Accou
             final BigDecimal originalLoan = JdbcSupport.getBigDecimalDefaultToNullIfZero(rs,"originalLoan");
             final BigDecimal loanBalance = JdbcSupport.getBigDecimalDefaultToNullIfZero(rs,"loanBalance");
             final BigDecimal amountPaid = JdbcSupport.getBigDecimalDefaultToNullIfZero(rs,"amountPaid");
+           
 
             final LocalDate writtenOffOnDate = JdbcSupport.getLocalDate(rs, "writtenOffOnDate");
 
@@ -503,7 +514,7 @@ public class AccountDetailsReadPlatformServiceJpaRepositoryImpl implements Accou
                     expectedMaturityDate, writtenOffOnDate, closedByUsername, closedByFirstname, closedByLastname);
 
             return new LoanAccountSummaryData(id, accountNo, externalId, productId, loanProductName, shortLoanProductName, loanStatus, loanType, loanCycle,
-                    timeline, inArrears,originalLoan,loanBalance,amountPaid);
+                    timeline, inArrears,originalLoan,loanBalance,amountPaid,collateral,loanaccount,reference);
         }
     }
     public AccountSummaryCollectionData retrieveClientAllloanAccountDetails() {
