@@ -224,7 +224,7 @@ public class ProductClassifyReadPlatformServiceImpl implements ProductClassifyRe
 		// check loan area aging   
 		int arreaAging = jdbctemplate.queryForObject(
 				"select ( to_days(curdate()) - to_days(overdue_since_date_derived) )  from m_loan_arrears_aging where loan_id = ?",
-				Integer.class, new Object[] { 1 });
+				Integer.class, new Object[] { LoanId });
 
 		int loanSubTypeStatusId = 1;
 		// if loan Area aging from 31 => 60 sub standard
