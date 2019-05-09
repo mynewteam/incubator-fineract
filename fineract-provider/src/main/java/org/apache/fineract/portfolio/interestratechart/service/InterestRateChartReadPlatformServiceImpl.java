@@ -91,13 +91,13 @@ public class InterestRateChartReadPlatformServiceImpl implements InterestRateCha
         sql.append(this.chartExtractor.schema());
         sql.append(" where sp.id = ? order by irc.id, ");
         sql.append("CASE ");
-        sql.append("WHEN isPrimaryGroupingByAmount then ircd.amount_range_from ");
-        sql.append("WHEN isPrimaryGroupingByAmount then ircd.amount_range_to ");
+        sql.append("WHEN isPrimaryGroupingByAmount = 1 then ircd.amount_range_from ");
+        sql.append("WHEN isPrimaryGroupingByAmount = 0 then ircd.amount_range_to ");
         sql.append("END,");
         sql.append("ircd.from_period, ircd.to_period,");
         sql.append("CASE ");
-        sql.append("WHEN !isPrimaryGroupingByAmount then ircd.amount_range_from ");
-        sql.append("WHEN !isPrimaryGroupingByAmount then ircd.amount_range_to ");
+        sql.append("WHEN isPrimaryGroupingByAmount = 0 then ircd.amount_range_from ");
+        sql.append("WHEN isPrimaryGroupingByAmount = 1 then ircd.amount_range_to ");
         sql.append("END");
         
         return this.jdbcTemplate.query(sql.toString(), this.chartExtractor, new Object[] { productId });
@@ -363,8 +363,8 @@ public class InterestRateChartReadPlatformServiceImpl implements InterestRateCha
             Long interestRateChartSlabId = null;
             int ircIndex = 0;// Interest rate chart index
             int ircdIndex = 0;// Interest rate chart Slabs index
-            rs.previous();
-            while (rs.next()) {
+//            rs.previous();
+//            while (rs.next()) {
                 Long tempIrcdId = rs.getLong("ircdId");
                 if (interestRateChartSlabId == null || interestRateChartSlabId.equals(tempIrcdId)) {
                     if (chartSlabData == null) {
@@ -376,11 +376,11 @@ public class InterestRateChartReadPlatformServiceImpl implements InterestRateCha
                         chartSlabData.addIncentives(incentiveData);
                     }
                 } else {
-                    rs.previous();
-                    break;
+//                    rs.previous();
+//                    break;
                 }
 
-            }
+//            }
             return chartSlabData;
         }
 
