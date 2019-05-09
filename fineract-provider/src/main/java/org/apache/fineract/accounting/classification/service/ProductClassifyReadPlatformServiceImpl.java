@@ -220,37 +220,14 @@ public class ProductClassifyReadPlatformServiceImpl implements ProductClassifyRe
 	}
 
 	@Override
-	public int getLoanSubTypeStatus(Long LoanId) {
-		// check loan area aging   
-		int arreaAging = jdbctemplate.queryForObject(
-				"select ( to_days(curdate()) - to_days(overdue_since_date_derived) )  from m_loan_arrears_aging where loan_id = ?",
-				Integer.class, new Object[] { LoanId });
-
-		int loanSubTypeStatusId = 1;
-		// if loan Area aging from 31 => 60 sub standard
-		// else if loan Area aging from 61 => 90 Doubtful
-		// else if loan Area aging from
-		if (arreaAging >= 31 && arreaAging <= 60) {
-			loanSubTypeStatusId = 2;
-		} else if (arreaAging >= 61 && arreaAging <= 90) {
-			loanSubTypeStatusId = 3;
-		} else if (arreaAging >= 91) {
-			loanSubTypeStatusId = 4;
-		}
-		return loanSubTypeStatusId;
-	}
-
-	@Override
-	public ProductSubTypeMappingData retrieveProductSubtypeMappingDataByProductId(Long productId,
-			int loanSubTypeStatus) {
-		String sql = "SELECT id, product_id, loan_subtype_status_id,  min_age, max_age, portfolio_acc_id, int_receivable_acc_id, income_acc_id FROM loan_product_subtype_mapping WHERE product_id = ? and loan_subtype_status_id = ?";
+	public ProductSubTypeMappingData retrieveProductSubtypeMappingDataByProductId(Long loanId) {
+		String sql = "SELECT ID, PRODUCT_ID, LOAN_SUBTYPE_STATUS_ID, MIN_AGE, MAX_AGE, PORTFOLIO_ACC_ID, INT_RECEIVABLE_ACC_ID, INCOME_ACC_ID  FROM " + 
+				" loan_product_subtype_mapping WHERE product_id = (SELECT PRODUCT_ID FROM M_LOAN WHERE ID = ?) " + 
+				"    AND ( SELECT to_days(curdate()) - to_days(overdue_since_date_derived) FROM m_loan_arrears_aging WHERE  loan_id = ? " + 
+				"    ) BETWEEN min_age AND max_age " + 
+				"    OR ( ( SELECT to_days(curdate()) - to_days(overdue_since_date_derived) FROM m_loan_arrears_aging WHERE loan_id = ? ) >= min_age AND max_age = - 1 )";
 		ProductSubTypeMappingDataMapper mapper = new ProductSubTypeMappingDataMapper();
 		
-		List<ProductSubTypeMappingData> mlist= this.jdbctemplate.query(sql, mapper, new Object[] { productId, loanSubTypeStatus });
-		if (mlist.isEmpty()) {
-			return null;
-		}else {
-			return mlist.get(0);
-		}
+		return this.jdbctemplate.queryForObject(sql, mapper, new Object[] { loanId, loanId, loanId });
 	}
 }

@@ -789,7 +789,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
 		}
 		final Loan loan = this.loanAssembler.assembleFrom(loanId);
 		
-		loan.setloanSubtypeStatus(this.productClassifyReadPlatformService.getLoanSubTypeStatus(loanId));
+		loan.setloanSubtypeStatus(this.productClassifyReadPlatformService.retrieveProductSubtypeMappingDataByProductId(loanId).getLoan_subtype_status_id());
 		
 		final PaymentDetail paymentDetail = this.paymentDetailWritePlatformService
 				.createAndPersistPaymentDetail(command, changes);

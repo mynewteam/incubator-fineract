@@ -1266,8 +1266,8 @@ public class AccountingProcessorHelper {
 					amount);
 		} else {
 //			Sothea Test
-			List<ProductClassifyMappingData> classificationData = classifyReadPlatformService
-					.retrieveProductClassifyList((long) 1, 1);
+//			List<ProductClassifyMappingData> classificationData = classifyReadPlatformService
+//					.retrieveProductClassifyList((long) 1, 1);
 			createCreditJournalEntryForLoan(office, currencyCode, account, loanId, transactionId, transactionDate,
 					amount);
 		}
@@ -1610,9 +1610,7 @@ public class AccountingProcessorHelper {
 
 		} else {
 
-			int loanStatusId = this.classifyReadPlatformService.getLoanSubTypeStatus(loanId);
-			ProductSubTypeMappingData product = this.classifyReadPlatformService
-					.retrieveProductSubtypeMappingDataByProductId(loanProductId, loanStatusId);
+			ProductSubTypeMappingData product = this.classifyReadPlatformService.retrieveProductSubtypeMappingDataByProductId(loanId);
 			
 			GLAccount gl = null;
 			if (accountMappingTypeId == ACCRUAL_ACCOUNTS_FOR_LOAN.LOAN_PORTFOLIO.getValue()) {
