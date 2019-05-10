@@ -95,13 +95,13 @@ public class DepositAccountInterestRateChartReadPlatformServiceImpl implements D
         sql.append(this.chartExtractor.schema());
         sql.append(" where irc.id = ? order by irc.id asc, ");
         sql.append("CASE ");
-        sql.append("WHEN isPrimaryGroupingByAmount then ircd.amount_range_from ");
-        sql.append("WHEN isPrimaryGroupingByAmount then ircd.amount_range_to ");
+        sql.append("WHEN isPrimaryGroupingByAmount = 1 then ircd.amount_range_from ");
+        sql.append("WHEN isPrimaryGroupingByAmount = 0 then ircd.amount_range_to ");
         sql.append("END,");
         sql.append("ircd.from_period, ircd.to_period,");
         sql.append("CASE ");
-        sql.append("WHEN !isPrimaryGroupingByAmount then ircd.amount_range_from ");
-        sql.append("WHEN !isPrimaryGroupingByAmount then ircd.amount_range_to ");
+        sql.append("WHEN isPrimaryGroupingByAmount = 0 then ircd.amount_range_from ");
+        sql.append("WHEN isPrimaryGroupingByAmount = 1 then ircd.amount_range_to ");
         sql.append("END");
         Collection<DepositAccountInterestRateChartData> chartDatas = this.jdbcTemplate.query(sql.toString(), this.chartExtractor,
                 new Object[] { chartId });
@@ -139,13 +139,13 @@ public class DepositAccountInterestRateChartReadPlatformServiceImpl implements D
         sql.append(this.chartExtractor.schema());
         sql.append(" where irc.savings_account_id = ? order by irc.id asc, ");
         sql.append("CASE ");
-        sql.append("WHEN isPrimaryGroupingByAmount then ircd.amount_range_from ");
-        sql.append("WHEN isPrimaryGroupingByAmount then ircd.amount_range_to ");
+        sql.append("WHEN isPrimaryGroupingByAmount = 1 then ircd.amount_range_from ");
+        sql.append("WHEN isPrimaryGroupingByAmount = 0 then ircd.amount_range_to ");
         sql.append("END,");
         sql.append("ircd.from_period, ircd.to_period,");
         sql.append("CASE ");
-        sql.append("WHEN !isPrimaryGroupingByAmount then ircd.amount_range_from ");
-        sql.append("WHEN !isPrimaryGroupingByAmount then ircd.amount_range_to ");
+        sql.append("WHEN isPrimaryGroupingByAmount = 0 then ircd.amount_range_from ");
+        sql.append("WHEN isPrimaryGroupingByAmount = 1 then ircd.amount_range_to ");
         sql.append("END");
 
         Collection<DepositAccountInterestRateChartData> chartDatas = this.jdbcTemplate.query(sql.toString(), this.chartExtractor,
@@ -174,8 +174,7 @@ public class DepositAccountInterestRateChartReadPlatformServiceImpl implements D
                 clientClassificationOptions);
     }
 
-    private static final class DepositAccountInterestRateChartExtractor implements
-            ResultSetExtractor<Collection<DepositAccountInterestRateChartData>> {
+    private static final class DepositAccountInterestRateChartExtractor implements  ResultSetExtractor<Collection<DepositAccountInterestRateChartData>> {
 
         DepositAccountInterestRateChartMapper chartMapper = new DepositAccountInterestRateChartMapper();
         InterestRateChartSlabExtractor chartSlabsMapper = new InterestRateChartSlabExtractor();
@@ -222,7 +221,6 @@ public class DepositAccountInterestRateChartReadPlatformServiceImpl implements D
             DepositAccountInterestRateChartData chartData = null;
             Long interestRateChartId = null;
             int ircIndex = 0;// Interest rate chart index
-
             while (rs.next()) {
                 Long tempIrcId = rs.getLong("ircId");
                 // first row or when interest rate chart id changes
@@ -293,8 +291,9 @@ public class DepositAccountInterestRateChartReadPlatformServiceImpl implements D
             Long interestRateChartSlabId = null;
             int ircIndex = 0;// Interest rate chart index
             int ircdIndex = 0;// Interest rate chart Slabs index
-            rs.previous();
-            while (rs.next()) {
+            
+//            rs.previous();
+//            while (rs.next()) {
                 Long tempIrcdId = rs.getLong("ircdId");
                 if (interestRateChartSlabId == null || interestRateChartSlabId.equals(tempIrcdId)) {
                     if (chartSlabData == null) {
@@ -306,11 +305,11 @@ public class DepositAccountInterestRateChartReadPlatformServiceImpl implements D
                         chartSlabData.addIncentives(incentiveData);
                     }
                 } else {
-                    rs.previous();
-                    break;
+//                    rs.previous();
+//                    break;
                 }
 
-            }
+//            }
             return chartSlabData;
         }
     }
