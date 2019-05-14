@@ -23,7 +23,7 @@ import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuilder;
 import org.apache.fineract.accounting.spotrate.command.SpotRateCommand;
 import org.apache.fineract.accounting.spotrate.domain.SpotRateRepository;
-import org.apache.fineract.accounting.spotrate.domain.mSpotRate;
+import org.apache.fineract.accounting.spotrate.domain.SpotRate;
 import org.apache.fineract.accounting.spotrate.serialization.SpotRateSerialization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -51,12 +51,12 @@ public class SpotRateWritePlatformServiceImp implements SpotRateWritePlatformSer
 		{
 			final SpotRateCommand spotRateCommand = this.fromApiJsonDeserializer.commandFromApiJson(command.json());
 			spotRateCommand.validateForCreate();
-			final mSpotRate spotrate = mSpotRate.fromJson(command);
+			final SpotRate spotrate = SpotRate.fromJson(command);
 
 			this.spotrateRespository.save(spotrate);
 
 			return new CommandProcessingResultBuilder().withCommandId(command.commandId())
-					.withEntityId(spotrate.getspotRateID()).build();
+					.withEntityId(spotrate.getId()).build();
 		} catch (final DataIntegrityViolationException dve)
 		{
 			return CommandProcessingResult.empty();

@@ -2,21 +2,21 @@ package org.apache.fineract.accounting.spotrate.domain;
 
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.fineract.accounting.spotrate.api.SpotRateJsonInputParams;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
+import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 import org.joda.time.LocalDate;
 
 @Entity
 @Table(name = "spotrate")
-public class mSpotRate  {
-   
-	@Column(name = "spotRateID")
-    private Long spotRateID;
+public class SpotRate extends AbstractPersistableCustom<Long> {
     
     @Column(name = "currency_code")
     private String currency_code;
@@ -31,30 +31,16 @@ public class mSpotRate  {
     private BigDecimal spotRate;
     
     @Column(name = "transactionDate")
-    private LocalDate transactionDate;
-
+    private Date transactionDate;
     
-    
-    
-    public mSpotRate(String currency_code, BigDecimal buyingRate, BigDecimal sellingRate, BigDecimal spotRate,
-			LocalDate transactionDate)
+    public SpotRate(String currency_code, BigDecimal buyingRate, BigDecimal sellingRate, BigDecimal spotRate, LocalDate transactionDate)
 	{
     	this.currency_code = currency_code;
     	this.buyingRate = buyingRate;
     	this.sellingRate = sellingRate;
     	this.spotRate = spotRate;
-    	this.transactionDate = transactionDate;
+    	this.transactionDate = transactionDate.toDate();
 	}
-
-
-	public Long getspotRateID() {
-        return this.spotRateID;
-    }
-    
-    
-    public void setspotRateID(Long spotRateID) {
-        this.spotRateID = spotRateID;
-    }
 
 
     public String getcurrency_code() {
@@ -95,25 +81,18 @@ public class mSpotRate  {
         this.spotRate = spotRate;
     }
 
-    
     public LocalDate gettransactionDate() {
-        return this.transactionDate;
-    }
+		return (LocalDate) ObjectUtils.defaultIfNull(new LocalDate(this.transactionDate), null);
+	}
 
-    
-    public void settransactionDate(LocalDate transactionDate) {
-        this.transactionDate = transactionDate;
-    }
-
-
-	public static mSpotRate fromJson(JsonCommand command)
+	public static SpotRate fromJson(JsonCommand command)
 	{
 		final String currency_code = command.stringValueOfParameterNamed(SpotRateJsonInputParams.CURRENCY_CODE.getValue());
         final BigDecimal buyingRate = command.bigDecimalValueOfParameterNamed(SpotRateJsonInputParams.BUYING_RATE.getValue());
         final BigDecimal sellingRate = command.bigDecimalValueOfParameterNamed(SpotRateJsonInputParams.SELLING_RATE.getValue());
         final BigDecimal spotRate = command.bigDecimalValueOfParameterNamed(SpotRateJsonInputParams.SPOTRATE.getValue());
         final LocalDate transactionDate = command.localDateValueOfParameterNamed(SpotRateJsonInputParams.TRANSACTION_DATE.getValue());
-		return new mSpotRate(currency_code, buyingRate, sellingRate, spotRate, transactionDate);
+		return new SpotRate(currency_code, buyingRate, sellingRate, spotRate, transactionDate);
 	}
     
     

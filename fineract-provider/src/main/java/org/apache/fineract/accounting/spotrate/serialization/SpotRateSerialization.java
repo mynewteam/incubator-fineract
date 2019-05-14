@@ -12,6 +12,8 @@ import org.apache.fineract.infrastructure.core.exception.InvalidJsonException;
 import org.apache.fineract.infrastructure.core.serialization.AbstractFromApiJsonDeserializer;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.joda.time.LocalDate;
+
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -45,8 +47,8 @@ public class SpotRateSerialization extends AbstractFromApiJsonDeserializer<SpotR
         final BigDecimal buyingRate = this.fromApiJsonHelper.extractBigDecimalNamed(SpotRateJsonInputParams.BUYING_RATE.getValue(), element, locale);
         final BigDecimal sellingRate = this.fromApiJsonHelper.extractBigDecimalNamed(SpotRateJsonInputParams.SELLING_RATE.getValue(), element, locale);
         final BigDecimal spotRate = this.fromApiJsonHelper.extractBigDecimalNamed(SpotRateJsonInputParams.SPOTRATE.getValue(), element, locale);
-        final LocalDate transactionDate = this.fromApiJsonHelper.extractLocalDateNamed(
-        		SpotRateJsonInputParams.TRANSACTION_DATE.getValue(), element);
+        final LocalDate transactionDate = this.fromApiJsonHelper.extractLocalDateNamed
+        		(SpotRateJsonInputParams.TRANSACTION_DATE.getValue(), element);
         return new SpotRateCommand(currency_code, buyingRate, sellingRate, spotRate, transactionDate);
     }
 }

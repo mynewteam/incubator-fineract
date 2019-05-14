@@ -4,15 +4,15 @@ import org.joda.time.LocalDate;
 import java.math.BigDecimal;
 
 public class SpotRateData {
-    private Long spotRateID;
+    private Long id;
     private String currency_code;
     private BigDecimal buyingRate;
     private BigDecimal sellingRate;
     private BigDecimal spotRate;
     private LocalDate transactionDate;
     
-    public SpotRateData(Long spotRateID, String currency_code, BigDecimal buyingRate, BigDecimal sellingRate, BigDecimal spotRate, LocalDate transactionDate) {
-        this.spotRateID=spotRateID;
+    public SpotRateData(Long id, String currency_code, BigDecimal buyingRate, BigDecimal sellingRate, BigDecimal spotRate, LocalDate transactionDate) {
+        this.id = id;
         this.currency_code = currency_code;
         this.buyingRate = buyingRate;
         this.sellingRate = sellingRate;
@@ -21,23 +21,23 @@ public class SpotRateData {
     }
     
     public SpotRateData instance(
-            final Long spotRateID,
+            final Long id,
             final String currency_code,
             final BigDecimal buyingRate,
             final BigDecimal sellingRate,
             final BigDecimal spotRate,
             final LocalDate transactionDate) {
-       return new SpotRateData(spotRateID, currency_code, buyingRate, sellingRate, spotRate, transactionDate);
+       return new SpotRateData(id, currency_code, buyingRate, sellingRate, spotRate, transactionDate);
     }
 
     
     public Long getspotRateID() {
-        return this.spotRateID;
+        return this.id;
     }
 
     
-    public void setspotRateID(Long spotRateID) {
-        this.spotRateID = spotRateID;
+    public void setspotRateID(Long id) {
+        this.id = id;
     }
 
     
