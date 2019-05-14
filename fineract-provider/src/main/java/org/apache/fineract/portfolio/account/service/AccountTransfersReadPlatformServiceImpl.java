@@ -222,6 +222,7 @@ public class AccountTransfersReadPlatformServiceImpl implements AccountTransfers
 	public Page<AccountTransferData> retrieveAll(final SearchParameters searchParameters, final Long accountDetailId) {
 
 		final StringBuilder sqlBuilder = new StringBuilder(200);
+	 String sqlCountRows = "";
 		sqlBuilder.append("select ");
 		sqlBuilder.append(this.accountTransfersMapper.schema());
 		Object[] finalObjectArray = {};
@@ -237,6 +238,7 @@ public class AccountTransfersReadPlatformServiceImpl implements AccountTransfers
 				sqlBuilder.append(' ').append(searchParameters.getSortOrder());
 				this.columnValidator.validateSqlInjection(sqlBuilder.toString(), searchParameters.getSortOrder());
 			}
+			
 		}
 
 		if (searchParameters.isLimited()) {
@@ -250,9 +252,12 @@ public class AccountTransfersReadPlatformServiceImpl implements AccountTransfers
 			// sqlBuilder.append(" offset ").append(
 			// searchParameters.getOffset());
 			// }
+			sqlCountRows="select count(*) from ( "+sqlBuilder.toString()+" )x";
+		}else {
+			sqlCountRows="select count(*) from ( "+sqlBuilder.toString()+" )x";
 		}
 
-		final String sqlCountRows = "SELECT FOUND_ROWS()";
+//		final String sqlCountRows = "SELECT FOUND_ROWS()";
 		return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlCountRows, sqlBuilder.toString(), finalObjectArray,
 				this.accountTransfersMapper);
 	}

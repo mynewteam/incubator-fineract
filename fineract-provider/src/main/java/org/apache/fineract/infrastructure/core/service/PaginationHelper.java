@@ -25,27 +25,45 @@ import org.springframework.jdbc.core.RowMapper;
 
 public class PaginationHelper<E> {
 
-    public Page<E> fetchPage(final JdbcTemplate jt, final String sqlCountRows, final String sqlFetchRows, final Object args[],
-            final RowMapper<E> rowMapper) {
+	public Page<E> fetchPage(final JdbcTemplate jt, final String sqlCountRows, final String sqlFetchRows,
+			final Object args[], final RowMapper<E> rowMapper) {
 
-        final List<E> items = jt.query(sqlFetchRows, args, rowMapper);
+		final List<E> items = jt.query(sqlFetchRows, args, rowMapper);
 
-        // determine how many rows are available
-        @SuppressWarnings("deprecation")
-//        final int totalFilteredRecords = jt.queryForInt(sqlCountRows);
-        final int totalFilteredRecords = items.size();
+		String s = "";
+		if(sqlFetchRows.toLowerCase().contains("offset")) {
+		s =	"select count(*) from ( " + sqlFetchRows.toLowerCase().subSequence(0, sqlFetchRows.indexOf("offset"))+ " )x";
+		}else if(sqlFetchRows.toLowerCase().contains("fetch")) {
+			s="select count(*) from ( " + sqlFetchRows.toLowerCase().subSequence(0, sqlFetchRows.indexOf("fetch"))+ " )x";
+		}else {
+			s="select count(*) from ( " + sqlFetchRows.toLowerCase().subSequence(0, sqlFetchRows.indexOf("offset"))+ " )x";	
+		}
+		
+				
+		// determine how many rows are available
+		@SuppressWarnings("deprecation")
+		final int totalFilteredRecords = jt.queryForInt(s, args);
 
-        return new Page<>(items, totalFilteredRecords);
-    }
+		return new Page<>(items, totalFilteredRecords);
+	}
 
-    public Page<Long> fetchPage(JdbcTemplate jdbcTemplate, String sql, String sqlCountRows, Class<Long> type) {
-        final List<Long> items = jdbcTemplate.queryForList(sql, type);
+	public Page<Long> fetchPage(JdbcTemplate jdbcTemplate, String sql, String sqlCountRows, Class<Long> type) {
+		final List<Long> items = jdbcTemplate.queryForList(sql, type);
 
-        // determine how many rows are available
-        @SuppressWarnings("deprecation")
-        final int totalFilteredRecords = items.size();
-//        final int totalFilteredRecords = jdbcTemplate.queryForInt(sqlCountRows);
+		String s = "";
+		if(sql.toLowerCase().contains("offset")) {
+		s =	"select count(*) from ( " + sql.toLowerCase().subSequence(0, sql.indexOf("offset"))+ " )x";
+		}else if(sql.toLowerCase().contains("fetch")) {
+			s="select count(*) from ( " + sql.toLowerCase().subSequence(0, sql.indexOf("fetch"))+ " )x";
+		}else {
+			s="select count(*) from ( " + sql.toLowerCase().subSequence(0, sql.indexOf("offset"))+ " )x";	
+		}
+		
+		
+		@SuppressWarnings("deprecation")
+//        final int totalFilteredRecords = items.size();
+		final int totalFilteredRecords = jdbcTemplate.queryForInt(s, type);
 
-        return new Page<>(items, totalFilteredRecords);
-    }
+		return new Page<>(items, totalFilteredRecords);
+	}
 }

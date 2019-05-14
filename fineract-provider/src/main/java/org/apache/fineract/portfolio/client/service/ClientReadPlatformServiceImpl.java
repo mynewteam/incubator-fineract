@@ -194,6 +194,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 		final String userOfficeHierarchy = this.context.officeHierarchy();
 		final String underHierarchySearchString = userOfficeHierarchy + "%";
 		final String appUserID = String.valueOf(context.authenticatedUser().getId());
+		String sqlCountRows = "";
 
 		// if (searchParameters.isScopedByOfficeHierarchy()) {
 		// this.context.validateAccessRights(searchParameters.getHierarchy());
@@ -227,6 +228,8 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 					this.columnValidator.validateSqlInjection(sqlBuilder.toString(), searchParameters.getSortOrder());
 				}
 			}
+			
+			sqlCountRows = "SELECT COUNT(*) FROM ( " + sqlBuilder.toString() + " ) X";
 
 			if (searchParameters.isLimited()) {
 				// sqlBuilder.append(" limit ").append(searchParameters.getLimit());
@@ -239,8 +242,10 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 				}
 				sqlBuilder.append(" fetch next ").append(searchParameters.getLimit()).append(" rows only");
 			}
+		}else {
+			sqlCountRows = "SELECT COUNT(*) FROM ( " + sqlBuilder.toString() + " ) X";
 		}
-		return this.paginationHelper.fetchPage(this.jdbcTemplate, "", sqlBuilder.toString(), paramList.toArray(),
+		return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlCountRows, sqlBuilder.toString(), paramList.toArray(),
 				this.clientMapper);
 	}
 

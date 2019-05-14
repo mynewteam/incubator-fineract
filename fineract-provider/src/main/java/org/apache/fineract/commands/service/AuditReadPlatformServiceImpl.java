@@ -217,6 +217,7 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
 
         final AuditMapper rm = new AuditMapper();
         final StringBuilder sqlBuilder = new StringBuilder(200);
+
         sqlBuilder.append("select ");
         sqlBuilder.append(rm.schema(includeJson, hierarchy));
         sqlBuilder.append(' ').append(updatedExtraCriteria);
@@ -234,7 +235,6 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
         }
 
         logger.info("sql: " + sqlBuilder.toString());
-
         final String sqlCountRows = "SELECT FOUND_ROWS()";
         return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlCountRows, sqlBuilder.toString(), new Object[] {},
                 rm);

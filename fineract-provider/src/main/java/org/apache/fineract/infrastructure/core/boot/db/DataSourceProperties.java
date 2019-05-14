@@ -46,7 +46,7 @@ public class DataSourceProperties extends PoolProperties {
     @Value("${" + PORT + ":1521}")
     private volatile @NotNull int port;
 
-    @Value("${" + HOST + ":192.168.56.104}")
+    @Value("${" + HOST + ":192.168.0.132}")
     private volatile @NotNull String hostname;
 
     @Value("${" + DB + ":ORCL}")
