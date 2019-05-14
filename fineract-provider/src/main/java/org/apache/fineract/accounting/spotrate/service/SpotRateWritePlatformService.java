@@ -25,7 +25,4 @@ public interface SpotRateWritePlatformService {
 
 	CommandProcessingResult createSpotRate(JsonCommand command);
 
-//    CommandProcessingResult updateSpotRate(Long spotRateID, JsonCommand command);
-
-    
 }

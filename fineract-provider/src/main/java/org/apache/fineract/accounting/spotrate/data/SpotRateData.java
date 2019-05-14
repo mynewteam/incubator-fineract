@@ -1,16 +1,17 @@
 package org.apache.fineract.accounting.spotrate.data;
 
 import org.joda.time.LocalDate;
+import java.math.BigDecimal;
 
 public class SpotRateData {
-    private int spotRateID;
+    private Long spotRateID;
     private String currency_code;
-    private double buyingRate;
-    private double sellingRate;
-    private double spotRate;
+    private BigDecimal buyingRate;
+    private BigDecimal sellingRate;
+    private BigDecimal spotRate;
     private LocalDate transactionDate;
     
-    public SpotRateData(int spotRateID, String currency_code, double buyingRate, double sellingRate, double spotRate, LocalDate transactionDate) {
+    public SpotRateData(Long spotRateID, String currency_code, BigDecimal buyingRate, BigDecimal sellingRate, BigDecimal spotRate, LocalDate transactionDate) {
         this.spotRateID=spotRateID;
         this.currency_code = currency_code;
         this.buyingRate = buyingRate;
@@ -20,22 +21,22 @@ public class SpotRateData {
     }
     
     public SpotRateData instance(
-            final Integer spotRateID,
+            final Long spotRateID,
             final String currency_code,
-            final double buyingRate,
-            final double sellingRate,
-            final double spotRate,
+            final BigDecimal buyingRate,
+            final BigDecimal sellingRate,
+            final BigDecimal spotRate,
             final LocalDate transactionDate) {
        return new SpotRateData(spotRateID, currency_code, buyingRate, sellingRate, spotRate, transactionDate);
     }
 
     
-    public Integer getspotRateID() {
+    public Long getspotRateID() {
         return this.spotRateID;
     }
 
     
-    public void setspotRateID(Integer spotRateID) {
+    public void setspotRateID(Long spotRateID) {
         this.spotRateID = spotRateID;
     }
 
@@ -50,32 +51,32 @@ public class SpotRateData {
     }
 
     
-    public double getbuyingRate() {
+    public BigDecimal getbuyingRate() {
         return this.buyingRate;
     }
 
     
-    public void setbuyingRate(double buyingRate) {
+    public void setbuyingRate(BigDecimal buyingRate) {
         this.buyingRate = buyingRate;
     }
 
     
-    public double getsellingRate() {
+    public BigDecimal getsellingRate() {
         return this.sellingRate;
     }
 
     
-    public void setsellingRate(double sellingRate) {
+    public void setsellingRate(BigDecimal sellingRate) {
         this.sellingRate = sellingRate;
     }
     
     
-    public double getspotRate() {
+    public BigDecimal getspotRate() {
         return this.spotRate;
     }
 
     
-    public void setspotRate(double spotRate) {
+    public void setspotRate(BigDecimal spotRate) {
         this.spotRate = spotRate;
     }
     

@@ -1,6 +1,8 @@
 package org.apache.fineract.accounting.spotrate.serialization;
 
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang.StringUtils;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 @Component
@@ -35,11 +38,13 @@ public class SpotRateSerialization extends AbstractFromApiJsonDeserializer<SpotR
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, supportedParameters);
 
         final JsonElement element = this.fromApiJsonHelper.parse(json);
+        final JsonObject topLevelJsonElement = element.getAsJsonObject();
+        final Locale locale = this.fromApiJsonHelper.extractLocaleParameter(topLevelJsonElement);
         
         final String currency_code = this.fromApiJsonHelper.extractStringNamed(SpotRateJsonInputParams.CURRENCY_CODE.getValue(), element);
-        final double buyingRate = this.fromApiJsonHelper.extractDoubleNamed(SpotRateJsonInputParams.BUYING_RATE.getValue(), element);
-        final double sellingRate = this.fromApiJsonHelper.extractDoubleNamed(SpotRateJsonInputParams.SELLING_RATE.getValue(), element);
-        final double spotRate = this.fromApiJsonHelper.extractDoubleNamed(SpotRateJsonInputParams.SPOTRATE.getValue(), element);
+        final BigDecimal buyingRate = this.fromApiJsonHelper.extractBigDecimalNamed(SpotRateJsonInputParams.BUYING_RATE.getValue(), element, locale);
+        final BigDecimal sellingRate = this.fromApiJsonHelper.extractBigDecimalNamed(SpotRateJsonInputParams.SELLING_RATE.getValue(), element, locale);
+        final BigDecimal spotRate = this.fromApiJsonHelper.extractBigDecimalNamed(SpotRateJsonInputParams.SPOTRATE.getValue(), element, locale);
         final LocalDate transactionDate = this.fromApiJsonHelper.extractLocalDateNamed(
         		SpotRateJsonInputParams.TRANSACTION_DATE.getValue(), element);
         return new SpotRateCommand(currency_code, buyingRate, sellingRate, spotRate, transactionDate);

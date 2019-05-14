@@ -1,6 +1,8 @@
 package org.apache.fineract.accounting.spotrate.domain;
 
 
+import java.math.BigDecimal;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -20,13 +22,13 @@ public class mSpotRate  {
     private String currency_code;
     
     @Column(name = "buyingRate")
-    private double buyingRate;
+    private BigDecimal buyingRate;
     
     @Column(name = "sellingRate")
-    private double sellingRate;
+    private BigDecimal sellingRate;
     
     @Column(name = "spotRate")
-    private double spotRate;
+    private BigDecimal spotRate;
     
     @Column(name = "transactionDate")
     private LocalDate transactionDate;
@@ -34,7 +36,7 @@ public class mSpotRate  {
     
     
     
-    public mSpotRate(String currency_code, double buyingRate, double sellingRate, double spotRate,
+    public mSpotRate(String currency_code, BigDecimal buyingRate, BigDecimal sellingRate, BigDecimal spotRate,
 			LocalDate transactionDate)
 	{
     	this.currency_code = currency_code;
@@ -65,31 +67,31 @@ public class mSpotRate  {
     }
 
     
-    public double getbuyingRate() {
+    public BigDecimal getbuyingRate() {
         return this.buyingRate;
     }
 
     
-    public void setbuyingRate(double buyingRate) {
+    public void setbuyingRate(BigDecimal buyingRate) {
         this.buyingRate = buyingRate;
     }
     
-    public double getsellingRate() {
+    public BigDecimal getsellingRate() {
         return this.sellingRate;
     }
     
     
-    public void setsellingRate(double sellingRate) {
+    public void setsellingRate(BigDecimal sellingRate) {
         this.sellingRate = sellingRate;
     }
 
 
-    public double getspotRate() {
+    public BigDecimal getspotRate() {
         return this.spotRate;
     }
 
     
-    public void setspotRate(double spotRate) {
+    public void setspotRate(BigDecimal spotRate) {
         this.spotRate = spotRate;
     }
 
@@ -107,9 +109,9 @@ public class mSpotRate  {
 	public static mSpotRate fromJson(JsonCommand command)
 	{
 		final String currency_code = command.stringValueOfParameterNamed(SpotRateJsonInputParams.CURRENCY_CODE.getValue());
-        final double buyingRate = command.doubleValueofParameterNamed(SpotRateJsonInputParams.BUYING_RATE.getValue());
-        final double sellingRate = command.doubleValueofParameterNamed(SpotRateJsonInputParams.SELLING_RATE.getValue());
-        final double spotRate = command.doubleValueofParameterNamed(SpotRateJsonInputParams.SPOTRATE.getValue());
+        final BigDecimal buyingRate = command.bigDecimalValueOfParameterNamed(SpotRateJsonInputParams.BUYING_RATE.getValue());
+        final BigDecimal sellingRate = command.bigDecimalValueOfParameterNamed(SpotRateJsonInputParams.SELLING_RATE.getValue());
+        final BigDecimal spotRate = command.bigDecimalValueOfParameterNamed(SpotRateJsonInputParams.SPOTRATE.getValue());
         final LocalDate transactionDate = command.localDateValueOfParameterNamed(SpotRateJsonInputParams.TRANSACTION_DATE.getValue());
 		return new mSpotRate(currency_code, buyingRate, sellingRate, spotRate, transactionDate);
 	}
