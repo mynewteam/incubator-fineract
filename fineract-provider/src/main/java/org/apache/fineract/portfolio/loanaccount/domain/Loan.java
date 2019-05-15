@@ -169,6 +169,7 @@ import org.slf4j.LoggerFactory;
 public class Loan extends AbstractPersistableCustom<Long>
 {
 
+
 	/** Disable optimistic locking till batch jobs failures can be fixed **/
 	@Version
 	int version;
@@ -411,6 +412,9 @@ public class Loan extends AbstractPersistableCustom<Long>
 
 	@Column(name = "loan_sub_status_id", nullable = true)
 	private Integer loanSubStatus;
+	
+	@Column(name = "loan_subtype_status_id", nullable = true)
+	private Integer loanSubtypeStatus;
 
 	@Column(name = "is_topup", nullable = false)
 	private boolean isTopup = false;
@@ -6596,12 +6600,14 @@ public class Loan extends AbstractPersistableCustom<Long>
 			List<LoanInterestRecalcualtionAdditionalDetails> compoundingDetails = extractInterestRecalculationAdditionalDetails();
 			List<LoanTransaction> incomeTransactions = retreiveListOfIncomePostingTransactions();
 			List<LoanTransaction> accrualTransactions = retreiveListOfAccrualTransactions();
+			
 			for (LoanInterestRecalcualtionAdditionalDetails compoundingDetail : compoundingDetails)
 			{
 				if (!compoundingDetail.getEffectiveDate().isBefore(DateUtils.getLocalDateOfTenant()))
 				{
 					break;
 				}
+				
 				LoanTransaction incomeTransaction = getTransactionForDate(incomeTransactions,
 					compoundingDetail.getEffectiveDate());
 				LoanTransaction accrualTransaction = getTransactionForDate(accrualTransactions,
@@ -6609,9 +6615,12 @@ public class Loan extends AbstractPersistableCustom<Long>
 				addUpdateIncomeAndAccrualTransaction(compoundingDetail, lastCompoundingDate, currentUser,
 					incomeTransaction,
 					accrualTransaction);
+				
 				lastCompoundingDate = compoundingDetail.getEffectiveDate();
 			}
+			
 			List<LoanRepaymentScheduleInstallment> installments = getRepaymentScheduleInstallments();
+			
 			LoanRepaymentScheduleInstallment lastInstallment = installments.get(installments.size() - 1);
 			reverseTransactionsPostEffectiveDate(incomeTransactions, lastInstallment.getDueDate());
 			reverseTransactionsPostEffectiveDate(accrualTransactions, lastInstallment.getDueDate());
@@ -6631,6 +6640,7 @@ public class Loan extends AbstractPersistableCustom<Long>
 	}
 
 	private void addUpdateIncomeAndAccrualTransaction(
+			
 		LoanInterestRecalcualtionAdditionalDetails compoundingDetail,
 		LocalDate lastCompoundingDate,
 		AppUser currentUser,
@@ -6641,11 +6651,15 @@ public class Loan extends AbstractPersistableCustom<Long>
 		BigDecimal fee = BigDecimal.ZERO;
 		BigDecimal penalties = BigDecimal.ZERO;
 		HashMap<String, Object> feeDetails = new HashMap<>();
-
+		
+		System.out.println("--- private void addUpdateIncomeAndAccrualTransaction( ---" );
+		logger.debug("--- trace: private void addUpdateIncomeAndAccrualTransaction( ---" );
+		
 		if (this.loanInterestRecalculationDetails.getInterestRecalculationCompoundingMethod()
 			.equals(InterestRecalculationCompoundingMethod.INTEREST))
 		{
 			interest = compoundingDetail.getAmount();
+			
 		} else if (this.loanInterestRecalculationDetails.getInterestRecalculationCompoundingMethod()
 			.equals(InterestRecalculationCompoundingMethod.FEE))
 		{
@@ -8302,5 +8316,9 @@ public class Loan extends AbstractPersistableCustom<Long>
 	public boolean isIndividualLoan()
 	{
 		return AccountType.fromInt(this.loanType).isIndividualAccount();
+	}
+
+	public void setloanSubtypeStatus(Integer loanSubtypeStatusId) {
+		this.loanSubtypeStatus=loanSubtypeStatusId;
 	}
 }

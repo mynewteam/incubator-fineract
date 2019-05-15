@@ -113,6 +113,9 @@ public class JobRegisterServiceImpl implements JobRegisterService, ApplicationLi
     @PostConstruct
     public void loadAllJobs() {
         final List<FineractPlatformTenant> allTenants = this.tenantDetailsService.findAllTenants();
+
+        logger.debug(" trace: public void loadAllJobs() {");
+
         for (final FineractPlatformTenant tenant : allTenants) {
             ThreadLocalContextUtil.setTenant(tenant);
             final List<ScheduledJobDetail> scheduledJobDetails = this.schedularWritePlatformService.retrieveAllJobs();
@@ -127,10 +130,12 @@ public class JobRegisterServiceImpl implements JobRegisterService, ApplicationLi
                 this.schedularWritePlatformService.updateSchedulerDetail(schedulerDetail);
             }
         }
+
     }
 
     public void executeJob(final ScheduledJobDetail scheduledJobDetail, String triggerType) {
         try {
+            logger.trace("-- trace: public void executeJob(final ScheduledJobDetail scheduledJobDetail, String triggerType) {");
             final JobDataMap jobDataMap = new JobDataMap();
             if (triggerType == null) {
                 triggerType = SchedulerServiceConstants.TRIGGER_TYPE_APPLICATION;
@@ -383,6 +388,7 @@ public class JobRegisterServiceImpl implements JobRegisterService, ApplicationLi
     }
 
     private Trigger createTrigger(final ScheduledJobDetail scheduledJobDetails, final JobDetail jobDetail) {
+        
         final FineractPlatformTenant tenant = ThreadLocalContextUtil.getTenant();
         final CronTriggerFactoryBean cronTriggerFactoryBean = new CronTriggerFactoryBean();
         cronTriggerFactoryBean.setName(scheduledJobDetails.getJobName() + "Trigger" + tenant.getId());
@@ -397,6 +403,7 @@ public class JobRegisterServiceImpl implements JobRegisterService, ApplicationLi
         cronTriggerFactoryBean.setPriority(scheduledJobDetails.getTaskPriority());
         cronTriggerFactoryBean.afterPropertiesSet();
         return cronTriggerFactoryBean.getObject();
+
     }
 
     private String getStackTraceAsString(final Throwable throwable) {

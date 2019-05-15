@@ -484,6 +484,7 @@ public abstract class AbstractLoanScheduleGenerator implements LoanScheduleGener
 							if (loanApplicationTerms.allowCompoundingOnEod()) {
 								effectiveDate = effectiveDate.minusDays(1);
 							}
+							
 							LoanInterestRecalcualtionAdditionalDetails additionalDetails = new LoanInterestRecalcualtionAdditionalDetails(
 									effectiveDate, entry.getValue().getAmount());
 							loanScheduleModelPeriod.getLoanCompoundingDetails().add(additionalDetails);

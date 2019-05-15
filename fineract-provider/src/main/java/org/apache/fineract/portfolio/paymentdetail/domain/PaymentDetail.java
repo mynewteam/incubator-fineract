@@ -62,7 +62,9 @@ public final class PaymentDetail extends AbstractPersistableCustom<Long> {
     }
 
     public static PaymentDetail generatePaymentDetail(final PaymentType paymentType, final JsonCommand command,
-            final Map<String, Object> changes) {
+       
+    	final Map<String, Object> changes) {
+    	
         final String accountNumber = command.stringValueOfParameterNamed(PaymentDetailConstants.accountNumberParamName);
         final String checkNumber = command.stringValueOfParameterNamed(PaymentDetailConstants.checkNumberParamName);
         final String routingCode = command.stringValueOfParameterNamed(PaymentDetailConstants.routingCodeParamName);

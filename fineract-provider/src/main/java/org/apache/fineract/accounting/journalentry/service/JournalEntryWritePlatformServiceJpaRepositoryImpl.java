@@ -492,10 +492,13 @@ public class JournalEntryWritePlatformServiceJpaRepositoryImpl implements Journa
         final boolean periodicAccrualBasedAccountingEnabled = (Boolean) accountingBridgeData.get("periodicAccrualBasedAccountingEnabled");
 
         if (cashBasedAccountingEnabled || upfrontAccrualBasedAccountingEnabled || periodicAccrualBasedAccountingEnabled) {
-            final LoanDTO loanDTO = this.helper.populateLoanDtoFromMap(accountingBridgeData, cashBasedAccountingEnabled,
-                    upfrontAccrualBasedAccountingEnabled, periodicAccrualBasedAccountingEnabled);
-            final AccountingProcessorForLoan accountingProcessorForLoan = this.accountingProcessorForLoanFactory
-                    .determineProcessor(loanDTO);
+            
+        	final LoanDTO loanDTO = this.helper.populateLoanDtoFromMap(
+        			accountingBridgeData, 
+        			cashBasedAccountingEnabled,
+                    upfrontAccrualBasedAccountingEnabled, 
+                    periodicAccrualBasedAccountingEnabled);
+            final AccountingProcessorForLoan accountingProcessorForLoan = this.accountingProcessorForLoanFactory.determineProcessor(loanDTO);
             accountingProcessorForLoan.createJournalEntriesForLoan(loanDTO);
         }
     }

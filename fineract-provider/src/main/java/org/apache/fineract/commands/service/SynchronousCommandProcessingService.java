@@ -43,6 +43,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class SynchronousCommandProcessingService implements CommandProcessingService {
 
@@ -53,6 +56,7 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
     private CommandSourceRepository commandSourceRepository;
     private final ConfigurationDomainService configurationDomainService;
     private final CommandHandlerProvider commandHandlerProvider;
+    private final static Logger logger = LoggerFactory.getLogger(SynchronousCommandProcessingService.class);
 
     @Autowired
     public SynchronousCommandProcessingService(final PlatformSecurityContext context, final ApplicationContext applicationContext,
@@ -75,7 +79,13 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
     @Override
     public CommandProcessingResult processAndLogCommand(final CommandWrapper wrapper, final JsonCommand command,
             final boolean isApprovedByChecker) {
-
+    	
+    	
+    	
+//    	logger.debug("--------Sothea Check processAndLogCommand-----------");
+//    	logger.debug(command.json());
+//    	logger.debug("--------End Sothea Check-----------");
+    	
         final boolean rollbackTransaction = this.configurationDomainService.isMakerCheckerEnabledForTask(wrapper.taskPermissionName());
 
         final NewCommandSourceHandler handler = findCommandHandler(wrapper);

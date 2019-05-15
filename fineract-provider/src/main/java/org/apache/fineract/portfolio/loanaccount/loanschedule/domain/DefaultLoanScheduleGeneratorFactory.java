@@ -44,8 +44,8 @@ public class DefaultLoanScheduleGeneratorFactory implements LoanScheduleGenerato
             break;
             case DECLINING_BALANCE:
                 loanScheduleGenerator = new DecliningBalanceInterestLoanScheduleGenerator();
-                logger.info("class DefaultLoanScheduleGeneratorFactory implements LoanScheduleGeneratorFactory: " );
-                logger.info("My Debug TEST loanScheduleGenerator: "+ loanScheduleGenerator.toString());
+                // logger.info("class DefaultLoanScheduleGeneratorFactory implements LoanScheduleGeneratorFactory: " );
+                // logger.info("My Debug TEST loanScheduleGenerator: "+ loanScheduleGenerator.toString());
             break;
             case INVALID:
             break;

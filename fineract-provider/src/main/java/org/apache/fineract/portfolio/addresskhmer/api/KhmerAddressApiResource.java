@@ -37,6 +37,16 @@ public class KhmerAddressApiResource {
         this.toApiJsonSerializer = toApiJsonSerializer;
         this.readPlatformService = readPlatformService;
     }
+    
+    @GET
+    @Path("/test")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String test() {
+
+        final Collection<CountryKhmerData> countrykh = this.readPlatformService.retrieveAllCountry();
+        return this.toApiJsonSerializer.serialize(countrykh);
+    }
 
     @GET
     @Path("/country")

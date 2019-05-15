@@ -36,6 +36,8 @@ public class ClientAddressReadPlatformServiceImpl implements ClientAddressReadPl
 
 	private final JdbcTemplate jdbcTemplate;
 	private final PlatformSecurityContext context;
+	
+	
 
 	@Autowired
 	public ClientAddressReadPlatformServiceImpl(
