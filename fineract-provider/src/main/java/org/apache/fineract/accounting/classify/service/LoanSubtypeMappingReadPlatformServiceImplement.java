@@ -104,17 +104,15 @@ public class LoanSubtypeMappingReadPlatformServiceImplement implements LoanSubty
 
 			Long id = rs.getLong("id");
 			Long productId = rs.getLong("product_id");
-			Long loanSubtypeStatusId = rs.getLong("loan_subtype_status_id");
+			int loanSubtypeStatusId = rs.getInt("loan_subtype_status_id");
 			Integer minAge = rs.getInt("min_age");
 			Integer maxAge = rs.getInt("max_age");
 			Long portfolioAccId = rs.getLong("portfolio_acc_id");
 			Long intReceivableAccId = rs.getLong("int_receivable_acc_id");
 			Long incomeAccId = rs.getLong("income_acc_id");
 
-			// logger.debug("public LoanArrearClassifyData mapRow(ResultSet rs, int rowNum)
-			// throws SQLException {");
-			return new LoanProductSubtypeMappingData(id, productId, loanSubtypeStatusId, minAge, maxAge, portfolioAccId,
-					intReceivableAccId, incomeAccId);
+return new LoanProductSubtypeMappingData(loanSubtypeStatusId, productId, loanSubtypeStatusId, minAge, maxAge, portfolioAccId, intReceivableAccId, incomeAccId)
+//			return new LoanProductSubtypeMappingData();
 		}
 	}
 
@@ -241,15 +239,4 @@ public class LoanSubtypeMappingReadPlatformServiceImplement implements LoanSubty
 
 		return this.jdbctemplate.queryForObject(sql, mapper, new Object[] { loanId, loanId, loanId });
 	}
-	
-//	public final class LoanProductSubtypeMappingDataMapper implements RowMapper<LoanProductSubtypeMappingData>{
-//
-//		@Override
-//		public LoanProductSubtypeMappingData mapRow(ResultSet rs, int rowNum) throws SQLException {
-//			// TODO Auto-generated method stub
-//			return null;
-//		}
-//		
-//	}
-
 }
