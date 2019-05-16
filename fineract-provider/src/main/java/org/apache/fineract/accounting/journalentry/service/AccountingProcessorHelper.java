@@ -25,10 +25,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;<<<<<<<HEAD
-import org.apache.fineract.accounting.classify.data.LoanLastValueAccForMoveData;
-import org.apache.fineract.accounting.classify.data.ProductClassifyMappingData;
-import org.apache.fineract.accounting.classify.service.LoanSubtypeMappingReadPlatformService;=======>>>>>>>parent of c20d364e3...cmt
 import org.apache.fineract.accounting.closure.domain.GLClosure;
 import org.apache.fineract.accounting.closure.domain.GLClosureRepository;
 import org.apache.fineract.accounting.common.AccountingConstants.ACCRUAL_ACCOUNTS_FOR_LOAN;
@@ -617,10 +613,10 @@ public class AccountingProcessorHelper {
 			final BigDecimal amount) {
 
 		final GLAccount debitAccount = getLinkedGLAccountForLoanProduct(loanProductId, accountTypeToDebitId,
-				paymentTypeId, loanId);
+				paymentTypeId);
 
 		final GLAccount creditAccount = getLinkedGLAccountForLoanProduct(loanProductId, accountTypeToCreditId,
-				paymentTypeId, loanId);
+				paymentTypeId);
 
 		createDebitJournalEntryForLoan(office, currencyCode, debitAccount, loanId, transactionId, transactionDate,
 				amount);
@@ -870,19 +866,8 @@ public class AccountingProcessorHelper {
 
 		} else {
 			final GLAccount debitAccount = getLinkedGLAccountForLoanProduct(loanProductId, accountTypeToDebitId,
-					paymentTypeId, loanId);
+					paymentTypeId);
 
-//	BigDecimal amountTest = BigDecimal.valueOf(1000);
-
-			final GLAccount creditAccount = getLinkedGLAccountForLoanProduct(loanProductId, accountTypeToCreditId,
-					paymentTypeId, loanId);
-
-//	final GLAccount creditAccount = getGLAccountById((Long.valueOf(239)));
-
-//	createDebitJournalEntryForLoan(office, currencyCode, debitAccount, loanId, transactionId, transactionDate,amount);
-//	createCreditJournalEntryForLoan(office, currencyCode, creditAccount, loanId, transactionId, transactionDate,amount);
->>>>>>> fasm
-=======
 		final GLAccount debitAccount = getLinkedGLAccountForLoanProduct(loanProductId, accountTypeToDebitId,
 				paymentTypeId);
 

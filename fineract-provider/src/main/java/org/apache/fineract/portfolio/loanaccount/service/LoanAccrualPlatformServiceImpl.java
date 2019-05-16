@@ -162,7 +162,7 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 			Collection<LoanProductSubtypeMappingData> newLoanProductSubtypeMappingDatas = this.loanSubtypeMappingReadPlatformService
 					.retrieveLoanProductSubtypeMappings(productId, daysInArrears);
 			// Long productId;
-			Long loanSubtypeStatusId = null;
+			int loanSubtypeStatusId = 0;
 			int minAge;
 			int maxAge;
 			Long portfolioAccId = null;
@@ -271,6 +271,7 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 						
 						addChangeSubTypeTransaction(loanId, loanSubtypeStatusId, officeId, currencyCode, debitGLAccount,
 								creditGLAccount, transactionDate, amount);
+						addChangeSubTypeTransaction(loanId, loanSubtypeStatusId, officeId, currencyCode, debitGLAccount, creditGLAccount, transactionDate, amount);
 						
 					}
 					
@@ -300,7 +301,7 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 //	final Date transactionDate, 
 //	final BigDecimal amount
 
-	private Long addChangeSubTypeTransaction(final Long loanId, final Long loanSubtypeStatusId, final Long officeId,
+	private Long addChangeSubTypeTransaction(final Long loanId, final int loanSubtypeStatusId, final Long officeId,
 			final String currencyCode, final GLAccount debitGLAccount, final GLAccount creditGLAccount,
 			final Date transactionDate, final BigDecimal amount) throws DataAccessException {
 

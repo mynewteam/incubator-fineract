@@ -111,8 +111,10 @@ public class LoanSubtypeMappingReadPlatformServiceImplement implements LoanSubty
 			Long intReceivableAccId = rs.getLong("int_receivable_acc_id");
 			Long incomeAccId = rs.getLong("income_acc_id");
 
-return new LoanProductSubtypeMappingData(loanSubtypeStatusId, productId, loanSubtypeStatusId, minAge, maxAge, portfolioAccId, intReceivableAccId, incomeAccId)
-//			return new LoanProductSubtypeMappingData();
+			// logger.debug("public LoanArrearClassifyData mapRow(ResultSet rs, int rowNum)
+			// throws SQLException {");
+			return new LoanProductSubtypeMappingData(id, productId, loanSubtypeStatusId, minAge, maxAge, portfolioAccId,
+					intReceivableAccId, incomeAccId);
 		}
 	}
 
