@@ -37,10 +37,13 @@ import org.apache.fineract.accounting.journalentry.data.LoanTransactionDTO;
 import org.apache.fineract.organisation.office.domain.Office;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+<<<<<<< HEAD
 import org.apache.commons.lang.StringUtils;
 import org.apache.fineract.accounting.classify.data.LoanLastValueAccForMoveData;
 import org.apache.fineract.accounting.classify.data.LoanSubTypeData;
 import org.apache.fineract.accounting.classify.data.ProductClassifyMappingData;
+=======
+>>>>>>> parent of c20d364e3... cmt
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

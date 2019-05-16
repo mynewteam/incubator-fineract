@@ -171,7 +171,6 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
 	private final LoanRepaymentScheduleTransactionProcessorFactory transactionProcessingStrategy;
 	private final CodeValueRepositoryWrapper codeValueRepository;
 	private final CashierTransactionDataValidator cashierTransactionDataValidator;
-	private final LoanSubtypeMappingReadPlatformService loanSubtypeMappingReadPlatformService;
 
 	@Autowired
 	public LoanWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context,
@@ -205,8 +204,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
 			final EntityDatatableChecksWritePlatformService entityDatatableChecksWritePlatformService,
 			final LoanRepaymentScheduleTransactionProcessorFactory transactionProcessingStrategy,
 			final CodeValueRepositoryWrapper codeValueRepository, final LoanRepositoryWrapper loanRepositoryWrapper,
-			final CashierTransactionDataValidator cashierTransactionDataValidator,
-			final LoanSubtypeMappingReadPlatformService loanSubtypeMappingReadPlatformService) {
+			final CashierTransactionDataValidator cashierTransactionDataValidator) {
 		this.context = context;
 		this.loanEventApiJsonValidator = loanEventApiJsonValidator;
 		this.loanAssembler = loanAssembler;
@@ -246,7 +244,6 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
 		this.entityDatatableChecksWritePlatformService = entityDatatableChecksWritePlatformService;
 		this.codeValueRepository = codeValueRepository;
 		this.cashierTransactionDataValidator = cashierTransactionDataValidator;
-		this.loanSubtypeMappingReadPlatformService = loanSubtypeMappingReadPlatformService;
 	}
 
 	private LoanLifecycleStateMachine defaultLoanLifecycleStateMachine() {
@@ -788,10 +785,6 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
 			changes.put("note", noteText);
 		}
 		final Loan loan = this.loanAssembler.assembleFrom(loanId);
-
-		loan.setLoanSubtypeStatus(this.loanSubtypeMappingReadPlatformService
-				.retrieveProductSubtypeMappingDataByProductId(loanId).getLoanSubtypeStatusId());
-
 		final PaymentDetail paymentDetail = this.paymentDetailWritePlatformService
 				.createAndPersistPaymentDetail(command, changes);
 		final Boolean isHolidayValidationDone = false;
