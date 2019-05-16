@@ -18,4 +18,7 @@ public interface  LoanSubtypeMappingReadPlatformService  {
 
 	Collection<GLAccountAmountData> retrieveLoanGLAccountAmountData(Long officeId, LocalDate tilldate, Long loanId,
 			Long glAccountId);
+
+			
+	ProductSubTypeMappingData retrieveProductSubtypeMappingDataByProductId(Long productId);
 }
