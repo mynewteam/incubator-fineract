@@ -4,7 +4,6 @@ import java.util.Collection;
 import org.apache.fineract.accounting.classify.data.GLAccountAmountData;
 import org.apache.fineract.accounting.classify.data.LoanArrearClassifyData;
 import org.apache.fineract.accounting.classify.data.LoanProductSubtypeMappingData;
-import org.apache.fineract.accounting.classify.data.ProductSubTypeMappingData;
 import org.joda.time.LocalDate;
 
 public interface  LoanSubtypeMappingReadPlatformService  {
@@ -21,5 +20,5 @@ public interface  LoanSubtypeMappingReadPlatformService  {
 			Long glAccountId);
 
 			
-	ProductSubTypeMappingData retrieveProductSubtypeMappingDataByProductId(Long productId);
+	LoanProductSubtypeMappingData retrieveProductSubtypeMappingDataByProductId(Long productId);
 }

@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.fineract.accounting.classify.data.ProductSubTypeMappingData;
-//import org.apache.fineract.accounting.classify.service.ProductClassifyReadPlatformServiceImpl;
 import org.apache.fineract.accounting.closure.domain.GLClosure;
 import org.apache.fineract.accounting.common.AccountingConstants.ACCRUAL_ACCOUNTS_FOR_LOAN;
 import org.apache.fineract.accounting.common.AccountingConstants.CASH_ACCOUNTS_FOR_LOAN;
@@ -49,13 +47,9 @@ import org.apache.fineract.portfolio.savings.domain.SavingsAccountTransaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.apache.commons.lang.StringUtils;
-//import org.apache.fineract.accounting.classify.data.LoanArriaClassifyData;
 import org.apache.fineract.accounting.classify.data.LoanLastValueAccForMoveData;
 import org.apache.fineract.accounting.classify.data.LoanSubTypeData;
 import org.apache.fineract.accounting.classify.data.ProductClassifyMappingData;
-import org.apache.fineract.accounting.classify.data.ProductSubTypeMappingData;
-//import org.apache.fineract.accounting.classify.service.ProductClassifyReadPlatformService;
-//import org.apache.fineract.accounting.classify.service.ProductClassifyReadPlatformServiceImpl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

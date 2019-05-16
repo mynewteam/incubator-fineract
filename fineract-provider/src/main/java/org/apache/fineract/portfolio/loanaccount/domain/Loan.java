@@ -8303,6 +8303,14 @@ public class Loan extends AbstractPersistableCustom<Long>
 		this.loanTransactions.size();
 	}
 
+	public Integer getLoanSubtypeStatus() {
+		return loanSubtypeStatus;
+	}
+
+	public void setLoanSubtypeStatus(Integer loanSubtypeStatus) {
+		this.loanSubtypeStatus = loanSubtypeStatus;
+	}
+
 	public void initializeRepaymentSchedule()
 	{
 		this.repaymentScheduleInstallments.size();
@@ -8318,7 +8326,4 @@ public class Loan extends AbstractPersistableCustom<Long>
 		return AccountType.fromInt(this.loanType).isIndividualAccount();
 	}
 
-	public void setloanSubtypeStatus(Integer loanSubtypeStatusId) {
-		this.loanSubtypeStatus=loanSubtypeStatusId;
-	}
 }

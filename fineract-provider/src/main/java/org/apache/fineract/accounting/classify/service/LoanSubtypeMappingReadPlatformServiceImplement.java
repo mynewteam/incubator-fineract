@@ -8,7 +8,6 @@ import java.util.Date;
 import org.apache.fineract.accounting.classify.data.GLAccountAmountData;
 import org.apache.fineract.accounting.classify.data.LoanArrearClassifyData;
 import org.apache.fineract.accounting.classify.data.LoanProductSubtypeMappingData;
-import org.apache.fineract.accounting.classify.data.ProductSubTypeMappingData;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -232,33 +231,25 @@ public class LoanSubtypeMappingReadPlatformServiceImplement implements LoanSubty
 	}
 
 	@Override
-	public ProductSubTypeMappingData retrieveProductSubtypeMappingDataByProductId(Long loanId) {
+	public LoanProductSubtypeMappingData retrieveProductSubtypeMappingDataByProductId(Long loanId) {
 		String sql = "SELECT ID, PRODUCT_ID, LOAN_SUBTYPE_STATUS_ID, MIN_AGE, MAX_AGE, PORTFOLIO_ACC_ID, INT_RECEIVABLE_ACC_ID, INCOME_ACC_ID  FROM "
 				+ " loan_product_subtype_mapping WHERE product_id = (SELECT PRODUCT_ID FROM M_LOAN WHERE ID = ?) "
 				+ "    AND ( SELECT to_days(curdate()) - to_days(overdue_since_date_derived) FROM m_loan_arrears_aging WHERE  loan_id = ? "
 				+ "    ) BETWEEN min_age AND max_age "
 				+ "    OR ( ( SELECT to_days(curdate()) - to_days(overdue_since_date_derived) FROM m_loan_arrears_aging WHERE loan_id = ? ) >= min_age AND max_age = - 1 )";
-		ProductSubTypeMappingDataMapper mapper = new ProductSubTypeMappingDataMapper();
+		LoanProductSubtypeMappingDataMapper mapper = new LoanProductSubtypeMappingDataMapper();
 
 		return this.jdbctemplate.queryForObject(sql, mapper, new Object[] { loanId, loanId, loanId });
 	}
 	
-	private final class ProductSubTypeMappingDataMapper implements RowMapper<ProductSubTypeMappingData>{
-
-		@Override
-		public ProductSubTypeMappingData mapRow(ResultSet rs, int rowNum) throws SQLException {
-			
-			Integer id;
-			Integer loan_subtype_status_id;
-			Integer product_id;
-			Integer min_age;
-			Integer max_age;
-			Long portfolio_acc_id;
-			Long int_receivable_acc_id;
-			Long income_acc_id;
-			return new ProductSubTypeMappingData(id, product_id, loan_subtype_status_id, min_age, max_age, portfolio_acc_id, int_receivable_acc_id, income_acc_id);
-		}
-		
-	}
+//	public final class LoanProductSubtypeMappingDataMapper implements RowMapper<LoanProductSubtypeMappingData>{
+//
+//		@Override
+//		public LoanProductSubtypeMappingData mapRow(ResultSet rs, int rowNum) throws SQLException {
+//			// TODO Auto-generated method stub
+//			return null;
+//		}
+//		
+//	}
 
 }

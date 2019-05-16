@@ -28,7 +28,6 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.fineract.accounting.classify.data.LoanLastValueAccForMoveData;
 import org.apache.fineract.accounting.classify.data.ProductClassifyMappingData;
-import org.apache.fineract.accounting.classify.data.ProductSubTypeMappingData;
 import org.apache.fineract.accounting.classify.service.LoanSubtypeMappingReadPlatformService;
 import org.apache.fineract.accounting.closure.domain.GLClosure;
 import org.apache.fineract.accounting.closure.domain.GLClosureRepository;
@@ -733,7 +732,7 @@ public class AccountingProcessorHelper {
 		List<LoanLastValueAccForMoveData> loanLastValueAccForMoveData = null;
 //		List<LoanArriaClassifyData> loanArriaClassifyData = null;
 //		List<LoanArriaClassifyData> loanArriaClassifyDataAccr = null;
-		List<ProductSubTypeMappingData> productSubTypeMappingData = null;
+//		List<ProductSubTypeMappingData> productSubTypeMappingData = null;
 
 		int dayArria = 0;
 

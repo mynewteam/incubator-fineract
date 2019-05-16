@@ -29,7 +29,6 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.fineract.accounting.classify.data.ProductSubTypeMappingData;
 import org.apache.fineract.accounting.journalentry.service.JournalEntryWritePlatformService;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
