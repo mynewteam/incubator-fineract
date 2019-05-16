@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.fineract.accounting.classify.service.LoanSubtypeMappingReadPlatformService;
 import org.apache.fineract.accounting.journalentry.service.JournalEntryWritePlatformService;
 import org.apache.fineract.infrastructure.codes.domain.CodeValue;
 import org.apache.fineract.infrastructure.codes.domain.CodeValueRepositoryWrapper;
@@ -170,6 +171,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
 	private final LoanRepaymentScheduleTransactionProcessorFactory transactionProcessingStrategy;
 	private final CodeValueRepositoryWrapper codeValueRepository;
 	private final CashierTransactionDataValidator cashierTransactionDataValidator;
+	private final LoanSubtypeMappingReadPlatformService loanSubtypeMappingReadPlatformService;
 
 	@Autowired
 	public LoanWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context,
@@ -203,7 +205,8 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
 			final EntityDatatableChecksWritePlatformService entityDatatableChecksWritePlatformService,
 			final LoanRepaymentScheduleTransactionProcessorFactory transactionProcessingStrategy,
 			final CodeValueRepositoryWrapper codeValueRepository, final LoanRepositoryWrapper loanRepositoryWrapper,
-			final CashierTransactionDataValidator cashierTransactionDataValidator) {
+			final CashierTransactionDataValidator cashierTransactionDataValidator,
+			final LoanSubtypeMappingReadPlatformService loanSubtypeMappingReadPlatformService) {
 		this.context = context;
 		this.loanEventApiJsonValidator = loanEventApiJsonValidator;
 		this.loanAssembler = loanAssembler;
@@ -243,6 +246,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
 		this.entityDatatableChecksWritePlatformService = entityDatatableChecksWritePlatformService;
 		this.codeValueRepository = codeValueRepository;
 		this.cashierTransactionDataValidator = cashierTransactionDataValidator;
+		this.loanSubtypeMappingReadPlatformService = loanSubtypeMappingReadPlatformService;
 	}
 
 	private LoanLifecycleStateMachine defaultLoanLifecycleStateMachine() {
@@ -785,7 +789,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
 		}
 		final Loan loan = this.loanAssembler.assembleFrom(loanId);
 		
-		loan.setloanSubtypeStatus(this.productClassifyReadPlatformService.retrieveProductSubtypeMappingDataByProductId(loanId).getLoan_subtype_status_id());
+		loan.setloanSubtypeStatus(this.loanSubtypeMappingReadPlatformService.retrieveProductSubtypeMappingDataByProductId(loanId).getLoan_subtype_status_id());
 		
 		final PaymentDetail paymentDetail = this.paymentDetailWritePlatformService
 				.createAndPersistPaymentDetail(command, changes);

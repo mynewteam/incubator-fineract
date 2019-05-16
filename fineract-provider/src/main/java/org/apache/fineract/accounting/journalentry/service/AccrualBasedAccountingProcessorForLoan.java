@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.fineract.accounting.classification.data.ProductSubTypeMappingData;
-import org.apache.fineract.accounting.classification.service.ProductClassifyReadPlatformServiceImpl;
+import org.apache.fineract.accounting.classify.data.ProductSubTypeMappingData;
+//import org.apache.fineract.accounting.classify.service.ProductClassifyReadPlatformServiceImpl;
 import org.apache.fineract.accounting.closure.domain.GLClosure;
 import org.apache.fineract.accounting.common.AccountingConstants.ACCRUAL_ACCOUNTS_FOR_LOAN;
 import org.apache.fineract.accounting.common.AccountingConstants.CASH_ACCOUNTS_FOR_LOAN;
@@ -49,13 +49,13 @@ import org.apache.fineract.portfolio.savings.domain.SavingsAccountTransaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.apache.commons.lang.StringUtils;
-import org.apache.fineract.accounting.classification.data.LoanArriaClassifyData;
-import org.apache.fineract.accounting.classification.data.LoanLastValueAccForMoveData;
-import org.apache.fineract.accounting.classification.data.LoanSubTypeData;
-import org.apache.fineract.accounting.classification.data.ProductClassifyMappingData;
-import org.apache.fineract.accounting.classification.data.ProductSubTypeMappingData;
-import org.apache.fineract.accounting.classification.service.ProductClassifyReadPlatformService;
-import org.apache.fineract.accounting.classification.service.ProductClassifyReadPlatformServiceImpl;
+//import org.apache.fineract.accounting.classify.data.LoanArriaClassifyData;
+import org.apache.fineract.accounting.classify.data.LoanLastValueAccForMoveData;
+import org.apache.fineract.accounting.classify.data.LoanSubTypeData;
+import org.apache.fineract.accounting.classify.data.ProductClassifyMappingData;
+import org.apache.fineract.accounting.classify.data.ProductSubTypeMappingData;
+//import org.apache.fineract.accounting.classify.service.ProductClassifyReadPlatformService;
+//import org.apache.fineract.accounting.classify.service.ProductClassifyReadPlatformServiceImpl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -244,7 +244,7 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
 		if (principalAmount != null && !(principalAmount.compareTo(BigDecimal.ZERO) == 0)) {
 			totalDebitAmount = totalDebitAmount.add(principalAmount);
 			GLAccount account = this.helper.getLinkedGLAccountForLoanProduct(loanProductId,
-					ACCRUAL_ACCOUNTS_FOR_LOAN.LOAN_PORTFOLIO.getValue(), paymentTypeId);
+					ACCRUAL_ACCOUNTS_FOR_LOAN.LOAN_PORTFOLIO.getValue(), paymentTypeId, loanId);
 			accountMap.put(account, principalAmount);
 		}
 
@@ -252,7 +252,7 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
 		if (interestAmount != null && !(interestAmount.compareTo(BigDecimal.ZERO) == 0)) {
 			totalDebitAmount = totalDebitAmount.add(interestAmount);
 			GLAccount account = this.helper.getLinkedGLAccountForLoanProduct(loanProductId,
-					ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue(), paymentTypeId);
+					ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue(), paymentTypeId, loanId);
 			if (accountMap.containsKey(account)) {
 				BigDecimal amount = accountMap.get(account).add(interestAmount);
 				accountMap.put(account, amount);
@@ -267,7 +267,7 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
 
 			if (isIncomeFromFee) {
 				GLAccount account = this.helper.getLinkedGLAccountForLoanProduct(loanProductId,
-						ACCRUAL_ACCOUNTS_FOR_LOAN.INCOME_FROM_FEES.getValue(), paymentTypeId);
+						ACCRUAL_ACCOUNTS_FOR_LOAN.INCOME_FROM_FEES.getValue(), paymentTypeId, loanId);
 				if (accountMap.containsKey(account)) {
 					BigDecimal amount = accountMap.get(account).add(feesAmount);
 					accountMap.put(account, amount);
@@ -276,7 +276,7 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
 				}
 			} else {
 				GLAccount account = this.helper.getLinkedGLAccountForLoanProduct(loanProductId,
-						ACCRUAL_ACCOUNTS_FOR_LOAN.FEES_RECEIVABLE.getValue(), paymentTypeId);
+						ACCRUAL_ACCOUNTS_FOR_LOAN.FEES_RECEIVABLE.getValue(), paymentTypeId, loanId);
 				if (accountMap.containsKey(account)) {
 					BigDecimal amount = accountMap.get(account).add(feesAmount);
 					accountMap.put(account, amount);
@@ -291,7 +291,7 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
 			totalDebitAmount = totalDebitAmount.add(penaltiesAmount);
 			if (isIncomeFromFee) {
 				GLAccount account = this.helper.getLinkedGLAccountForLoanProduct(loanProductId,
-						ACCRUAL_ACCOUNTS_FOR_LOAN.INCOME_FROM_PENALTIES.getValue(), paymentTypeId);
+						ACCRUAL_ACCOUNTS_FOR_LOAN.INCOME_FROM_PENALTIES.getValue(), paymentTypeId, loanId);
 				if (accountMap.containsKey(account)) {
 					BigDecimal amount = accountMap.get(account).add(penaltiesAmount);
 					accountMap.put(account, amount);
@@ -300,7 +300,7 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
 				}
 			} else {
 				GLAccount account = this.helper.getLinkedGLAccountForLoanProduct(loanProductId,
-						ACCRUAL_ACCOUNTS_FOR_LOAN.PENALTIES_RECEIVABLE.getValue(), paymentTypeId);
+						ACCRUAL_ACCOUNTS_FOR_LOAN.PENALTIES_RECEIVABLE.getValue(), paymentTypeId, loanId);
 				if (accountMap.containsKey(account)) {
 					BigDecimal amount = accountMap.get(account).add(penaltiesAmount);
 					accountMap.put(account, amount);
@@ -313,7 +313,7 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
 		if (overPaymentAmount != null && !(overPaymentAmount.compareTo(BigDecimal.ZERO) == 0)) {
 			totalDebitAmount = totalDebitAmount.add(overPaymentAmount);
 			GLAccount account = this.helper.getLinkedGLAccountForLoanProduct(loanProductId,
-					ACCRUAL_ACCOUNTS_FOR_LOAN.OVERPAYMENT.getValue(), paymentTypeId);
+					ACCRUAL_ACCOUNTS_FOR_LOAN.OVERPAYMENT.getValue(), paymentTypeId, loanId);
 			if (accountMap.containsKey(account)) {
 				BigDecimal amount = accountMap.get(account).add(overPaymentAmount);
 				accountMap.put(account, amount);
