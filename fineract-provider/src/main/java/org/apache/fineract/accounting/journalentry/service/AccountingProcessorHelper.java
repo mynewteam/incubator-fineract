@@ -26,6 +26,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+<<<<<<< HEAD
+=======
+import org.apache.fineract.accounting.classification.data.LoanArriaClassifyData;
+import org.apache.fineract.accounting.classification.data.LoanLastValueAccForMoveData;
+import org.apache.fineract.accounting.classification.data.ProductClassifyMappingData;
+import org.apache.fineract.accounting.classification.data.ProductSubTypeMappingData;
+import org.apache.fineract.accounting.classification.service.ProductClassifyReadPlatformService;
+import org.apache.fineract.accounting.classification.service.ProductClassifyReadPlatformServiceImpl;
+>>>>>>> fasm
 import org.apache.fineract.accounting.closure.domain.GLClosure;
 import org.apache.fineract.accounting.closure.domain.GLClosureRepository;
 import org.apache.fineract.accounting.common.AccountingConstants.ACCRUAL_ACCOUNTS_FOR_LOAN;
@@ -55,7 +64,6 @@ import org.apache.fineract.accounting.journalentry.exception.JournalEntryInvalid
 import org.apache.fineract.accounting.producttoaccountmapping.domain.PortfolioProductType;
 import org.apache.fineract.accounting.producttoaccountmapping.domain.ProductToGLAccountMapping;
 import org.apache.fineract.accounting.producttoaccountmapping.domain.ProductToGLAccountMappingRepository;
-import org.apache.fineract.accounting.producttoaccountmapping.exception.ProductToGLAccountMappingNotFoundException;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.apache.fineract.organisation.monetary.data.CurrencyData;
@@ -413,6 +421,30 @@ public class AccountingProcessorHelper {
 				loanProductId, paymentTypeId, loanId, transactionId, transactionDate, amount);
 	}
 
+	/// Loan Change SubType
+	/// createAccrualBasedJournalEntriesAndReversalsForLoanChangeSubType
+	public void createAccrualBasedJournalEntriesAndReversalsForLoanChangeSubType(
+
+			final Office office, final String currencyCode, final Integer accountTypeToBeDebited, // 7
+			final Integer accountTypeToBeCredited, // 3
+			final Long loanProductId, final Long paymentTypeId, final Long loanId, final String transactionId,
+			final Date transactionDate, final BigDecimal amount, final Boolean isReversal) {
+
+		int accountTypeToDebitId = accountTypeToBeDebited;
+		int accountTypeToCreditId = accountTypeToBeCredited;
+
+		// reverse debits and credits for reversals
+
+		if (isReversal) {
+			accountTypeToDebitId = accountTypeToBeCredited;
+			accountTypeToCreditId = accountTypeToBeDebited;
+		}
+
+		createJournalEntriesForLoan(office, currencyCode, accountTypeToDebitId, // 7
+				accountTypeToCreditId, // 3
+				loanProductId, paymentTypeId, loanId, transactionId, transactionDate, amount);
+	}
+
 	/**
 	 * Convenience method that creates a pair of related Debits and Credits for
 	 * Accrual Based accounting.
@@ -604,11 +636,82 @@ public class AccountingProcessorHelper {
 		return this.officeRepositoryWrapper.findOneWithNotFoundDetection(officeId);
 	}
 
+<<<<<<< HEAD
 	/// Sothea Check
+=======
+	// Sothea Check
+>>>>>>> fasm
 	private void createJournalEntriesForLoan(final Office office, final String currencyCode,
 			final int accountTypeToDebitId, final int accountTypeToCreditId, final Long loanProductId,
 			final Long paymentTypeId, final Long loanId, final String transactionId, final Date transactionDate,
 			final BigDecimal amount) {
+<<<<<<< HEAD
+=======
+
+		BigDecimal amountOutString = BigDecimal.valueOf(0);
+
+		List<ProductClassifyMappingData> productClassify = null;
+		List<ProductSubTypeMappingData> productSubTypeMappingData = null;
+		List<LoanArriaClassifyData> loanArriaClassifyData = null;
+
+		int dayArria = 0;
+		try {
+			loanArriaClassifyData = this.productClassifyReadPlatformServiceImpl
+					.retrieveLoanArriaClassifyDataByLoanId(loanId, transactionDate);
+		} catch (Exception ex) {
+			logger.debug("trac:  = loanArriaClassifyData" + ex.toString());
+		}
+
+		// .debug("final List<LoanArriaClassifyData> loanArriaClassifyData =
+		// this.productClassifyReadPlatformServiceImpl.retrieveLoanArriaClassifyDataByLoanId(loanId"+loanId+");");
+
+		for (LoanArriaClassifyData row : loanArriaClassifyData) {
+			try {
+				logger.debug("trac: getAccCrId:" + row.getDays_in_arrears());
+				amountOutString = BigDecimal.valueOf(row.getLoan_outstanding());
+				dayArria = row.getDays_in_arrears();
+			} catch (Exception ex) {
+				logger.debug("trac:  = for (LoanArriaClassifyData row : loanArriaClassifyData) {" + ex.toString());
+			}
+
+		}
+
+		if (dayArria > 0) {
+
+			try {
+
+				productSubTypeMappingData = this.productClassifyReadPlatformServiceImpl
+						.retrieveProductSubTypeMappingList(loanProductId, dayArria);
+
+			} catch (Exception ex) {
+				logger.debug("trac:  = if (dayArria > 0) {: " + ex.toString());
+			}
+
+		}
+
+		if (productSubTypeMappingData != null) {
+
+			for (ProductSubTypeMappingData pSubtype : productSubTypeMappingData) {
+
+				BigDecimal LastValueAccForMove = BigDecimal.ZERO;
+				GLAccount debitAccount = getGLAccountById((Long.valueOf(pSubtype.getInt_receivable_acc_id())));
+				GLAccount creditAccount = getGLAccountById((Long.valueOf(pSubtype.getIncome_acc_id())));
+				if (LastValueAccForMove.compareTo(BigDecimal.valueOf(0)) == 1) {
+					createDebitJournalEntryForLoan(office, currencyCode, debitAccount, loanId, transactionId,
+							transactionDate, amount);
+					createCreditJournalEntryForLoan(office, currencyCode, creditAccount, loanId, transactionId,
+							transactionDate, amount);
+				}
+			}
+
+		} else {
+
+			final GLAccount debitAccount = getLinkedGLAccountForLoanProduct(loanProductId, accountTypeToDebitId,
+					paymentTypeId, loanId);
+
+			final GLAccount creditAccount = getLinkedGLAccountForLoanProduct(loanProductId, accountTypeToCreditId,
+					paymentTypeId, loanId);
+>>>>>>> fasm
 
 		final GLAccount debitAccount = getLinkedGLAccountForLoanProduct(loanProductId, accountTypeToDebitId,
 				paymentTypeId);
@@ -629,6 +732,7 @@ public class AccountingProcessorHelper {
 			final Long paymentTypeId, final Long loanId, final String transactionId, final Date transactionDate,
 			final BigDecimal amount, final Date AccDate) {
 
+<<<<<<< HEAD
 		final GLAccount debitAccount = getLinkedGLAccountForLoanProduct(loanProductId, accountTypeToDebitId,
 				paymentTypeId);
 
@@ -641,6 +745,253 @@ public class AccountingProcessorHelper {
 
 //		createDebitJournalEntryForLoan(office, currencyCode, debitAccount, loanId, transactionId, transactionDate,amount);
 //		createCreditJournalEntryForLoan(office, currencyCode, creditAccount, loanId, transactionId, transactionDate,amount);
+=======
+//		BigDecimal amount1 = BigDecimal.valueOf(1000);
+		BigDecimal amountOutString = BigDecimal.valueOf(0);
+
+		List<ProductClassifyMappingData> productClassify = null;
+		List<LoanLastValueAccForMoveData> loanLastValueAccForMoveData = null;
+		List<LoanArriaClassifyData> loanArriaClassifyData = null;
+		List<LoanArriaClassifyData> loanArriaClassifyDataAccr = null;
+		List<ProductSubTypeMappingData> productSubTypeMappingData = null;
+
+		int dayArria = 0;
+
+		logger.debug(
+				"final List<LoanArriaClassifyData> loanArriaClassifyData = this.productClassifyReadPlatformServiceImpl.retrieveLoanArriaClassifyDataByLoanId(loanId"
+						+ loanId + ");");
+
+		try {
+
+//			loanArriaClassifyData = this.productClassifyReadPlatformServiceImpl.retrieveLoanArriaByDate(AccDate);
+//			loanArriaClassifyData = this.productClassifyReadPlatformServiceImpl.retrieveLoanArriaClassifyDataByLoanId(loanId,AccDate);
+
+		} catch (Exception ex) {
+
+			logger.debug("trac:  = loanArriaClassifyData" + ex.toString());
+		}
+
+		for (LoanArriaClassifyData row : loanArriaClassifyData) {
+
+			try {
+				logger.debug("trac: getAccCrId:" + row.getDays_in_arrears());
+				amountOutString = BigDecimal.valueOf(row.getLoan_outstanding());
+				dayArria = row.getDays_in_arrears();
+				Long arriaLoanId = 0l;
+				Long arrialoanProductId = 0l;
+				arriaLoanId = Long.valueOf(row.getAccount_number());
+				arrialoanProductId = Long.valueOf(row.getProduct_id());
+				if (dayArria > 0) {
+					try {
+						productSubTypeMappingData = this.productClassifyReadPlatformServiceImpl
+								.retrieveProductSubTypeMappingList(arrialoanProductId, dayArria);
+
+//						productClassify = this.productClassifyReadPlatformServiceImpl.retrieveProductClassifyList(loanProductId, dayArria);
+						List<ProductSubTypeMappingData> productSubTypeMappingDataMove = null;
+
+						if (productSubTypeMappingData != null) {
+							for (ProductSubTypeMappingData productSubType : productSubTypeMappingData) {
+
+								Long subTypeStatusId = Long.valueOf(productSubType.getLoan_subtype_status_id());
+								productSubTypeMappingDataMove = this.productClassifyReadPlatformServiceImpl
+										.retrieveProductSubTypeMappingListForChangeType(subTypeStatusId, loanProductId);
+
+								for (ProductSubTypeMappingData productSubTypeMove : productSubTypeMappingDataMove) {
+
+									// Move Portfolio ACCOUNT
+									loanLastValueAccForMoveData = this.productClassifyReadPlatformServiceImpl
+											.retrieveLoanLastValueAccForMoveDataByLoanIdAndAccId(
+													Long.valueOf(row.getAccount_number()),
+													Long.valueOf(productSubTypeMove.getPortfolio_acc_id()));
+
+									for (LoanLastValueAccForMoveData loanLastValueAcc : loanLastValueAccForMoveData) {
+
+										logger.trace(
+												"trace: for (LoanLastValueAccForMoveData loanLastValueAcc: loanLastValueAccForMoveData) {");
+
+										BigDecimal LastValueAccForMove = BigDecimal.ZERO;
+										GLAccount creditAccountForMoveFrom = getGLAccountById(
+												(Long.valueOf(loanLastValueAcc.getAccount_id())));
+										GLAccount creditAccountForMoveTo = getGLAccountById(
+												(Long.valueOf(productSubType.getPortfolio_acc_id())));
+
+										try {
+											LastValueAccForMove = BigDecimal
+													.valueOf(loanLastValueAcc.getLast_running_balance());
+										} catch (Exception ex) {
+										}
+
+										logger.debug(
+												"Trace: Move Portfolio ACCOUNT BigDecimal LastValueAccForMove = BigDecimal.valueOf(row.getLast_running_balance():"
+														+ LastValueAccForMove + ");");
+
+										if (LastValueAccForMove.compareTo(BigDecimal.valueOf(0)) == 1) {
+											createDebitJournalEntryForLoan(office, currencyCode, creditAccountForMoveTo,
+													arriaLoanId, transactionId, transactionDate, LastValueAccForMove);
+											createCreditJournalEntryForLoan(office, currencyCode,
+													creditAccountForMoveFrom, arriaLoanId, transactionId,
+													transactionDate, LastValueAccForMove);
+										}
+
+									}
+
+									// Move Portfolio ACCOUNT
+									loanLastValueAccForMoveData = null;
+									loanLastValueAccForMoveData = this.productClassifyReadPlatformServiceImpl
+											.retrieveLoanLastValueAccForMoveDataByLoanIdAndAccId(
+													Long.valueOf(row.getAccount_number()),
+													Long.valueOf(productSubTypeMove.getInt_receivable_acc_id()));
+
+									for (LoanLastValueAccForMoveData loanLastValueAcc : loanLastValueAccForMoveData) {
+										logger.trace(
+												"trace: for (LoanLastValueAccForMoveData loanLastValueAcc: loanLastValueAccForMoveData) {");
+
+										BigDecimal LastValueAccForMove = BigDecimal.ZERO;
+										GLAccount creditAccountForMoveFrom = getGLAccountById(
+												(Long.valueOf(loanLastValueAcc.getAccount_id())));
+										GLAccount creditAccountForMoveTo = getGLAccountById(
+												(Long.valueOf(productSubType.getInt_receivable_acc_id())));
+
+										try {
+											LastValueAccForMove = BigDecimal
+													.valueOf(loanLastValueAcc.getLast_running_balance());
+										} catch (Exception ex) {
+										}
+
+										logger.debug(
+												"Trace: Move Portfolio ACCOUNT BigDecimal LastValueAccForMove = BigDecimal.valueOf(row.getLast_running_balance():"
+														+ LastValueAccForMove + ");");
+
+										if (LastValueAccForMove.compareTo(BigDecimal.valueOf(0)) == 1) {
+											createDebitJournalEntryForLoan(office, currencyCode, creditAccountForMoveTo,
+													arriaLoanId, transactionId, transactionDate, LastValueAccForMove);
+											createCreditJournalEntryForLoan(office, currencyCode,
+													creditAccountForMoveFrom, arriaLoanId, transactionId,
+													transactionDate, LastValueAccForMove);
+										}
+
+									}
+
+									// Move Portfolio Interest
+									loanLastValueAccForMoveData = null;
+									loanLastValueAccForMoveData = this.productClassifyReadPlatformServiceImpl
+											.retrieveLoanLastValueAccForMoveDataByLoanIdAndAccId(arriaLoanId,
+													Long.valueOf(productSubTypeMove.getIncome_acc_id()));
+
+									for (LoanLastValueAccForMoveData loanLastValueAcc : loanLastValueAccForMoveData) {
+										logger.trace(
+												"trace: for (LoanLastValueAccForMoveData loanLastValueAcc: loanLastValueAccForMoveData) {");
+
+										BigDecimal LastValueAccForMove = BigDecimal.ZERO;
+										GLAccount creditAccountForMoveFrom = getGLAccountById(
+												(Long.valueOf(loanLastValueAcc.getAccount_id())));
+										GLAccount creditAccountForMoveTo = getGLAccountById(
+												(Long.valueOf(productSubType.getInt_receivable_acc_id())));
+
+										try {
+											LastValueAccForMove = BigDecimal
+													.valueOf(loanLastValueAcc.getLast_running_balance());
+										} catch (Exception ex) {
+										}
+
+										logger.debug(
+												"Trace: Move Portfolio ACCOUNT BigDecimal LastValueAccForMove = BigDecimal.valueOf(row.getLast_running_balance():"
+														+ LastValueAccForMove + ");");
+
+										if (LastValueAccForMove.equals(BigDecimal.valueOf(0)) == false) {
+											createDebitJournalEntryForLoan(office, currencyCode,
+													creditAccountForMoveFrom, arriaLoanId, transactionId,
+													transactionDate, LastValueAccForMove);
+											createCreditJournalEntryForLoan(office, currencyCode,
+													creditAccountForMoveTo, arriaLoanId, transactionId, transactionDate,
+													LastValueAccForMove);
+										}
+
+									}
+
+								}
+
+							}
+
+						}
+
+					} catch (Exception ex) {
+						logger.debug("trac:  = if (dayArria > 0) {: " + ex.toString());
+					}
+
+				}
+
+			} catch (Exception ex) {
+				logger.debug("trac:  = for (LoanArriaClassifyData row : loanArriaClassifyData) {" + ex.toString());
+			}
+
+		}
+
+		int dayArriaAccr = 0;
+
+		List<ProductSubTypeMappingData> productSubTypeMappingDataAccr = null;
+
+		loanArriaClassifyDataAccr = this.productClassifyReadPlatformServiceImpl
+				.retrieveLoanArriaClassifyDataByLoanId(loanId, AccDate);
+
+		for (LoanArriaClassifyData row : loanArriaClassifyDataAccr) {
+
+//			logger.debug("trac: getAccCrId:" + row.getDays_in_arrears());
+//			amountOutString = BigDecimal.valueOf(row.getLoan_outstanding());
+			dayArriaAccr = row.getDays_in_arrears();
+//			Long arriaLoanId = 0l;
+//			Long arrialoanProductId =  0l;
+//			arriaLoanId = Long.valueOf(row.getAccount_number());
+//			arrialoanProductId = Long.valueOf(row.getProduct_id());
+
+		}
+
+		if (dayArriaAccr > 0) {
+
+			productSubTypeMappingDataAccr = this.productClassifyReadPlatformServiceImpl
+					.retrieveProductSubTypeMappingList(loanProductId, dayArriaAccr);
+
+			if (productSubTypeMappingDataAccr != null) {
+
+				for (ProductSubTypeMappingData subTypeRow : productSubTypeMappingDataAccr) {
+
+					logger.debug("trac: Loan_subtype_status_id:" + subTypeRow.getLoan_subtype_status_id());
+
+					final GLAccount debitAccount = getGLAccountById(
+							(Long.valueOf(subTypeRow.getInt_receivable_acc_id())));
+
+//					BigDecimal amountTest = BigDecimal.valueOf(1000);
+
+					final GLAccount creditAccount = getGLAccountById((Long.valueOf(subTypeRow.getIncome_acc_id())));
+//
+////					final GLAccount creditAccount = getGLAccountById((Long.valueOf(239)));
+//
+////					createDebitJournalEntryForLoan(office, currencyCode, debitAccount, loanId, transactionId, transactionDate,amount);
+////					createCreditJournalEntryForLoan(office, currencyCode, creditAccount, loanId, transactionId, transactionDate,amount);
+//
+					createDebitJournalEntryForLoan(office, currencyCode, debitAccount, loanId, transactionId,
+							transactionDate, amount);
+					createCreditJournalEntryForLoan(office, currencyCode, creditAccount, loanId, transactionId,
+							transactionDate, amount);
+
+				}
+
+			}
+
+		} else {
+			final GLAccount debitAccount = getLinkedGLAccountForLoanProduct(loanProductId, accountTypeToDebitId,
+					paymentTypeId, loanId);
+
+//	BigDecimal amountTest = BigDecimal.valueOf(1000);
+
+			final GLAccount creditAccount = getLinkedGLAccountForLoanProduct(loanProductId, accountTypeToCreditId,
+					paymentTypeId, loanId);
+
+//	final GLAccount creditAccount = getGLAccountById((Long.valueOf(239)));
+
+//	createDebitJournalEntryForLoan(office, currencyCode, debitAccount, loanId, transactionId, transactionDate,amount);
+//	createCreditJournalEntryForLoan(office, currencyCode, creditAccount, loanId, transactionId, transactionDate,amount);
+>>>>>>> fasm
 
 		createDebitJournalEntryForLoan(office, currencyCode, debitAccount, loanId, transactionId, transactionDate,
 				amount);
@@ -786,7 +1137,8 @@ public class AccountingProcessorHelper {
 	public void createDebitJournalEntryOrReversalForLoan(final Office office, final String currencyCode,
 			final int accountMappingTypeId, final Long loanProductId, final Long paymentTypeId, final Long loanId,
 			final String transactionId, final Date transactionDate, final BigDecimal amount, final Boolean isReversal) {
-		final GLAccount account = getLinkedGLAccountForLoanProduct(loanProductId, accountMappingTypeId, paymentTypeId);
+		final GLAccount account = getLinkedGLAccountForLoanProduct(loanProductId, accountMappingTypeId, paymentTypeId,
+				loanId);
 		if (isReversal) {
 			createCreditJournalEntryForLoan(office, currencyCode, account, loanId, transactionId, transactionDate,
 					amount);
@@ -918,7 +1270,8 @@ public class AccountingProcessorHelper {
 	private void createCreditJournalEntryOrReversalForLoan(final Office office, final String currencyCode,
 			final int accountMappingTypeId, final Long loanProductId, final Long paymentTypeId, final Long loanId,
 			final String transactionId, final Date transactionDate, final BigDecimal amount, final Boolean isReversal) {
-		final GLAccount account = getLinkedGLAccountForLoanProduct(loanProductId, accountMappingTypeId, paymentTypeId);
+		final GLAccount account = getLinkedGLAccountForLoanProduct(loanProductId, accountMappingTypeId, paymentTypeId,
+				loanId);
 		createCreditJournalEntryOrReversalForLoan(office, currencyCode, loanId, transactionId, transactionDate, amount,
 				isReversal, account);
 	}
@@ -933,6 +1286,11 @@ public class AccountingProcessorHelper {
 					amount);
 		} else {
 //			Sothea Test
+<<<<<<< HEAD
+=======
+//			List<ProductClassifyMappingData> classificationData = classifyReadPlatformService
+//					.retrieveProductClassifyList((long) 1, 1);
+>>>>>>> fasm
 			createCreditJournalEntryForLoan(office, currencyCode, account, loanId, transactionId, transactionDate,
 					amount);
 		}
@@ -1260,7 +1618,7 @@ public class AccountingProcessorHelper {
 	}
 
 	public GLAccount getLinkedGLAccountForLoanProduct(final Long loanProductId, final int accountMappingTypeId,
-			final Long paymentTypeId) {
+			final Long paymentTypeId, final Long loanId) {
 
 		GLAccount glAccount = null;
 
@@ -1274,24 +1632,41 @@ public class AccountingProcessorHelper {
 
 		} else {
 
-			ProductToGLAccountMapping accountMapping = this.accountMappingRepository.findCoreProductToFinAccountMapping(
-					loanProductId, PortfolioProductType.LOAN.getValue(), accountMappingTypeId);
-
-			/****
-			 * Get more specific mapping for FUND source accounts (based on payment
-			 * channels). Note that fund source placeholder ID would be same for both cash
-			 * and accrual accounts
-			 ***/
-
-			if (accountMappingTypeId == CASH_ACCOUNTS_FOR_LOAN.FUND_SOURCE.getValue()) {
-				final ProductToGLAccountMapping paymentChannelSpecificAccountMapping = this.accountMappingRepository
-						.findByProductIdAndProductTypeAndFinancialAccountTypeAndPaymentTypeId(loanProductId,
-								PortfolioProductType.LOAN.getValue(), accountMappingTypeId, paymentTypeId);
-				if (paymentChannelSpecificAccountMapping != null) {
-					accountMapping = paymentChannelSpecificAccountMapping;
-				}
+			ProductSubTypeMappingData product = this.classifyReadPlatformService.retrieveProductSubtypeMappingDataByProductId(loanId);
+			
+			GLAccount gl = null;
+			if (accountMappingTypeId == ACCRUAL_ACCOUNTS_FOR_LOAN.LOAN_PORTFOLIO.getValue()) {
+				gl = this.getGLAccountById(product.getPortfolio_acc_id());
+			} else if (accountMappingTypeId == ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue()) {
+				gl = this.getGLAccountById(product.getInt_receivable_acc_id());
+			} else if (accountMappingTypeId == ACCRUAL_ACCOUNTS_FOR_LOAN.INCOME_FROM_FEES.getValue()) {
+				gl = this.getGLAccountById(product.getInt_receivable_acc_id());
 			}
+		
 
+
+//			ProductToGLAccountMapping accountMapping = this.accountMappingRepository.findCoreProductToFinAccountMapping(
+//					loanDTO.getLoanProductId(), PortfolioProductType.LOAN.getValue(), accountMappingTypeId);
+
+		/****
+		 * Get more specific mapping for FUND source accounts (based on payment
+		 * channels). Note that fund source placeholder ID would be same for both cash
+		 * and accrual accounts
+		 ***/
+
+//			if (accountMappingTypeId == CASH_ACCOUNTS_FOR_LOAN.FUND_SOURCE.getValue()) {
+//				final ProductToGLAccountMapping paymentChannelSpecificAccountMapping = this.accountMappingRepository
+//						.findByProductIdAndProductTypeAndFinancialAccountTypeAndPaymentTypeId(loanProductId,
+//								PortfolioProductType.LOAN.getValue(), accountMappingTypeId, paymentTypeId);
+//				if (paymentChannelSpecificAccountMapping != null) {
+//					accountMapping = paymentChannelSpecificAccountMapping;
+//				}
+//			}
+
+		glAccount = gl;
+	}return glAccount;
+
+<<<<<<< HEAD
 			if (accountMapping == null) {
 				throw new ProductToGLAccountMappingNotFoundException(PortfolioProductType.LOAN, loanProductId,
 						ACCRUAL_ACCOUNTS_FOR_LOAN.OVERPAYMENT.toString());
@@ -1300,6 +1675,8 @@ public class AccountingProcessorHelper {
 			glAccount = accountMapping.getGlAccount();
 		}
 		return glAccount;
+=======
+>>>>>>> fasm
 	}
 
 	private GLAccount getLinkedGLAccountForLoanCharges(final Long loanProductId, final int accountMappingTypeId,

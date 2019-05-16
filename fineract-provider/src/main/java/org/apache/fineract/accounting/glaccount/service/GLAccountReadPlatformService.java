@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.apache.fineract.accounting.glaccount.data.GLAccountData;
 import org.apache.fineract.accounting.glaccount.data.GLAccountDataForLookup;
+import org.apache.fineract.accounting.glaccount.domain.GLAccount;
 import org.apache.fineract.accounting.glaccount.domain.GLAccountType;
 import org.apache.fineract.accounting.journalentry.data.JournalEntryAssociationParametersData;
 
@@ -41,4 +42,5 @@ public interface GLAccountReadPlatformService {
     GLAccountData retrieveNewGLAccountDetails(final Integer type);
 
     List<GLAccountDataForLookup> retrieveAccountsByTagId(final Long ruleId, final Integer transactionType);
+    
 }

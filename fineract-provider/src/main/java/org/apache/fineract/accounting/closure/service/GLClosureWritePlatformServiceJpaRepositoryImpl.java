@@ -88,8 +88,6 @@ public class GLClosureWritePlatformServiceJpaRepositoryImpl implements GLClosure
                 if (latestGLClosure.getClosingDate().after(closureDate)) { throw new GLClosureInvalidException(
                         GL_CLOSURE_INVALID_REASON.ACCOUNTING_CLOSED, latestGLClosure.getClosingDate()); }
             }
-            
-            
             // logger.debug("-----------Sothea Check----------");
             // logger.debug("-----------GLClosureWritePlatformServiceJpaRepositoryImpl----------");
             // logger.debug(command.json().toString());

@@ -90,6 +90,8 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
     @CronTarget(jobName = JobName.UPDATE_LOAN_ARREARS_AGEING)
     public void updateLoanArrearsAgeingDetails() {
 
+        logger.debug("-- this.jdbcTemplate.execute(\"truncate table m_loan_arrears_aging\");");
+
         this.jdbcTemplate.execute("truncate table m_loan_arrears_aging");
 
         final StringBuilder updateSqlBuilder = new StringBuilder(900);
@@ -122,6 +124,7 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
 
         List<String> insertStatements = updateLoanArrearsAgeingDetailsWithOriginalSchedule();
         insertStatements.add(0, updateSqlBuilder.toString());
+        
         final int[] results = this.jdbcTemplate.batchUpdate(insertStatements.toArray(new String[0]));
         int result = 0;
         for (int i : results) {

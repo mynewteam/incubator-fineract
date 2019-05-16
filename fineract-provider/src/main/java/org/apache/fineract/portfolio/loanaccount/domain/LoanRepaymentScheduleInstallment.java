@@ -138,7 +138,7 @@ public final class LoanRepaymentScheduleInstallment extends AbstractAuditableCus
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 	@JoinColumn(name = "loan_repayment_schedule_id", referencedColumnName = "id", nullable = false)
 	private Set<LoanInterestRecalcualtionAdditionalDetails> loanCompoundingDetails = new HashSet<>();
-
+	
 	protected LoanRepaymentScheduleInstallment()
 	{
 		this.installmentNumber = null;
@@ -187,11 +187,23 @@ public final class LoanRepaymentScheduleInstallment extends AbstractAuditableCus
 
 	private BigDecimal defaultToNullIfZero(final BigDecimal value)
 	{
+		
 		BigDecimal result = value;
-		if (BigDecimal.ZERO.compareTo(value) == 0)
+		/**
+		 * reach
+		 */
+		if(result != null)
 		{
-			result = null;
+			if (BigDecimal.ZERO.compareTo(value) == 0)
+			{
+				result = null;
+			}
 		}
+		//end
+//		if (BigDecimal.ZERO.compareTo(value) == 0)
+//		{
+//			result = null;
+//		}
 		return result;
 	}
 
@@ -251,7 +263,6 @@ public final class LoanRepaymentScheduleInstallment extends AbstractAuditableCus
 	public Money getInterestCharged(final MonetaryCurrency currency)
 	{
 		return Money.of(currency, this.interestCharged);
-
 	}
 
 	public Money getInterestPaid(final MonetaryCurrency currency)

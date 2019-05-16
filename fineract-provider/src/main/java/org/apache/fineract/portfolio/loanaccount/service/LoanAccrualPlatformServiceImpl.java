@@ -88,10 +88,15 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 	@CronTarget(jobName = JobName.ADD_ACCRUAL_ENTRIES)
 	public void addAccrualAccounting() throws JobExecutionException {
 
+		logger.debug("Trac: public void addAccrualAccounting() throws JobExecutionException {");
+
 		Collection<LoanScheduleAccrualData> loanScheduleAccrualDatas = this.loanReadPlatformService
 				.retriveScheduleAccrualData();
+
 		StringBuilder sb = new StringBuilder();
+
 		Map<Long, Collection<LoanScheduleAccrualData>> loanDataMap = new HashMap<>();
+
 		for (final LoanScheduleAccrualData accrualData : loanScheduleAccrualDatas) {
 			if (loanDataMap.containsKey(accrualData.getLoanId())) {
 				loanDataMap.get(accrualData.getLoanId()).add(accrualData);

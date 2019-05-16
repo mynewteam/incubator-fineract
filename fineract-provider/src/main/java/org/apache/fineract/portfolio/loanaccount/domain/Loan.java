@@ -169,6 +169,7 @@ import org.slf4j.LoggerFactory;
 public class Loan extends AbstractPersistableCustom<Long>
 {
 
+
 	/** Disable optimistic locking till batch jobs failures can be fixed **/
 	@Version
 	int version;
@@ -411,6 +412,9 @@ public class Loan extends AbstractPersistableCustom<Long>
 
 	@Column(name = "loan_sub_status_id", nullable = true)
 	private Integer loanSubStatus;
+	
+	@Column(name = "loan_subtype_status_id", nullable = true)
+	private Integer loanSubtypeStatus;
 
 	@Column(name = "is_topup", nullable = false)
 	private boolean isTopup = false;
@@ -8312,5 +8316,9 @@ public class Loan extends AbstractPersistableCustom<Long>
 	public boolean isIndividualLoan()
 	{
 		return AccountType.fromInt(this.loanType).isIndividualAccount();
+	}
+
+	public void setloanSubtypeStatus(Integer loanSubtypeStatusId) {
+		this.loanSubtypeStatus=loanSubtypeStatusId;
 	}
 }

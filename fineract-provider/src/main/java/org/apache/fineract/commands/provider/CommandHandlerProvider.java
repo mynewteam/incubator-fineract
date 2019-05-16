@@ -69,13 +69,17 @@ public class CommandHandlerProvider implements ApplicationContextAware {
      * @param action the action to lookup the handler, must be given.
      */
     public NewCommandSourceHandler getHandler (final String entity, final String action) {
-        Preconditions.checkArgument(StringUtils.isNoneEmpty(entity), "An entity must be given!");
+        
+    	Preconditions.checkArgument(StringUtils.isNoneEmpty(entity), "An entity must be given!");
         Preconditions.checkArgument(StringUtils.isNoneEmpty(action), "An action must be given!");
 
         final String key =  entity + "|" + action;
+        
         if (!this.registeredHandlers.containsKey(key)) {
             throw new UnsupportedCommandException(key);
         }
+        
+        LOGGER.debug("(NewCommandSourceHandler)this.applicationContext.getBean(this.registeredHandlers.get(key):"+this.registeredHandlers.get(key)+");");
         return (NewCommandSourceHandler)this.applicationContext.getBean(this.registeredHandlers.get(key));
     }
 
