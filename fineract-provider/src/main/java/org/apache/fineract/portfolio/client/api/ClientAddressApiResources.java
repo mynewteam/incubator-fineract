@@ -169,4 +169,5 @@ public class ClientAddressApiResources {
 
 		return this.toApiJsonSerializer.serialize(result);
 	}
+
 }

@@ -156,7 +156,7 @@ public final class LoanScheduleModel
 		final Collection<LoanSchedulePeriodData> periodsData = new ArrayList<>();
 		for (final LoanScheduleModelPeriod modelPeriod : this.periods)
 		{
-			// logger.info("");
+			logger.info("");
 			periodsData.add(modelPeriod.toData());
 		}
 

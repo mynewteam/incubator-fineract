@@ -31,19 +31,10 @@ import org.apache.fineract.accounting.common.AccountingConstants.ACCRUAL_ACCOUNT
 import org.apache.fineract.accounting.common.AccountingConstants.CASH_ACCOUNTS_FOR_LOAN;
 import org.apache.fineract.accounting.common.AccountingConstants.FINANCIAL_ACTIVITY;
 import org.apache.fineract.accounting.glaccount.domain.GLAccount;
-import org.apache.fineract.accounting.glaccount.domain.GLAccountRepositoryWrapper;
 import org.apache.fineract.accounting.journalentry.data.ChargePaymentDTO;
 import org.apache.fineract.accounting.journalentry.data.LoanDTO;
 import org.apache.fineract.accounting.journalentry.data.LoanTransactionDTO;
-import org.apache.fineract.accounting.journalentry.domain.JournalEntry;
-import org.apache.fineract.accounting.journalentry.domain.JournalEntryRepository;
-import org.apache.fineract.accounting.journalentry.domain.JournalEntryType;
-import org.apache.fineract.accounting.producttoaccountmapping.domain.PortfolioProductType;
 import org.apache.fineract.organisation.office.domain.Office;
-import org.apache.fineract.portfolio.client.domain.ClientTransaction;
-import org.apache.fineract.portfolio.loanaccount.domain.LoanTransaction;
-import org.apache.fineract.portfolio.paymentdetail.domain.PaymentDetail;
-import org.apache.fineract.portfolio.savings.domain.SavingsAccountTransaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.apache.commons.lang.StringUtils;
@@ -59,7 +50,8 @@ public class AccrualBasedAccountingProcessorForLoan implements AccountingProcess
 
 	private final AccountingProcessorHelper helper;
 
-//    private final static Logger logger = LoggerFactory.getLogger(AccrualBasedAccountingProcessorForLoan.class);
+	// private final static Logger logger =
+	// LoggerFactory.getLogger(AccrualBasedAccountingProcessorForLoan.class);
 	@Autowired
 	public AccrualBasedAccountingProcessorForLoan(final AccountingProcessorHelper accountingProcessorHelper) {
 		this.helper = accountingProcessorHelper;

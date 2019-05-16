@@ -67,7 +67,6 @@ import org.apache.fineract.portfolio.loanaccount.data.LoanScheduleAccrualData;
 import org.apache.fineract.portfolio.loanaccount.data.ScheduleGeneratorDTO;
 import org.apache.fineract.portfolio.loanaccount.service.LoanAccrualPlatformService;
 import org.apache.fineract.portfolio.loanaccount.service.LoanAssembler;
-import org.apache.fineract.portfolio.loanaccount.service.LoanReadPlatformServiceImpl;
 import org.apache.fineract.portfolio.loanaccount.service.LoanUtilService;
 import org.apache.fineract.portfolio.note.domain.Note;
 import org.apache.fineract.portfolio.note.domain.NoteRepository;
@@ -75,8 +74,6 @@ import org.apache.fineract.portfolio.paymentdetail.domain.PaymentDetail;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -103,8 +100,6 @@ public class LoanAccountDomainServiceJpa implements LoanAccountDomainService {
     private final BusinessEventNotifierService businessEventNotifierService;
     private final LoanUtilService loanUtilService;
     private final StandingInstructionRepository standingInstructionRepository;
-    
-    private final static Logger logger = LoggerFactory.getLogger(LoanAccountDomainServiceJpa.class);
 
     @Autowired
     public LoanAccountDomainServiceJpa(final LoanAssembler loanAccountAssembler, final LoanRepositoryWrapper loanRepositoryWrapper,
@@ -185,7 +180,6 @@ public class LoanAccountDomainServiceJpa implements LoanAccountDomainService {
             newRepaymentTransaction = LoanTransaction.repayment(loan.getOffice(), repaymentAmount, paymentDetail, transactionDate,
                     txnExternalId, currentDateTime, currentUser);
         }
-
 
         LocalDate recalculateFrom = null;
         if (loan.repaymentScheduleDetail().isInterestRecalculationEnabled()) {
@@ -355,12 +349,14 @@ public class LoanAccountDomainServiceJpa implements LoanAccountDomainService {
         postJournalEntries(loanAccount,existingTransactionIds,existingReversedTransactionIds,isAccountTransfer, false);
     }
 
-    private void postJournalEntries(final Loan loanAccount, final List<Long> existingTransactionIds, final List<Long> existingReversedTransactionIds, boolean isAccountTransfer, boolean isLoanToLoanTransfer) {
+    private void postJournalEntries(final Loan loanAccount, final List<Long> existingTransactionIds,
+            final List<Long> existingReversedTransactionIds, boolean isAccountTransfer, boolean isLoanToLoanTransfer) {
 
         final MonetaryCurrency currency = loanAccount.getCurrency();
         final ApplicationCurrency applicationCurrency = this.applicationCurrencyRepositoryWrapper.findOneWithNotFoundDetection(currency);
 
-        final Map<String, Object> accountingBridgeData = loanAccount.deriveAccountingBridgeData(applicationCurrency.toData(), existingTransactionIds, existingReversedTransactionIds, isAccountTransfer);
+        final Map<String, Object> accountingBridgeData = loanAccount.deriveAccountingBridgeData(applicationCurrency.toData(),
+                existingTransactionIds, existingReversedTransactionIds, isAccountTransfer);
         accountingBridgeData.put("isLoanToLoanTransfer", isLoanToLoanTransfer);
         this.journalEntryWritePlatformService.createJournalEntriesForLoan(accountingBridgeData);
     }
@@ -480,52 +476,34 @@ public class LoanAccountDomainServiceJpa implements LoanAccountDomainService {
 
     @Override
     public void recalculateAccruals(Loan loan, boolean isInterestCalcualtionHappened) {
-       
-    	
-    	LocalDate accruedTill = loan.getAccruedTill();
-    	
+        LocalDate accruedTill = loan.getAccruedTill();
         if (!loan.isPeriodicAccrualAccountingEnabledOnLoanProduct() || !isInterestCalcualtionHappened
                 || accruedTill == null || loan.isNpa() || !loan.status().isActive()) { return; }
         
         boolean isOrganisationDateEnabled = this.configurationDomainService.isOrganisationstartDateEnabled();
-        
         Date organisationStartDate = new Date();
-        
         if(isOrganisationDateEnabled){
             organisationStartDate = this.configurationDomainService.retrieveOrganisationStartDate(); 
         }
-        
         Collection<LoanScheduleAccrualData> loanScheduleAccrualDatas = new ArrayList<>();
-        
         List<LoanRepaymentScheduleInstallment> installments = loan.getRepaymentScheduleInstallments();
-        
         Long loanId = loan.getId();
         Long officeId = loan.getOfficeId();
         LocalDate accrualStartDate = null;
-        
         PeriodFrequencyType repaymentFrequency = loan.repaymentScheduleDetail().getRepaymentPeriodFrequencyType();
-        
         Integer repayEvery = loan.repaymentScheduleDetail().getRepayEvery();
         LocalDate interestCalculatedFrom = loan.getInterestChargedFromDate();
         Long loanProductId = loan.productId();
         MonetaryCurrency currency = loan.getCurrency();
-        
         ApplicationCurrency applicationCurrency = this.applicationCurrencyRepository.findOneWithNotFoundDetection(currency);
-        
         CurrencyData currencyData = applicationCurrency.toData();
-        
         Set<LoanCharge> loanCharges = loan.charges();
 
         for (LoanRepaymentScheduleInstallment installment : installments) {
-        	
             if (installment.getDueDate().isAfter(loan.getMaturityDate())) {
-            	
                 accruedTill = DateUtils.getLocalDateOfTenant();
-                
             }
-            
             if(!isOrganisationDateEnabled || new LocalDate(organisationStartDate).isBefore(installment.getDueDate())){
-            	
                 generateLoanScheduleAccrualData(accruedTill, loanScheduleAccrualDatas, loanId, officeId, accrualStartDate, repaymentFrequency, 
                         repayEvery, interestCalculatedFrom, loanProductId, currency, currencyData, loanCharges, installment);
             }

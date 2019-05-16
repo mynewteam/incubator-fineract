@@ -79,7 +79,6 @@ public class GLAccountWritePlatformServiceJpaRepositoryImpl implements GLAccount
     @Transactional
     @Override
     public CommandProcessingResult createGLAccount(final JsonCommand command) {
-    	logger.debug("GL_account_Begin_Create");
         try {
             final GLAccountCommand accountCommand = this.fromApiJsonDeserializer.commandFromApiJson(command.json());
             accountCommand.validateForCreate();

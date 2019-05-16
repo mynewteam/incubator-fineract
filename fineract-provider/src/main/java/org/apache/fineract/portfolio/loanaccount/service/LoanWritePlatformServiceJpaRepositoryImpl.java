@@ -788,9 +788,10 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
 			changes.put("note", noteText);
 		}
 		final Loan loan = this.loanAssembler.assembleFrom(loanId);
-		
-		loan.setLoanSubtypeStatus(this.loanSubtypeMappingReadPlatformService.retrieveProductSubtypeMappingDataByProductId(loanId).getLoanSubtypeStatusId());
-		
+
+		loan.setLoanSubtypeStatus(this.loanSubtypeMappingReadPlatformService
+				.retrieveProductSubtypeMappingDataByProductId(loanId).getLoanSubtypeStatusId());
+
 		final PaymentDetail paymentDetail = this.paymentDetailWritePlatformService
 				.createAndPersistPaymentDetail(command, changes);
 		final Boolean isHolidayValidationDone = false;
