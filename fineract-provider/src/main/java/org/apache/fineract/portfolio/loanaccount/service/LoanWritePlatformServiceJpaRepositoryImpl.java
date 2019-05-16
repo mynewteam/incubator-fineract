@@ -124,7 +124,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.apache.fineract.accounting.classification.service.ProductClassifyReadPlatformService;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -171,7 +170,6 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
 	private final LoanRepaymentScheduleTransactionProcessorFactory transactionProcessingStrategy;
 	private final CodeValueRepositoryWrapper codeValueRepository;
 	private final CashierTransactionDataValidator cashierTransactionDataValidator;
-	private final ProductClassifyReadPlatformService productClassifyReadPlatformService;
 
 	@Autowired
 	public LoanWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context,
@@ -205,8 +203,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
 			final EntityDatatableChecksWritePlatformService entityDatatableChecksWritePlatformService,
 			final LoanRepaymentScheduleTransactionProcessorFactory transactionProcessingStrategy,
 			final CodeValueRepositoryWrapper codeValueRepository, final LoanRepositoryWrapper loanRepositoryWrapper,
-			final CashierTransactionDataValidator cashierTransactionDataValidator,
-			final ProductClassifyReadPlatformService productClassifyReadPlatformService) {
+			final CashierTransactionDataValidator cashierTransactionDataValidator) {
 		this.context = context;
 		this.loanEventApiJsonValidator = loanEventApiJsonValidator;
 		this.loanAssembler = loanAssembler;
@@ -246,7 +243,6 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
 		this.entityDatatableChecksWritePlatformService = entityDatatableChecksWritePlatformService;
 		this.codeValueRepository = codeValueRepository;
 		this.cashierTransactionDataValidator = cashierTransactionDataValidator;
-		this.productClassifyReadPlatformService= productClassifyReadPlatformService;
 	}
 
 	private LoanLifecycleStateMachine defaultLoanLifecycleStateMachine() {

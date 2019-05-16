@@ -29,8 +29,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.fineract.accounting.classification.data.ProductSubTypeMappingData;
-import org.apache.fineract.accounting.classification.service.ProductClassifyReadPlatformServiceImpl;
+import org.apache.fineract.accounting.classify.data.ProductSubTypeMappingData;
 import org.apache.fineract.accounting.journalentry.service.JournalEntryWritePlatformService;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
@@ -75,7 +74,6 @@ public class LoanAccrualWritePlatformServiceImpl implements LoanAccrualWritePlat
 	private final AppUserRepositoryWrapper userRepository;
 	private final LoanRepositoryWrapper loanRepositoryWrapper;
 	private final ApplicationCurrencyRepositoryWrapper applicationCurrencyRepository;
-	private final static Logger logger = LoggerFactory.getLogger(LoanAccrualWritePlatformServiceImpl.class);
 
 	@Autowired
 	public LoanAccrualWritePlatformServiceImpl(final RoutingDataSource dataSource,

@@ -1,4 +1,4 @@
-package org.apache.fineract.accounting.classification.data;
+package org.apache.fineract.accounting.classify.data;
 
 public class ProductSubTypeMappingData {
 	

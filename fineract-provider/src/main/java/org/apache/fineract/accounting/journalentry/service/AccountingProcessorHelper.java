@@ -26,15 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-<<<<<<< HEAD
-=======
-import org.apache.fineract.accounting.classification.data.LoanArriaClassifyData;
-import org.apache.fineract.accounting.classification.data.LoanLastValueAccForMoveData;
-import org.apache.fineract.accounting.classification.data.ProductClassifyMappingData;
-import org.apache.fineract.accounting.classification.data.ProductSubTypeMappingData;
-import org.apache.fineract.accounting.classification.service.ProductClassifyReadPlatformService;
-import org.apache.fineract.accounting.classification.service.ProductClassifyReadPlatformServiceImpl;
->>>>>>> fasm
 import org.apache.fineract.accounting.closure.domain.GLClosure;
 import org.apache.fineract.accounting.closure.domain.GLClosureRepository;
 import org.apache.fineract.accounting.common.AccountingConstants.ACCRUAL_ACCOUNTS_FOR_LOAN;
@@ -636,11 +627,6 @@ public class AccountingProcessorHelper {
 		return this.officeRepositoryWrapper.findOneWithNotFoundDetection(officeId);
 	}
 
-<<<<<<< HEAD
-	/// Sothea Check
-=======
-	// Sothea Check
->>>>>>> fasm
 	private void createJournalEntriesForLoan(final Office office, final String currencyCode,
 			final int accountTypeToDebitId, final int accountTypeToCreditId, final Long loanProductId,
 			final Long paymentTypeId, final Long loanId, final String transactionId, final Date transactionDate,
@@ -732,20 +718,7 @@ public class AccountingProcessorHelper {
 			final Long paymentTypeId, final Long loanId, final String transactionId, final Date transactionDate,
 			final BigDecimal amount, final Date AccDate) {
 
-<<<<<<< HEAD
-		final GLAccount debitAccount = getLinkedGLAccountForLoanProduct(loanProductId, accountTypeToDebitId,
-				paymentTypeId);
 
-//		BigDecimal amountTest = BigDecimal.valueOf(1000);
-
-		final GLAccount creditAccount = getLinkedGLAccountForLoanProduct(loanProductId, accountTypeToCreditId,
-				paymentTypeId);
-
-//		final GLAccount creditAccount = getGLAccountById((Long.valueOf(239)));
-
-//		createDebitJournalEntryForLoan(office, currencyCode, debitAccount, loanId, transactionId, transactionDate,amount);
-//		createCreditJournalEntryForLoan(office, currencyCode, creditAccount, loanId, transactionId, transactionDate,amount);
-=======
 //		BigDecimal amount1 = BigDecimal.valueOf(1000);
 		BigDecimal amountOutString = BigDecimal.valueOf(0);
 
