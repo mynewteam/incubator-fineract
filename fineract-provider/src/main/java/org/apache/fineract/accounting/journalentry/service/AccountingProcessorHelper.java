@@ -98,7 +98,6 @@ public class AccountingProcessorHelper {
 	private final SavingsAccountTransactionRepository savingsAccountTransactionRepository;
 	private final AccountTransfersReadPlatformService accountTransfersReadPlatformService;
 
-
 	private final static Logger logger = LoggerFactory.getLogger(AccountingProcessorHelper.class);
 
 	@Autowired
@@ -112,7 +111,6 @@ public class AccountingProcessorHelper {
 			final GLAccountRepositoryWrapper accountRepositoryWrapper,
 			final ClientTransactionRepositoryWrapper clientTransactionRepositoryWrapper) {
 
-
 		this.glJournalEntryRepository = glJournalEntryRepository;
 		this.accountMappingRepository = accountMappingRepository;
 		this.closureRepository = closureRepository;
@@ -123,7 +121,7 @@ public class AccountingProcessorHelper {
 		this.accountTransfersReadPlatformService = accountTransfersReadPlatformService;
 		this.accountRepositoryWrapper = accountRepositoryWrapper;
 		this.clientTransactionRepository = clientTransactionRepositoryWrapper;
-		
+
 	}
 
 	public LoanDTO populateLoanDtoFromMap(
@@ -606,20 +604,11 @@ public class AccountingProcessorHelper {
 		return this.officeRepositoryWrapper.findOneWithNotFoundDetection(officeId);
 	}
 
-	///Sothea Check
-	private void createJournalEntriesForLoan(
-			final Office office, 
-			final String currencyCode,
-			final int accountTypeToDebitId, 
-			final int accountTypeToCreditId, 
-			final Long loanProductId,
-			final Long paymentTypeId, 
-			final Long loanId, 
-			final String transactionId, 
-			final Date transactionDate,
-			final BigDecimal amount
-			) 
-	{
+	/// Sothea Check
+	private void createJournalEntriesForLoan(final Office office, final String currencyCode,
+			final int accountTypeToDebitId, final int accountTypeToCreditId, final Long loanProductId,
+			final Long paymentTypeId, final Long loanId, final String transactionId, final Date transactionDate,
+			final BigDecimal amount) {
 
 		final GLAccount debitAccount = getLinkedGLAccountForLoanProduct(loanProductId, accountTypeToDebitId,
 				paymentTypeId);
@@ -634,12 +623,11 @@ public class AccountingProcessorHelper {
 
 	}
 
+//	My Function for Loan Journal Entry
 	private void createJournalEntriesForLoan(final Office office, final String currencyCode,
 			final int accountTypeToDebitId, final int accountTypeToCreditId, final Long loanProductId,
 			final Long paymentTypeId, final Long loanId, final String transactionId, final Date transactionDate,
-			final BigDecimal amount,
-			final Date AccDate
-			) {
+			final BigDecimal amount, final Date AccDate) {
 
 		final GLAccount debitAccount = getLinkedGLAccountForLoanProduct(loanProductId, accountTypeToDebitId,
 				paymentTypeId);
@@ -660,7 +648,7 @@ public class AccountingProcessorHelper {
 				amount);
 
 	}
-	
+
 	private void createJournalEntriesForSavings(final Office office, final String currencyCode,
 			final int accountTypeToDebitId, final int accountTypeToCreditId, final Long savingsProductId,
 			final Long paymentTypeId, final Long savingsId, final String transactionId, final Date transactionDate,
@@ -715,7 +703,7 @@ public class AccountingProcessorHelper {
 				}
 			}
 		}
-		
+
 		createCashBasedDebitJournalEntriesAndReversalsForSavings(office, currencyCode,
 				accountTypeToBeDebited.getValue(), savingsProductId, paymentTypeId, savingsId, transactionId,
 				transactionDate, amount, isReversal);
@@ -993,9 +981,8 @@ public class AccountingProcessorHelper {
 		this.glJournalEntryRepository.saveAndFlush(journalEntry);
 	}
 
-	private void createCreditJournalEntryForLoan(final Office office, final String currencyCode,
-			final GLAccount account, final Long loanId, final String transactionId, final Date transactionDate,
-			final BigDecimal amount) {
+	public void createCreditJournalEntryForLoan(final Office office, final String currencyCode, final GLAccount account,
+			final Long loanId, final String transactionId, final Date transactionDate, final BigDecimal amount) {
 		final boolean manualEntry = false;
 		LoanTransaction loanTransaction = null;
 		SavingsAccountTransaction savingsAccountTransaction = null;
@@ -1048,7 +1035,7 @@ public class AccountingProcessorHelper {
 		this.glJournalEntryRepository.saveAndFlush(journalEntry);
 	}
 
-	private void createDebitJournalEntryForLoan(final Office office, final String currencyCode, final GLAccount account,
+	public void createDebitJournalEntryForLoan(final Office office, final String currencyCode, final GLAccount account,
 			final Long loanId, final String transactionId, final Date transactionDate, final BigDecimal amount) {
 
 		final boolean manualEntry = false;
@@ -1309,6 +1296,7 @@ public class AccountingProcessorHelper {
 				throw new ProductToGLAccountMappingNotFoundException(PortfolioProductType.LOAN, loanProductId,
 						ACCRUAL_ACCOUNTS_FOR_LOAN.OVERPAYMENT.toString());
 			}
+			
 			glAccount = accountMapping.getGlAccount();
 		}
 		return glAccount;

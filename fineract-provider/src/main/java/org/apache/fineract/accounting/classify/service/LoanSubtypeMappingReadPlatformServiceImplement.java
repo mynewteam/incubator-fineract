@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Date;
 
+import org.apache.fineract.accounting.classify.data.GLAccountAmountData;
 import org.apache.fineract.accounting.classify.data.LoanArrearClassifyData;
 import org.apache.fineract.accounting.classify.data.LoanProductSubtypeMappingData;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
@@ -12,10 +13,14 @@ import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
 
 @Service
 public class LoanSubtypeMappingReadPlatformServiceImplement implements LoanSubtypeMappingReadPlatformService {
+	private final NamedParameterJdbcTemplate namedJdbctemplate;
 	private final JdbcTemplate jdbctemplate;
 //	private final static Logger logger = LoggerFactory.getLogger(ProductClassifyReadPlatformServiceImpl.class);
 	private final String schema;
@@ -23,13 +28,14 @@ public class LoanSubtypeMappingReadPlatformServiceImplement implements LoanSubty
 	@Autowired
 	public LoanSubtypeMappingReadPlatformServiceImplement(final RoutingDataSource dataSource) {
 		this.jdbctemplate = new JdbcTemplate(dataSource);
+		this.namedJdbctemplate = new NamedParameterJdbcTemplate(dataSource);
 		
 		final StringBuilder builder = new StringBuilder(400);
 		
 		builder.append(" id, ");
-		builder.append("product_id, ");
-		builder.append("loan_subtype_status_id, ");
-		builder.append("min_age, ");
+		builder.append(" product_id, ");
+		builder.append(" loan_subtype_status_id, ");
+		builder.append(" min_age, ");
 		builder.append(" max_age, ");
 		builder.append(" portfolio_acc_id, ");
 		builder.append(" int_receivable_acc_id, ");
@@ -57,12 +63,11 @@ public class LoanSubtypeMappingReadPlatformServiceImplement implements LoanSubty
 
 	@Override
 	public Collection<LoanProductSubtypeMappingData> retrieveLoanProductSubtypeMappings(Long productId, Integer age) {
-
 			LoanProductSubtypeMappingDataMapper mapper = new LoanProductSubtypeMappingDataMapper();
 			final StringBuilder sqlBuilder = new StringBuilder(200);
 			sqlBuilder.append("select SQL_CALC_FOUND_ROWS ");
 			sqlBuilder.append(this.schema());
-			sqlBuilder.append(" WHERE  product_id = ? AND (? BETWEEN min_age AND max_age)  OR ((min_age <= ? and max_age=-1))");
+			sqlBuilder.append(" WHERE product_id = ? AND ((? BETWEEN min_age AND max_age)  OR (min_age <= ? AND max_age = - 1))");
 			return this.jdbctemplate.query(sqlBuilder.toString(), mapper, new Object[] { productId, age , age });
 			
 	}
@@ -109,21 +114,23 @@ public class LoanSubtypeMappingReadPlatformServiceImplement implements LoanSubty
 	}
 	
 	
-	
 	private static final class LoanArrearClassifyDataMapper implements RowMapper<LoanArrearClassifyData> {
 		@Override
 		public LoanArrearClassifyData mapRow(ResultSet rs, int rowNum) throws SQLException {
 			
+			 Long officeId =rs.getLong("office_id");
 			 String clientAccountNo= rs.getString("client_account_no");
 			 Long accountNumber =rs.getLong("account_number");
+			 
 			 Long productId = rs.getLong("product_id");
 			 Long loanSubtypeStatusId = rs.getLong("loan_subtype_status_id");
 			 double loanOutstanding = rs.getDouble("loan_outstanding");
 			 Date overdueSinceDateDerived = rs.getDate("overdue_since_date_derived") ;
-			 String daysInArrears = rs.getString("days_in_arrears");
+			 String currencyCode = rs.getString("currency_code");
+			 Integer daysInArrears = JdbcSupport.getInteger(rs,"days_in_arrea");
 //			 Integer daysInArrears = JdbcSupport.getInteger(rs, "days_in_arrear days_in_arrear");
-			
-			 return new LoanArrearClassifyData(clientAccountNo, accountNumber, productId, loanSubtypeStatusId, loanOutstanding, overdueSinceDateDerived, Integer.parseInt(daysInArrears));
+//			return null;
+			 return new LoanArrearClassifyData(officeId, clientAccountNo, accountNumber, productId, loanSubtypeStatusId, loanOutstanding, currencyCode, overdueSinceDateDerived, daysInArrears);
 		}
 	}
 
@@ -132,15 +139,103 @@ public class LoanSubtypeMappingReadPlatformServiceImplement implements LoanSubty
 		
 		LoanArrearClassifyDataMapper mapper = new LoanArrearClassifyDataMapper();
 		
-		final StringBuilder sqlBuilder = new StringBuilder(400);
+		final StringBuilder sqlBuilder = new StringBuilder(600);
 		
-		sqlBuilder.append(" select SQL_CALC_FOUND_ROWS ");
-		sqlBuilder.append(" v.client_account_no,v.account_number, v.product_id, v.loan_subtype_status_id , v.loan_outstanding, v.overdue_since_date_derived ");
-		sqlBuilder.append(" , ( TO_DAYS(?) - TO_DAYS( v.overdue_since_date_derived )) AS days_in_arrears ");
+		sqlBuilder.append(" select ");
+		sqlBuilder.append(" v.office_id, v.currency_code,v.client_account_no,v.account_number, v.product_id, v.loan_subtype_status_id , v.loan_outstanding, v.overdue_since_date_derived ");
+		sqlBuilder.append(" , datediff(date(:tilldate) , date(v.overdue_since_date_derived)) AS \"days_in_arrea\" ");
 		sqlBuilder.append(" from v_loan_aging_detail v");
-		sqlBuilder.append(" where v.overdue_since_date_derived < ? ");
-		
-		return this.jdbctemplate.query(sqlBuilder.toString(), mapper, new Object[] { tilldate, tilldate });
+		sqlBuilder.append(" where v.overdue_since_date_derived < :tilldate ");
+		SqlParameterSource paramSource = new MapSqlParameterSource()
+		.addValue("tilldate", tilldate.toString());
+		return this.namedJdbctemplate.query(sqlBuilder.toString(), paramSource, mapper);
 	}
+	
+	@Override
+	public Collection<GLAccountAmountData> retrieveLoanGLAccountAmountData(Long officeId ,org.joda.time.LocalDate tilldate,Long loanId, Long glAccountId) {
+		
+		GLAccountAmountDataMapper mapper = new GLAccountAmountDataMapper();
+		
+		final StringBuilder sqlBuilder = new StringBuilder(600);
+		
+		sqlBuilder.append(" SELECT  " + 
+				"    loan_id AS loanId, " + 
+				"    glAccountId, " + 
+				"    glAccountName, " + 
+				"    max(transactionDate) AS transactionDate, " + 
+				"    SUM(IFNULL(debitAmount, 0) - IFNULL(creditAmount, 0)) AS balance " + 
+				" FROM " + 
+				"    (SELECT  " + 
+				"        glAccount.classification_enum AS classification, " + 
+				"            journalEntry.transaction_id, " + 
+				"            journalEntry.loan_transaction_id, " + 
+				"            loanTransaction.id AS loanTransactionId, " + 
+				"            loanTransaction.loan_id AS loanTransactionLoanId, " + 
+				"            (SELECT  " + 
+				"                    s.loan_id " + 
+				"                FROM " + 
+				"                    m_loan_transaction s " + 
+				"                WHERE " + 
+				"                    s.id = journalEntry.loan_transaction_id " + 
+				"                LIMIT 1) AS loan_id, " + 
+				"            glAccount.name AS glAccountName, " + 
+				"            glAccount.gl_code AS glAccountCode, " + 
+				"            glAccount.id AS glAccountId, " + 
+				"            journalEntry.office_id AS officeId, " + 
+				"            office.name AS officeName, " + 
+				"            journalEntry.ref_num AS referenceNumber, " + 
+				"            journalEntry.manual_entry AS manualEntry, " + 
+				"            journalEntry.entry_date AS transactionDate, " + 
+				"            journalEntry.type_enum AS entryType, " + 
+				"            journalEntry.amount AS amount, " + 
+				"            IF(journalEntry.type_enum = 1, journalEntry.amount, 0) AS creditAmount, " + 
+				"            IF(journalEntry.type_enum = 2, journalEntry.amount, 0) AS debitAmount, " + 
+				"            journalEntry.transaction_id AS transactionId, " + 
+				"            journalEntry.entity_type_enum AS entityType, " + 
+				"            journalEntry.entity_id AS entityId, " + 
+				"            creatingUser.id AS createdByUserId, " + 
+				"            creatingUser.username AS createdByUserName, " + 
+				"            journalEntry.reversed AS reversed, " + 
+				"            journalEntry.currency_code AS currencyCode " + 
+				"    FROM  " + 
+				"        acc_gl_journal_entry journalEntry  " + 
+				"    LEFT JOIN acc_gl_account glAccount ON glAccount.id = journalEntry.account_id  " + 
+				"    LEFT JOIN m_office office ON office.id = journalEntry.office_id  " + 
+				"    LEFT JOIN m_appuser creatingUser ON creatingUser.id = journalEntry.createdby_id  " + 
+				"    JOIN m_currency curr ON curr.code = journalEntry.currency_code  " + 
+				"    JOIN m_loan_transaction loanTransaction ON loanTransaction.id = journalEntry.loan_transaction_id " + 
+				"    WHERE " + 
+				"        journalEntry.office_id = :officeId  " + 
+				"            AND loanTransaction.loan_id = :loanId  " + 
+				"            AND journalEntry.entry_date <= :tilldate  " + 
+				"            AND journalEntry.account_id = :accountId  " + 
+				"    ORDER BY journalEntry.entry_date , journalentry.id) AS Table1  " + 
+				"GROUP BY loan_id , glAccountId , glAccountName; ");
+		
+		
+		MapSqlParameterSource namedParameters = new MapSqlParameterSource();
 
+	    namedParameters.addValue("officeId", officeId);
+	    namedParameters.addValue("loanId", loanId);
+	    namedParameters.addValue("tilldate", tilldate);
+	    namedParameters.addValue("accountId", glAccountId);
+//	    namedParameterJdbcTemplate.update(SQL, namedParameters);
+	    
+//		SqlParameterSource paramSource = new MapSqlParameterSource().addValue("tilldate", tilldate);
+		return this.namedJdbctemplate.query(sqlBuilder.toString(), namedParameters, mapper);
+	}
+	
+	private static final class GLAccountAmountDataMapper implements RowMapper<GLAccountAmountData> {
+		@Override
+		public GLAccountAmountData mapRow(ResultSet rs, int rowNum) throws SQLException {
+			
+		 Long loanId = rs.getLong("loanId");
+		 Long glAccountId = rs.getLong("glAccountId");
+		 String glAccountName = rs.getString("glAccountName");
+		 Date transactionDate = rs.getDate("transactionDate");
+		 double balance = rs.getDouble("balance");
+		 return new GLAccountAmountData(loanId, glAccountId, glAccountName, transactionDate, balance);
+		}
+	}
+	
 }

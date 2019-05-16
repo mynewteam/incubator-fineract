@@ -39,6 +39,11 @@ public enum LoanTransactionType {
      * penalty
      **/
     ACCRUAL(10, "loanTransactionType.accrual"), //
+    /**
+     * Transaction represents an Accrual Change Loan Classify(For either interest
+     * 
+     **/
+    CHANGE_SUBTYPE(11, "loanTransactionType.changeSubtype"), //
 
     /***
      * A Loan Transfer involves two steps, first a "initiate" Loan transfer
@@ -107,6 +112,9 @@ public enum LoanTransactionType {
             case 10:
                 loanTransactionType = LoanTransactionType.ACCRUAL;
             break;
+            case 11:
+                loanTransactionType = LoanTransactionType.CHANGE_SUBTYPE;
+            break;
             case 12:
                 loanTransactionType = LoanTransactionType.INITIATE_TRANSFER;
             break;
@@ -164,6 +172,9 @@ public enum LoanTransactionType {
 
     public boolean isAccrual() {
         return this.value.equals(LoanTransactionType.ACCRUAL.getValue());
+    }
+    public boolean isChangeSubtype() {
+        return this.value.equals(LoanTransactionType.CHANGE_SUBTYPE.getValue());
     }
 
     public boolean isWriteOff() {

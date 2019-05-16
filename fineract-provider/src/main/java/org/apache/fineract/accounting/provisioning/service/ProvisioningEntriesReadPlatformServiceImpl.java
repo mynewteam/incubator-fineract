@@ -68,7 +68,8 @@ public class ProvisioningEntriesReadPlatformServiceImpl implements ProvisioningE
         private final StringBuilder sqlQuery;
 
         protected LoanProductProvisioningEntryMapper(String formattedDate) {
-            sqlQuery = new StringBuilder()
+            
+        	sqlQuery = new StringBuilder()
                     .append("select if(loan.loan_type_enum=1, mclient.office_id, mgroup.office_id) as office_id, loan.loan_type_enum, pcd.criteria_id as criteriaid, loan.product_id,loan.currency_code,")
                     .append("GREATEST(datediff(")
                     .append(formattedDate)

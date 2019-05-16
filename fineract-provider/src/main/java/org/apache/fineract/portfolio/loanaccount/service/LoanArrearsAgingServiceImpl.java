@@ -104,13 +104,13 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
         updateSqlBuilder
                 .append("INSERT INTO m_loan_arrears_aging(`loan_id`,`principal_overdue_derived`,`interest_overdue_derived`,`fee_charges_overdue_derived`,`penalty_charges_overdue_derived`,`total_overdue_derived`,`overdue_since_date_derived`)");
         updateSqlBuilder.append("select ml.id as loanId,");
-        updateSqlBuilder.append(principalOverdueCalculationSql + " as principal_overdue_derived,");
-        updateSqlBuilder.append(interestOverdueCalculationSql + " as interest_overdue_derived,");
-        updateSqlBuilder.append(feeChargesOverdueCalculationSql + " as fee_charges_overdue_derived,");
-        updateSqlBuilder.append(penaltyChargesOverdueCalculationSql + " as penalty_charges_overdue_derived,");
+        updateSqlBuilder.append(principalOverdueCalculationSql + " as principal_overdue_derived, ");
+        updateSqlBuilder.append(interestOverdueCalculationSql + " as interest_overdue_derived, ");
+        updateSqlBuilder.append(feeChargesOverdueCalculationSql + " as fee_charges_overdue_derived, ");
+        updateSqlBuilder.append(penaltyChargesOverdueCalculationSql + " as penalty_charges_overdue_derived, ");
         updateSqlBuilder.append(principalOverdueCalculationSql + "+" + interestOverdueCalculationSql + "+");
         updateSqlBuilder.append(feeChargesOverdueCalculationSql + "+" + penaltyChargesOverdueCalculationSql + " as total_overdue_derived,");
-        updateSqlBuilder.append("MIN(mr.duedate) as overdue_since_date_derived ");
+        updateSqlBuilder.append(" MIN(mr.duedate) as overdue_since_date_derived ");
         updateSqlBuilder.append(" FROM m_loan ml ");
         updateSqlBuilder.append(" INNER JOIN m_loan_repayment_schedule mr on mr.loan_id = ml.id ");
         updateSqlBuilder.append(" left join m_product_loan_recalculation_details prd on prd.product_id = ml.product_id ");
