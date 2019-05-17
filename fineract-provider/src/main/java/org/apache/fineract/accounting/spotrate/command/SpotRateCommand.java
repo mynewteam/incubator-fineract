@@ -32,7 +32,7 @@ public class SpotRateCommand
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
 
-        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("mSpotRate");
+        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("SpotRate");
 		
 
         baseDataValidator.reset().parameter(SpotRateJsonInputParams.CURRENCY_CODE.getValue()).value(this.currency_code).notBlank();

@@ -19,80 +19,93 @@ import org.joda.time.LocalDate;
 public class SpotRate extends AbstractPersistableCustom<Long> {
     
     @Column(name = "currency_code")
-    private String currency_code;
+    private String currencyCode;
     
-    @Column(name = "buyingRate")
+    @Column(name = "buying_rate")
     private BigDecimal buyingRate;
     
-    @Column(name = "sellingRate")
+    @Column(name = "selling_rate")
     private BigDecimal sellingRate;
     
-    @Column(name = "spotRate")
+    @Column(name = "spot_rate")
     private BigDecimal spotRate;
     
-    @Column(name = "transactionDate")
+    @Column(name = "transaction_date")
     private Date transactionDate;
     
-    public SpotRate(String currency_code, BigDecimal buyingRate, BigDecimal sellingRate, BigDecimal spotRate, LocalDate transactionDate)
+
+    public SpotRate(String currencyCode, BigDecimal buyingRate, BigDecimal sellingRate, BigDecimal spotRate,
+			LocalDate transactionDate)
 	{
-    	this.currency_code = currency_code;
-    	this.buyingRate = buyingRate;
-    	this.sellingRate = sellingRate;
-    	this.spotRate = spotRate;
-    	this.transactionDate = transactionDate.toDate();
+		super();
+		this.currencyCode = currencyCode;
+		this.buyingRate = buyingRate;
+		this.sellingRate = sellingRate;
+		this.spotRate = spotRate;
+		this.transactionDate = transactionDate.toDate();
+	}
+    
+
+	public String getCurrencyCode()
+	{
+		return currencyCode;
 	}
 
 
-    public String getcurrency_code() {
-        return this.currency_code;
-    }
-
-    
-    public void setcurrency_code(String currency_code) {
-        this.currency_code = currency_code;
-    }
-
-    
-    public BigDecimal getbuyingRate() {
-        return this.buyingRate;
-    }
-
-    
-    public void setbuyingRate(BigDecimal buyingRate) {
-        this.buyingRate = buyingRate;
-    }
-    
-    public BigDecimal getsellingRate() {
-        return this.sellingRate;
-    }
-    
-    
-    public void setsellingRate(BigDecimal sellingRate) {
-        this.sellingRate = sellingRate;
-    }
+	public void setCurrencyCode(String currencyCode)
+	{
+		this.currencyCode = currencyCode;
+	}
 
 
-    public BigDecimal getspotRate() {
-        return this.spotRate;
-    }
+	public BigDecimal getBuyingRate()
+	{
+		return buyingRate;
+	}
 
-    
-    public void setspotRate(BigDecimal spotRate) {
-        this.spotRate = spotRate;
-    }
 
-    public LocalDate gettransactionDate() {
+	public void setBuyingRate(BigDecimal buyingRate)
+	{
+		this.buyingRate = buyingRate;
+	}
+
+
+	public BigDecimal getSellingRate()
+	{
+		return sellingRate;
+	}
+
+
+	public void setSellingRate(BigDecimal sellingRate)
+	{
+		this.sellingRate = sellingRate;
+	}
+
+
+	public BigDecimal getSpotRate()
+	{
+		return spotRate;
+	}
+
+
+	public void setSpotRate(BigDecimal spotRate)
+	{
+		this.spotRate = spotRate;
+	}
+
+
+	public LocalDate gettransactionDate() {
 		return (LocalDate) ObjectUtils.defaultIfNull(new LocalDate(this.transactionDate), null);
 	}
 
 	public static SpotRate fromJson(JsonCommand command)
 	{
-		final String currency_code = command.stringValueOfParameterNamed(SpotRateJsonInputParams.CURRENCY_CODE.getValue());
+		final String currencyCode = command.stringValueOfParameterNamed(SpotRateJsonInputParams.CURRENCY_CODE.getValue());
         final BigDecimal buyingRate = command.bigDecimalValueOfParameterNamed(SpotRateJsonInputParams.BUYING_RATE.getValue());
         final BigDecimal sellingRate = command.bigDecimalValueOfParameterNamed(SpotRateJsonInputParams.SELLING_RATE.getValue());
         final BigDecimal spotRate = command.bigDecimalValueOfParameterNamed(SpotRateJsonInputParams.SPOTRATE.getValue());
         final LocalDate transactionDate = command.localDateValueOfParameterNamed(SpotRateJsonInputParams.TRANSACTION_DATE.getValue());
-		return new SpotRate(currency_code, buyingRate, sellingRate, spotRate, transactionDate);
+		return new SpotRate(currencyCode, buyingRate, sellingRate, spotRate, transactionDate);
 	}
     
     

@@ -55,8 +55,7 @@ public class SpotRateWritePlatformServiceImp implements SpotRateWritePlatformSer
 
 			this.spotrateRespository.save(spotrate);
 
-			return new CommandProcessingResultBuilder().withCommandId(command.commandId())
-					.withEntityId(spotrate.getId()).build();
+			return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(spotrate.getId()).build();
 		} catch (final DataIntegrityViolationException dve)
 		{
 			return CommandProcessingResult.empty();

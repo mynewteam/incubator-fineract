@@ -5,15 +5,15 @@ import java.math.BigDecimal;
 
 public class SpotRateData {
     private Long id;
-    private String currency_code;
+    private String currencyCode;
     private BigDecimal buyingRate;
     private BigDecimal sellingRate;
     private BigDecimal spotRate;
     private LocalDate transactionDate;
     
-    public SpotRateData(Long id, String currency_code, BigDecimal buyingRate, BigDecimal sellingRate, BigDecimal spotRate, LocalDate transactionDate) {
+    public SpotRateData(Long id, String currencyCode, BigDecimal buyingRate, BigDecimal sellingRate, BigDecimal spotRate, LocalDate transactionDate) {
         this.id = id;
-        this.currency_code = currency_code;
+        this.currencyCode = currencyCode;
         this.buyingRate = buyingRate;
         this.sellingRate = sellingRate;
         this.spotRate = spotRate;
@@ -41,13 +41,13 @@ public class SpotRateData {
     }
 
     
-    public String getcurrency_code() {
-        return this.currency_code;
+    public String getcurrencyCode() {
+        return this.currencyCode;
     }
 
     
-    public void setcurrency_code(String currency_code) {
-        this.currency_code = currency_code;
+    public void setcurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode;
     }
 
     
