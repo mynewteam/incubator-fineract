@@ -1084,7 +1084,7 @@ public class AccountingProcessorHelper {
         GLAccount glAccount = null;
         if (isOrganizationAccount(accountMappingTypeId)) {
             FinancialActivityAccount financialActivityAccount = this.financialActivityAccountRepository
-                    .findByFinancialActivityTypeWithNotFoundDetection(accountMappingTypeId);
+                    .findByFinancialActivityTypeWithNotFoundDetection(accountMappingTypeId,null);
             glAccount = financialActivityAccount.getGlAccount();
         } else {
             ProductToGLAccountMapping accountMapping = this.accountMappingRepository.findCoreProductToFinAccountMapping(loanProductId,
@@ -1162,7 +1162,7 @@ public class AccountingProcessorHelper {
         GLAccount glAccount = null;
         if (isOrganizationAccount(accountMappingTypeId)) {
             FinancialActivityAccount financialActivityAccount = this.financialActivityAccountRepository
-                    .findByFinancialActivityTypeWithNotFoundDetection(accountMappingTypeId);
+                    .findByFinancialActivityTypeWithNotFoundDetection(accountMappingTypeId,null);
             glAccount = financialActivityAccount.getGlAccount();
         } else {
             ProductToGLAccountMapping accountMapping = this.accountMappingRepository.findCoreProductToFinAccountMapping(savingsProductId,
@@ -1189,7 +1189,7 @@ public class AccountingProcessorHelper {
         GLAccount glAccount = null;
         if (isOrganizationAccount(accountMappingTypeId)) {
             FinancialActivityAccount financialActivityAccount = this.financialActivityAccountRepository
-                    .findByFinancialActivityTypeWithNotFoundDetection(accountMappingTypeId);
+                    .findByFinancialActivityTypeWithNotFoundDetection(accountMappingTypeId,null);
             glAccount = financialActivityAccount.getGlAccount();
         } else {
             ProductToGLAccountMapping accountMapping = this.accountMappingRepository.findCoreProductToFinAccountMapping(shareProductId,
@@ -1275,7 +1275,7 @@ public class AccountingProcessorHelper {
     public void createDebitJournalEntryOrReversalForClientChargePayments(final Office office, final String currencyCode,
             final Long clientId, final Long transactionId, final Date transactionDate, final BigDecimal amount, final Boolean isReversal) {
         final GLAccount account = financialActivityAccountRepository.findByFinancialActivityTypeWithNotFoundDetection(
-                FINANCIAL_ACTIVITY.ASSET_FUND_SOURCE.getValue()).getGlAccount();
+                FINANCIAL_ACTIVITY.ASSET_FUND_SOURCE.getValue(),null).getGlAccount();
         if (isReversal) {
             createCreditJournalEntryForClientPayments(office, currencyCode, account, clientId, transactionId, transactionDate, amount);
         } else {

@@ -46,10 +46,24 @@ public class FinancialActivityAccountRepositoryWrapper {
         return financialActivityAccount;
     }
 
-    public FinancialActivityAccount findByFinancialActivityTypeWithNotFoundDetection(final int financialActivityType) {
-        FinancialActivityAccount financialActivityAccount = this.repository.findByFinancialActivityType(financialActivityType);
+    public FinancialActivityAccount findByFinancialActivityTypeWithNotFoundDetection(final int financialActivityType,final String currency) {
+       List<FinancialActivityAccount>  financialActivityAccount = this.repository.findByFinancialActivityType(financialActivityType);
+      
+        
+        
+        
+        
+        
+        
         if (financialActivityAccount == null) { throw new FinancialActivityAccountNotFoundException(financialActivityType); }
-        return financialActivityAccount;
+        
+        if(currency.equals("USD")) {
+        	return financialActivityAccount.get(1);
+        }else {
+        	return financialActivityAccount.get(0);
+		}
+        
+        
     }
 
     public List<FinancialActivityAccount> findAll() {

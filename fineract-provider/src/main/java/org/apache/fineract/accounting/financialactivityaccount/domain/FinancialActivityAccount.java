@@ -32,7 +32,7 @@ import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 @Table(name = "acc_gl_financial_activity_account")
 public class FinancialActivityAccount extends AbstractPersistableCustom<Long> {
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)	
     @JoinColumn(name = "gl_account_id")
     private GLAccount glAccount;
 
