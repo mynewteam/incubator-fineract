@@ -81,5 +81,4 @@ public class SpotRateApiResource {
 
         return this.toApiJsonSerializer.serialize(settings, spotrateDate, RESPONSE_DATA_PARAMETERS);
     }
-    
 }
