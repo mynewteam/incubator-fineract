@@ -64,10 +64,16 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.gson.JsonElement;
+
+import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
+
 @Service
 public class TellerWritePlatformServiceJpaImpl implements TellerWritePlatformService {
 
     private final static Logger logger = LoggerFactory.getLogger(TellerWritePlatformServiceJpaImpl.class);
+
+	
 
     private final PlatformSecurityContext context;
     private final TellerCommandFromApiJsonDeserializer fromApiJsonDeserializer;
@@ -79,7 +85,7 @@ public class TellerWritePlatformServiceJpaImpl implements TellerWritePlatformSer
     private final JournalEntryRepository glJournalEntryRepository;
     private final FinancialActivityAccountRepositoryWrapper financialActivityAccountRepositoryWrapper;
     private final CashierTransactionDataValidator cashierTransactionDataValidator;
-
+    private final FromJsonHelper fromJsonHelper;
     @Autowired
     public TellerWritePlatformServiceJpaImpl(final PlatformSecurityContext context,
             final TellerCommandFromApiJsonDeserializer fromApiJsonDeserializer,
@@ -87,7 +93,7 @@ public class TellerWritePlatformServiceJpaImpl implements TellerWritePlatformSer
             final StaffRepository staffRepository, CashierRepository cashierRepository, CashierTransactionRepository cashierTxnRepository,
             JournalEntryRepository glJournalEntryRepository,
             FinancialActivityAccountRepositoryWrapper financialActivityAccountRepositoryWrapper,
-            final CashierTransactionDataValidator cashierTransactionDataValidator) {
+            final CashierTransactionDataValidator cashierTransactionDataValidator,final FromJsonHelper fromJsonHelper) {
         this.context = context;
         this.fromApiJsonDeserializer = fromApiJsonDeserializer;
         this.tellerRepositoryWrapper = tellerRepositoryWrapper;
@@ -98,6 +104,8 @@ public class TellerWritePlatformServiceJpaImpl implements TellerWritePlatformSer
         this.glJournalEntryRepository = glJournalEntryRepository;
         this.financialActivityAccountRepositoryWrapper = financialActivityAccountRepositoryWrapper;
         this.cashierTransactionDataValidator = cashierTransactionDataValidator;
+        this.fromJsonHelper = fromJsonHelper;
+        
     }
 
     @Override
@@ -387,6 +395,10 @@ public class TellerWritePlatformServiceJpaImpl implements TellerWritePlatformSer
 
             final String entityType = command.stringValueOfParameterNamed("entityType");
             final Long entityId = command.longValueOfParameterNamed("entityId");
+            
+            final JsonElement jsonElement = this.fromJsonHelper.parse(command.json());
+            final String currency = this.fromJsonHelper.extractStringNamed("currencyCode", jsonElement);
+
             if (entityType != null) {
                 if (entityType.equals("loan account")) {
                     // TODO : Check if loan account exists
@@ -417,9 +429,9 @@ public class TellerWritePlatformServiceJpaImpl implements TellerWritePlatformSer
 
             // Pass the journal entries
             FinancialActivityAccount mainVaultFinancialActivityAccount = this.financialActivityAccountRepositoryWrapper
-                    .findByFinancialActivityTypeWithNotFoundDetection(FINANCIAL_ACTIVITY.CASH_AT_MAINVAULT.getValue());
+                    .findByFinancialActivityTypeWithNotFoundDetection(FINANCIAL_ACTIVITY.CASH_AT_MAINVAULT.getValue(),currency);
             FinancialActivityAccount tellerCashFinancialActivityAccount = this.financialActivityAccountRepositoryWrapper
-                    .findByFinancialActivityTypeWithNotFoundDetection(FINANCIAL_ACTIVITY.CASH_AT_TELLER.getValue());
+                    .findByFinancialActivityTypeWithNotFoundDetection(FINANCIAL_ACTIVITY.CASH_AT_TELLER.getValue(),currency);
             GLAccount creditAccount = null;
             GLAccount debitAccount = null;
             if (txnType.equals(CashierTxnType.ALLOCATE)) {
