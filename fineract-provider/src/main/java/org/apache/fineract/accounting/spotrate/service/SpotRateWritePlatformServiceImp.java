@@ -21,6 +21,10 @@ package org.apache.fineract.accounting.spotrate.service;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuilder;
+import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
+import org.joda.time.LocalDate;
+
+import org.apache.fineract.accounting.spotrate.api.SpotRateJsonInputParams;
 import org.apache.fineract.accounting.spotrate.command.SpotRateCommand;
 import org.apache.fineract.accounting.spotrate.domain.SpotRateRepository;
 import org.apache.fineract.accounting.spotrate.domain.SpotRate;
@@ -30,17 +34,24 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.gson.JsonElement;
+
 @Service
 public class SpotRateWritePlatformServiceImp implements SpotRateWritePlatformService
 {
 	private final SpotRateSerialization fromApiJsonDeserializer ;
 	private final SpotRateRepository spotrateRespository;
+	private final SpotRateReadPlatformService spotRateReadPlatformService;
+	private final FromJsonHelper fromApiJsonHelper;
 	
 	@Autowired
-	public SpotRateWritePlatformServiceImp(final SpotRateSerialization fromApiJsonDeserializer, final SpotRateRepository spotrateRespository)
+	public SpotRateWritePlatformServiceImp(final SpotRateSerialization fromApiJsonDeserializer, final SpotRateRepository spotrateRespository,
+			final SpotRateReadPlatformService spotRateReadPlatformService, final FromJsonHelper fromApiJsonfromApiJsonHelper)
 	{
 		this.fromApiJsonDeserializer = fromApiJsonDeserializer;
 		this.spotrateRespository = spotrateRespository;
+		this.spotRateReadPlatformService = spotRateReadPlatformService;
+		this.fromApiJsonHelper = fromApiJsonfromApiJsonHelper;
 	}
 
 	@Transactional
@@ -50,7 +61,17 @@ public class SpotRateWritePlatformServiceImp implements SpotRateWritePlatformSer
 		try
 		{
 			final SpotRateCommand spotRateCommand = this.fromApiJsonDeserializer.commandFromApiJson(command.json());
+			
+			final JsonElement element = this.fromApiJsonHelper.parse(command.json());
+			
+			final String currency_code = this.fromApiJsonHelper.extractStringNamed(SpotRateJsonInputParams.CURRENCY_CODE.getValue(), element);
+			final LocalDate transactionDate = this.fromApiJsonHelper.extractLocalDateNamed(SpotRateJsonInputParams.TRANSACTION_DATE.getValue(), element);
+			
+			boolean isSpotrateExisted = this.spotRateReadPlatformService.CheckSpotrate(transactionDate.toString(), currency_code);
+			
 			spotRateCommand.validateForCreate();
+			spotRateCommand.validateIsExisted(isSpotrateExisted);
+			
 			final SpotRate spotrate = SpotRate.fromJson(command);
 
 			this.spotrateRespository.save(spotrate);

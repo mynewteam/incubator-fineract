@@ -59,4 +59,16 @@ public class SpotRateReadPlatformServiceImp implements SpotRateReadPlatformServi
 
         return this.jdbcTemplate.query(sql.toString(), rm, new Object[] { transactionDate });
 	}
+	
+	@Override
+	public Boolean CheckSpotrate(String transactionDate, String currencyCode)
+	{
+		final SpotRateMapper rm = new SpotRateMapper();
+		final StringBuilder sql = new StringBuilder();
+		sql.append("select ").append(rm.schema());
+
+        sql.append(" where sr.transaction_date = ? and sr.currency_code = ?");
+
+        return this.jdbcTemplate.query(sql.toString(), rm, new Object[] { transactionDate, currencyCode }).isEmpty();
+	}
 }

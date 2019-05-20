@@ -6,6 +6,7 @@ import org.joda.time.LocalDate;
 import java.util.List;
 
 import org.apache.fineract.accounting.spotrate.api.SpotRateJsonInputParams;
+import org.apache.fineract.accounting.spotrate.exception.SpotRateNotFoundException;
 import org.apache.fineract.infrastructure.core.data.ApiParameterError;
 import org.apache.fineract.infrastructure.core.data.DataValidatorBuilder;
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
@@ -47,5 +48,13 @@ public class SpotRateCommand
 
 		if (!dataValidationErrors.isEmpty()) { throw new PlatformApiDataValidationException("validation.msg.validation.errors.exist",
                 "Validation errors exist.", dataValidationErrors); }
+    }
+	public void validateIsExisted(boolean isSpotrateExisted) {
+        
+        if(!isSpotrateExisted)
+        {
+        	throw new SpotRateNotFoundException();
+        }
+        
     }
 }

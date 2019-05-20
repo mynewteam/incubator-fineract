@@ -5,8 +5,9 @@ import org.apache.fineract.infrastructure.core.exception.AbstractPlatformResourc
 
 public class SpotRateNotFoundException extends AbstractPlatformResourceNotFoundException
 {
-	public SpotRateNotFoundException(final String transactionDate)
+	public SpotRateNotFoundException()
 	{
-		super("error.msg.spotrate.date.invalid", "Spot rate in " + transactionDate + " does not exist ");
+		super("error.msg.spotrate.existed", "Spotrate already existed today.");
 	}
+	
 }

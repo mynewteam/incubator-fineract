@@ -8,4 +8,5 @@ import org.apache.fineract.accounting.spotrate.data.SpotRateData;
 public interface SpotRateReadPlatformService
 {
 	List<SpotRateData> retrieveTodaySpotRate(String transactionDate);
+	Boolean CheckSpotrate(String transactionDate, String currencyCode);
 }
