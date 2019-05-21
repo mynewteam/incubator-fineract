@@ -47,7 +47,7 @@ public class FinancialActivityAccountRepositoryWrapper {
     }
 
     public FinancialActivityAccount findByFinancialActivityTypeWithNotFoundDetection(final int financialActivityType,String currency) {
-        list<FinancialActivityAccount> financialActivityAccount = this.repository.findByFinancialActivityType(financialActivityType);
+        List<FinancialActivityAccount> financialActivityAccount = this.repository.findByFinancialActivityType(financialActivityType);
         
         
         
