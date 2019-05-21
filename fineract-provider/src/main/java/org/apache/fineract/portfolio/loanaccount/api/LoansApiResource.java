@@ -709,7 +709,7 @@ public class LoansApiResource {
             @Context final UriInfo uriInfo, final String apiRequestBodyAsJson) {
 
         if (is(commandParam, "calculateLoanSchedule")) {
-            logger.info("My Debug TEST apiRequestBodyAsJson: " + apiRequestBodyAsJson);
+         
             final JsonElement parsedQuery = this.fromJsonHelper.parse(apiRequestBodyAsJson);
             final JsonQuery query = JsonQuery.from(apiRequestBodyAsJson, parsedQuery, this.fromJsonHelper);
 
@@ -720,9 +720,6 @@ public class LoansApiResource {
             String prettyJson;
             try {
                 prettyJson = mapper.writeValueAsString(loanSchedule);
-                logger.info("-------------------------------------------------------------------------------------------------");
-                logger.info("Sothea Test: this.calculationPlatformService.calculateLoanSchedule(query, true) loanSchedule: " + prettyJson);
-                logger.info("-------------------------------------------------------------------------------------------------");
             } catch (JsonProcessingException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -736,8 +733,6 @@ public class LoansApiResource {
         }
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder().createLoanApplication().withJson(apiRequestBodyAsJson).build();
-
-        logger.info("My Debug TEST CommandWrapperBuilder after CommandWrapperBuilder :" + apiRequestBodyAsJson);
 
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
 

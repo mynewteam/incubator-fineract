@@ -63,5 +63,4 @@ public class AccrualAccountingWritePlatformServiceImpl implements AccrualAccount
         }
         return CommandProcessingResult.empty();
     }
-
 }
