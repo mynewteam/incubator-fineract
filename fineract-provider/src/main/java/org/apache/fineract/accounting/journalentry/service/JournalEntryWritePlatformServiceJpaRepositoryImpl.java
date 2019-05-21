@@ -656,7 +656,7 @@ public class JournalEntryWritePlatformServiceJpaRepositoryImpl implements Journa
             journalEntryCommand.validateForCreate();
 
             final FinancialActivityAccount financialActivityAccountId = this.financialActivityAccountRepositoryWrapper
-                    .findByFinancialActivityTypeWithNotFoundDetection(300);
+                    .findByFinancialActivityTypeWithNotFoundDetection(300,null);
             final Long contraId = financialActivityAccountId.getGlAccount().getId();
             if (contraId == null) { throw new GeneralPlatformDomainRuleException(
                     "error.msg.financial.activity.mapping.opening.balance.contra.account.cannot.be.null",
