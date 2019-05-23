@@ -104,7 +104,7 @@ public class LoanSubtypeMappingReadPlatformServiceImplement implements LoanSubty
 
 			Long id = rs.getLong("id");
 			Long productId = rs.getLong("product_id");
-			int loanSubtypeStatusId = rs.getInt("loan_subtype_status_id");
+			Long loanSubtypeStatusId = rs.getLong("loan_subtype_status_id");
 			Integer minAge = rs.getInt("min_age");
 			Integer maxAge = rs.getInt("max_age");
 			Long portfolioAccId = rs.getLong("portfolio_acc_id");
@@ -170,13 +170,10 @@ public class LoanSubtypeMappingReadPlatformServiceImplement implements LoanSubty
 		final StringBuilder sqlBuilder = new StringBuilder(600);
 
 		sqlBuilder.append(" select ");
-		sqlBuilder.append(
-				" v.office_id, v.currency_code,v.client_account_no,v.account_number, v.product_id, v.loan_subtype_status_id , v.loan_outstanding, v.overdue_since_date_derived ");
+		sqlBuilder.append(" v.office_id, v.currency_code,v.client_account_no,v.account_number, v.product_id, v.loan_subtype_status_id , v.loan_outstanding, v.overdue_since_date_derived ");
 		sqlBuilder.append(" , datediff(date('"+date+"') , date(v.overdue_since_date_derived)) AS days_in_arrea ");
 		sqlBuilder.append(" from v_loan_aging_detail v");
 		sqlBuilder.append(" where v.account_number =:loanId and v.overdue_since_date_derived < '"+date+"' ");
-		
-		
 	
 		System.out.println(date);
 		MapSqlParameterSource namedParameters = new MapSqlParameterSource();
@@ -195,23 +192,23 @@ public class LoanSubtypeMappingReadPlatformServiceImplement implements LoanSubty
 
 		final StringBuilder sqlBuilder = new StringBuilder(600);
 
-		sqlBuilder.append(" SELECT  " + "    loan_id AS loanId, " + "    glAccountId, " + "    glAccountName, "
+		sqlBuilder.append(" SELECT  " + "    loan_id AS loanId, " + " glAccountId, " + " glAccountName, "
 				+ "    max(transactionDate) AS transactionDate, "
-				+ "    SUM(IFNULL(debitAmount, 0) - IFNULL(creditAmount, 0)) AS balance " + " FROM " + "    (SELECT  "
+				+ "    SUM(IFNULL(debitAmount, 0) - IFNULL(creditAmount, 0)) AS balance " + " FROM " + " (SELECT  "
 				+ "        glAccount.classification_enum AS classification, "
-				+ "            journalEntry.transaction_id, " + "            journalEntry.loan_transaction_id, "
+				+ "            journalEntry.transaction_id, " + " journalEntry.loan_transaction_id, "
 				+ "            loanTransaction.id AS loanTransactionId, "
-				+ "            loanTransaction.loan_id AS loanTransactionLoanId, " + "            (SELECT  "
-				+ "                    s.loan_id " + "                FROM "
-				+ "                    m_loan_transaction s " + "                WHERE "
+				+ "            loanTransaction.loan_id AS loanTransactionLoanId, " + " (SELECT  "
+				+ "                    s.loan_id " + " FROM "
+				+ "                    m_loan_transaction s " + " WHERE "
 				+ "                    s.id = journalEntry.loan_transaction_id "
-				+ "                LIMIT 1) AS loan_id, " + "            glAccount.name AS glAccountName, "
-				+ "            glAccount.gl_code AS glAccountCode, " + "            glAccount.id AS glAccountId, "
-				+ "            journalEntry.office_id AS officeId, " + "            office.name AS officeName, "
-				+ "            journalEntry.ref_num AS referenceNumber, "
+				+ "                LIMIT 1) AS loan_id, " + " glAccount.name AS glAccountName, "
+				+ "            glAccount.gl_code AS glAccountCode, " + " glAccount.id AS glAccountId, "
+				+ "            journalEntry.office_id AS officeId, " + " office.name AS officeName, "
+				+ "            journalEntry.ref_num AS referenceNumber, " 
 				+ "            journalEntry.manual_entry AS manualEntry, "
 				+ "            journalEntry.entry_date AS transactionDate, "
-				+ "            journalEntry.type_enum AS entryType, " + "            journalEntry.amount AS amount, "
+				+ "            journalEntry.type_enum AS entryType, journalEntry.amount AS amount, "
 				+ "            IF(journalEntry.type_enum = 1, journalEntry.amount, 0) AS creditAmount, "
 				+ "            IF(journalEntry.type_enum = 2, journalEntry.amount, 0) AS debitAmount, "
 				+ "            journalEntry.transaction_id AS transactionId, "
@@ -227,7 +224,7 @@ public class LoanSubtypeMappingReadPlatformServiceImplement implements LoanSubty
 				+ "    LEFT JOIN m_appuser creatingUser ON creatingUser.id = journalEntry.createdby_id  "
 				+ "    JOIN m_currency curr ON curr.code = journalEntry.currency_code  "
 				+ "    JOIN m_loan_transaction loanTransaction ON loanTransaction.id = journalEntry.loan_transaction_id "
-				+ "    WHERE " + "        journalEntry.office_id = :officeId  "
+				+ "    WHERE journalEntry.office_id = :officeId  "
 				+ "            AND loanTransaction.loan_id = :loanId  "
 				+ "            AND journalEntry.entry_date <= :tilldate  "
 				+ "            AND journalEntry.account_id = :accountId  "

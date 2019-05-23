@@ -147,44 +147,55 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 		 // Change Loan SubtypeStatus By ArreaAging
 
 		for (final LoanArrearClassifyData loanArrearClassifyData : loanArrearClassifyDatas) {
-			
+			Long currentloanSubtypeStatusId = 0L;
 			Long loanId = loanArrearClassifyData.getAccountNumber();
 			String clientAccountNo = loanArrearClassifyData.getClientAccountNo();
 			Long accountNumber = loanArrearClassifyData.getAccountNumber();
 			Long productId = loanArrearClassifyData.getProductId();
-			Long currentloanSubtypeStatusId = loanArrearClassifyData.getLoanSubtypeStatusId();
+			currentloanSubtypeStatusId = loanArrearClassifyData.getLoanSubtypeStatusId();
 			double loanOutstanding = loanArrearClassifyData.getLoanOutstanding();
 			Date overdueSinceDateDerived = loanArrearClassifyData.getOverdueSinceDateDerived();
 			Integer daysInArrears = loanArrearClassifyData.getDaysInArrears();
 			Long officeId = loanArrearClassifyData.getOfficeId();
 			String currencyCode = loanArrearClassifyData.getCurrencyCode();
 
-			// get Current SubtypeStatus with CurrentData 
+			if(daysInArrears>361) {
+				System.out.print(daysInArrears);
+			}
+			
+			if(loanId>12) {
+				System.out.print(daysInArrears);
+			}
+			if(currencyCode.trim().equalsIgnoreCase("KHR")) {
+				System.out.print(currencyCode);
+				
+			}
+			// get New SubtypeStatus 
 			Collection<LoanProductSubtypeMappingData> newLoanProductSubtypeMappingDatas = this.loanSubtypeMappingReadPlatformService
 					.retrieveLoanProductSubtypeMappings(productId, daysInArrears);
 			
 			// Long productId;
-			int loanSubtypeStatusId = 0;
+			Long newLoanSubtypeStatusId = (long) 0;
 			int minAge;
 			int maxAge;
-			Long portfolioAccId = null;
-			Long intReceivableAccId = null;
-			Long incomeAccId = null;
+			Long newPortfolioAccId = null;
+			Long newInterestReceivableAccId = null;
+			Long newIncomeAccId = null;
 			Date transactionDate = tilldate.toDate();
+			
 			Long currentPortfolioAccId = null;
 //			Long currentloanSubtypeStatusId = null;
 			Long currentIntReceivableAccId = null;
 			Long currentIncomeAccId = null;
 			// get Current SubtypeStatus with CurrentData
 
-			for (LoanProductSubtypeMappingData loanProductSubtypeMappingData : newLoanProductSubtypeMappingDatas) {
-//				loanId=loanProductSubtypeMappingData.getLoanSubtypeStatusId();
-				loanSubtypeStatusId = loanProductSubtypeMappingData.getLoanSubtypeStatusId();
-				minAge = loanProductSubtypeMappingData.getMinAge();
-				maxAge = loanProductSubtypeMappingData.getMaxAge();
-				portfolioAccId = loanProductSubtypeMappingData.getPortfolioAccId();
-				intReceivableAccId = loanProductSubtypeMappingData.getIntReceivableAccId();
-				incomeAccId = loanProductSubtypeMappingData.getIncomeAccId();
+			for (LoanProductSubtypeMappingData newLoanProductSubtypeMappingData : newLoanProductSubtypeMappingDatas) {
+				newLoanSubtypeStatusId = newLoanProductSubtypeMappingData.getLoanSubtypeStatusId();
+				minAge = newLoanProductSubtypeMappingData.getMinAge();
+				maxAge = newLoanProductSubtypeMappingData.getMaxAge();
+				newPortfolioAccId = newLoanProductSubtypeMappingData.getPortfolioAccId();
+				newInterestReceivableAccId = newLoanProductSubtypeMappingData.getIntReceivableAccId();
+				newIncomeAccId = newLoanProductSubtypeMappingData.getIncomeAccId();
 
 			}
 
@@ -199,12 +210,16 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 				
 			}
 
-			if(currentIncomeAccId==1141) { 
+			if(newPortfolioAccId==611) { 
 				System.out.print(currentIncomeAccId);
 				}
 			
+			if(newLoanSubtypeStatusId == 4) {
+				System.out.print(currentloanSubtypeStatusId);
+			}
+			
 			if (currentPortfolioAccId != null) {
-				if (currentloanSubtypeStatusId != loanSubtypeStatusId) {
+				if (currentloanSubtypeStatusId != newLoanSubtypeStatusId) {
 
 					// Get Current Current loan glBalance
 					// portfolio_acc_id
@@ -243,16 +258,18 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 					// Get Current Loan Ledger
 					// Move Portfolio Ledger
 
-				
+					if(newPortfolioAccId==704) {
+						System.out.print(newPortfolioAccId);
+					}
 					if (portfolioGLAmount != 0) {
 						
 						try {
 							
-							GLAccount debitGLAccount = glAccountRepository.findOne(portfolioAccId);
+							GLAccount debitGLAccount = glAccountRepository.findOne(newPortfolioAccId);
 							GLAccount creditGLAccount = glAccountRepository.findOne(currentPortfolioAccId);
 							BigDecimal amount = BigDecimal.valueOf((Math.ceil(portfolioGLAmount)));
 							
-							addChangeSubTypeTransaction(loanId, loanSubtypeStatusId, officeId, currencyCode,
+							addChangeSubTypeTransaction(loanId, newLoanSubtypeStatusId, officeId, currencyCode,
 									debitGLAccount, creditGLAccount, transactionDate, amount);
 							
 						} catch (Exception e) {
@@ -265,11 +282,11 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 					// Move Interest Receivable Ledger
 					if (interestReceivableGLAmount != 0) {
 
-						GLAccount debitGLAccount = glAccountRepository.findOne(intReceivableAccId);
+						GLAccount debitGLAccount = glAccountRepository.findOne(newInterestReceivableAccId);
 						GLAccount creditGLAccount = glAccountRepository.findOne(currentIntReceivableAccId);
 						BigDecimal amount = BigDecimal.valueOf((Math.ceil(interestReceivableGLAmount)));
 						
-						addChangeSubTypeTransaction(loanId, loanSubtypeStatusId, officeId, currencyCode, debitGLAccount,
+						addChangeSubTypeTransaction(loanId, newLoanSubtypeStatusId, officeId, currencyCode, debitGLAccount,
 								creditGLAccount, transactionDate, amount);
 
 					}
@@ -277,12 +294,12 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 					if (incomeGLAmount != 0) {
 						
 						GLAccount debitGLAccount = glAccountRepository.findOne(currentIncomeAccId);
-						GLAccount creditGLAccount = glAccountRepository.findOne(incomeAccId);
+						GLAccount creditGLAccount = glAccountRepository.findOne(newIncomeAccId);
 						BigDecimal amount = BigDecimal.valueOf((Math.ceil(incomeGLAmount)));
 						
-						addChangeSubTypeTransaction(loanId, loanSubtypeStatusId, officeId, currencyCode, debitGLAccount,
+						addChangeSubTypeTransaction(loanId, newLoanSubtypeStatusId, officeId, currencyCode, debitGLAccount,
 								creditGLAccount, transactionDate, amount);
-						addChangeSubTypeTransaction(loanId, loanSubtypeStatusId, officeId, currencyCode, debitGLAccount, creditGLAccount, transactionDate, amount);
+						addChangeSubTypeTransaction(loanId, newLoanSubtypeStatusId, officeId, currencyCode, debitGLAccount, creditGLAccount, transactionDate, amount);
 						
 					}
 					
@@ -312,7 +329,7 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 //	final Date transactionDate, 
 //	final BigDecimal amount
 
-	private Long addChangeSubTypeTransaction(final Long loanId, final int loanSubtypeStatusId, final Long officeId,
+	private Long addChangeSubTypeTransaction(final Long loanId, final Long loanSubtypeStatusId, final Long officeId,
 			final String currencyCode, final GLAccount debitGLAccount, final GLAccount creditGLAccount,
 			final Date transactionDate, final BigDecimal amount) throws DataAccessException {
 
@@ -320,7 +337,7 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 				+ "transaction_type_enum, " + "transaction_date, " + "amount, " + "submitted_on_date) " + " VALUES ("
 				+ "?, " + "?, " + "0, " + "?, " + "?, " + "?, " + "?)";
 		
-		this.jdbctemplate.update(transactionSql, loanId, officeId, LoanTransactionType.CHANGE_SUBTYPE.getValue(), transactionDate, amount, DateUtils.getDateOfTenant());
+		this.jdbctemplate.update(transactionSql, loanId, officeId, 11, transactionDate, amount, DateUtils.getDateOfTenant());
 		
 		@SuppressWarnings("deprecation")
 		final Long transactionId = this.jdbctemplate.queryForLong("SELECT LAST_INSERT_ID()");
