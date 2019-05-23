@@ -35,6 +35,7 @@ public class LoanTransactionEnumData {
     private final boolean waiveInterest;
     private final boolean waiveCharges;
     private final boolean accrual;
+    private final boolean changeSubtype;
     private final boolean writeOff;
     private final boolean recoveryRepayment;
     private final boolean initiateTransfer;
@@ -56,6 +57,7 @@ public class LoanTransactionEnumData {
         this.waiveInterest = Long.valueOf(4).equals(this.id);
         this.waiveCharges = Long.valueOf(9).equals(this.id);
         this.accrual = Long.valueOf(10).equals(this.id);
+        this.changeSubtype = Long.valueOf(11).equals(this.id);
         this.writeOff = Long.valueOf(6).equals(this.id);
         this.recoveryRepayment = Long.valueOf(8).equals(this.id);
         this.initiateTransfer = Long.valueOf(12).equals(this.id);
