@@ -22,4 +22,6 @@ public interface  LoanSubtypeMappingReadPlatformService  {
 
 	LoanProductSubtypeMappingData retrieveProductSubtypeMappingDataByProductId(Long productId);
 	Collection<LoanArrearClassifyData> retrieveLoanArrearsClassifyDataByDateAndLoanId(Date tilldate, Long loanId);
+	Collection<LoanProductSubtypeMappingData> retrieveLoanProductSubtypeMappingByProductIdAndLoanSubtypeStatusId(
+			Long productId, Long loanSubtypeStatusId);
 }

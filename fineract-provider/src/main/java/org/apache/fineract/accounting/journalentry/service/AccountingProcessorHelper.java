@@ -1369,8 +1369,8 @@ public class AccountingProcessorHelper {
 				.retrieveLoanProductSubtypeMappings(loanProductId, days_in_arrear);
 		GLAccount gl = null;
 
-//			 ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue(), //7
-//             ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue(), //3
+		// ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue(), //7
+		// ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue(), //3
 
 		for (LoanProductSubtypeMappingData product : loanProductSubtypeMappingDatas) {
 			

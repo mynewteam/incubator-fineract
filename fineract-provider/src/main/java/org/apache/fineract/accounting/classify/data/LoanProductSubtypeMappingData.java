@@ -4,7 +4,7 @@ public class LoanProductSubtypeMappingData {
 
 	private Long id;
 	private Long productId;
-	private int loanSubtypeStatusId;
+	private Long loanSubtypeStatusId;
 	private int minAge;
 	private int maxAge;
 	private Long portfolioAccId;
@@ -16,7 +16,7 @@ public class LoanProductSubtypeMappingData {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public LoanProductSubtypeMappingData(Long id, Long productId, int loanSubtypeStatusId, int minAge, int maxAge,
+	public LoanProductSubtypeMappingData(Long id, Long productId, Long loanSubtypeStatusId, int minAge, int maxAge,
 			Long portfolioAccId, Long intReceivableAccId, Long incomeAccId) {
 		super();
 		this.id = id;
@@ -40,10 +40,10 @@ public class LoanProductSubtypeMappingData {
 	public void setProductId(Long productId) {
 		this.productId = productId;
 	}
-	public int getLoanSubtypeStatusId() {
+	public Long getLoanSubtypeStatusId() {
 		return loanSubtypeStatusId;
 	}
-	public void setLoanSubtypeStatusId(int loanSubtypeStatusId) {
+	public void setLoanSubtypeStatusId(Long loanSubtypeStatusId) {
 		this.loanSubtypeStatusId = loanSubtypeStatusId;
 	}
 	public int getMinAge() {
