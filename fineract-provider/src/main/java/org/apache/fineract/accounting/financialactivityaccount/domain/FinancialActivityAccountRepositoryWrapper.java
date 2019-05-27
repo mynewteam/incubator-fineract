@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.accounting.financialactivityaccount.domain;
 
+
 import java.util.List;
 
 import org.apache.fineract.accounting.financialactivityaccount.exception.FinancialActivityAccountNotFoundException;
@@ -46,11 +47,17 @@ public class FinancialActivityAccountRepositoryWrapper {
         return financialActivityAccount;
     }
 
-    public FinancialActivityAccount findByFinancialActivityTypeWithNotFoundDetection(final int financialActivityType) {
-        FinancialActivityAccount financialActivityAccount = this.repository.findByFinancialActivityType(financialActivityType);
+    public FinancialActivityAccount findByFinancialActivityTypeWithNotFoundDetection(final int financialActivityType ,final String currency) {
+       List<FinancialActivityAccount> financialActivityAccount = (List<FinancialActivityAccount>) this.repository.findByFinancialActivityType(financialActivityType);
         if (financialActivityAccount == null) { throw new FinancialActivityAccountNotFoundException(financialActivityType); }
-        return financialActivityAccount;
+        
+        if(currency.toUpperCase().toString().equals("KHR")) {
+        	return financialActivityAccount.get(1);
+        }else {
+        	return financialActivityAccount.get(0);
+		}
     }
+
 
     public List<FinancialActivityAccount> findAll() {
         return this.repository.findAll();
