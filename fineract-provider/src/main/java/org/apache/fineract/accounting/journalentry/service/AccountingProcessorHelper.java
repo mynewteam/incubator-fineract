@@ -423,7 +423,7 @@ public class AccountingProcessorHelper {
 //		createJournalEntriesForLoan(office, currencyCode, accountTypeToDebitId, // 7
 //				accountTypeToCreditId, // 3
 //				loanProductId, paymentTypeId, loanId, transactionId, transactionDate, amount);
-//		
+		
 		createJournalEntriesForLoanAccrual(office, currencyCode, accountTypeToDebitId, // 7
 				accountTypeToCreditId, // 3
 				loanProductId, paymentTypeId, loanId, transactionId, transactionDate, amount);
@@ -678,22 +678,38 @@ public class AccountingProcessorHelper {
 		for (LoanArrearClassifyData loanArrearClassifyData : loanArrearClassifyDatas) {
 			days_in_arrear = loanArrearClassifyData.getDaysInArrears();
 		}
+		
+		if(days_in_arrear<=0) {
+			final GLAccount debitAccount = getLinkedGLAccountForLoanProduct(loanProductId, accountTypeToDebitId,
+					paymentTypeId, loanId);
 
-		final GLAccount debitAccount = getLinkedGLAccountForLoanProductAndAccrual(loanProductId, accountTypeToDebitId,
-				paymentTypeId, days_in_arrear);
+			final GLAccount creditAccount = getLinkedGLAccountForLoanProduct(loanProductId, accountTypeToCreditId,
+					paymentTypeId, loanId);
 
-		final GLAccount creditAccount = getLinkedGLAccountForLoanProductAndAccrual(loanProductId, accountTypeToCreditId,
-				paymentTypeId, days_in_arrear);
-
-		try {
 			createDebitJournalEntryForLoan(office, currencyCode, debitAccount, loanId, transactionId, transactionDate,
 					amount);
 
 			createCreditJournalEntryForLoan(office, currencyCode, creditAccount, loanId, transactionId, transactionDate,
 					amount);
-		} catch (Exception ex) {
-			System.out.print(ex);
+		}else {
+			final GLAccount debitAccount = getLinkedGLAccountForLoanProductAndAccrual(loanProductId, accountTypeToDebitId,
+					paymentTypeId, days_in_arrear);
+
+			final GLAccount creditAccount = getLinkedGLAccountForLoanProductAndAccrual(loanProductId, accountTypeToCreditId,
+					paymentTypeId, days_in_arrear);
+
+			try {
+				createDebitJournalEntryForLoan(office, currencyCode, debitAccount, loanId, transactionId, transactionDate,
+						amount);
+
+				createCreditJournalEntryForLoan(office, currencyCode, creditAccount, loanId, transactionId, transactionDate,
+						amount);
+			} catch (Exception ex) {
+				System.out.print(ex);
+			}
 		}
+
+		
 
 	}
 
@@ -1380,10 +1396,32 @@ public class AccountingProcessorHelper {
 				gl = this.getGLAccountById(product.getIntReceivableAccId());
 			} else if (accountMappingTypeId == ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_ON_LOANS.getValue()) { //Interest Income
 				gl = this.getGLAccountById(product.getIncomeAccId());
+			}else {
+				ProductToGLAccountMapping accountMapping = this.accountMappingRepository.findCoreProductToFinAccountMapping(
+						loanProductId, PortfolioProductType.LOAN.getValue(), accountMappingTypeId);
+
+		/****
+		 * Get more specific mapping for FUND source accounts (based on payment
+		 * channels). Note that fund source placeholder ID would be same for both cash
+		 * and accrual accounts
+		 ***/
+
+				if (accountMappingTypeId == CASH_ACCOUNTS_FOR_LOAN.FUND_SOURCE.getValue()) {
+					
+					final ProductToGLAccountMapping paymentChannelSpecificAccountMapping = this.accountMappingRepository
+							.findByProductIdAndProductTypeAndFinancialAccountTypeAndPaymentTypeId(loanProductId,
+									PortfolioProductType.LOAN.getValue(), accountMappingTypeId, null);
+					if (paymentChannelSpecificAccountMapping != null) {
+						
+						accountMapping = paymentChannelSpecificAccountMapping;
+						gl = accountMapping.getGlAccount();
+					}
+				}
 			}
 			
 			glAccount = gl;
 		}
+		
 
 		return glAccount;
 
