@@ -134,7 +134,7 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 
 		Collection<LoanScheduleAccrualData> loanScheduleAccrualDatas = this.loanReadPlatformService
 				.retrivePeriodicAccrualData(tilldate);
-				changeLoanProductSubtype(tilldate);
+				
 		return addPeriodicAccruals(tilldate, loanScheduleAccrualDatas);
 	}
 
@@ -198,124 +198,94 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 
 			}
 
+//			Collection<LoanProductSubtypeMappingData> currentLoanProductSubtypeMappingDatas = this.loanSubtypeMappingReadPlatformService
+//					.retrieveLoanProductSubtypeMappingBySubtypeStatusId(productId, currentloanSubtypeStatusId);
+			
 			Collection<LoanProductSubtypeMappingData> currentLoanProductSubtypeMappingDatas = this.loanSubtypeMappingReadPlatformService
-					.retrieveLoanProductSubtypeMappingBySubtypeStatusId(productId, currentloanSubtypeStatusId);
+					.retrieveLoanProductSubtypeMappingByProductIdAndLoanSubtypeStatusId(productId, newPortfolioAccId);
 
 			for (LoanProductSubtypeMappingData currentloanProductSubtypeMappingData : currentLoanProductSubtypeMappingDatas) {
 				currentPortfolioAccId = currentloanProductSubtypeMappingData.getPortfolioAccId();
 				currentIntReceivableAccId = currentloanProductSubtypeMappingData.getIntReceivableAccId();
 				currentIncomeAccId = currentloanProductSubtypeMappingData.getIncomeAccId();
-			}
+				
+				if (currentPortfolioAccId != null) {
+					if (currentloanSubtypeStatusId != newLoanSubtypeStatusId) {
+						// Get Current Current loan glBalance
+						// portfolio_acc_id
+						double portfolioGLAmount = 0;
+						double interestReceivableGLAmount = 0;
+						double incomeGLAmount = 0;
 
-			if(newLoanSubtypeStatusId==704) { 
-				System.out.print(currentPortfolioAccId);
-			}
-			
-			if(newLoanSubtypeStatusId==3) { 
-				System.out.print(currentPortfolioAccId);
-			}
-			
-			
-			if(productId==17) { 
-				System.out.print(currentPortfolioAccId);
-			}
-			
-			if(newLoanSubtypeStatusId == 3 && currencyCode.trim().equalsIgnoreCase("KHR") ) {
-				System.out.print(currentloanSubtypeStatusId);
-			}
-			if (currentPortfolioAccId != null) {
-				if (currentloanSubtypeStatusId != newLoanSubtypeStatusId) {
-					// Get Current Current loan glBalance
-					// portfolio_acc_id
-					double portfolioGLAmount = 0;
-					double interestReceivableGLAmount = 0;
-					double incomeGLAmount = 0;
-
-					// int_receivable_acc_id
-					// int_receivable
-					// income_acc_id
-					// income_acc
-					
-					if(newLoanSubtypeStatusId==3) {
-						System.out.print(currentPortfolioAccId + currencyCode);
-					}
-
-					Collection<GLAccountAmountData> glPortfolioAmountDatas = this.loanSubtypeMappingReadPlatformService
-							.retrieveLoanGLAccountAmountData(officeId, tilldate, loanId, currentPortfolioAccId);
-					
-					for (GLAccountAmountData glAccountAmountData : glPortfolioAmountDatas) {
-						portfolioGLAmount = glAccountAmountData.getBalance();
-					}
-
-					Collection<GLAccountAmountData> glInterestReceivableGLAmountAmountDatas = this.loanSubtypeMappingReadPlatformService
-							.retrieveLoanGLAccountAmountData(officeId, tilldate, loanId, currentIntReceivableAccId);
-					
-					for (GLAccountAmountData glAccountAmountData : glInterestReceivableGLAmountAmountDatas) {
-						interestReceivableGLAmount = glAccountAmountData.getBalance();
-					}
-
-					Collection<GLAccountAmountData> glIncomeGLAmountDatas = this.loanSubtypeMappingReadPlatformService
-							.retrieveLoanGLAccountAmountData(officeId, tilldate, loanId, currentIncomeAccId);
-					
-					for (GLAccountAmountData glAccountAmountData : glIncomeGLAmountDatas) {
-						incomeGLAmount = glAccountAmountData.getBalance();
-					}
-
-					// Move Accounting
-					// Get Current Loan Ledger
-					// Move Portfolio Ledger
-
-					if(newPortfolioAccId==704) {
-						System.out.print(newPortfolioAccId);
-					}
-					
-					if (portfolioGLAmount != 0) {
+						// int_receivable_acc_id
+						// int_receivable
+						// income_acc_id
+						// income_acc
 						
-						try {
-							
-							GLAccount debitGLAccount = glAccountRepository.findOne(newPortfolioAccId);
-							GLAccount creditGLAccount = glAccountRepository.findOne(currentPortfolioAccId);
-							BigDecimal amount = BigDecimal.valueOf((Math.ceil(portfolioGLAmount)));
-							
-							addChangeSubTypeTransaction(loanId, newLoanSubtypeStatusId, officeId, currencyCode,
-									debitGLAccount, creditGLAccount, transactionDate, amount);
-							
-						} catch (Exception e) {
-							// TODO: handle exception
-							//Log.d("portfolioGLAmount",e.toString());
-							System.out.print(e.toString());	
+						Collection<GLAccountAmountData> glPortfolioAmountDatas = this.loanSubtypeMappingReadPlatformService
+								.retrieveLoanGLAccountAmountData(officeId, tilldate, loanId, currentPortfolioAccId);
+						
+						for (GLAccountAmountData glAccountAmountData : glPortfolioAmountDatas) {
+							portfolioGLAmount = glAccountAmountData.getBalance();
 						}
+
+						Collection<GLAccountAmountData> glInterestReceivableGLAmountAmountDatas = this.loanSubtypeMappingReadPlatformService
+								.retrieveLoanGLAccountAmountData(officeId, tilldate, loanId, currentIntReceivableAccId);
+						
+						for (GLAccountAmountData glAccountAmountData : glInterestReceivableGLAmountAmountDatas) {
+							interestReceivableGLAmount = glAccountAmountData.getBalance();
+						}
+
+						Collection<GLAccountAmountData> glIncomeGLAmountDatas = this.loanSubtypeMappingReadPlatformService.retrieveLoanGLAccountAmountData(officeId, tilldate, loanId, currentIncomeAccId);
+						
+						for (GLAccountAmountData glAccountAmountData : glIncomeGLAmountDatas) {
+							incomeGLAmount = glAccountAmountData.getBalance();
+						}
+
+						// Move Accounting
+						// Get Current Loan Ledger
+						// Move Portfolio Ledger
+						
+						if (portfolioGLAmount != 0) {
+							
+							try {
+								
+								GLAccount debitGLAccount = glAccountRepository.findOne(newPortfolioAccId);
+								GLAccount creditGLAccount = glAccountRepository.findOne(currentPortfolioAccId);
+								BigDecimal amount = BigDecimal.valueOf((Math.ceil(portfolioGLAmount)));
+								
+								addChangeSubTypeTransaction(loanId, newLoanSubtypeStatusId, officeId, currencyCode,
+										debitGLAccount, creditGLAccount, transactionDate, amount);
+								
+							} catch (Exception e) {
+								System.out.print(e.toString());	
+							}
+						}
+
+						// Move Interest Receivable Ledger
+						if (interestReceivableGLAmount != 0) {
+
+							GLAccount debitGLAccount = glAccountRepository.findOne(newInterestReceivableAccId);
+							GLAccount creditGLAccount = glAccountRepository.findOne(currentIntReceivableAccId);
+							BigDecimal amount = BigDecimal.valueOf((Math.ceil(interestReceivableGLAmount)));
+							
+							addChangeSubTypeTransaction(loanId, newLoanSubtypeStatusId, officeId, currencyCode, debitGLAccount, creditGLAccount, transactionDate, amount);
+
+						}
+
+						if (incomeGLAmount != 0) {
+							
+							GLAccount debitGLAccount = glAccountRepository.findOne(currentIncomeAccId);
+							GLAccount creditGLAccount = glAccountRepository.findOne(newIncomeAccId);
+							BigDecimal amount = BigDecimal.valueOf((Math.ceil(incomeGLAmount)));
+							
+							addChangeSubTypeTransaction(loanId, newLoanSubtypeStatusId, officeId, currencyCode, debitGLAccount,
+									creditGLAccount, transactionDate, amount);
+							addChangeSubTypeTransaction(loanId, newLoanSubtypeStatusId, officeId, currencyCode, debitGLAccount, creditGLAccount, transactionDate, amount);
+							
+						}
+						
 					}
-
-					// Move Interest Receivable Ledger
-					if (interestReceivableGLAmount != 0) {
-
-						GLAccount debitGLAccount = glAccountRepository.findOne(newInterestReceivableAccId);
-						GLAccount creditGLAccount = glAccountRepository.findOne(currentIntReceivableAccId);
-						BigDecimal amount = BigDecimal.valueOf((Math.ceil(interestReceivableGLAmount)));
-						
-						addChangeSubTypeTransaction(loanId, newLoanSubtypeStatusId, officeId, currencyCode, debitGLAccount, creditGLAccount, transactionDate, amount);
-
-					}
-
-					if (incomeGLAmount != 0) {
-						
-						GLAccount debitGLAccount = glAccountRepository.findOne(currentIncomeAccId);
-						GLAccount creditGLAccount = glAccountRepository.findOne(newIncomeAccId);
-						BigDecimal amount = BigDecimal.valueOf((Math.ceil(incomeGLAmount)));
-						
-						addChangeSubTypeTransaction(loanId, newLoanSubtypeStatusId, officeId, currencyCode, debitGLAccount,
-								creditGLAccount, transactionDate, amount);
-						addChangeSubTypeTransaction(loanId, newLoanSubtypeStatusId, officeId, currencyCode, debitGLAccount, creditGLAccount, transactionDate, amount);
-						
-					}
-					
-					// Move Income Ledger
-					// Add New Loan Transaction
-					// Move Ledger Amount
-					// Update SubType Status
-					// Get New Loan Ledger
-					
 				}
 			}
 
@@ -398,6 +368,8 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 						+ realCause.getMessage());
 			}
 		}
+		
+		changeLoanProductSubtype(tilldate);
 		return sb.toString();
 	}
 

@@ -86,6 +86,17 @@ public class LoanSubtypeMappingReadPlatformServiceImplement implements LoanSubty
 		return this.jdbctemplate.query(sqlBuilder.toString(), mapper, new Object[] { productId, loanSubtypeStatusId });
 
 	}
+	
+	@Override
+	public Collection<LoanProductSubtypeMappingData> retrieveLoanProductSubtypeMappingByProductIdAndLoanSubtypeStatusId(Long productId,
+			Long loanSubtypeStatusId) {
+		LoanProductSubtypeMappingDataMapper mapper = new LoanProductSubtypeMappingDataMapper();
+		final StringBuilder sqlBuilder = new StringBuilder(200);
+		sqlBuilder.append("select SQL_CALC_FOUND_ROWS ");
+		sqlBuilder.append(this.schema());
+		sqlBuilder.append(" WHERE product_id = ? AND not loan_subtype_status_id=?");
+		return this.jdbctemplate.query(sqlBuilder.toString(), mapper, new Object[] { productId, loanSubtypeStatusId });
+	}
 
 	@Override
 	public Collection<LoanProductSubtypeMappingData> retrieveAllLoanProductSubtypeMappings() {
@@ -190,7 +201,7 @@ public class LoanSubtypeMappingReadPlatformServiceImplement implements LoanSubty
 
 		GLAccountAmountDataMapper mapper = new GLAccountAmountDataMapper();
 
-		final StringBuilder sqlBuilder = new StringBuilder(600);
+		final StringBuilder sqlBuilder = new StringBuilder(900);
 
 		sqlBuilder.append(" SELECT  " + "    loan_id AS loanId, " + " glAccountId, " + " glAccountName, "
 				+ "    max(transactionDate) AS transactionDate, "
@@ -232,17 +243,12 @@ public class LoanSubtypeMappingReadPlatformServiceImplement implements LoanSubty
 				+ "GROUP BY loan_id , glAccountId , glAccountName; ");
 
 		MapSqlParameterSource namedParameters = new MapSqlParameterSource();
-		if(loanId==7) {
-			System.out.print(loanId);
-		}
+		
 		namedParameters.addValue("officeId", officeId);
 		namedParameters.addValue("loanId", loanId);
 		namedParameters.addValue("tilldate", tilldate);
 		namedParameters.addValue("accountId", glAccountId);
-		// namedParameterJdbcTemplate.update(SQL, namedParameters);
-
-		// SqlParameterSource paramSource = new
-		// MapSqlParameterSource().addValue("tilldate", tilldate);
+		
 		return this.namedJdbctemplate.query(sqlBuilder.toString(), namedParameters, mapper);
 	}
 
