@@ -246,17 +246,13 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 						// Get Current Loan Ledger
 						// Move Portfolio Ledger
 						
-						if (portfolioGLAmount != 0) {
-							
+						if (portfolioGLAmount > 0) {
 							try {
-								
 								GLAccount debitGLAccount = glAccountRepository.findOne(newPortfolioAccId);
 								GLAccount creditGLAccount = glAccountRepository.findOne(currentPortfolioAccId);
-								BigDecimal amount = BigDecimal.valueOf((Math.ceil(portfolioGLAmount)));
-								
+								BigDecimal amount = BigDecimal.valueOf((Math.abs(portfolioGLAmount)));
 								addChangeSubTypeTransaction(loanId, newLoanSubtypeStatusId, officeId, currencyCode,
 										debitGLAccount, creditGLAccount, transactionDate, amount);
-								
 							} catch (Exception e) {
 								System.out.print(e.toString());	
 							}
@@ -265,15 +261,14 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 						if (interestReceivableGLAmount > 0) {
 							GLAccount debitGLAccount = glAccountRepository.findOne(newInterestReceivableAccId);
 							GLAccount creditGLAccount = glAccountRepository.findOne(currentIntReceivableAccId);
-							BigDecimal amount = BigDecimal.valueOf((Math.ceil(interestReceivableGLAmount)));
+							BigDecimal amount = BigDecimal.valueOf((Math.abs(interestReceivableGLAmount)));
 							addChangeSubTypeTransaction(loanId, newLoanSubtypeStatusId, officeId, currencyCode, debitGLAccount, creditGLAccount, transactionDate, amount);
 						}
-						if (incomeGLAmount != 0) {
+						if (incomeGLAmount < 0) {
 							GLAccount debitGLAccount = glAccountRepository.findOne(currentIncomeAccId);
 							GLAccount creditGLAccount = glAccountRepository.findOne(newIncomeAccId);
-							BigDecimal amount = BigDecimal.valueOf((Math.ceil(incomeGLAmount)));
-							addChangeSubTypeTransaction(loanId, newLoanSubtypeStatusId, officeId, currencyCode, debitGLAccount, creditGLAccount, transactionDate, amount);
-							
+							BigDecimal amount = BigDecimal.valueOf((Math.abs(incomeGLAmount)));
+							addChangeSubTypeTransaction(loanId, newLoanSubtypeStatusId, officeId, currencyCode, debitGLAccount, creditGLAccount, transactionDate, amount);		
 						}
 						
 					}
