@@ -261,26 +261,17 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 								System.out.print(e.toString());	
 							}
 						}
-
 						// Move Interest Receivable Ledger
-						if (interestReceivableGLAmount != 0) {
-
+						if (interestReceivableGLAmount > 0) {
 							GLAccount debitGLAccount = glAccountRepository.findOne(newInterestReceivableAccId);
 							GLAccount creditGLAccount = glAccountRepository.findOne(currentIntReceivableAccId);
 							BigDecimal amount = BigDecimal.valueOf((Math.ceil(interestReceivableGLAmount)));
-							
 							addChangeSubTypeTransaction(loanId, newLoanSubtypeStatusId, officeId, currencyCode, debitGLAccount, creditGLAccount, transactionDate, amount);
-
 						}
-
 						if (incomeGLAmount != 0) {
-							
 							GLAccount debitGLAccount = glAccountRepository.findOne(currentIncomeAccId);
 							GLAccount creditGLAccount = glAccountRepository.findOne(newIncomeAccId);
 							BigDecimal amount = BigDecimal.valueOf((Math.ceil(incomeGLAmount)));
-							
-							addChangeSubTypeTransaction(loanId, newLoanSubtypeStatusId, officeId, currencyCode, debitGLAccount,
-									creditGLAccount, transactionDate, amount);
 							addChangeSubTypeTransaction(loanId, newLoanSubtypeStatusId, officeId, currencyCode, debitGLAccount, creditGLAccount, transactionDate, amount);
 							
 						}
