@@ -124,15 +124,24 @@ public class FixedDepositAccountsApiResource {
     @Path("template")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public String template(@QueryParam("clientId") final Long clientId, @QueryParam("groupId") final Long groupId,
+    public String template(
+    		@QueryParam("clientId") final Long clientId, 
+    		@QueryParam("groupId") final Long groupId,
             @QueryParam("productId") final Long productId,
+            @QueryParam("depositAccountTypeId") final Long depositAccountType,
             @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") final boolean staffInSelectedOfficeOnly,
             @Context final UriInfo uriInfo) {
 
         this.context.authenticatedUser().validateHasReadPermission(DepositsApiConstants.FIXED_DEPOSIT_ACCOUNT_RESOURCE_NAME);
 
-        final DepositAccountData account = this.depositAccountReadPlatformService.retrieveTemplate(DepositAccountType.FIXED_DEPOSIT,
-                clientId, groupId, productId, staffInSelectedOfficeOnly);
+        DepositAccountData account = null;
+        if(depositAccountType.equals(200) ) {
+        	 account= this.depositAccountReadPlatformService.retrieveTemplate(DepositAccountType.FIXED_DEPOSIT,
+                     clientId, groupId, productId, staffInSelectedOfficeOnly);
+        }else if(depositAccountType.equals(300)) {
+        	 account= this.depositAccountReadPlatformService.retrieveTemplate(DepositAccountType.RECURRING_DEPOSIT,
+                     clientId, groupId, productId, staffInSelectedOfficeOnly);
+        }
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toApiJsonSerializer.serialize(settings, account, DepositsApiConstants.FIXED_DEPOSIT_ACCOUNT_RESPONSE_DATA_PARAMETERS);
