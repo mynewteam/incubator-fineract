@@ -168,7 +168,6 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 			}
 			if(currencyCode.trim().equalsIgnoreCase("KHR")) {
 				System.out.print(currencyCode);
-				
 			}
 			// get New SubtypeStatus 
 			Collection<LoanProductSubtypeMappingData> newLoanProductSubtypeMappingDatas = this.loanSubtypeMappingReadPlatformService
@@ -203,27 +202,31 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 					.retrieveLoanProductSubtypeMappingBySubtypeStatusId(productId, currentloanSubtypeStatusId);
 
 			for (LoanProductSubtypeMappingData currentloanProductSubtypeMappingData : currentLoanProductSubtypeMappingDatas) {
-				
 				currentPortfolioAccId = currentloanProductSubtypeMappingData.getPortfolioAccId();
 				currentIntReceivableAccId = currentloanProductSubtypeMappingData.getIntReceivableAccId();
 				currentIncomeAccId = currentloanProductSubtypeMappingData.getIncomeAccId();
-				
 			}
 
-			if(newPortfolioAccId==611) { 
-				System.out.print(currentIncomeAccId);
-				}
+			if(newLoanSubtypeStatusId==704) { 
+				System.out.print(currentPortfolioAccId);
+			}
 			
-			if(newLoanSubtypeStatusId == 4) {
+			if(newLoanSubtypeStatusId==3) { 
+				System.out.print(currentPortfolioAccId);
+			}
+			
+			
+			if(productId==17) { 
+				System.out.print(currentPortfolioAccId);
+			}
+			
+			if(newLoanSubtypeStatusId == 3 && currencyCode.trim().equalsIgnoreCase("KHR") ) {
 				System.out.print(currentloanSubtypeStatusId);
 			}
-			
 			if (currentPortfolioAccId != null) {
 				if (currentloanSubtypeStatusId != newLoanSubtypeStatusId) {
-
 					// Get Current Current loan glBalance
 					// portfolio_acc_id
-
 					double portfolioGLAmount = 0;
 					double interestReceivableGLAmount = 0;
 					double incomeGLAmount = 0;
@@ -232,6 +235,10 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 					// int_receivable
 					// income_acc_id
 					// income_acc
+					
+					if(newLoanSubtypeStatusId==3) {
+						System.out.print(currentPortfolioAccId + currencyCode);
+					}
 
 					Collection<GLAccountAmountData> glPortfolioAmountDatas = this.loanSubtypeMappingReadPlatformService
 							.retrieveLoanGLAccountAmountData(officeId, tilldate, loanId, currentPortfolioAccId);
@@ -261,6 +268,7 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 					if(newPortfolioAccId==704) {
 						System.out.print(newPortfolioAccId);
 					}
+					
 					if (portfolioGLAmount != 0) {
 						
 						try {
@@ -286,8 +294,7 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 						GLAccount creditGLAccount = glAccountRepository.findOne(currentIntReceivableAccId);
 						BigDecimal amount = BigDecimal.valueOf((Math.ceil(interestReceivableGLAmount)));
 						
-						addChangeSubTypeTransaction(loanId, newLoanSubtypeStatusId, officeId, currencyCode, debitGLAccount,
-								creditGLAccount, transactionDate, amount);
+						addChangeSubTypeTransaction(loanId, newLoanSubtypeStatusId, officeId, currencyCode, debitGLAccount, creditGLAccount, transactionDate, amount);
 
 					}
 
@@ -332,28 +339,34 @@ public class LoanAccrualPlatformServiceImpl implements LoanAccrualPlatformServic
 	private Long addChangeSubTypeTransaction(final Long loanId, final Long loanSubtypeStatusId, final Long officeId,
 			final String currencyCode, final GLAccount debitGLAccount, final GLAccount creditGLAccount,
 			final Date transactionDate, final BigDecimal amount) throws DataAccessException {
+		try {
+			String transactionSql = " INSERT INTO m_loan_transaction (" + "loan_id," + "office_id," + "is_reversed,"
+					+ "transaction_type_enum, " + "transaction_date, " + "amount, " + "submitted_on_date) " + " VALUES ("
+					+ "?, " + "?, " + "0, " + "?, " + "?, " + "?, " + "?)";
+			
+			this.jdbctemplate.update(transactionSql, loanId, officeId, 11, transactionDate, amount, DateUtils.getDateOfTenant());
+			
+			@SuppressWarnings("deprecation")
+			final Long transactionId = this.jdbctemplate.queryForLong("SELECT LAST_INSERT_ID()");
+			String updateLoan = " UPDATE m_loan  SET loan_subtype_status_id=?  WHERE  id=? ";
+			this.jdbctemplate.update(updateLoan, loanSubtypeStatusId, loanId);
 
-		String transactionSql = " INSERT INTO m_loan_transaction (" + "loan_id," + "office_id," + "is_reversed,"
-				+ "transaction_type_enum, " + "transaction_date, " + "amount, " + "submitted_on_date) " + " VALUES ("
-				+ "?, " + "?, " + "0, " + "?, " + "?, " + "?, " + "?)";
+			Office office = officeRepository.findOne(officeId);
+
+			String tranId =  transactionId.toString();
+
+			helper.createDebitJournalEntryForLoan(office, currencyCode, debitGLAccount, loanId, tranId, transactionDate, amount);
+			helper.createCreditJournalEntryForLoan(office, currencyCode, creditGLAccount, loanId, tranId, transactionDate, amount);
+			
+			return transactionId;
+
+		}catch(Exception ex) {
+			System.out.print(ex.toString());
+		}
 		
-		this.jdbctemplate.update(transactionSql, loanId, officeId, 11, transactionDate, amount, DateUtils.getDateOfTenant());
+		return null;
 		
-		@SuppressWarnings("deprecation")
-		final Long transactionId = this.jdbctemplate.queryForLong("SELECT LAST_INSERT_ID()");
-		String updateLoan = " UPDATE m_loan  SET loan_subtype_status_id=?  WHERE  id=? ";
-		this.jdbctemplate.update(updateLoan, loanSubtypeStatusId, loanId);
-
-		Office office = officeRepository.findOne(officeId);
-
-		String tranId = "L" + transactionId;
-
-		helper.createDebitJournalEntryForLoan(office, currencyCode, debitGLAccount, loanId, tranId, transactionDate,
-				amount);
-		helper.createCreditJournalEntryForLoan(office, currencyCode, creditGLAccount, loanId, tranId, transactionDate,
-				amount);
-
-		return transactionId;
+		
 	}
 
 	// classification

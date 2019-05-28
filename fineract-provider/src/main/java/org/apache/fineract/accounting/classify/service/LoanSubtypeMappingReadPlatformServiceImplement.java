@@ -232,7 +232,9 @@ public class LoanSubtypeMappingReadPlatformServiceImplement implements LoanSubty
 				+ "GROUP BY loan_id , glAccountId , glAccountName; ");
 
 		MapSqlParameterSource namedParameters = new MapSqlParameterSource();
-
+		if(loanId==7) {
+			System.out.print(loanId);
+		}
 		namedParameters.addValue("officeId", officeId);
 		namedParameters.addValue("loanId", loanId);
 		namedParameters.addValue("tilldate", tilldate);
