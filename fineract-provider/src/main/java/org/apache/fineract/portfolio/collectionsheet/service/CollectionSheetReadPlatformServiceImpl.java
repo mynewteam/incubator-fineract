@@ -228,15 +228,15 @@ public class CollectionSheetReadPlatformServiceImpl implements CollectionSheetRe
                     .append("ln.account_no As accountId, ").append("ln.loan_status_id As accountStatusId, ")
                     .append("pl.short_name As productShortName, ").append("ln.product_id As productId, ")
                     .append("ln.currency_code as currencyCode, ln.currency_digits as currencyDigits, ln.currency_multiplesof as inMultiplesOf, rc.name as currencyName, rc.display_symbol as currencyDisplaySymbol, rc.internationalized_name_code as currencyNameCode, ")
-                    .append("if(ln.loan_status_id = 200 , ln.principal_amount , null) As disbursementAmount, ")
-                    .append("sum(nvl(if(ln.loan_status_id = 300, ls.principal_amount, 0.0), 0.0) - nvl(if(ln.loan_status_id = 300, ls.principal_completed_derived, 0.0), 0.0)) As principalDue, ")
+                    .append(" case when ln.loan_status_id = 200 then ln.principal_amount else null end As disbursementAmount, ")
+                    .append("sum(nvl(case when ln.loan_status_id = 300 then ls.principal_amount else 0.0 end, 0.0) - nvl(case when ln.loan_status_id = 300 then ls.principal_completed_derived else 0.0 end, 0.0)) As principalDue, ")
                     .append("ln.principal_repaid_derived As principalPaid, ")
-                    .append("sum(nvl(if(ln.loan_status_id = 300, ls.interest_amount, 0.0), 0.0) - nvl(if(ln.loan_status_id = 300, ls.interest_completed_derived, 0.0), 0.0) - nvl(IF(ln.loan_status_id = 300, ls.interest_waived_derived, 0.0), 0.0)) As interestDue, ")
+                    .append("sum(nvl(case when ln.loan_status_id = 300 then ls.interest_amount else 0.0 end, 0.0) - nvl(case when ln.loan_status_id = 300 then ls.interest_completed_derived else 0.0 end, 0.0) - nvl(case when ln.loan_status_id = 300 then ls.interest_waived_derived else 0.0 end, 0.0)) As interestDue, ")
                     .append("ln.interest_repaid_derived As interestPaid, ")
-                    .append("sum(nvl(if(ln.loan_status_id = 300, ls.fee_charges_amount, 0.0), 0.0) - nvl(if(ln.loan_status_id = 300, ls.fee_charges_completed_derived, 0.0), 0.0)) As feeDue, ")
+                    .append("sum(nvl(case when ln.loan_status_id = 300 then ls.fee_charges_amount else 0.0 end, 0.0) - nvl(case when ln.loan_status_id = 300 then ls.fee_charges_completed_derived else 0.0 end, 0.0)) As feeDue, ")
                     .append("ln.fee_charges_repaid_derived As feePaid, ")
                     .append("ca.attendance_type_enum as attendanceTypeId ").append("FROM m_group gp ")
-                    .append("LEFT JOIN m_office of ON of.id = gp.office_id AND of.hierarchy like :officeHierarchy ")
+                    .append("LEFT JOIN m_office off ON off.id = gp.office_id AND off.hierarchy like :officeHierarchy ")
                     .append("JOIN m_group_level gl ON gl.id = gp.level_Id ")
                     .append("LEFT JOIN m_staff sf ON sf.id = gp.staff_id ")
                     .append("JOIN m_group_client gc ON gc.group_id = gp.id ")
@@ -244,9 +244,9 @@ public class CollectionSheetReadPlatformServiceImpl implements CollectionSheetRe
                     .append("LEFT JOIN m_loan ln ON cl.id = ln.client_id  and ln.group_id=gp.id AND ln.group_id is not null AND ( ln.loan_status_id = 300 ) ")
                     .append("LEFT JOIN m_product_loan pl ON pl.id = ln.product_id ")
                     .append("LEFT JOIN m_currency rc on rc.code = ln.currency_code ")
-                    .append("LEFT JOIN m_loan_repayment_schedule ls ON ls.loan_id = ln.id AND ls.completed_derived = 0 AND ls.duedate <= :dueDate ")
+                    .append("LEFT JOIN m_loan_repayment_schedule ls ON ls.loan_id = ln.id AND ls.completed_derived = 0 AND ls.duedate <= to_date( :dueDate , 'yyyy/mm/dd') ")
                     .append("left join m_calendar_instance ci on gp.parent_id = ci.entity_id and ci.entity_type_enum =:entityTypeId ")
-                    .append("left join m_meeting mt on ci.id = mt.calendar_instance_id and mt.meeting_date =:dueDate ")
+                    .append("left join m_meeting mt on ci.id = mt.calendar_instance_id and mt.meeting_date = to_date( :dueDate , 'yyyy/mm/dd') ")
                     .append("left join m_client_attendance ca on ca.meeting_id=mt.id and ca.client_id=cl.id ");
 
             if (isCenterCollection) {
@@ -256,13 +256,19 @@ public class CollectionSheetReadPlatformServiceImpl implements CollectionSheetRe
             }
             sql.append("and (ln.loan_status_id != 200 AND ln.loan_status_id != 100) ");
 
-            sql.append("and (gp.status_enum = 300 or (gp.status_enum = 600 and gp.closedon_date >= :dueDate)) ")
-                    .append("and (cl.status_enum = 300 or (cl.status_enum = 600 and cl.closedon_date >= :dueDate)) ")
-                    .append("GROUP BY gp.id ,cl.id , ln.id ORDER BY gp.id , cl.id , ln.id ").append(") loandata ")
+            sql.append("and (gp.status_enum = 300 or (gp.status_enum = 600 and gp.closedon_date >= to_date( :dueDate , 'yyyy/mm/dd') )) ")
+                    .append("and (cl.status_enum = 300 or (cl.status_enum = 600 and cl.closedon_date >= to_date( :dueDate , 'yyyy/mm/dd') )) ")
+                    .append("GROUP BY gp.id ,cl.id , ln.id gp.display_name,  cl.display_name, sf.id,sf.display_name,gl.id,gl.level_name,ln.account_no,ln.loan_status_id,pl.short_name,ln.product_id,ln.currency_code,ln.currency_digits,ln.currency_multiplesof,rc.name,rc.display_symbol,rc.internationalized_name_code,ln.principal_amount,ln.principal_repaid_derived,ln.interest_repaid_derived,ln.fee_charges_repaid_derived,ca.attendance_type_enum ORDER BY gp.id , cl.id , ln.id ").append(") loandata ")
                     .append("LEFT JOIN m_loan_charge lc ON lc.loan_id = loandata.loanId AND lc.is_paid_derived = 0 AND lc.is_active = 1 ")
-                    .append("AND ( lc.due_for_collection_as_of_date  <= :dueDate OR lc.charge_time_enum = 1) ")
-                    .append("GROUP BY loandata.groupId, ").append("loandata.clientId, ").append("loandata.loanId ")
-                    .append("ORDER BY loandata.groupId, ").append("loandata.clientId, ").append("loandata.loanId ");
+                    .append("AND ( lc.due_for_collection_as_of_date  <= to_date( :dueDate , 'yyyy/mm/dd') OR lc.charge_time_enum = 1) ")
+                    .append("GROUP BY loandata.groupId, ")
+                    .append("loandata.clientId, ")
+                    .append("loandata.loanId, ")
+                    .append(" loandata.groupname,loandata.clientname,loandata.staffid,loandata.staffname,loandata.levelid,loandata.levelname, ")
+                    .append(" loandata.clientid,loandata.loanid,loandata.accountid,loandata.accountstatusid,loandata.productshortname,loandata.productid,loandata.currencycode,loandata.currencydigits,loandata.inmultiplesof, ")
+                   .append(" loandata.currencyname,loandata.currencydisplaysymbol,loandata.currencynamecode,loandata.disbursementamount,loandata.principaldue,loandata.principalpaid,loandata.interestdue,loandata.interestpaid,loandata.feedue, ")
+                   .append("loandata.feepaid,loandata.attendancetypeid") 
+                   .append("ORDER BY loandata.groupId, ").append("loandata.clientId, ").append("loandata.loanId ");
 
             return sql.toString();
 
@@ -496,7 +502,7 @@ public class CollectionSheetReadPlatformServiceImpl implements CollectionSheetRe
 
         private final GroupSavingsDataMapper groupSavingsDataMapper = new GroupSavingsDataMapper();
 
-        public String collectionSheetSchema(final boolean isCenterCollection) {
+		public String collectionSheetSchema(final boolean isCenterCollection) {
 
             final StringBuffer sql = new StringBuffer(400);
             sql.append("SELECT gp.display_name As groupName, ").append("gp.id As groupId, ")
@@ -508,20 +514,20 @@ public class CollectionSheetReadPlatformServiceImpl implements CollectionSheetRe
                     .append("sa.currency_code as currencyCode, ").append("sa.currency_digits as currencyDigits, ")
                     .append("sa.currency_multiplesof as inMultiplesOf, ").append("rc.name as currencyName, ")
                     .append("rc.display_symbol as currencyDisplaySymbol, ")
-                    .append("if(sa.deposit_type_enum=100,'Saving Deposit',if(sa.deposit_type_enum=300,'Recurring Deposit','Current Deposit')) as depositAccountType, ")
+                    .append(" case when sa.deposit_type_enum=100 then 'Saving Deposit' else case when sa.deposit_type_enum=300 then 'Recurring Deposit' else 'Current Deposit' end end as depositAccountType, ")
                     .append("rc.internationalized_name_code as currencyNameCode, ")
                     .append("sum(nvl(mss.deposit_amount,0) - nvl(mss.deposit_amount_completed_derived,0)) as dueAmount ")
 
                     .append("FROM m_group gp ")
-                    .append("LEFT JOIN m_office of ON of.id = gp.office_id AND of.hierarchy like :officeHierarchy ")
+                    .append("LEFT JOIN m_office off ON off.id = gp.office_id AND off.hierarchy like :officeHierarchy ")
                     .append("JOIN m_group_level gl ON gl.id = gp.level_Id ")
                     .append("LEFT JOIN m_staff sf ON sf.id = gp.staff_id ")
                     .append("JOIN m_group_client gc ON gc.group_id = gp.id ")
                     .append("JOIN m_client cl ON cl.id = gc.client_id ")
                     .append("JOIN m_savings_account sa ON sa.client_id=cl.id and sa.status_enum=300 ")
                     .append("JOIN m_savings_product sp ON sa.product_id=sp.id ")
-                    .append("LEFT JOIN m_deposit_account_recurring_detail dard ON sa.id = dard.savings_account_id AND dard.is_mandatory = true AND dard.is_calendar_inherited = true ")
-                    .append("LEFT JOIN m_mandatory_savings_schedule mss ON mss.savings_account_id=sa.id AND mss.duedate <= :dueDate ")
+                    .append("LEFT JOIN m_deposit_account_recurring_detail dard ON sa.id = dard.savings_account_id AND dard.is_mandatory = 1 AND dard.is_calendar_inherited = 1 ")
+                    .append("LEFT JOIN m_mandatory_savings_schedule mss ON mss.savings_account_id=sa.id AND mss.duedate <= to_date( :dueDate , 'yyyy/mm/dd') ")
                     .append("LEFT JOIN m_currency rc on rc.code = sa.currency_code ");
 
             if (isCenterCollection) {
@@ -530,9 +536,12 @@ public class CollectionSheetReadPlatformServiceImpl implements CollectionSheetRe
                 sql.append("WHERE gp.id = :groupId ");
             }
 
-            sql.append("and (gp.status_enum = 300 or (gp.status_enum = 600 and gp.closedon_date >= :dueDate)) ")
-                    .append("and (cl.status_enum = 300 or (cl.status_enum = 600 and cl.closedon_date >= :dueDate)) ")
-                    .append("GROUP BY gp.id ,cl.id , sa.id ORDER BY gp.id , cl.id , sa.id ");
+            sql.append("and (gp.status_enum = 300 or (gp.status_enum = 600 and gp.closedon_date >= to_date( :dueDate , 'yyyy/mm/dd') )) ")
+                    .append("and (cl.status_enum = 300 or (cl.status_enum = 600 and cl.closedon_date >= to_date( :dueDate , 'yyyy/mm/dd') )) ")
+                    .append("GROUP BY gp.id ,cl.id , sa.id, ")
+                    .append(" gp.display_name,cl.display_name,sf.id ,sf.display_name,gl.id,gl.level_name,sa.account_no,sa.status_enum,sp.short_name,sp.id,sa.currency_code, ")
+                    .append(" sa.currency_digits,sa.currency_multiplesof,rc.name,rc.display_symbol,sa.deposit_type_enum,rc.internationalized_name_code ")
+                    .append(" ORDER BY gp.id , cl.id , sa.id ");
 
             return sql.toString();
         }
@@ -742,35 +751,35 @@ public class CollectionSheetReadPlatformServiceImpl implements CollectionSheetRe
                     "ln.currency_code as currencyCode, ln.currency_digits as currencyDigits, ln.currency_multiplesof as inMultiplesOf, ");
             sb.append(
                     "rc.name as currencyName, rc.display_symbol as currencyDisplaySymbol, rc.internationalized_name_code as currencyNameCode, ");
-            sb.append("if(ln.loan_status_id = 200 , ln.principal_amount , null) As disbursementAmount, ");
+            sb.append(" case when ln.loan_status_id = 200 then ln.principal_amount else null end As disbursementAmount, ");
             sb.append(
-                    "sum(nvl(if(ln.loan_status_id = 300, ls.principal_amount, 0.0), 0.0) - nvl(if(ln.loan_status_id = 300, ls.principal_completed_derived, 0.0), 0.0)) As principalDue, ");
+                    "sum(nvl(case when ln.loan_status_id = 300 then ls.principal_amount else 0.0 end, 0.0) - nvl(case when ln.loan_status_id = 300 then ls.principal_completed_derived else 0.0 end , 0.0)) As principalDue, ");
             sb.append("ln.principal_repaid_derived As principalPaid, ");
             sb.append(
-                    "sum(nvl(if(ln.loan_status_id = 300, ls.interest_amount, 0.0), 0.0) - nvl(if(ln.loan_status_id = 300, ls.interest_completed_derived, 0.0), 0.0)) As interestDue, ");
+                    "sum(nvl(case when ln.loan_status_id = 300 then ls.interest_amount else 0.0 end, 0.0) - nvl(case when ln.loan_status_id = 300 then ls.interest_completed_derived else 0.0 end, 0.0)) As interestDue, ");
             sb.append("ln.interest_repaid_derived As interestPaid, ");
             sb.append(
-                    "sum(nvl(if(ln.loan_status_id = 300, ls.fee_charges_amount, 0.0), 0.0) - nvl(if(ln.loan_status_id = 300, ls.fee_charges_completed_derived, 0.0), 0.0)) As feeDue, ");
+                    "sum(nvl(case when ln.loan_status_id = 300 then ls.fee_charges_amount else 0.0 end, 0.0) - nvl(case when ln.loan_status_id = 300 then ls.fee_charges_completed_derived else 0.0 end, 0.0)) As feeDue, ");
             sb.append("ln.fee_charges_repaid_derived As feePaid ");
             sb.append("FROM m_loan ln ");
             sb.append("JOIN m_client cl ON cl.id = ln.client_id  ");
-            sb.append("LEFT JOIN m_office of ON of.id = cl.office_id  AND of.hierarchy like :officeHierarchy ");
+            sb.append("LEFT JOIN m_office off ON off.id = cl.office_id  AND off.hierarchy like :officeHierarchy ");
             sb.append("LEFT JOIN m_product_loan pl ON pl.id = ln.product_id ");
             sb.append("LEFT JOIN m_currency rc on rc.code = ln.currency_code ");
             sb.append(
-                    "JOIN m_loan_repayment_schedule ls ON ls.loan_id = ln.id AND ls.completed_derived = 0 AND ls.duedate <= :dueDate ");
+                    "JOIN m_loan_repayment_schedule ls ON ls.loan_id = ln.id AND ls.completed_derived = 0 AND ls.duedate <= to_date( :dueDate , 'yyyy/mm/dd') ");
             sb.append("where ");
             if (checkForOfficeId) {
-                sb.append("of.id = :officeId and ");
+                sb.append("off.id = :officeId and ");
             }
             if (checkforStaffId) {
                 sb.append("ln.loan_officer_id = :staffId and ");
             }
             sb.append("(ln.loan_status_id = 300) ");
-            sb.append("and ln.group_id is null GROUP BY cl.id , ln.id ORDER BY cl.id , ln.id ) loandata ");
+            sb.append("and ln.group_id is null GROUP BY cl.id , ln.id ,cl.display_name, ln.account_no, ln.loan_status_id, pl.short_name, ln.product_id, ln.currency_code, ln.currency_digits, ln.currency_multiplesof, rc.name, rc.display_symbol, rc.internationalized_name_code, ln.principal_amount, ln.principal_repaid_derived, ln.interest_repaid_derived, ln.fee_charges_repaid_derived ORDER BY cl.id , ln.id ) loandata ");
             sb.append(
-                    "LEFT JOIN m_loan_charge lc ON lc.loan_id = loandata.loanId AND lc.is_paid_derived = 0 AND lc.is_active = 1 AND ( lc.due_for_collection_as_of_date  <= :dueDate OR lc.charge_time_enum = 1) ");
-            sb.append("GROUP BY loandata.clientId, loandata.loanId ORDER BY loandata.clientId, loandata.loanId ");
+                    "LEFT JOIN m_loan_charge lc ON lc.loan_id = loandata.loanId AND lc.is_paid_derived = 0 AND lc.is_active = 1 AND ( lc.due_for_collection_as_of_date  <= to_date( :dueDate , 'yyyy/mm/dd') OR lc.charge_time_enum = 1) ");
+            sb.append("GROUP BY loandata.clientId, loandata.loanId, loandata.clientname,loandata.accountid,loandata.accountstatusid,loandata.productshortname,loandata.productid,loandata.currencycode,loandata.currencydigits,loandata.inmultiplesof,loandata.currencyname,loandata.currencydisplaysymbol,loandata.currencynamecode, loandata.disbursementamount,loandata.principaldue,loandata.principalpaid,loandata.interestdue,loandata.interestpaid,loandata.feedue,loandata.feepaid ORDER BY loandata.clientId, loandata.loanId ");
 
             sql = sb.toString();
         }
@@ -830,7 +839,7 @@ public class CollectionSheetReadPlatformServiceImpl implements CollectionSheetRe
 
             final StringBuffer sb = new StringBuffer(400);
             sb.append(
-                    "SELECT if(sa.deposit_type_enum=100,'Saving Deposit',if(sa.deposit_type_enum=300,'Recurring Deposit','Current Deposit')) as depositAccountType, cl.display_name As clientName, cl.id As clientId, ");
+                    "SELECT case when sa.deposit_type_enum=100 then 'Saving Deposit' else case when sa.deposit_type_enum=300 then 'Recurring Deposit' else 'Current Deposit' end end as depositAccountType, cl.display_name As clientName, cl.id As clientId, ");
             sb.append("sa.id As savingsId, sa.account_no As accountId, sa.status_enum As accountStatusId, ");
             sb.append("sp.short_name As productShortName, sp.id As productId, ");
             sb.append(
@@ -842,20 +851,22 @@ public class CollectionSheetReadPlatformServiceImpl implements CollectionSheetRe
             sb.append("JOIN m_client cl ON cl.id = sa.client_id ");
             sb.append("JOIN m_savings_product sp ON sa.product_id=sp.id ");
             sb.append(
-                    "LEFT JOIN m_deposit_account_recurring_detail dard ON sa.id = dard.savings_account_id AND dard.is_mandatory = true AND dard.is_calendar_inherited = false ");
+                    "LEFT JOIN m_deposit_account_recurring_detail dard ON sa.id = dard.savings_account_id AND dard.is_mandatory = 1 AND dard.is_calendar_inherited = 0 ");
             sb.append(
-                    "LEFT JOIN m_mandatory_savings_schedule mss ON mss.savings_account_id=sa.id AND mss.completed_derived = 0 AND mss.duedate <= :dueDate ");
-            sb.append("LEFT JOIN m_office of ON of.id = cl.office_id AND of.hierarchy like :officeHierarchy ");
+                    "LEFT JOIN m_mandatory_savings_schedule mss ON mss.savings_account_id=sa.id AND mss.completed_derived = 0 AND mss.duedate <= to_date( :dueDate , 'yyyy/mm/dd') ");
+            sb.append("LEFT JOIN m_office off ON off.id = cl.office_id AND off.hierarchy like :officeHierarchy ");
             sb.append("LEFT JOIN m_currency rc on rc.code = sa.currency_code ");
             sb.append("WHERE sa.status_enum=300 and sa.group_id is null and sa.deposit_type_enum in (100,300,400) ");
-            sb.append("and (cl.status_enum = 300 or (cl.status_enum = 600 and cl.closedon_date >= :dueDate)) ");
+            sb.append("and (cl.status_enum = 300 or (cl.status_enum = 600 and cl.closedon_date >= to_date( :dueDate , 'yyyy/mm/dd') )) ");
             if (checkForOfficeId) {
-                sb.append("and of.id = :officeId ");
+                sb.append("and off.id = :officeId ");
             }
             if (checkforStaffId) {
                 sb.append("and sa.field_officer_id = :staffId ");
             }
-            sb.append("GROUP BY cl.id , sa.id ORDER BY cl.id , sa.id ");
+            sb.append("GROUP BY cl.id , sa.id , sa.deposit_type_enum,cl.display_name,sa.account_no,sa.status_enum ,sp.short_name,sp.id,sa.currency_code,sa.currency_digits,sa.currency_multiplesof,")
+            .append(" rc.name,rc.display_symbol,rc.internationalized_name_code ")
+            .append(" ORDER BY cl.id , sa.id ");
 
             this.sql = sb.toString();
         }
