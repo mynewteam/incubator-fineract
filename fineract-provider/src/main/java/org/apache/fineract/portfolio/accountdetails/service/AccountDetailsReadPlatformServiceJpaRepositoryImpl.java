@@ -404,7 +404,7 @@ public class AccountDetailsReadPlatformServiceJpaRepositoryImpl implements Accou
                                         activatedOnDate, activatedByUsername, activatedByFirstname, activatedByLastname,
                                         closedOnDate, closedByUsername, closedByFirstname, closedByLastname);
 
-                        return new SavingsAccountSummaryData(id, accountNo, externalId, productId, productName,
+                        return new SavingsAccountSummaryData(id,null, accountNo, externalId, productId, productName,
                                         shortProductName, status, currency, accountBalance, accountTypeData, timeline,
                                         depositTypeData, subStatus, lastActiveTransactionDate);
                 }

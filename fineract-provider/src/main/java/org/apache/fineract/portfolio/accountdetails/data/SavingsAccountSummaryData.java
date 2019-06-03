@@ -36,12 +36,21 @@ public class SavingsAccountSummaryData {
     private final Long id;
     private final String accountNo;
     private final String externalId;
+    private final Long clientid;
     private final Long productId;
     private final String productName;
     private final String shortProductName;
     private final SavingsAccountStatusEnumData status;
     private final CurrencyData currency;
-    private final BigDecimal accountBalance;
+    public Long getId() {
+		return id;
+	}
+
+	public Long getClientid() {
+		return clientid;
+	}
+
+	private final BigDecimal accountBalance;
     //differentiate Individual, JLG or Group account
     private final EnumOptionData accountType;
     private final SavingsAccountApplicationTimelineData timeline;
@@ -51,11 +60,12 @@ public class SavingsAccountSummaryData {
     //differentiate deposit accounts Savings, FD and RD accounts
     private final EnumOptionData depositType;
 
-    public SavingsAccountSummaryData(final Long id, final String accountNo, final String externalId, final Long productId,
+    public SavingsAccountSummaryData(final Long id,final Long clientid, final String accountNo, final String externalId, final Long productId,
             final String productName, final String shortProductName, final SavingsAccountStatusEnumData status, final CurrencyData currency,
             final BigDecimal accountBalance, final EnumOptionData accountType, final SavingsAccountApplicationTimelineData timeline, final EnumOptionData depositType, 
             final SavingsAccountSubStatusEnumData subStatus, final LocalDate lastActiveTransactionDate) {
         this.id = id;
+        this.clientid=clientid;
         this.accountNo = accountNo;
         this.externalId = externalId;
         this.productId = productId;
