@@ -36,7 +36,7 @@ public class PaginationHelper<E> {
 		}else if(sqlFetchRows.toLowerCase().contains("fetch")) {
 			s="select count(*) from ( " + sqlFetchRows.toLowerCase().subSequence(0, sqlFetchRows.indexOf("fetch"))+ " )x";
 		}else {
-			s="select count(*) from ( " + sqlFetchRows.toLowerCase().subSequence(0, sqlFetchRows.indexOf("offset"))+ " )x";	
+			s="select count(*) from ( " + sqlFetchRows + " )x";	
 		}
 		
 				
@@ -56,7 +56,7 @@ public class PaginationHelper<E> {
 		}else if(sql.toLowerCase().contains("fetch")) {
 			s="select count(*) from ( " + sql.toLowerCase().subSequence(0, sql.indexOf("fetch"))+ " )x";
 		}else {
-			s="select count(*) from ( " + sql.toLowerCase().subSequence(0, sql.indexOf("offset"))+ " )x";	
+			s="select count(*) from ( " + sql + " )x";	
 		}
 		
 		
