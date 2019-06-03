@@ -62,7 +62,8 @@ public class AccountDetailsReadPlatformServiceJpaRepositoryImpl implements Accou
         private final GroupReadPlatformService groupReadPlatformService;
         private final ColumnValidator columnValidator;
 
-        @Autowired
+       
+		@Autowired
         public AccountDetailsReadPlatformServiceJpaRepositoryImpl(
                         final ClientReadPlatformService clientReadPlatformService, final RoutingDataSource dataSource,
                         final GroupReadPlatformService groupReadPlatformService,
@@ -91,6 +92,8 @@ public class AccountDetailsReadPlatformServiceJpaRepositoryImpl implements Accou
                 return new AccountSummaryCollectionData(loanAccounts, savingsAccounts, shareAccounts);
         }
 
+
+      
         @Override
         public AccountSummaryCollectionData retrieveGroupAccountDetails(final Long groupId) {
                 // Check if group exists
@@ -144,7 +147,18 @@ public class AccountDetailsReadPlatformServiceJpaRepositoryImpl implements Accou
                 // logger.debug("2_");
                 return this.jdbcTemplate.query(sql, rm, inputs);
         }
-
+        private List<LoanAccountSummaryData> retrieveLoanAllAccountDetails() {
+            final LoanAccountSummaryDataMapper rm = new LoanAccountSummaryDataMapper();
+            final String sql = "select " + rm.loanAccountSummarySchema() ;
+            this.columnValidator.validateSqlInjection(rm.loanAccountSummarySchema());
+            return this.jdbcTemplate.query(sql, rm);
+        }
+        private List<SavingsAccountSummaryData> retrieveAccountDetailsAllLoan(final String savingswhereClause) {
+            final SavingsAccountSummaryDataMapper savingsAccountSummaryDataMapper = new SavingsAccountSummaryDataMapper();
+            final String savingsSql = "select " + savingsAccountSummaryDataMapper.schema() + savingswhereClause;
+            this.columnValidator.validateSqlInjection(savingsAccountSummaryDataMapper.schema() , savingswhereClause);
+            return this.jdbcTemplate.query(savingsSql, savingsAccountSummaryDataMapper);
+        }
         /**
          * @param entityId
          * @return
@@ -536,6 +550,17 @@ public class AccountDetailsReadPlatformServiceJpaRepositoryImpl implements Accou
                                         shortLoanProductName, loanStatus, loanType, loanCycle, timeline, inArrears,
                                         originalLoan, loanBalance, amountPaid);
                 }
+        }
+        public AccountSummaryCollectionData retrieveClientAllloanAccountDetails() {
+        	this.clientReadPlatformService.retrieveOne((long) 1);
+        	final long clientId =1;
+            final String loanwhereClause = "";
+            final String savingswhereClause = "";
+            final List<LoanAccountSummaryData> loanAccounts = retrieveLoanAllAccountDetails();
+            final List<SavingsAccountSummaryData> savingsAccounts = retrieveAccountDetailsAllLoan(savingswhereClause);
+            final List<ShareAccountSummaryData> shareAccounts = retrieveShareAccountDetails(clientId) ;
+//            return new 
+            return new AccountSummaryCollectionData(loanAccounts, savingsAccounts, shareAccounts);
         }
 
 }

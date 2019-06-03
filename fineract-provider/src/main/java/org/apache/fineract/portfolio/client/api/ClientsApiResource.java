@@ -345,6 +345,27 @@ public class ClientsApiResource {
 		return this.clientAccountSummaryToApiJsonSerializer.serialize(settings, clientAccount,
 				CLIENT_ACCOUNTS_DATA_PARAMETERS);
 	}
+	
+	@GET
+	@Path("all/accounts")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+	public String retrieveAssociatedaAllAccounts(@Context final UriInfo uriInfo) {
+
+		this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
+
+		final AccountSummaryCollectionData clientAccount = this.accountDetailsReadPlatformService
+				.retrieveClientAllloanAccountDetails();
+
+		final Set<String> CLIENT_ACCOUNTS_DATA_PARAMETERS = new HashSet<>(
+				Arrays.asList("loanAccounts", "savingsAccounts", "shareAccounts"));
+
+		final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper
+				.process(uriInfo.getQueryParameters());
+		return this.clientAccountSummaryToApiJsonSerializer.serialize(settings, clientAccount,
+				CLIENT_ACCOUNTS_DATA_PARAMETERS);
+	}
+
 
 	@GET
 	@Path("downloadtemplate")

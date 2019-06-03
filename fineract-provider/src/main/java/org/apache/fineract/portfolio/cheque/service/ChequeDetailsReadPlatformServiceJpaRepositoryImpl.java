@@ -8,11 +8,11 @@ import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
 import org.apache.fineract.organisation.monetary.data.CurrencyData;
-import org.apache.fineract.portfolio.account.data.PortfolioAccountData;
-import org.apache.fineract.portfolio.account.service.PortfolioAccountReadPlatformService;
 import org.apache.fineract.portfolio.accountdetails.data.SavingsAccountSummaryData;
 import org.apache.fineract.portfolio.accountdetails.service.AccountEnumerations;
+import org.apache.fineract.portfolio.cheque.data.ChequeDepositToSummaryCollectionData;
 import org.apache.fineract.portfolio.cheque.data.ChequeSummaryCollectionData;
+//import org.apache.fineract.portfolio.cheque.data.ChequeDepositToSummaryCollectionData;
 import org.apache.fineract.portfolio.client.data.ClientData;
 import org.apache.fineract.portfolio.client.service.ClientReadPlatformService;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountApplicationTimelineData;
@@ -43,7 +43,7 @@ public class ChequeDetailsReadPlatformServiceJpaRepositoryImpl implements Cheque
 	}
 	
 	@Override
-	public ChequeSummaryCollectionData retrieveClientAccountdepositto(String accountsaving) {
+	public ChequeDepositToSummaryCollectionData retrieveClientAccountdepositto(String accountsaving) {
 		ClientData clientinfo = null;
 		 long clientid;
 		final String savingswhereClause = " where sa.account_no = ? order by sa.status_enum ASC, sa.account_no ASC";
@@ -54,7 +54,7 @@ public class ChequeDetailsReadPlatformServiceJpaRepositoryImpl implements Cheque
 //		
 		clientinfo = this.clientReadPlatformService.retrieveOne(clientid);
 		
-		return new ChequeSummaryCollectionData(deposittoaccount,clientinfo);
+		return new ChequeDepositToSummaryCollectionData(deposittoaccount,clientinfo);
 	}
 
 	@Override
