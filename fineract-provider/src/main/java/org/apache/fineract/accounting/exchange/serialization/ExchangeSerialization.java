@@ -6,8 +6,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang.StringUtils;
+import org.apache.fineract.accounting.exchange.api.ExchangeJsonInputParams;
+import org.apache.fineract.accounting.exchange.command.ExchangeCommand;
 import org.apache.fineract.accounting.spotrate.api.SpotRateJsonInputParams;
-import org.apache.fineract.accounting.spotrate.command.SpotRateCommand;
 import org.apache.fineract.infrastructure.core.exception.InvalidJsonException;
 import org.apache.fineract.infrastructure.core.serialization.AbstractFromApiJsonDeserializer;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
@@ -21,7 +22,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 @Component
-public class ExchangeSerialization extends AbstractFromApiJsonDeserializer<SpotRateCommand>
+public class ExchangeSerialization extends AbstractFromApiJsonDeserializer<ExchangeCommand>
 {
 	private final FromJsonHelper fromApiJsonHelper;
 
@@ -31,22 +32,24 @@ public class ExchangeSerialization extends AbstractFromApiJsonDeserializer<SpotR
     }
 
     @Override
-    public SpotRateCommand commandFromApiJson(final String json) {
+    public ExchangeCommand commandFromApiJson(final String json) {
         if (StringUtils.isBlank(json)) { throw new InvalidJsonException(); }
 
         final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
-        final Set<String> supportedParameters = SpotRateJsonInputParams.getAllValues();
+        final Set<String> supportedParameters = ExchangeJsonInputParams.getAllValues();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, supportedParameters);
 
         final JsonElement element = this.fromApiJsonHelper.parse(json);
         final JsonObject topLevelJsonElement = element.getAsJsonObject();
         final Locale locale = this.fromApiJsonHelper.extractLocaleParameter(topLevelJsonElement);
         
-        final String currency_code = this.fromApiJsonHelper.extractStringNamed(SpotRateJsonInputParams.CURRENCY_CODE.getValue(), element);
-        final BigDecimal buyingRate = this.fromApiJsonHelper.extractBigDecimalNamed(SpotRateJsonInputParams.BUYING_RATE.getValue(), element, locale);
-        final BigDecimal sellingRate = this.fromApiJsonHelper.extractBigDecimalNamed(SpotRateJsonInputParams.SELLING_RATE.getValue(), element, locale);
+        final String buycurrencyCode = this.fromApiJsonHelper.extractStringNamed(ExchangeJsonInputParams.BUYCURRENCY_CODE.getValue(), element);
+        final String sellcurrencyCode = this.fromApiJsonHelper.extractStringNamed(ExchangeJsonInputParams.SELLCURRENCY_CODE.getValue(), element);
+        final BigDecimal sellamount = this.fromApiJsonHelper.extractBigDecimalNamed(ExchangeJsonInputParams.SELLAMOUNT.getValue(), element, locale);
+        final BigDecimal buyamount = this.fromApiJsonHelper.extractBigDecimalNamed(ExchangeJsonInputParams.BUYAMOUNT.getValue(), element, locale);
         final BigDecimal spotRate = this.fromApiJsonHelper.extractBigDecimalNamed(SpotRateJsonInputParams.SPOTRATE.getValue(), element, locale);
         final LocalDate transactionDate = this.fromApiJsonHelper.extractLocalDateNamed(SpotRateJsonInputParams.TRANSACTION_DATE.getValue(), element);
-        return new SpotRateCommand(currency_code, buyingRate, sellingRate, spotRate, transactionDate);
+        final Long officeId = this.fromApiJsonHelper.extractLongNamed(SpotRateJsonInputParams.OFFICE_ID.getValue(), element);
+        return new ExchangeCommand(officeId, buycurrencyCode, sellcurrencyCode, buyamount, sellamount, spotRate, transactionDate);
     }
 }

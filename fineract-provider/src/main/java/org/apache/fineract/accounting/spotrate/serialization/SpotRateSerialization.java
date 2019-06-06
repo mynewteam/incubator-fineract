@@ -47,6 +47,7 @@ public class SpotRateSerialization extends AbstractFromApiJsonDeserializer<SpotR
         final BigDecimal sellingRate = this.fromApiJsonHelper.extractBigDecimalNamed(SpotRateJsonInputParams.SELLING_RATE.getValue(), element, locale);
         final BigDecimal spotRate = this.fromApiJsonHelper.extractBigDecimalNamed(SpotRateJsonInputParams.SPOTRATE.getValue(), element, locale);
         final LocalDate transactionDate = this.fromApiJsonHelper.extractLocalDateNamed(SpotRateJsonInputParams.TRANSACTION_DATE.getValue(), element);
-        return new SpotRateCommand(currency_code, buyingRate, sellingRate, spotRate, transactionDate);
+        final Long officeId = this.fromApiJsonHelper.extractLongNamed(SpotRateJsonInputParams.OFFICE_ID.getValue(), element);
+        return new SpotRateCommand(currency_code, buyingRate, sellingRate, spotRate, transactionDate, officeId);
     }
 }

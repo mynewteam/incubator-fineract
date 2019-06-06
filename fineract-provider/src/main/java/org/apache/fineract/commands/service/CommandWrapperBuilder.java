@@ -3155,4 +3155,13 @@ public class CommandWrapperBuilder {
     	this.href = "/spotrate";
     	return this;
     }
+
+	public CommandWrapperBuilder doExchange()
+	{
+		this.actionName = "CREATE";
+    	this.entityName = "EXCHANGE";
+    	this.entityId = null;
+    	this.href = "/exchange";
+    	return this;
+	}
 }

@@ -5,8 +5,7 @@ import java.util.ArrayList;
 import org.joda.time.LocalDate;
 import java.util.List;
 
-import org.apache.fineract.accounting.spotrate.api.SpotRateJsonInputParams;
-import org.apache.fineract.accounting.spotrate.exception.SpotRateNotFoundException;
+import org.apache.fineract.accounting.exchange.api.ExchangeJsonInputParams;
 import org.apache.fineract.infrastructure.core.data.ApiParameterError;
 import org.apache.fineract.infrastructure.core.data.DataValidatorBuilder;
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
@@ -14,17 +13,21 @@ import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidati
 public class ExchangeCommand
 {
 
-    private final String currency_code;
-    private final BigDecimal buyingRate;
-    private final BigDecimal sellingRate;
+    private final Long officeId;
+    private final String buycurrencyCode;
+    private final String sellcurrencyCode;
+    private final BigDecimal sellamount;
+    private final BigDecimal buyamount;
     private final BigDecimal spotRate;
     private final LocalDate transactionDate;
     
-    public ExchangeCommand(final String currency_code, final BigDecimal buyingRate, final BigDecimal sellingRate, 
-    		final BigDecimal spotRate, final LocalDate transactionDate) {
-        this.currency_code = currency_code;
-        this.buyingRate = buyingRate;
-        this.sellingRate = sellingRate;
+    public ExchangeCommand(final Long officeId, final String buycurrencyCode, final String sellcurrencyCode, 
+    		final BigDecimal buyamount, final BigDecimal sellamount, final BigDecimal spotRate, final LocalDate transactionDate) {
+        this.officeId = officeId;
+        this.buycurrencyCode = buycurrencyCode;
+        this.sellcurrencyCode = sellcurrencyCode;
+        this.buyamount = buyamount;
+        this.sellamount = sellamount;
         this.spotRate = spotRate;
         this.transactionDate = transactionDate;
     }
@@ -34,27 +37,22 @@ public class ExchangeCommand
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
 
         final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("SpotRate");
-		
 
-        baseDataValidator.reset().parameter(SpotRateJsonInputParams.CURRENCY_CODE.getValue()).value(this.currency_code).notBlank();
+        baseDataValidator.reset().parameter(ExchangeJsonInputParams.OFFICE_ID.getValue()).value(this.officeId).notBlank();
 
-        baseDataValidator.reset().parameter(SpotRateJsonInputParams.BUYING_RATE.getValue()).value(this.buyingRate).notNull().positiveAmount();
+        baseDataValidator.reset().parameter(ExchangeJsonInputParams.BUYCURRENCY_CODE.getValue()).value(this.buycurrencyCode).notBlank();
 
-        baseDataValidator.reset().parameter(SpotRateJsonInputParams.SELLING_RATE.getValue()).value(this.sellingRate).notNull().positiveAmount();
+        baseDataValidator.reset().parameter(ExchangeJsonInputParams.SELLCURRENCY_CODE.getValue()).value(this.sellcurrencyCode).notBlank();
+        
+        baseDataValidator.reset().parameter(ExchangeJsonInputParams.BUYAMOUNT.getValue()).value(this.buyamount).notBlank();
 
-        baseDataValidator.reset().parameter(SpotRateJsonInputParams.SPOTRATE.getValue()).value(this.spotRate).notNull().positiveAmount();
+        baseDataValidator.reset().parameter(ExchangeJsonInputParams.SELLAMOUNT.getValue()).value(this.sellamount).notBlank();
 
-        baseDataValidator.reset().parameter(SpotRateJsonInputParams.TRANSACTION_DATE.getValue()).value(this.transactionDate).notBlank();
+        baseDataValidator.reset().parameter(ExchangeJsonInputParams.SPOTRATE.getValue()).value(this.spotRate).notNull().positiveAmount();
+
+        baseDataValidator.reset().parameter(ExchangeJsonInputParams.TRANSACTION_DATE.getValue()).value(this.transactionDate).notBlank();
 
 		if (!dataValidationErrors.isEmpty()) { throw new PlatformApiDataValidationException("validation.msg.validation.errors.exist",
                 "Validation errors exist.", dataValidationErrors); }
-    }
-	public void validateIsExisted(boolean isSpotrateExisted) {
-        
-        if(!isSpotrateExisted)
-        {
-        	throw new SpotRateNotFoundException();
-        }
-        
     }
 }

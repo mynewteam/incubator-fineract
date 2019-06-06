@@ -25,10 +25,15 @@ import java.util.Set;
  * Enum of all parameters passed in while creating/updating a Spot Rate
  ***/
 public enum ExchangeJsonInputParams {
-	buycurrency_code("buycurrencyCode"),
-	buyamount("buyamount"),
-	sellcurrency_Code("sellcurrencyCode"),
-	sellamount("sellamount");
+	OFFICE_ID("officeId"),
+	TRANSACTION_DATE("TransactionDate"),
+	BUYCURRENCY_CODE("buycurrencyCode"),
+	BUYAMOUNT("buyamount"),
+	SELLCURRENCY_CODE("sellcurrencyCode"),
+	SELLAMOUNT("sellamount"),
+	SPOTRATE("spotRate"),
+	LOCALE("locale"),
+	DATE_FORMAT("dateFormat");
 
     private final String value;
 

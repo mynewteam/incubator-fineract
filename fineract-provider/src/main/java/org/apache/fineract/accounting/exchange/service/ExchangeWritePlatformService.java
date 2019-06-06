@@ -23,6 +23,6 @@ import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 
 public interface ExchangeWritePlatformService {
 
-	CommandProcessingResult createSpotRate(JsonCommand command);
+	CommandProcessingResult doExchange(JsonCommand command);
 	
 }

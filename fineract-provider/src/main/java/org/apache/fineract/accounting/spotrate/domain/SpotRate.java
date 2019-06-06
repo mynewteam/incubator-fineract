@@ -33,9 +33,12 @@ public class SpotRate extends AbstractPersistableCustom<Long> {
     @Column(name = "transaction_date")
     private Date transactionDate;
     
+    @Column(name = "office_id")
+    private Long office_id;
+    
 
     public SpotRate(String currencyCode, BigDecimal buyingRate, BigDecimal sellingRate, BigDecimal spotRate,
-			LocalDate transactionDate)
+			LocalDate transactionDate, Long office_id)
 	{
 		super();
 		this.currencyCode = currencyCode;
@@ -43,6 +46,7 @@ public class SpotRate extends AbstractPersistableCustom<Long> {
 		this.sellingRate = sellingRate;
 		this.spotRate = spotRate;
 		this.transactionDate = transactionDate.toDate();
+		this.office_id = office_id;
 	}
     
 
@@ -105,7 +109,8 @@ public class SpotRate extends AbstractPersistableCustom<Long> {
         final BigDecimal sellingRate = command.bigDecimalValueOfParameterNamed(SpotRateJsonInputParams.SELLING_RATE.getValue());
         final BigDecimal spotRate = command.bigDecimalValueOfParameterNamed(SpotRateJsonInputParams.SPOTRATE.getValue());
         final LocalDate transactionDate = command.localDateValueOfParameterNamed(SpotRateJsonInputParams.TRANSACTION_DATE.getValue());
-		return new SpotRate(currencyCode, buyingRate, sellingRate, spotRate, transactionDate);
+        final Long office_id = command.longValueOfParameterNamed(SpotRateJsonInputParams.OFFICE_ID.getValue());
+		return new SpotRate(currencyCode, buyingRate, sellingRate, spotRate, transactionDate, office_id);
 	}
     
     

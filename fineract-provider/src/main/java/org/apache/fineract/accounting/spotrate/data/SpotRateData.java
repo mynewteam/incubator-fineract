@@ -10,14 +10,17 @@ public class SpotRateData {
     private BigDecimal sellingRate;
     private BigDecimal spotRate;
     private LocalDate transactionDate;
+    private Long officeId;
     
-    public SpotRateData(Long id, String currencyCode, BigDecimal buyingRate, BigDecimal sellingRate, BigDecimal spotRate, LocalDate transactionDate) {
+    public SpotRateData(Long id, String currencyCode, BigDecimal buyingRate, BigDecimal sellingRate, BigDecimal spotRate, LocalDate transactionDate,
+    		Long officeId) {
         this.id = id;
         this.currencyCode = currencyCode;
         this.buyingRate = buyingRate;
         this.sellingRate = sellingRate;
         this.spotRate = spotRate;
         this.transactionDate = transactionDate;
+        this.officeId = officeId;
     }
     
     public SpotRateData instance(
@@ -26,8 +29,9 @@ public class SpotRateData {
             final BigDecimal buyingRate,
             final BigDecimal sellingRate,
             final BigDecimal spotRate,
-            final LocalDate transactionDate) {
-       return new SpotRateData(id, currency_code, buyingRate, sellingRate, spotRate, transactionDate);
+            final LocalDate transactionDate,
+            final Long officeId) {
+       return new SpotRateData(id, currency_code, buyingRate, sellingRate, spotRate, transactionDate, officeId);
     }
 
     
@@ -89,6 +93,16 @@ public class SpotRateData {
     public void settransactionDate(LocalDate transactionDate) {
         this.transactionDate = transactionDate;
     }
+
+	public Long getOfficeId()
+	{
+		return officeId;
+	}
+
+	public void setOfficeId(Long officeId)
+	{
+		this.officeId = officeId;
+	}
     
     
 }

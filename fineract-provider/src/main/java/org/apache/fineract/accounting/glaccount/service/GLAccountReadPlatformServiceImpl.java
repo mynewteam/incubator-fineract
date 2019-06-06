@@ -266,7 +266,15 @@ public class GLAccountReadPlatformServiceImpl implements GLAccountReadPlatformSe
         final String sql = "Select " + mapper.schema() + " where rule.id=? and tags.acc_type_enum=?";
         return this.jdbcTemplate.query(sql, mapper, new Object[] { ruleId, transactionType });
     }
-
+    public Long findGLAccountbyGLCode(String glCode)
+    {
+    	final GLAccountDataLookUpMapper mapper = new GLAccountDataLookUpMapper();
+        final String sql = "Select id, name, gl_code glCode from acc_gl_account where gl_code = ?";
+        GLAccountDataForLookup glAccount = this.jdbcTemplate.queryForObject(sql, mapper, new Object[] { glCode });
+        
+        return glAccount.getId();
+    }
+    
     private static final class GLAccountDataLookUpMapper implements RowMapper<GLAccountDataForLookup> {
 
         public String schema() {

@@ -34,9 +34,9 @@ public class ExchangeApiResource {
     @POST
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public String createSpotrate(final String jsonRequestBody) {
+    public String doExchange(final String jsonRequestBody) {
 
-        final CommandWrapper commandRequest = new CommandWrapperBuilder().createSpotRate().withJson(jsonRequestBody).build();
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().doExchange().withJson(jsonRequestBody).build();
 
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
 

@@ -19,14 +19,16 @@ public class SpotRateCommand
     private final BigDecimal sellingRate;
     private final BigDecimal spotRate;
     private final LocalDate transactionDate;
+    private final Long officeId;
     
     public SpotRateCommand(final String currency_code, final BigDecimal buyingRate, final BigDecimal sellingRate, 
-    		final BigDecimal spotRate, final LocalDate transactionDate) {
+    		final BigDecimal spotRate, final LocalDate transactionDate, final Long officeId) {
         this.currency_code = currency_code;
         this.buyingRate = buyingRate;
         this.sellingRate = sellingRate;
         this.spotRate = spotRate;
         this.transactionDate = transactionDate;
+        this.officeId = officeId;
     }
 
 	public void validateForCreate() {
@@ -45,6 +47,8 @@ public class SpotRateCommand
         baseDataValidator.reset().parameter(SpotRateJsonInputParams.SPOTRATE.getValue()).value(this.spotRate).notNull().positiveAmount();
 
         baseDataValidator.reset().parameter(SpotRateJsonInputParams.TRANSACTION_DATE.getValue()).value(this.transactionDate).notBlank();
+        
+        baseDataValidator.reset().parameter(SpotRateJsonInputParams.OFFICE_ID.getValue()).value(this.officeId).notNull();
 
 		if (!dataValidationErrors.isEmpty()) { throw new PlatformApiDataValidationException("validation.msg.validation.errors.exist",
                 "Validation errors exist.", dataValidationErrors); }

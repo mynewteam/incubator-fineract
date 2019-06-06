@@ -21,55 +21,252 @@ package org.apache.fineract.accounting.exchange.service;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuilder;
-import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
-import org.joda.time.LocalDate;
+import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.organisation.office.domain.Office;
+import org.apache.fineract.organisation.office.domain.OfficeRepositoryWrapper;
+import org.apache.fineract.organisation.office.domain.OrganisationCurrencyRepositoryWrapper;
+import org.apache.fineract.useradministration.domain.AppUser;
 
-import org.apache.fineract.accounting.spotrate.api.SpotRateJsonInputParams;
-import org.apache.fineract.accounting.spotrate.command.SpotRateCommand;
-import org.apache.fineract.accounting.spotrate.domain.SpotRateRepository;
-import org.apache.fineract.accounting.spotrate.domain.SpotRate;
-import org.apache.fineract.accounting.spotrate.serialization.SpotRateSerialization;
+import java.math.BigDecimal;
+import java.util.Date;
+
+import org.apache.fineract.accounting.exchange.api.ExchangeJsonInputParams;
+import org.apache.fineract.accounting.exchange.command.ExchangeCommand;
+import org.apache.fineract.accounting.exchange.serialization.ExchangeSerialization;
+import org.apache.fineract.accounting.glaccount.domain.GLAccount;
+import org.apache.fineract.accounting.glaccount.domain.GLAccountRepository;
+import org.apache.fineract.accounting.glaccount.service.GLAccountReadPlatformService;
+import org.apache.fineract.accounting.journalentry.domain.JournalEntry;
+import org.apache.fineract.accounting.journalentry.domain.JournalEntryRepository;
+import org.apache.fineract.accounting.journalentry.domain.JournalEntryType;
+import org.apache.fineract.accounting.journalentry.exception.JournalEntryInvalidException;
+import org.apache.fineract.accounting.journalentry.exception.JournalEntryInvalidException.GL_JOURNAL_ENTRY_INVALID_REASON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.google.gson.JsonElement;
 
 @Service
 public class ExchangeWritePlatformServiceImp implements ExchangeWritePlatformService
 {
-	private final SpotRateSerialization fromApiJsonDeserializer ;
-	private final SpotRateRepository spotrateRespository;
-	private final FromJsonHelper fromApiJsonHelper;
+	private final ExchangeSerialization fromApiJsonDeserializer ;
+	private final GLAccountRepository glAccountRepository;
+	private final OfficeRepositoryWrapper officeRepositoryWrapper;
+	private final GLAccountReadPlatformService glAccountReadPlatformService;
+    private final JournalEntryRepository glJournalEntryRepository;
+    private final PlatformSecurityContext context;
+    private final OrganisationCurrencyRepositoryWrapper organisationCurrencyRepository;
 	
 	@Autowired
-	public ExchangeWritePlatformServiceImp(final SpotRateSerialization fromApiJsonDeserializer, final SpotRateRepository spotrateRespository,
-			final FromJsonHelper fromApiJsonfromApiJsonHelper)
+	public ExchangeWritePlatformServiceImp(final ExchangeSerialization fromApiJsonDeserializer,
+			final JournalEntryRepository glJournalEntryRepository, final OrganisationCurrencyRepositoryWrapper organisationCurrencyRepository,
+			final OfficeRepositoryWrapper officeRepositoryWrapper, final GLAccountReadPlatformService glAccountReadPlatformService,
+			final PlatformSecurityContext context, final GLAccountRepository glAccountRepository)
 	{
 		this.fromApiJsonDeserializer = fromApiJsonDeserializer;
-		this.spotrateRespository = spotrateRespository;
-		this.fromApiJsonHelper = fromApiJsonfromApiJsonHelper;
+		this.glJournalEntryRepository = glJournalEntryRepository;
+		this.organisationCurrencyRepository = organisationCurrencyRepository;
+		this.officeRepositoryWrapper = officeRepositoryWrapper;
+		this.context = context;
+		this.glAccountReadPlatformService = glAccountReadPlatformService;
+		this.glAccountRepository = glAccountRepository;
 	}
 
-	@Transactional
 	@Override
-	public CommandProcessingResult createSpotRate(final JsonCommand command)
+	public CommandProcessingResult doExchange(final JsonCommand command)
 	{
 		try
 		{
-			final SpotRateCommand spotRateCommand = this.fromApiJsonDeserializer.commandFromApiJson(command.json());
+			final ExchangeCommand ExchangeCommand = this.fromApiJsonDeserializer.commandFromApiJson(command.json());
+			ExchangeCommand.validateForCreate();
 			
-			spotRateCommand.validateForCreate();
-			
-			final SpotRate spotrate = SpotRate.fromJson(command);
+            String currencyCode = null;
+            BigDecimal amount = null;
+            GLAccount glAccount = null;
+            String transactionId = null;
+            String comments = "";
+            
+            // check office is valid
+            final Long officeId = command.longValueOfParameterNamed(ExchangeJsonInputParams.OFFICE_ID.getValue());
+            final Office office = this.officeRepositoryWrapper.findOneWithNotFoundDetection(officeId);
+            
+            final String buyingcurrencyCode = command.stringValueOfParameterNamed(ExchangeJsonInputParams.BUYCURRENCY_CODE.getValue());
+            final String sellingcurrencyCode = command.stringValueOfParameterNamed(ExchangeJsonInputParams.SELLCURRENCY_CODE.getValue());
+            final String spotrate = command.stringValueOfParameterNamed(ExchangeJsonInputParams.SPOTRATE.getValue());
 
-			this.spotrateRespository.save(spotrate);
+            final BigDecimal buyingamount = command.bigDecimalValueOfParameterNamed(ExchangeJsonInputParams.BUYAMOUNT.getValue());
+            final BigDecimal sellingamount = command.bigDecimalValueOfParameterNamed(ExchangeJsonInputParams.SELLAMOUNT.getValue());
+            Long glAccountId = null;
 
-			return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(spotrate.getId()).build();
+            /** Set a transaction Id and save these Journal entries **/
+            final Date transactionDate = command.DateValueOfParameterNamed(ExchangeJsonInputParams.TRANSACTION_DATE.getValue());
+            
+            
+            if(buyingcurrencyCode == "KHR")
+            {
+            	/**
+            	 * USD
+            	 */
+            	amount = sellingamount;
+            	currencyCode = sellingcurrencyCode;
+            	/** Validate current code is appropriate **/
+                this.organisationCurrencyRepository.findOneWithNotFoundDetection(currencyCode);
+                
+            	//Debit
+            	transactionId = generateTransactionId(officeId);
+            	
+            	glAccountId = glAccountReadPlatformService.findGLAccountbyGLCode("296602");
+            	
+            	glAccount = this.glAccountRepository.findOne(glAccountId);
+            	comments = "Sell dollar: " + amount +", with spotrate: "+ spotrate;
+            	validateGLAccountForTransaction(glAccount);
+            	
+            	saveAllDebitOrCreditEntries(ExchangeCommand, office, currencyCode, transactionDate,
+                        glAccount, amount, transactionId, comments, JournalEntryType.DEBIT);
+            	//Credit
+            	glAccountId = glAccountReadPlatformService.findGLAccountbyGLCode("111102-1-0");
+            	
+            	glAccount = this.glAccountRepository.findOne(glAccountId);
+            	comments = "Sell dollar: " + amount +", with spotrate: "+ spotrate;
+            	validateGLAccountForTransaction(glAccount);
+            	
+            	saveAllDebitOrCreditEntries(ExchangeCommand, office, currencyCode, transactionDate,
+                		glAccount, amount, transactionId, comments, JournalEntryType.CREDIT);
+            	
+            	/**
+            	 * KHR
+            	 */
+            	amount = buyingamount;
+            	currencyCode = buyingcurrencyCode;
+            	/** Validate current code is appropriate **/
+                this.organisationCurrencyRepository.findOneWithNotFoundDetection(currencyCode);
+                
+            	//Debit
+            	transactionId = generateTransactionId(officeId);
+            	
+            	glAccountId = glAccountReadPlatformService.findGLAccountbyGLCode("111101-1-0");
+            	
+            	glAccount = this.glAccountRepository.findOne(glAccountId);
+            	comments = "Buy Riel: " + amount +", with spotrate: "+ spotrate;
+            	validateGLAccountForTransaction(glAccount);
+            	
+            	saveAllDebitOrCreditEntries(ExchangeCommand, office, currencyCode, transactionDate,
+                        glAccount, amount, transactionId, comments, JournalEntryType.DEBIT);
+            	//Credit
+            	glAccountId = glAccountReadPlatformService.findGLAccountbyGLCode("386101");
+            	
+            	glAccount = this.glAccountRepository.findOne(glAccountId);
+            	comments = "Buy Riel: " + amount +", with spotrate: "+ spotrate;
+            	validateGLAccountForTransaction(glAccount);
+            	
+            	saveAllDebitOrCreditEntries(ExchangeCommand, office, currencyCode, transactionDate,
+                		glAccount, amount, transactionId, comments, JournalEntryType.CREDIT);
+            }
+            else
+            {
+            	/**
+            	 * USD
+            	 */
+            	amount = buyingamount;
+            	currencyCode = buyingcurrencyCode;
+            	/** Validate current code is appropriate **/
+                this.organisationCurrencyRepository.findOneWithNotFoundDetection(currencyCode);
+                
+            	//Debit
+            	transactionId = generateTransactionId(officeId);
+            	
+            	glAccountId = glAccountReadPlatformService.findGLAccountbyGLCode("296602");
+            	
+            	glAccount = this.glAccountRepository.findOne(glAccountId);
+            	comments = "Buy dollar: " + amount +", with spotrate: "+ spotrate;
+            	validateGLAccountForTransaction(glAccount);
+            	
+            	saveAllDebitOrCreditEntries(ExchangeCommand, office, currencyCode, transactionDate,
+                        glAccount, amount, transactionId, comments, JournalEntryType.CREDIT);
+            	//Credit
+            	glAccountId = glAccountReadPlatformService.findGLAccountbyGLCode("111102-1-0");
+            	
+            	glAccount = this.glAccountRepository.findOne(glAccountId);
+            	comments = "Buy dollar: " + amount +", with spotrate: "+ spotrate;
+            	validateGLAccountForTransaction(glAccount);
+            	
+            	saveAllDebitOrCreditEntries(ExchangeCommand, office, currencyCode, transactionDate,
+                		glAccount, amount, transactionId, comments, JournalEntryType.DEBIT);
+            	
+            	/**
+            	 * KHR
+            	 */
+            	amount = sellingamount;
+            	currencyCode = sellingcurrencyCode;
+            	
+            	/** Validate current code is appropriate **/
+                this.organisationCurrencyRepository.findOneWithNotFoundDetection(currencyCode);
+                
+            	//Debit
+            	transactionId = generateTransactionId(officeId);
+            	
+            	glAccountId = glAccountReadPlatformService.findGLAccountbyGLCode("111101-1-0");
+            	
+            	glAccount = this.glAccountRepository.findOne(glAccountId);
+            	comments = "Sell Reil: " +  amount + ", with spotrate: "+ spotrate;
+            	validateGLAccountForTransaction(glAccount);
+            	
+            	saveAllDebitOrCreditEntries(ExchangeCommand, office, currencyCode, transactionDate,
+                        glAccount, amount, transactionId, comments, JournalEntryType.DEBIT);
+            	//Credit
+            	glAccountId = glAccountReadPlatformService.findGLAccountbyGLCode("386101");
+            	
+            	glAccount = this.glAccountRepository.findOne(glAccountId);
+            	comments = "Sell Reil: " +  amount + ", with spotrate: "+ spotrate;
+            	validateGLAccountForTransaction(glAccount);
+            	
+            	saveAllDebitOrCreditEntries(ExchangeCommand, office, currencyCode, transactionDate,
+                		glAccount, amount, transactionId, comments, JournalEntryType.CREDIT);
+            }
+            
+            return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withOfficeId(officeId)
+                    .withTransactionId(transactionId).build();
+            
 		} catch (final DataIntegrityViolationException dve)
 		{
 			return CommandProcessingResult.empty();
 		}
 	}
+	
+	private void saveAllDebitOrCreditEntries(final ExchangeCommand command, final Office office,
+            final String currencyCode, final Date transactionDate, GLAccount glAccount, final BigDecimal amount, 
+            final String transactionId, final String comments,final JournalEntryType type) {
+        final boolean manualEntry = true;
+        
+        validateGLAccountForTransaction(glAccount);
+
+        /** Validate current code is appropriate **/
+        this.organisationCurrencyRepository.findOneWithNotFoundDetection(currencyCode);
+        
+        final JournalEntry glJournalEntry = JournalEntry.createNew(office, null, glAccount, currencyCode, transactionId,
+                manualEntry, transactionDate, type, amount, comments, null, null, null,
+                null, null, null, null);
+        
+        this.glJournalEntryRepository.saveAndFlush(glJournalEntry);
+    }
+	
+	private void validateGLAccountForTransaction(final GLAccount creditOrDebitAccountHead) {
+        /***
+         * validate that the account allows manual adjustments and is not
+         * disabled
+         **/
+        if (creditOrDebitAccountHead.isDisabled()) {
+            throw new JournalEntryInvalidException(GL_JOURNAL_ENTRY_INVALID_REASON.GL_ACCOUNT_DISABLED, null,
+                    creditOrDebitAccountHead.getName(), creditOrDebitAccountHead.getGlCode());
+        } else if (!creditOrDebitAccountHead.isManualEntriesAllowed()) { throw new JournalEntryInvalidException(
+                GL_JOURNAL_ENTRY_INVALID_REASON.GL_ACCOUNT_MANUAL_ENTRIES_NOT_PERMITTED, null, creditOrDebitAccountHead.getName(),
+                creditOrDebitAccountHead.getGlCode()); }
+    }
+	
+	private String generateTransactionId(final Long officeId) {
+        final AppUser user = this.context.authenticatedUser();
+        final Long time = System.currentTimeMillis();
+        final String uniqueVal = String.valueOf(time) + user.getId() + officeId;
+        final String transactionId = Long.toHexString(Long.parseLong(uniqueVal));
+        return transactionId;
+    }
 }

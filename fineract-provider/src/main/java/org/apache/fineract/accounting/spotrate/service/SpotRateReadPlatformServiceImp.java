@@ -29,7 +29,7 @@ public class SpotRateReadPlatformServiceImp implements SpotRateReadPlatformServi
 
 		public String schema() {
             StringBuilder sb = new StringBuilder();
-            sb.append("sr.id, sr.currency_code, sr.buying_rate, sr.selling_rate, sr.spot_rate, sr.transaction_date FROM spotrate sr");
+            sb.append("sr.id, sr.currency_code, sr.buying_rate, sr.selling_rate, sr.spot_rate, sr.transaction_date, sr.office_id FROM spotrate sr");
             return sb.toString();
         }
 		
@@ -43,8 +43,8 @@ public class SpotRateReadPlatformServiceImp implements SpotRateReadPlatformServi
 			final BigDecimal sellingRate = rs.getBigDecimal("selling_rate");
 			final BigDecimal spotRate = rs.getBigDecimal("spot_rate");
 			final LocalDate transactionDate = new LocalDate(rs.getDate("transaction_Date"));
-
-			return new SpotRateData(id, currencyCode, buyingRate, sellingRate, spotRate, transactionDate);
+			final Long officeId = rs.getLong("office_id");
+			return new SpotRateData(id, currencyCode, buyingRate, sellingRate, spotRate, transactionDate, officeId);
 		}
 	}
 
