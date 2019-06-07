@@ -211,7 +211,7 @@ public class ExchangeWritePlatformServiceImp implements ExchangeWritePlatformSer
             	validateGLAccountForTransaction(glAccount);
             	
             	saveAllDebitOrCreditEntries(ExchangeCommand, office, currencyCode, transactionDate,
-                        glAccount, amount, transactionId, comments, JournalEntryType.DEBIT);
+                        glAccount, amount, transactionId, comments, JournalEntryType.CREDIT);
             	//Credit
             	glAccountId = glAccountReadPlatformService.findGLAccountbyGLCode("386101");
             	
@@ -220,7 +220,7 @@ public class ExchangeWritePlatformServiceImp implements ExchangeWritePlatformSer
             	validateGLAccountForTransaction(glAccount);
             	
             	saveAllDebitOrCreditEntries(ExchangeCommand, office, currencyCode, transactionDate,
-                		glAccount, amount, transactionId, comments, JournalEntryType.CREDIT);
+                		glAccount, amount, transactionId, comments, JournalEntryType.DEBIT);
             }
             
             return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withOfficeId(officeId)
