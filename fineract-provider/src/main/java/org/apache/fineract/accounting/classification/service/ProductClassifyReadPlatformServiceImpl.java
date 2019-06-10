@@ -221,13 +221,16 @@ public class ProductClassifyReadPlatformServiceImpl implements ProductClassifyRe
 
 	@Override
 	public ProductSubTypeMappingData retrieveProductSubtypeMappingDataByProductId(Long loanId) {
-		String sql = "SELECT ID, PRODUCT_ID, LOAN_SUBTYPE_STATUS_ID, MIN_AGE, MAX_AGE, PORTFOLIO_ACC_ID, INT_RECEIVABLE_ACC_ID, INCOME_ACC_ID  FROM " + 
-				" loan_product_subtype_mapping WHERE product_id = (SELECT PRODUCT_ID FROM M_LOAN WHERE ID = ?) " + 
-				"    AND ( SELECT to_days(curdate()) - to_days(overdue_since_date_derived) FROM m_loan_arrears_aging WHERE  loan_id = ? " + 
-				"    ) BETWEEN min_age AND max_age " + 
-				"    OR ( ( SELECT to_days(curdate()) - to_days(overdue_since_date_derived) FROM m_loan_arrears_aging WHERE loan_id = ? ) >= min_age AND max_age = - 1 )";
+		String sql = "SELECT ID, PRODUCT_ID, LOAN_SUBTYPE_STATUS_ID, MIN_AGE, MAX_AGE, PORTFOLIO_ACC_ID, INT_RECEIVABLE_ACC_ID, INCOME_ACC_ID  FROM "
+				+ " loan_product_subtype_mapping WHERE product_id = (SELECT PRODUCT_ID FROM M_LOAN WHERE ID = ?) "
+				+ "    AND ( SELECT to_days(curdate()) - to_days(overdue_since_date_derived) FROM m_loan_arrears_aging WHERE  loan_id = ? "
+				+ "    ) BETWEEN min_age AND max_age "
+				+ "    OR ( ( SELECT to_days(curdate()) - to_days(overdue_since_date_derived) FROM m_loan_arrears_aging WHERE loan_id = ? ) >= min_age AND max_age = - 1 )";
 		ProductSubTypeMappingDataMapper mapper = new ProductSubTypeMappingDataMapper();
-		
-		return this.jdbctemplate.queryForObject(sql, mapper, new Object[] { loanId, loanId, loanId });
+		ProductSubTypeMappingData product = null;
+		try {
+			product = this.jdbctemplate.queryForObject(sql, mapper, new Object[] { loanId, loanId, loanId });
+		} catch (Exception ex) {}
+		return product;
 	}
 }

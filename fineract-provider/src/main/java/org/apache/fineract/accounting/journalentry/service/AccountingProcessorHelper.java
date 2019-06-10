@@ -62,6 +62,7 @@ import org.apache.fineract.accounting.journalentry.exception.JournalEntryInvalid
 import org.apache.fineract.accounting.producttoaccountmapping.domain.PortfolioProductType;
 import org.apache.fineract.accounting.producttoaccountmapping.domain.ProductToGLAccountMapping;
 import org.apache.fineract.accounting.producttoaccountmapping.domain.ProductToGLAccountMappingRepository;
+import org.apache.fineract.accounting.producttoaccountmapping.exception.ProductToGLAccountMappingNotFoundException;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.apache.fineract.organisation.monetary.data.CurrencyData;
@@ -1339,45 +1340,52 @@ public class AccountingProcessorHelper {
 			ProductSubTypeMappingData product = this.classifyReadPlatformService
 					.retrieveProductSubtypeMappingDataByProductId(loanId);
 			GLAccount gl = null;
-
-			if (accountMappingTypeId == ACCRUAL_ACCOUNTS_FOR_LOAN.LOAN_PORTFOLIO.getValue()) {
-				gl = this.getGLAccountById(product.getPortfolio_acc_id());
-			} else if (accountMappingTypeId == ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue()) {
-				gl = this.getGLAccountById(product.getInt_receivable_acc_id());
-			} else if (accountMappingTypeId == ACCRUAL_ACCOUNTS_FOR_LOAN.INCOME_FROM_FEES.getValue()) {
-				gl = this.getGLAccountById(product.getInt_receivable_acc_id());
-			} else if (accountMappingTypeId == CASH_ACCOUNTS_FOR_LOAN.FUND_SOURCE.getValue()) {
+			if (product != null) {
+				if (accountMappingTypeId == ACCRUAL_ACCOUNTS_FOR_LOAN.LOAN_PORTFOLIO.getValue()) {
+					gl = this.getGLAccountById(product.getPortfolio_acc_id());
+				} else if (accountMappingTypeId == ACCRUAL_ACCOUNTS_FOR_LOAN.INTEREST_RECEIVABLE.getValue()) {
+					gl = this.getGLAccountById(product.getInt_receivable_acc_id());
+				} else if (accountMappingTypeId == ACCRUAL_ACCOUNTS_FOR_LOAN.INCOME_FROM_FEES.getValue()) {
+					gl = this.getGLAccountById(product.getInt_receivable_acc_id());
+				} else if (accountMappingTypeId == CASH_ACCOUNTS_FOR_LOAN.FUND_SOURCE.getValue()) {
+					ProductToGLAccountMapping accountMapping = this.accountMappingRepository
+							.findCoreProductToFinAccountMapping(loanProductId, PortfolioProductType.LOAN.getValue(),
+									accountMappingTypeId);
+					final ProductToGLAccountMapping paymentChannelSpecificAccountMapping = this.accountMappingRepository
+							.findByProductIdAndProductTypeAndFinancialAccountTypeAndPaymentTypeId(loanProductId,
+									PortfolioProductType.LOAN.getValue(), accountMappingTypeId, paymentTypeId);
+					if (paymentChannelSpecificAccountMapping != null) {
+						accountMapping = paymentChannelSpecificAccountMapping;
+					}
+					gl = accountMapping.getGlAccount();
+				}
+				glAccount = gl;
+			} else {
 				ProductToGLAccountMapping accountMapping = this.accountMappingRepository
 						.findCoreProductToFinAccountMapping(loanProductId, PortfolioProductType.LOAN.getValue(),
 								accountMappingTypeId);
-				final ProductToGLAccountMapping paymentChannelSpecificAccountMapping = this.accountMappingRepository
-						.findByProductIdAndProductTypeAndFinancialAccountTypeAndPaymentTypeId(loanProductId,
-								PortfolioProductType.LOAN.getValue(), accountMappingTypeId, paymentTypeId);
-				if (paymentChannelSpecificAccountMapping != null) {
-					accountMapping = paymentChannelSpecificAccountMapping;
+
+				/****
+				 * Get more specific mapping for FUND source accounts (based on payment
+				 * channels). Note that fund source placeholder ID would be same for both cash
+				 * and accrual accounts
+				 ***/
+				if (accountMappingTypeId == CASH_ACCOUNTS_FOR_LOAN.FUND_SOURCE.getValue()) {
+					final ProductToGLAccountMapping paymentChannelSpecificAccountMapping = this.accountMappingRepository
+							.findByProductIdAndProductTypeAndFinancialAccountTypeAndPaymentTypeId(loanProductId,
+									PortfolioProductType.LOAN.getValue(), accountMappingTypeId, paymentTypeId);
+					if (paymentChannelSpecificAccountMapping != null) {
+						accountMapping = paymentChannelSpecificAccountMapping;
+					}
 				}
-				gl = accountMapping.getGlAccount();	
+
+				if (accountMapping == null) {
+					throw new ProductToGLAccountMappingNotFoundException(PortfolioProductType.LOAN, loanProductId,
+							ACCRUAL_ACCOUNTS_FOR_LOAN.OVERPAYMENT.toString());
+				}
+				glAccount = accountMapping.getGlAccount();
 			}
 
-//			ProductToGLAccountMapping accountMapping = this.accountMappingRepository.findCoreProductToFinAccountMapping(
-//					loanDTO.getLoanProductId(), PortfolioProductType.LOAN.getValue(), accountMappingTypeId);
-
-			/****
-			 * Get more specific mapping for FUND source accounts (based on payment
-			 * channels). Note that fund source placeholder ID would be same for both cash
-			 * and accrual accounts
-			 ***/
-
-//			if (accountMappingTypeId == CASH_ACCOUNTS_FOR_LOAN.FUND_SOURCE.getValue()) {
-//				final ProductToGLAccountMapping paymentChannelSpecificAccountMapping = this.accountMappingRepository
-//						.findByProductIdAndProductTypeAndFinancialAccountTypeAndPaymentTypeId(loanProductId,
-//								PortfolioProductType.LOAN.getValue(), accountMappingTypeId, paymentTypeId);
-//				if (paymentChannelSpecificAccountMapping != null) {
-//					accountMapping = paymentChannelSpecificAccountMapping;
-//				}
-//			}
-
-			glAccount = gl;
 		}
 		return glAccount;
 
