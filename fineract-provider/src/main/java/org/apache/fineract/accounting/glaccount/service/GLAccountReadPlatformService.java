@@ -40,7 +40,9 @@ public interface GLAccountReadPlatformService {
     List<GLAccountData> retrieveAllEnabledHeaderGLAccounts(GLAccountType accountType);
 
     GLAccountData retrieveNewGLAccountDetails(final Integer type);
-
+    
+    Long findGLAccountbyGLCode(String glCode);
+    
     List<GLAccountDataForLookup> retrieveAccountsByTagId(final Long ruleId, final Integer transactionType);
     
 }

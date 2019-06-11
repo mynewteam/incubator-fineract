@@ -1000,7 +1000,7 @@ public class CommandWrapperBuilder {
         this.href = "/codes/" + codeId + "/codevalues/" + codeValueId;
         return this;
     }
-
+    
     public CommandWrapperBuilder deleteCodeValue(final Long codeId, final Long codeValueId) {
         this.actionName = "DELETE";
         this.entityName = "CODEVALUE";
@@ -3146,4 +3146,22 @@ public class CommandWrapperBuilder {
         this.href = "/twofactor/configure";
         return this;
     }
+    
+    public CommandWrapperBuilder createSpotRate()
+    {
+    	this.actionName = "CREATE";
+    	this.entityName = "SPOTRATE";
+    	this.entityId = null;
+    	this.href = "/spotrate";
+    	return this;
+    }
+
+	public CommandWrapperBuilder doExchange()
+	{
+		this.actionName = "CREATE";
+    	this.entityName = "EXCHANGE";
+    	this.entityId = null;
+    	this.href = "/exchange";
+    	return this;
+	}
 }
