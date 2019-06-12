@@ -51,7 +51,7 @@ public class FinancialActivityAccountRepositoryWrapper {
        List<FinancialActivityAccount> financialActivityAccount = (List<FinancialActivityAccount>) this.repository.findByFinancialActivityType(financialActivityType);
         if (financialActivityAccount == null) { throw new FinancialActivityAccountNotFoundException(financialActivityType); }
         
-        if(currency.toUpperCase().toString().equals("KHR")) {
+        if(currency.toUpperCase().toString().equals("USD")) {
         	return financialActivityAccount.get(1);
         }else {
         	return financialActivityAccount.get(0);
