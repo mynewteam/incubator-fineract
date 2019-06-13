@@ -160,7 +160,11 @@ public class JournalEntryCommand {
     public SingleDebitOrCreditEntryCommand[] getDebits() {
         return this.debits;
     }
-
+    
+    public String getCurrency() {
+    	return this.currencyCode;
+    }
+    
     public String getReferenceNumber() {
         return this.referenceNumber;
     }
