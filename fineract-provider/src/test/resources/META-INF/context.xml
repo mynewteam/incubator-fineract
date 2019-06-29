@@ -25,7 +25,7 @@
 	<Resource type="javax.sql.DataSource" 
         name="jdbc/mifosplatform-tenants"
 		driverClassName="oracle.jdbc.OracleDriver" 
-        url="jdbc:oracle:thin:@192.168.0.100:1521:ORCL"
+        url="jdbc:oracle:thin:@192.168.0.132:1521:ORCL"
 		username="VMICROWEB" 
         password="123" 
         validationQuery="SELECT 1 FROM DUAL" 
