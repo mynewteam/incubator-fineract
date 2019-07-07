@@ -1609,7 +1609,7 @@ public class DepositAccountReadPlatformServiceImpl implements DepositAccountRead
                         sqlBuilder.append("nvl(sac.amount_outstanding_derived,0.0) AS outstandingChargeAmount ");
                         sqlBuilder.append("from m_savings_account sa ");
                         sqlBuilder.append(
-                                        "join m_mandatory_savings_schedule mss  on mss.savings_account_id=sa.id and mss.completed_derived = false ");
+                                        "join m_mandatory_savings_schedule mss  on mss.savings_account_id=sa.id and mss.completed_derived = 0 ");
                         sqlBuilder.append("join m_currency curr on curr.code = sa.currency_code ");
                         sqlBuilder.append("LEFT JOIN(SELECT s.savings_account_id AS savings_account_id ");
                         sqlBuilder.append(
@@ -1618,7 +1618,7 @@ public class DepositAccountReadPlatformServiceImpl implements DepositAccountRead
                         sqlBuilder.append("JOIN m_charge c ON c.id = s.charge_id AND c.charge_time_enum = 3 ");
                         sqlBuilder.append("WHERE s.savings_account_id = ? ");
                         sqlBuilder.append(
-                                        "AND s.is_active = TRUE GROUP BY s.savings_account_id)sac ON sac.savings_account_id = sa.id ");
+                                        "AND s.is_active = 1 GROUP BY s.savings_account_id)sac ON sac.savings_account_id = sa.id ");
 
                         this.schemaSql = sqlBuilder.toString();
                 }

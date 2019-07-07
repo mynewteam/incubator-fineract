@@ -103,7 +103,7 @@ public class RecurringDepositAccountTransactionsApiResource {
     public String retrieveTemplate(@PathParam("recurringDepositAccountId") final Long recurringDepositAccountId,
             @QueryParam("command") final String commandParam, @Context final UriInfo uriInfo) {
 
-        this.context.authenticatedUser().validateHasReadPermission(DepositsApiConstants.RECURRING_DEPOSIT_ACCOUNT_RESOURCE_NAME);
+        this.context.authenticatedUser().validateHasReadPermission(DepositsApiConstants.RECURRING_DEPOSIT_ACCOUNT_RESOURCE_NAME);	
 
         /***
          * Check @Param commandParam value for deposit or withdrawal
