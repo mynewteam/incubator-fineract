@@ -177,7 +177,11 @@ public class PentahoReportingProcessServiceImpl implements ReportingProcessServi
                         rptParamValues.put(paramName, Long.parseLong(pValue));
                     } else if (clazz.getCanonicalName().equalsIgnoreCase("java.sql.Date")) {
                         rptParamValues.put(paramName, Date.valueOf(pValue));
-                    } else {
+                    }
+//                        else if(clazz.getCanonicalName().equalsIgnoreCase("java.lang.Number")) {
+//                    	rptParamValues.put(paramName, Number.)
+//                    }
+                    else {
                         rptParamValues.put(paramName, pValue);
                     }
                 }
